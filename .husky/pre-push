@@ -1,0 +1,9 @@
+set -e
+
+echo "[husky] Type checking (tsc --noEmit) before push..."
+pnpm exec tsc --noEmit
+
+echo "[husky] Running build before push..."
+pnpm run build
+
+echo "[husky] Build passed. Proceeding with push."
