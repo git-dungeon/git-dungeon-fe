@@ -1,13 +1,21 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { redirect, createFileRoute } from "@tanstack/react-router";
+import { authSessionQueryOptions } from "@/entities/auth/model/auth-session-query";
 
 export const Route = createFileRoute("/")({
-  component: Index,
+  beforeLoad: async ({ context }) => {
+    const session = await context.queryClient.ensureQueryData(
+      authSessionQueryOptions
+    );
+
+    if (session) {
+      throw redirect({ to: "/dashboard" });
+    }
+
+    throw redirect({ to: "/login" });
+  },
+  component: IndexRoute,
 });
 
-function Index() {
-  return (
-    <div className="p-2">
-      <h3>Welcome Home!</h3>
-    </div>
-  );
+function IndexRoute() {
+  return null;
 }
