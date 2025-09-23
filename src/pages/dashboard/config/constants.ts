@@ -1,0 +1,1 @@
+export const DASHBOARD_RECENT_LOG_LIMIT = 10;
