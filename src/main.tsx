@@ -1,27 +1,84 @@
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
-
-// Import the generated route tree
+import { QueryClientProvider } from "@tanstack/react-query";
+import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { routeTree } from "./routeTree.gen";
+import {
+  queryClient,
+  queryClientPersistOptions,
+} from "@/shared/lib/query/query-client";
+import type { RouterContext } from "@/shared/lib/router/router-context";
+import { createAuthService } from "@/entities/auth/lib/auth-service";
+import { IS_MSW_ENABLED } from "@/shared/config/env";
+import "./index.css";
 
-// Create a new router instance
-const router = createRouter({ routeTree });
+const authService = createAuthService(queryClient);
 
-// Register the router instance for type safety
+const router = createRouter({
+  routeTree,
+  context: {
+    queryClient,
+    auth: authService,
+  } satisfies RouterContext,
+});
+
 declare module "@tanstack/react-router" {
   interface Register {
     router: typeof router;
   }
 }
 
-// Render the app
-const rootElement = document.querySelector("#root")!;
-if (!rootElement.innerHTML) {
-  const root = ReactDOM.createRoot(rootElement);
-  root.render(
-    <StrictMode>
+export function App() {
+  if (queryClientPersistOptions) {
+    return (
+      <PersistQueryClientProvider
+        client={queryClient}
+        persistOptions={queryClientPersistOptions}
+      >
+        <RouterProvider router={router} />
+      </PersistQueryClientProvider>
+    );
+  }
+
+  return (
+    <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />
-    </StrictMode>
+    </QueryClientProvider>
   );
 }
+
+async function enableMocking() {
+  if (!IS_MSW_ENABLED) {
+    return;
+  }
+
+  const { startMockServiceWorker } = await import("@/mocks/browser");
+  await startMockServiceWorker();
+}
+
+async function bootstrap() {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  if (IS_MSW_ENABLED) {
+    await enableMocking();
+  }
+
+  const rootElement = document.querySelector("#root");
+  if (!rootElement) {
+    throw new Error("#root element not found");
+  }
+
+  if (!rootElement.innerHTML) {
+    const root = ReactDOM.createRoot(rootElement);
+    root.render(
+      <StrictMode>
+        <App />
+      </StrictMode>
+    );
+  }
+}
+
+void bootstrap();

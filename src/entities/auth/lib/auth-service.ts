@@ -1,0 +1,86 @@
+import { redirect, type ParsedLocation } from "@tanstack/react-router";
+import type { QueryClient } from "@tanstack/react-query";
+import {
+  AUTH_SESSION_QUERY_KEY,
+  authSessionQueryOptions,
+} from "@/entities/auth/model/auth-session-query";
+import type { AuthSession } from "@/entities/auth/model/types";
+import { authStore } from "@/entities/auth/model/access-token-store";
+import { sanitizeRedirectPath } from "@/shared/lib/navigation/sanitize-redirect-path";
+
+interface AuthorizeParams {
+  location: ParsedLocation;
+  redirectTo?: string;
+}
+
+interface RedirectIfAuthenticatedParams {
+  location: ParsedLocation;
+  redirectTo?: string;
+}
+
+export interface AuthService {
+  ensureSession(): Promise<AuthSession | null>;
+  authorize(params: AuthorizeParams): Promise<AuthSession>;
+  redirectIfAuthenticated(params: RedirectIfAuthenticatedParams): Promise<void>;
+  setSession(session: AuthSession | null): void;
+  invalidateSession(): Promise<void>;
+  setAccessToken(token?: string): void;
+}
+
+function resolveRedirectTarget(location: ParsedLocation, fallback?: string) {
+  const locationPath = sanitizeRedirectPath(
+    `${location.pathname ?? "/"}${location.searchStr ?? ""}${location.hash ?? ""}`,
+    "/"
+  );
+
+  if (fallback) {
+    return sanitizeRedirectPath(fallback, locationPath);
+  }
+
+  return locationPath;
+}
+
+export function createAuthService(queryClient: QueryClient): AuthService {
+  return {
+    async ensureSession() {
+      return queryClient.ensureQueryData(authSessionQueryOptions);
+    },
+    async authorize({ location, redirectTo }: AuthorizeParams) {
+      const session = await this.ensureSession();
+
+      if (!session) {
+        throw redirect({
+          to: "/login",
+          search: {
+            redirect: resolveRedirectTarget(location, redirectTo),
+          },
+        });
+      }
+
+      return session;
+    },
+    async redirectIfAuthenticated({
+      location,
+      redirectTo,
+    }: RedirectIfAuthenticatedParams) {
+      const session = await this.ensureSession();
+      if (session) {
+        throw redirect({
+          to: redirectTo ?? resolveRedirectTarget(location),
+          search: undefined,
+        });
+      }
+    },
+    setSession(session) {
+      queryClient.setQueryData(AUTH_SESSION_QUERY_KEY, session);
+    },
+    async invalidateSession() {
+      queryClient.setQueryData(AUTH_SESSION_QUERY_KEY, null);
+      await queryClient.invalidateQueries({ queryKey: AUTH_SESSION_QUERY_KEY });
+      authStore.clear();
+    },
+    setAccessToken(token) {
+      authStore.setAccessToken(token);
+    },
+  };
+}

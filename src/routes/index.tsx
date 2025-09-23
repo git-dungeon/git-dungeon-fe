@@ -1,13 +1,18 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { redirect, createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
-  component: Index,
+  beforeLoad: async ({ context }) => {
+    const session = await context.auth.ensureSession();
+
+    if (session) {
+      throw redirect({ to: "/dashboard" });
+    }
+
+    throw redirect({ to: "/login" });
+  },
+  component: IndexRoute,
 });
 
-function Index() {
-  return (
-    <div className="p-2">
-      <h3>Welcome Home!</h3>
-    </div>
-  );
+function IndexRoute() {
+  return null;
 }
