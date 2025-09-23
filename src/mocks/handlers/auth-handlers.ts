@@ -7,6 +7,7 @@ import {
   decodeSessionCookie,
   encodeSessionCookie,
 } from "@/entities/auth/lib/auth-cookie";
+import { sanitizeRedirectPath } from "@/shared/lib/navigation/sanitize-redirect-path";
 
 const DEFAULT_SESSION: AuthSession = {
   userId: "user-123",
@@ -75,12 +76,21 @@ export const authHandlers = [
   }),
   http.post(AUTH_ENDPOINTS.startGithubOAuth, async ({ request }) => {
     try {
-      const data = await request.json();
-      const session = resolveSession(data);
+      const rawBody = await request.json();
+      const redirectValue =
+        typeof rawBody === "object" && rawBody !== null && "redirect" in rawBody
+          ? (rawBody as Record<string, unknown>).redirect
+          : undefined;
+      const safeRedirect = sanitizeRedirectPath(
+        typeof redirectValue === "string" ? redirectValue : undefined,
+        "/dashboard"
+      );
+      const session = resolveSession(rawBody);
       return HttpResponse.json(
         {
           session,
           accessToken: createAccessToken(session),
+          redirect: safeRedirect,
         },
         { headers: createLoginHeaders(session) }
       );
@@ -89,6 +99,7 @@ export const authHandlers = [
         {
           session: DEFAULT_SESSION,
           accessToken: createAccessToken(DEFAULT_SESSION),
+          redirect: "/dashboard",
         },
         { headers: createLoginHeaders(DEFAULT_SESSION) }
       );

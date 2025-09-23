@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { GithubLoginButton } from "@/features/auth/github-login/ui/github-login-button";
 import { useAuthSession } from "@/entities/auth/model/use-auth-session";
+import { sanitizeRedirectPath } from "@/shared/lib/navigation/sanitize-redirect-path";
 
 interface LoginSearch {
   redirect?: string;
@@ -23,6 +24,7 @@ function LoginRoute() {
   const { redirect } = Route.useSearch();
   const navigate = useNavigate();
   const { data: session } = useAuthSession();
+  const safeRedirect = sanitizeRedirectPath(redirect, "/dashboard");
 
   useEffect(() => {
     if (!session) {
@@ -30,9 +32,9 @@ function LoginRoute() {
     }
 
     void navigate({
-      to: redirect ?? "/dashboard",
+      to: safeRedirect,
     });
-  }, [navigate, redirect, session]);
+  }, [navigate, safeRedirect, session]);
 
   return (
     <section className="mx-auto flex w-full max-w-md flex-col items-center gap-6 text-center">
@@ -43,7 +45,7 @@ function LoginRoute() {
         </p>
       </div>
       <div className="flex w-full flex-col gap-3">
-        <GithubLoginButton redirectTo={redirect}>
+        <GithubLoginButton redirectTo={safeRedirect}>
           GitHub로 계속하기
         </GithubLoginButton>
         <p className="text-muted-foreground text-xs">

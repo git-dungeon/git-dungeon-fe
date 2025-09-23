@@ -6,6 +6,7 @@ import {
 } from "@/entities/auth/model/auth-session-query";
 import type { AuthSession } from "@/entities/auth/model/types";
 import { authStore } from "@/entities/auth/model/access-token-store";
+import { sanitizeRedirectPath } from "@/shared/lib/navigation/sanitize-redirect-path";
 
 interface AuthorizeParams {
   location: ParsedLocation;
@@ -27,21 +28,16 @@ export interface AuthService {
 }
 
 function resolveRedirectTarget(location: ParsedLocation, fallback?: string) {
-  if (fallback && fallback.length > 0) {
-    return fallback;
+  const locationPath = sanitizeRedirectPath(
+    `${location.pathname ?? "/"}${location.searchStr ?? ""}${location.hash ?? ""}`,
+    "/"
+  );
+
+  if (fallback) {
+    return sanitizeRedirectPath(fallback, locationPath);
   }
 
-  const href = location.href ?? "";
-  if (href.length > 0) {
-    return href;
-  }
-
-  const search =
-    typeof location.searchStr === "string" ? location.searchStr : "";
-  const hash = location.hash ?? "";
-  const pathname = location.pathname ?? "/";
-  const result = `${pathname}${search}${hash}`;
-  return result === "" ? "/" : result;
+  return locationPath;
 }
 
 export function createAuthService(queryClient: QueryClient): AuthService {

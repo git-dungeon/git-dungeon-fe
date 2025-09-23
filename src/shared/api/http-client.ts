@@ -2,63 +2,38 @@ import ky, { HTTPError, type Options } from "ky";
 import { resolveApiUrl } from "@/shared/config/env";
 import { getAccessTokenFromProvider } from "@/shared/api/access-token-provider";
 
-const DEFAULT_HEADERS: HeadersInit = {
-  "Content-Type": "application/json",
-};
-
 type ExtendedHeadersInit = HeadersInit | Record<string, string | undefined>;
 
-function mergeHeaders(
-  base: HeadersInit,
-  override?: ExtendedHeadersInit
-): Headers {
-  const merged = new Headers(base);
-
-  if (!override) {
-    return merged;
+function toHeaders(init?: ExtendedHeadersInit): Headers {
+  if (!init) {
+    return new Headers();
   }
 
-  if (override instanceof Headers) {
-    override.forEach((value, key) => {
-      merged.set(key, value);
-    });
-
-    return merged;
+  if (init instanceof Headers) {
+    return new Headers(init);
   }
 
-  if (Array.isArray(override)) {
-    override.forEach(([key, value]) => {
-      if (typeof value !== "undefined") {
-        merged.set(key, value);
-      }
-    });
-
-    return merged;
+  if (Array.isArray(init)) {
+    return new Headers(init);
   }
 
-  if (override !== null && typeof override === "object") {
-    const iterator = (override as Record<symbol, unknown>)[Symbol.iterator];
-    if (typeof iterator === "function") {
-      for (const entry of override as unknown as Iterable<[string, string]>) {
-        const [key, value] = entry;
-        merged.set(key, value);
-      }
-
-      return merged;
+  const headers = new Headers();
+  Object.entries(init).forEach(([key, value]) => {
+    if (typeof value === "undefined") {
+      return;
     }
+
+    headers.set(key, value);
+  });
+  return headers;
+}
+
+function isTrustedOrigin(url: URL): boolean {
+  if (typeof window !== "undefined") {
+    return url.origin === window.location.origin;
   }
 
-  Object.entries(override as Record<string, string | undefined>).forEach(
-    ([key, value]) => {
-      if (typeof value === "undefined") {
-        return;
-      }
-
-      merged.set(key, value);
-    }
-  );
-
-  return merged;
+  return false;
 }
 
 export class ApiError extends Error {
@@ -75,23 +50,38 @@ export class ApiError extends Error {
 
 export interface HttpRequestConfig extends Options {
   parseAs?: "json" | "text" | "none";
+  includeAuthToken?: boolean;
 }
 
 export async function httpRequest<TResponse>(
   path: string,
   config: HttpRequestConfig = {}
 ): Promise<TResponse> {
-  const { parseAs = "json", headers, credentials, ...rest } = config;
-  const url = resolveApiUrl(path);
+  const {
+    parseAs = "json",
+    headers,
+    credentials,
+    includeAuthToken,
+    ...rest
+  } = config;
+  const resolvedUrl = resolveApiUrl(path);
+  const parsedUrl = new URL(
+    resolvedUrl,
+    typeof window !== "undefined" ? window.location.origin : "http://localhost"
+  );
   const accessToken = getAccessTokenFromProvider();
 
   try {
-    const headerOverride = mergeHeaders(DEFAULT_HEADERS, headers);
-    if (accessToken) {
+    const headerOverride = toHeaders(headers);
+    const shouldAttachToken =
+      includeAuthToken ??
+      (!/^https?:/i.test(resolvedUrl) || isTrustedOrigin(parsedUrl));
+
+    if (shouldAttachToken && accessToken) {
       headerOverride.set("Authorization", `Bearer ${accessToken}`);
     }
 
-    const response = await ky(url, {
+    const response = await ky(resolvedUrl, {
       credentials: credentials ?? "include",
       headers: headerOverride,
       ...rest,
