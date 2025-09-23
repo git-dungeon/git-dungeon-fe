@@ -1,3 +1,4 @@
+import { isAfter, isValid, parseISO } from "date-fns";
 import type { CurrentAction } from "@/entities/dashboard/model/types";
 import type { DungeonLogEntry } from "@/entities/dungeon-log/model/types";
 import {
@@ -35,7 +36,7 @@ export function DashboardActivity({
     latestLog?.status === "completed" ? latestLog : undefined;
   const parsedNextActionStart = parseIso(nextActionStartAt);
   const isNextActionDue = parsedNextActionStart
-    ? parsedNextActionStart <= Date.now()
+    ? !isAfter(parsedNextActionStart, new Date())
     : false;
   const isIdle = !isCurrentActionActive && apRemaining > 0 && isNextActionDue;
   const hasLogs = Boolean(latestLog);
@@ -103,13 +104,13 @@ export function DashboardActivity({
   );
 }
 
-function parseIso(iso?: string): number | undefined {
+function parseIso(iso?: string): Date | undefined {
   if (!iso) {
     return undefined;
   }
 
-  const parsed = new Date(iso).getTime();
-  if (Number.isNaN(parsed)) {
+  const parsed = parseISO(iso);
+  if (!isValid(parsed)) {
     return undefined;
   }
 

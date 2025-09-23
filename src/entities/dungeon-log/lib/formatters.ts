@@ -1,3 +1,11 @@
+import {
+  differenceInDays,
+  differenceInHours,
+  differenceInMinutes,
+  isAfter,
+  isValid,
+  parseISO,
+} from "date-fns";
 import type {
   DungeonAction,
   DungeonLogDelta,
@@ -58,30 +66,33 @@ export function resolveStatusLabel(
   return `${actionLabel}을(를) ${STATUS_FALLBACK_LABEL[status] ?? "진행했습니다"}`;
 }
 
-export function formatRelativeTime(iso: string): string {
-  const targetTime = new Date(iso).getTime();
-  const now = Date.now();
-  const diff = now - targetTime;
+const RELATIVE_TIME_FORMATTER = new Intl.RelativeTimeFormat("ko", {
+  numeric: "auto",
+});
 
-  if (Number.isNaN(targetTime) || diff < 0) {
+export function formatRelativeTime(iso: string): string {
+  const targetDate = parseISO(iso);
+
+  if (!isValid(targetDate) || isAfter(targetDate, new Date())) {
     return "방금";
   }
 
-  const minutes = Math.floor(diff / (60 * 1000));
+  const now = new Date();
+  const minutes = differenceInMinutes(now, targetDate);
   if (minutes < 1) {
     return "방금";
   }
   if (minutes < 60) {
-    return `${minutes}분 전`;
+    return RELATIVE_TIME_FORMATTER.format(-minutes, "minute");
   }
 
-  const hours = Math.floor(minutes / 60);
+  const hours = differenceInHours(now, targetDate);
   if (hours < 24) {
-    return `${hours}시간 전`;
+    return RELATIVE_TIME_FORMATTER.format(-hours, "hour");
   }
 
-  const days = Math.floor(hours / 24);
-  return `${days}일 전`;
+  const days = differenceInDays(now, targetDate);
+  return RELATIVE_TIME_FORMATTER.format(-days, "day");
 }
 
 export function formatDelta(delta: DungeonLogDelta): string[] {

@@ -1,11 +1,11 @@
 import { http, HttpResponse } from "msw";
+import { subMinutes } from "date-fns";
 import { DASHBOARD_ENDPOINTS } from "@/shared/config/env";
 import type { DashboardResponse } from "@/entities/dashboard/model/types";
 import type { DungeonLogEntry } from "@/entities/dungeon-log/model/types";
 
 function createTimestamp(minutesAgo: number): string {
-  const now = Date.now();
-  return new Date(now - minutesAgo * 60 * 1000).toISOString();
+  return subMinutes(new Date(), minutesAgo).toISOString();
 }
 
 const MOCK_DASHBOARD_STATE: DashboardResponse = {
