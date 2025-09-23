@@ -9,7 +9,7 @@ import eslintConfigPrettier from "eslint-config-prettier";
 import unusedImports from "eslint-plugin-unused-imports";
 
 export default tseslint.config([
-  globalIgnores(["dist", "src/routeTree.gen.ts"]),
+  globalIgnores(["dist", "src/routeTree.gen.ts", "public/mockServiceWorker.js"]),
   {
     files: ["src/**/*.{ts,tsx}"],
     plugins: {

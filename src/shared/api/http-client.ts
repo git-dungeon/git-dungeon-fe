@@ -1,5 +1,6 @@
 import ky, { HTTPError, type Options } from "ky";
 import { resolveApiUrl } from "@/shared/config/env";
+import { getAccessTokenFromProvider } from "@/shared/api/access-token-provider";
 
 const DEFAULT_HEADERS: HeadersInit = {
   "Content-Type": "application/json",
@@ -82,11 +83,17 @@ export async function httpRequest<TResponse>(
 ): Promise<TResponse> {
   const { parseAs = "json", headers, credentials, ...rest } = config;
   const url = resolveApiUrl(path);
+  const accessToken = getAccessTokenFromProvider();
 
   try {
+    const headerOverride = mergeHeaders(DEFAULT_HEADERS, headers);
+    if (accessToken) {
+      headerOverride.set("Authorization", `Bearer ${accessToken}`);
+    }
+
     const response = await ky(url, {
       credentials: credentials ?? "include",
-      headers: mergeHeaders(DEFAULT_HEADERS, headers),
+      headers: headerOverride,
       ...rest,
     });
 

@@ -11,9 +11,9 @@ export function GithubLoginButton(props: GithubLoginButtonProps) {
   const { redirectTo, className, children, ...rest } = props;
   const handleGithubLogin = useGithubLogin({ redirectTo });
 
-  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
+  const handleClick = async (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    handleGithubLogin();
+    await handleGithubLogin();
   };
 
   return (

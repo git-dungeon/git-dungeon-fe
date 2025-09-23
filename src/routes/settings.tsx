@@ -1,10 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { requireAuthSession } from "@/features/auth/require-auth/lib/require-auth-session";
 
 export const Route = createFileRoute("/settings")({
-  beforeLoad: async (options) => {
-    await requireAuthSession(options);
-  },
+  beforeLoad: ({ context, location }) => context.auth.authorize({ location }),
+  loader: ({ context }) => context.auth.ensureSession(),
   component: SettingsRoute,
 });
 

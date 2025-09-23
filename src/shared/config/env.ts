@@ -8,7 +8,11 @@ export const API_BASE_URL =
 export const AUTH_ENDPOINTS = {
   startGithubOAuth: "/auth/github",
   session: "/api/auth/session",
+  logout: "/api/auth/logout",
 } as const;
+
+export const IS_MSW_ENABLED =
+  import.meta.env.DEV && import.meta.env.VITE_ENABLE_MSW === "true";
 
 export function resolveApiUrl(path: string): string {
   if (/^https?:/i.test(path)) {
