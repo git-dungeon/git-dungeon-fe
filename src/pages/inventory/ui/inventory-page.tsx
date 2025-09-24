@@ -1,19 +1,21 @@
 import { useInventory } from "@/entities/inventory/model/use-inventory";
-import { InventoryItems } from "@/widgets/inventory-items/ui/inventory-items";
 import { Card, CardContent } from "@/shared/ui/card";
+import { InventoryLayout } from "@/widgets/inventory/ui/inventory-layout";
+import { useInventoryActions } from "@/features/inventory/model/use-inventory-actions";
 
 export function InventoryPage() {
   const { data, isLoading, isError, refetch, isFetching } = useInventory();
+  const actions = useInventoryActions();
 
-  const items = data?.items ?? [];
   const showLoading = isLoading && !data;
+  const items = data?.items ?? [];
 
   return (
     <section className="space-y-6">
       <header className="space-y-1">
         <h1 className="text-foreground text-2xl font-semibold">인벤토리</h1>
         <p className="text-muted-foreground text-sm">
-          보유 중인 장비를 확인하고 장착을 변경하세요.
+          현재 유저가 가지고 있는 아이템 목록입니다.
         </p>
       </header>
 
@@ -28,7 +30,7 @@ export function InventoryPage() {
               onClick={() => {
                 void refetch();
               }}
-              className="border-input bg-background text-foreground hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring inline-flex items-center rounded-md border px-3 py-1 text-xs font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+              className="border-input bg-background text-foreground hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring inline-flex items-center rounded-md border px-3 py-1 text-xs font-semibold transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
             >
               다시 시도
             </button>
@@ -54,7 +56,18 @@ export function InventoryPage() {
         </Card>
       ) : null}
 
-      {items.length > 0 ? <InventoryItems items={items} /> : null}
+      {data ? (
+        <InventoryLayout
+          items={data.items}
+          equipped={data.equipped}
+          summary={data.summary}
+          isPending={actions.isPending}
+          error={actions.error}
+          onEquip={actions.equip}
+          onUnequip={actions.unequip}
+          onDiscard={actions.discard}
+        />
+      ) : null}
     </section>
   );
 }

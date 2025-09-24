@@ -1,4 +1,7 @@
-import type { EquippedItem } from "@/entities/dashboard/model/types";
+import type {
+  EquippedItem,
+  EquipmentSlot,
+} from "@/entities/dashboard/model/types";
 import {
   formatModifier,
   formatRarity,
@@ -7,11 +10,53 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { EquipmentRow } from "@/widgets/dashboard-equipment/ui/equipment-row";
 
 interface DashboardEquipmentProps {
-  weapon?: EquippedItem;
+  helmet?: EquippedItem;
   armor?: EquippedItem;
+  weapon?: EquippedItem;
+  ring?: EquippedItem;
 }
 
-export function DashboardEquipment({ weapon, armor }: DashboardEquipmentProps) {
+const EQUIPMENT_ROWS: Array<{
+  slot: EquipmentSlot;
+  label: string;
+  placeholder: string;
+}> = [
+  {
+    slot: "helmet",
+    label: "투구",
+    placeholder: "장착된 투구가 없습니다.",
+  },
+  {
+    slot: "armor",
+    label: "방어구",
+    placeholder: "장착된 방어구가 없습니다.",
+  },
+  {
+    slot: "weapon",
+    label: "무기",
+    placeholder: "장착된 무기가 없습니다.",
+  },
+  {
+    slot: "ring",
+    label: "반지",
+    placeholder: "장착된 반지가 없습니다.",
+  },
+];
+
+export function DashboardEquipment({
+  helmet,
+  armor,
+  weapon,
+  ring,
+}: DashboardEquipmentProps) {
+  const itemsBySlot: Partial<Record<EquipmentSlot, EquippedItem | undefined>> =
+    {
+      helmet,
+      armor,
+      weapon,
+      ring,
+    };
+
   return (
     <Card>
       <CardHeader>
@@ -19,20 +64,16 @@ export function DashboardEquipment({ weapon, armor }: DashboardEquipmentProps) {
       </CardHeader>
       <CardContent>
         <dl className="divide-border divide-y text-sm">
-          <EquipmentRow
-            label="무기"
-            item={weapon}
-            placeholder="장착된 무기가 없습니다."
-            formatItem={formatEquipment}
-            formatModifier={formatModifier}
-          />
-          <EquipmentRow
-            label="방어구"
-            item={armor}
-            placeholder="장착된 방어구가 없습니다."
-            formatItem={formatEquipment}
-            formatModifier={formatModifier}
-          />
+          {EQUIPMENT_ROWS.map(({ slot, label, placeholder }) => (
+            <EquipmentRow
+              key={slot}
+              label={label}
+              item={itemsBySlot[slot]}
+              placeholder={placeholder}
+              formatItem={formatEquipment}
+              formatModifier={formatModifier}
+            />
+          ))}
         </dl>
       </CardContent>
     </Card>

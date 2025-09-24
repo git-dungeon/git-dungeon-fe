@@ -34,6 +34,16 @@ export const mockDashboardResponse: DashboardResponse = {
         { stat: "luck", value: 1 },
       ],
     },
+    equippedHelmet: {
+      id: "helmet-obsidian",
+      name: "Obsidian Helm",
+      slot: "helmet",
+      rarity: "epic",
+      modifiers: [
+        { stat: "def", value: 6 },
+        { stat: "hp", value: 8 },
+      ],
+    },
     equippedArmor: {
       id: "armor-dragon-scale",
       name: "Dragon Scale",
@@ -42,6 +52,16 @@ export const mockDashboardResponse: DashboardResponse = {
       modifiers: [
         { stat: "def", value: 8 },
         { stat: "hp", value: 5 },
+      ],
+    },
+    equippedRing: {
+      id: "ring-ember",
+      name: "Ember Ring",
+      slot: "ring",
+      rarity: "rare",
+      modifiers: [
+        { stat: "luck", value: 2 },
+        { stat: "atk", value: 1 },
       ],
     },
     currentAction: {
