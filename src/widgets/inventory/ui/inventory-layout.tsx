@@ -9,6 +9,7 @@ import { InventorySlots } from "@/widgets/inventory/ui/inventory-slots";
 import { InventoryCharacterPanel } from "@/widgets/inventory/ui/inventory-character-panel";
 import { InventoryGrid } from "@/widgets/inventory/ui/inventory-grid";
 import { InventoryModal } from "@/widgets/inventory/ui/inventory-modal";
+import { HintCard } from "@/entities/inventory/ui/hint-card";
 
 interface InventoryLayoutProps {
   items: InventoryItem[];
@@ -63,13 +64,12 @@ export function InventoryLayout({
 
         <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_260px]">
           <InventoryCharacterPanel summary={summary} />
-          {renderHintCard(selectedItem)}
+          <HintCard />
         </div>
       </div>
 
       <InventoryGrid
         items={items}
-        selectedItemId={selectedItemId}
         onSelect={(item) => handleSelect(item, item.slot)}
       />
 
@@ -83,23 +83,6 @@ export function InventoryLayout({
         onUnequip={onUnequip}
         onDiscard={onDiscard}
       />
-    </div>
-  );
-}
-
-function renderHintCard(selectedItem: InventoryItem | null) {
-  return (
-    <div className="rounded-lg border-2 border-dashed border-neutral-800 bg-neutral-900/40 p-5 text-sm text-neutral-200">
-      <h2 className="text-base font-semibold text-neutral-100">Tips</h2>
-      <p className="mt-2 leading-relaxed text-neutral-300">
-        슬롯 또는 인벤토리 아이템을 클릭해 상세 정보를 확인하고 장착을
-        변경해보세요.
-        {selectedItem ? (
-          <span className="block pt-2 text-xs text-neutral-400">
-            현재 선택: {selectedItem.name}
-          </span>
-        ) : null}
-      </p>
     </div>
   );
 }

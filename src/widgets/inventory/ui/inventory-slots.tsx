@@ -8,6 +8,8 @@ import {
 } from "@/entities/dashboard/lib/formatters";
 import type { EquipmentSlot } from "@/entities/dashboard/model/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
+import { Button } from "@/shared/ui/button";
+import { cn } from "@/shared/lib/utils";
 
 interface InventorySlotsProps {
   equipped: InventoryEquippedMap;
@@ -22,13 +24,9 @@ const SLOT_LABEL_MAP: Record<EquipmentSlot, string> = {
   ring: "반지",
 };
 
-export function InventorySlots({
-  equipped,
-  selectedItemId,
-  onSelect,
-}: InventorySlotsProps) {
+export function InventorySlots({ equipped, onSelect }: InventorySlotsProps) {
   return (
-    <Card className="bg-neutral-900/60 text-neutral-100 shadow-[0_0_0_2px_rgba(255,255,255,0.05)]">
+    <Card>
       <CardHeader>
         <CardTitle className="text-base">장착 슬롯</CardTitle>
       </CardHeader>
@@ -39,48 +37,39 @@ export function InventorySlots({
               [EquipmentSlot, InventoryItem | null]
             >
           ).map(([slot, item]) => (
-            <button
+            <Button
               key={slot}
               type="button"
+              variant="outline"
               onClick={() => {
                 if (item) {
                   onSelect(item, slot);
                 }
               }}
               title={item ? buildTooltip(item) : undefined}
-              className={[
-                "group flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-neutral-700 bg-neutral-800/80 p-3 text-center transition",
-                item
-                  ? "hover:border-primary focus-visible:border-primary"
-                  : "opacity-60",
-                selectedItemId && item && selectedItemId === item.id
-                  ? "border-primary shadow-[0_0_0_3px_rgba(249,115,22,0.25)]"
-                  : "",
-              ]
-                .filter(Boolean)
-                .join(" ")}
+              className={cn(
+                "group flex h-auto flex-col items-center justify-center gap-2 text-center transition"
+              )}
             >
-              <div className="flex size-14 items-center justify-center rounded-md border border-neutral-700 bg-neutral-900">
+              <div className="flex size-14 items-center justify-center">
                 {item ? (
                   <img
                     src={item.sprite}
                     alt={item.name}
-                    className="size-12 object-cover"
+                    className="size-14 object-cover"
                     loading="lazy"
                   />
                 ) : (
-                  <span className="text-xs text-neutral-500">빈 슬롯</span>
+                  <div className="border-foreground size-14 rounded-lg border-1 border-dashed" />
                 )}
               </div>
               <div className="space-y-1">
                 <p className="text-xs font-semibold tracking-wide">
                   {SLOT_LABEL_MAP[slot]}
                 </p>
-                <p className="text-[11px] text-neutral-300">
-                  {item ? item.name : "장비 없음"}
-                </p>
+                <p className="text-[11px]">{item ? item.name : "장비 없음"}</p>
               </div>
-            </button>
+            </Button>
           ))}
         </div>
       </CardContent>

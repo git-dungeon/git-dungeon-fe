@@ -1,5 +1,6 @@
 import { useInventory } from "@/entities/inventory/model/use-inventory";
 import { Card, CardContent } from "@/shared/ui/card";
+import { Button } from "@/shared/ui/button";
 import { InventoryLayout } from "@/widgets/inventory/ui/inventory-layout";
 import { useInventoryActions } from "@/features/inventory/model/use-inventory-actions";
 
@@ -25,15 +26,17 @@ export function InventoryPage() {
             <span className="text-destructive">
               인벤토리를 불러오는 중 문제가 발생했습니다.
             </span>
-            <button
+            <Button
               type="button"
+              variant="outline"
+              size="sm"
               onClick={() => {
                 void refetch();
               }}
-              className="border-input bg-background text-foreground hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring inline-flex items-center rounded-md border px-3 py-1 text-xs font-semibold transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+              className="text-xs"
             >
               다시 시도
-            </button>
+            </Button>
           </CardContent>
         </Card>
       ) : null}

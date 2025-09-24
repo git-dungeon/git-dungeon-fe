@@ -5,6 +5,17 @@ import {
   formatRarity,
 } from "@/entities/dashboard/lib/formatters";
 import { formatObtainedAt } from "@/entities/inventory/lib/formatters";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/shared/ui/dialog";
+import { Button } from "@/shared/ui/button";
+import { Badge } from "@/shared/ui/badge";
 
 interface InventoryModalProps {
   item: InventoryItem | null;
@@ -38,6 +49,12 @@ export function InventoryModal({
     return null;
   }
 
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen) {
+      onClose();
+    }
+  };
+
   const handleEquip = async () => {
     await onEquip(item.id);
     onClose();
@@ -54,96 +71,90 @@ export function InventoryModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-label={`${item.name} 상세 정보`}
-        className="relative w-full max-w-md rounded-2xl border border-neutral-700 bg-neutral-900 text-neutral-100 shadow-[0_20px_60px_rgba(0,0,0,0.45)]"
-      >
-        <button
-          type="button"
-          onClick={onClose}
-          className="absolute top-4 right-4 text-neutral-400 transition hover:text-neutral-200"
-          aria-label="닫기"
-        >
-          ✕
-        </button>
-
-        <div className="flex flex-col gap-5 p-6">
-          <header className="flex items-center gap-4">
-            <div className="flex size-16 items-center justify-center rounded-lg border border-neutral-700 bg-neutral-800">
+    <Dialog open onOpenChange={handleOpenChange}>
+      <DialogContent className="max-w-md gap-0">
+        <DialogClose asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="닫기"
+            className="absolute top-4 right-4"
+          >
+            ✕
+          </Button>
+        </DialogClose>
+        <div className="flex flex-col gap-2">
+          <DialogHeader className="flex-row items-start gap-2">
+            <div className="flex size-12 shrink-0 items-center justify-center">
               <img
                 src={item.sprite}
                 alt={item.name}
-                className="size-14 object-cover"
+                className="size-12 object-cover"
                 loading="lazy"
               />
             </div>
-            <div>
-              <h2 className="text-lg font-semibold">{item.name}</h2>
-              <p className="text-primary-300 text-sm">
+            <div className="w-full text-left">
+              <DialogTitle className="text-lg font-semibold">
+                {item.name}
+              </DialogTitle>
+              <DialogDescription className="text-sm">
                 {SLOT_LABEL_MAP[slot]} · {formatRarity(item.rarity)}
-              </p>
+              </DialogDescription>
             </div>
-          </header>
+          </DialogHeader>
 
-          <section className="space-y-2 text-sm">
-            <h3 className="text-xs tracking-[0.3em] text-neutral-400 uppercase">
-              스탯 보너스
-            </h3>
-            <ul className="space-y-1 rounded-md border border-neutral-700 bg-neutral-800/70 p-3">
+          <section className="flex flex-col gap-2 text-sm">
+            <h3 className="text-xs">추가 스탯</h3>
+            <ul className="flex flex-wrap gap-2">
               {item.modifiers.map((modifier, index) => (
                 <li
                   key={`${item.id}-modifier-${index}`}
                   className="font-medium"
                 >
-                  {formatModifier(modifier)}
+                  <Badge variant="outline">{formatModifier(modifier)}</Badge>
                 </li>
               ))}
-              {item.modifiers.length === 0 ? (
-                <li className="text-neutral-400">추가 보너스 없음</li>
-              ) : null}
+              {item.modifiers.length === 0 ? <li>추가 스탯 없음</li> : null}
             </ul>
-            <p className="text-xs text-neutral-400">
+            <p className="text-xs">
               획득일: {formatObtainedAt(item.obtainedAt)}
             </p>
           </section>
 
           {error ? (
-            <p className="border-destructive/40 bg-destructive/10 text-destructive rounded-md border p-2 text-xs">
-              {error.message}
-            </p>
+            <p className="text-destructive text-xs">{error.message}</p>
           ) : null}
 
-          <footer className="flex flex-wrap gap-2">
-            <button
+          <DialogFooter className="gap-2">
+            <Button
               type="button"
               onClick={handleEquip}
               disabled={item.isEquipped || isPending}
-              className="border-primary bg-primary text-primary-foreground hover:bg-primary/90 flex-1 rounded-md border px-4 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
+              className="flex-1"
             >
               장착
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
+              variant="outline"
               onClick={handleUnequip}
               disabled={!item.isEquipped || isPending}
-              className="hover:border-primary flex-1 rounded-md border border-neutral-600 bg-neutral-800 px-4 py-2 text-sm font-semibold text-neutral-100 transition disabled:cursor-not-allowed disabled:opacity-60"
+              className="flex-1"
             >
               해제
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
+              variant="destructive"
               onClick={handleDiscard}
               disabled={isPending}
-              className="border-destructive/70 bg-destructive/20 text-destructive hover:bg-destructive/30 w-full rounded-md border px-4 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
+              className="text-background flex-1"
             >
               버리기
-            </button>
-          </footer>
+            </Button>
+          </DialogFooter>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

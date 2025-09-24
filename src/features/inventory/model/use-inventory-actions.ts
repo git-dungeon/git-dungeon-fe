@@ -27,7 +27,7 @@ export function useInventoryActions() {
 
   const handleSuccess = (next: InventoryResponse) => {
     queryClient.setQueryData(INVENTORY_QUERY_KEY, next);
-    void queryClient.invalidateQueries({ queryKey: DASHBOARD_STATE_QUERY_KEY });
+    queryClient.invalidateQueries({ queryKey: DASHBOARD_STATE_QUERY_KEY });
   };
 
   const equipMutation = useMutation({
