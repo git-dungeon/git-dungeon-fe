@@ -1,6 +1,6 @@
 import type { DungeonLogDelta } from "@/entities/dungeon-log/model/types";
 import { formatDelta } from "@/entities/dungeon-log/lib/formatters";
-import { Badge } from "@/shared/ui/badge/badge";
+import { Badge } from "@/shared/ui/badge";
 
 interface DeltaListProps {
   delta: DungeonLogDelta;

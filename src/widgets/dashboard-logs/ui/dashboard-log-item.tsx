@@ -6,7 +6,7 @@ import {
   resolveActionLabel,
   resolveStatusLabel,
 } from "@/entities/dungeon-log/lib/formatters";
-import { Card, CardContent, CardHeader } from "@/shared/ui/card/card";
+import { Card, CardContent, CardHeader } from "@/shared/ui/card";
 
 interface DashboardLogItemProps {
   log: DungeonLogEntry;
@@ -17,7 +17,7 @@ export function DashboardLogItem({ log, renderDelta }: DashboardLogItemProps) {
   return (
     <li>
       <Card>
-        <CardHeader className="flex flex-row items-start justify-between space-y-0 p-4">
+        <CardHeader className="flex flex-row items-start justify-between space-y-0">
           <div>
             <p className="text-foreground text-sm font-medium">
               {resolveActionLabel(log.action)}
@@ -33,7 +33,7 @@ export function DashboardLogItem({ log, renderDelta }: DashboardLogItemProps) {
             {formatRelativeTime(log.timestamp)}
           </span>
         </CardHeader>
-        <CardContent className="p-4 pt-0">{renderDelta(log.delta)}</CardContent>
+        <CardContent>{renderDelta(log.delta)}</CardContent>
       </Card>
     </li>
   );

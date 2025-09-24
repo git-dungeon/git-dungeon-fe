@@ -1,6 +1,6 @@
 import { cn } from "@/shared/lib/utils";
-import { RadialProgress } from "@/shared/ui/chart/radial-progress";
-import { Card, CardContent, CardDescription } from "@/shared/ui/card/card";
+import { RadialProgress } from "@/shared/ui/radial-progress";
+import { Card, CardContent, CardDescription } from "@/shared/ui/card";
 
 interface SummaryCardChart {
   current: number;
@@ -32,7 +32,7 @@ export function SummaryCard({
 
   return (
     <Card>
-      <CardContent className="p-4">
+      <CardContent>
         <p className="text-muted-foreground text-xs tracking-wide uppercase">
           {title}
         </p>

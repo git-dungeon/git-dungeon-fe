@@ -1,9 +1,4 @@
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/shared/ui/card/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import {
   type DashboardActivityViewParams,
   useDashboardActivityView,
@@ -28,11 +23,11 @@ export function DashboardActivity({
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 p-5">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0">
         <CardTitle className="text-lg">최근 활동</CardTitle>
         <span className="text-muted-foreground text-xs">{timestampLabel}</span>
       </CardHeader>
-      <CardContent className="space-y-1 p-5 pt-0 text-sm">
+      <CardContent className="space-y-1 pt-0 text-sm">
         <p className="text-foreground font-medium">{title}</p>
         <p className="text-muted-foreground">{message}</p>
         {meta ? <p className="text-muted-foreground text-xs">{meta}</p> : null}

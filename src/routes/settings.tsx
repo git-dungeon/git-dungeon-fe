@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Card, CardContent } from "@/shared/ui/card/card";
+import { Card, CardContent } from "@/shared/ui/card";
 
 export const Route = createFileRoute("/settings")({
   beforeLoad: ({ context, location }) => context.auth.authorize({ location }),

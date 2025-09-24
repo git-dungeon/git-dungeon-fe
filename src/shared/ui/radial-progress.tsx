@@ -1,10 +1,6 @@
-import {
-  PolarAngleAxis,
-  RadialBar,
-  RadialBarChart,
-  ResponsiveContainer,
-} from "recharts";
+import { PolarAngleAxis, RadialBar, RadialBarChart } from "recharts";
 import { cn } from "@/shared/lib/utils";
+import { ChartContainer, type ChartConfig } from "@/shared/ui/chart";
 
 interface RadialProgressProps {
   percent: number;
@@ -40,12 +36,17 @@ export function RadialProgress({
     },
   ];
 
+  const chartConfig = {} satisfies ChartConfig;
+
   return (
     <div
       className={cn("relative", className)}
       style={{ width: size, height: size }}
     >
-      <ResponsiveContainer width="100%" height="100%">
+      <ChartContainer
+        config={chartConfig}
+        className="mx-auto aspect-square max-h-[250px]"
+      >
         <RadialBarChart
           data={chartData}
           innerRadius="70%"
@@ -66,7 +67,7 @@ export function RadialProgress({
             background={{ fill: trackColor }}
           />
         </RadialBarChart>
-      </ResponsiveContainer>
+      </ChartContainer>
       <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
         <span className="text-foreground text-sm font-semibold">{label}</span>
         {secondaryLabel ? (
