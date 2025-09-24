@@ -1,5 +1,5 @@
 import type { DashboardState } from "@/entities/dashboard/model/types";
-import { buildSummaryCards } from "@/entities/dashboard/lib/formatters";
+import { buildSummaryCards } from "@/widgets/dashboard-summary/model/build-summary-cards";
 import { SummaryCard } from "@/entities/dashboard/ui/summary-card";
 
 interface DashboardSummaryProps {
