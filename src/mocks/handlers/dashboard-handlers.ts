@@ -8,7 +8,7 @@ function createTimestamp(minutesAgo: number): string {
   return subMinutes(new Date(), minutesAgo).toISOString();
 }
 
-const MOCK_DASHBOARD_STATE: DashboardResponse = {
+export const mockDashboardResponse: DashboardResponse = {
   state: {
     userId: "user-123",
     level: 8,
@@ -53,7 +53,7 @@ const MOCK_DASHBOARD_STATE: DashboardResponse = {
   },
 };
 
-const MOCK_DUNGEON_LOGS: DungeonLogEntry[] = [
+export const mockDungeonLogs: DungeonLogEntry[] = [
   {
     id: "log-001",
     floor: 13,
@@ -216,7 +216,7 @@ const MOCK_DUNGEON_LOGS: DungeonLogEntry[] = [
 
 export const dashboardHandlers = [
   http.get(DASHBOARD_ENDPOINTS.state, () => {
-    return HttpResponse.json(MOCK_DASHBOARD_STATE);
+    return HttpResponse.json(mockDashboardResponse);
   }),
   http.get(DASHBOARD_ENDPOINTS.logs, ({ request }) => {
     const url = new URL(request.url);
@@ -228,15 +228,12 @@ export const dashboardHandlers = [
       Number.isFinite(limit) && limit !== 0 ? Math.abs(limit) : 10;
 
     const startIndex = cursor
-      ? Math.max(MOCK_DUNGEON_LOGS.findIndex((log) => log.id === cursor) + 1, 0)
+      ? Math.max(mockDungeonLogs.findIndex((log) => log.id === cursor) + 1, 0)
       : 0;
 
-    const logs = MOCK_DUNGEON_LOGS.slice(
-      startIndex,
-      startIndex + resolvedLimit
-    );
+    const logs = mockDungeonLogs.slice(startIndex, startIndex + resolvedLimit);
     const lastItem = logs.at(-1);
-    const hasMore = startIndex + resolvedLimit < MOCK_DUNGEON_LOGS.length;
+    const hasMore = startIndex + resolvedLimit < mockDungeonLogs.length;
 
     return HttpResponse.json({
       logs,
