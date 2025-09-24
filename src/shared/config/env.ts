@@ -11,6 +11,11 @@ export const AUTH_ENDPOINTS = {
   logout: "/api/auth/logout",
 } as const;
 
+export const DASHBOARD_ENDPOINTS = {
+  state: "/api/state",
+  logs: "/api/logs",
+} as const;
+
 export const IS_MSW_ENABLED =
   import.meta.env.DEV && import.meta.env.VITE_ENABLE_MSW === "true";
 

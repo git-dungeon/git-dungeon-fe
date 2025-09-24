@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Card, CardContent } from "@/shared/ui/card";
 
 export const Route = createFileRoute("/settings")({
   beforeLoad: ({ context, location }) => context.auth.authorize({ location }),
@@ -15,9 +16,11 @@ function SettingsRoute() {
           테마, 언어, 임베딩 배너 미리보기를 이곳에서 관리합니다.
         </p>
       </header>
-      <div className="border-border text-muted-foreground rounded-lg border border-dashed p-6 text-sm">
-        환경설정 폼과 미리보기 위젯이 추가될 예정입니다.
-      </div>
+      <Card className="border-dashed">
+        <CardContent className="text-muted-foreground p-6 text-sm">
+          환경설정 폼과 미리보기 위젯이 추가될 예정입니다.
+        </CardContent>
+      </Card>
     </section>
   );
 }

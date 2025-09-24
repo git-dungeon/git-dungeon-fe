@@ -1,0 +1,38 @@
+import type { DashboardState } from "@/entities/dashboard/model/types";
+import { buildSummaryCards } from "@/widgets/dashboard-summary/model/build-summary-cards";
+import { SummaryCard } from "@/entities/dashboard/ui/summary-card";
+
+interface DashboardSummaryProps {
+  state: DashboardState;
+}
+
+export function DashboardSummary({ state }: DashboardSummaryProps) {
+  const { combat, resources } = buildSummaryCards(state);
+
+  return (
+    <section className="grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2">
+        {combat.map((card) => (
+          <SummaryCard
+            key={card.title}
+            title={card.title}
+            value={card.value}
+            caption={card.caption}
+            chart={card.chart}
+          />
+        ))}
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2">
+        {resources.map((card) => (
+          <SummaryCard
+            key={card.title}
+            title={card.title}
+            value={card.value}
+            caption={card.caption}
+            chart={card.chart}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}

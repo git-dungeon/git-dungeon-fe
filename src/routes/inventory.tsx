@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Card, CardContent } from "@/shared/ui/card";
 
 export const Route = createFileRoute("/inventory")({
   beforeLoad: ({ context, location }) => context.auth.authorize({ location }),
@@ -15,9 +16,11 @@ function InventoryRoute() {
           보유 중인 장비와 장착 관리 UI가 렌더링될 영역입니다.
         </p>
       </header>
-      <div className="border-border text-muted-foreground rounded-lg border border-dashed p-6 text-sm">
-        장비 리스트, 필터, 장착 액션 컴포넌트가 추가될 예정입니다.
-      </div>
+      <Card className="border-dashed">
+        <CardContent className="text-muted-foreground p-6 text-sm">
+          장비 리스트, 필터, 장착 액션 컴포넌트가 추가될 예정입니다.
+        </CardContent>
+      </Card>
     </section>
   );
 }

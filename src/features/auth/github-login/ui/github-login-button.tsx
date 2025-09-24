@@ -1,5 +1,5 @@
 import type { ButtonHTMLAttributes, MouseEvent } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/lib/utils";
 import { useGithubLogin } from "@/features/auth/github-login/model/use-github-login";
 
 export interface GithubLoginButtonProps
