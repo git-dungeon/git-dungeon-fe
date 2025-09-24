@@ -18,6 +18,7 @@ export function DashboardSummary({ state }: DashboardSummaryProps) {
             title={card.title}
             value={card.value}
             caption={card.caption}
+            chart={card.chart}
           />
         ))}
       </div>
@@ -28,6 +29,7 @@ export function DashboardSummary({ state }: DashboardSummaryProps) {
             title={card.title}
             value={card.value}
             caption={card.caption}
+            chart={card.chart}
           />
         ))}
       </div>

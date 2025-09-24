@@ -41,6 +41,10 @@ export function buildSummaryCards(state: DashboardState) {
   const maxFloorText = `지하 ${maxFloorLabel.toString().padStart(2, "0")}층`;
   const floorProgress = Math.max(0, state.floorProgress ?? 0);
   const normalizedProgress = Math.min(floorProgress, 200);
+  const floorProgressForChart = Math.min(floorProgress, 100);
+  const hpPercent = state.maxHp > 0 ? (state.hp / state.maxHp) * 100 : 0;
+  const expPercent =
+    state.expToLevel > 0 ? (state.exp / state.expToLevel) * 100 : 0;
 
   const combat = [
     {
@@ -52,6 +56,12 @@ export function buildSummaryCards(state: DashboardState) {
       title: "HP",
       value: `${state.hp} / ${state.maxHp}`,
       caption: "현재 / 최대 체력",
+      chart: {
+        current: state.hp,
+        max: state.maxHp,
+        color: "var(--color-chart-1)",
+        secondaryLabel: `${Math.round(hpPercent)}%`,
+      },
     },
     {
       title: "ATK",
@@ -75,6 +85,12 @@ export function buildSummaryCards(state: DashboardState) {
       title: "층 진행도",
       value: `${Math.round(normalizedProgress)}%`,
       caption: "100%가 되면 자동으로 다음 층으로 이동",
+      chart: {
+        current: floorProgressForChart,
+        max: 100,
+        color: "var(--color-chart-2)",
+        secondaryLabel: "진행 중",
+      },
     },
     {
       title: "Gold",
@@ -85,6 +101,12 @@ export function buildSummaryCards(state: DashboardState) {
       title: "경험치",
       value: `${state.exp} / ${state.expToLevel}`,
       caption: "다음 레벨까지 필요 EXP",
+      chart: {
+        current: state.exp,
+        max: state.expToLevel,
+        color: "var(--color-chart-3)",
+        secondaryLabel: `${Math.round(expPercent)}%`,
+      },
     },
     {
       title: "남은 AP",
