@@ -11,6 +11,7 @@ import {
 import type { RouterContext } from "@/shared/lib/router/router-context";
 import { createAuthService } from "@/entities/auth/lib/auth-service";
 import { IS_MSW_ENABLED } from "@/shared/config/env";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import "./index.css";
 
 const authService = createAuthService(queryClient);
@@ -37,6 +38,7 @@ export function App() {
         persistOptions={queryClientPersistOptions}
       >
         <RouterProvider router={router} />
+        <ReactQueryDevtools initialIsOpen={false} />
       </PersistQueryClientProvider>
     );
   }
@@ -44,6 +46,7 @@ export function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
 }

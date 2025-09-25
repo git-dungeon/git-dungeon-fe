@@ -5,6 +5,7 @@ import type {
   InventoryEquippedMap,
   InventoryItem,
   InventoryResponse,
+  InventoryStatValues,
 } from "@/entities/inventory/model/types";
 import type { EquipmentSlot } from "@/entities/dashboard/model/types";
 import { mockDashboardResponse } from "@/mocks/handlers/dashboard-handlers";
@@ -335,14 +336,49 @@ function buildInventoryResponse(): InventoryResponse {
   const equipped = buildEquippedMap();
   const { hp, atk, def, luck } = mockDashboardResponse.state;
 
+  const equipmentBonus: InventoryStatValues = {
+    hp: 0,
+    atk: 0,
+    def: 0,
+    luck: 0,
+  };
+
+  Object.values(equipped).forEach((item) => {
+    if (!item) {
+      return;
+    }
+
+    item.modifiers.forEach((modifier) => {
+      switch (modifier.stat) {
+        case "hp":
+          equipmentBonus.hp += modifier.value;
+          break;
+        case "atk":
+          equipmentBonus.atk += modifier.value;
+          break;
+        case "def":
+          equipmentBonus.def += modifier.value;
+          break;
+        case "luck":
+          equipmentBonus.luck += modifier.value;
+          break;
+        default:
+          break;
+      }
+    });
+  });
+
   return {
     items: inventoryItems.map((item) => ({ ...item })),
     equipped,
     summary: {
-      hp,
-      atk,
-      def,
-      luck,
+      total: {
+        hp,
+        atk,
+        def,
+        luck,
+      },
+      equipmentBonus,
     },
   };
 }

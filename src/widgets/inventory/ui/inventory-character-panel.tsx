@@ -9,6 +9,8 @@ interface InventoryCharacterPanelProps {
 export function InventoryCharacterPanel({
   summary,
 }: InventoryCharacterPanelProps) {
+  const { total, equipmentBonus } = summary;
+
   return (
     <Card>
       <CardHeader>
@@ -27,21 +29,29 @@ export function InventoryCharacterPanel({
         </div>
 
         <dl className="grid grid-cols-2 gap-3 text-sm">
-          <StatItem title="HP" value={summary.hp.toString()} caption="체력" />
+          <StatItem
+            title="HP"
+            caption="체력"
+            total={total.hp}
+            equipmentBonus={equipmentBonus.hp}
+          />
           <StatItem
             title="ATK"
-            value={summary.atk.toString()}
             caption="공격력"
+            total={total.atk}
+            equipmentBonus={equipmentBonus.atk}
           />
           <StatItem
             title="DEF"
-            value={summary.def.toString()}
             caption="방어력"
+            total={total.def}
+            equipmentBonus={equipmentBonus.def}
           />
           <StatItem
             title="LUCK"
-            value={summary.luck.toString()}
             caption="행운"
+            total={total.luck}
+            equipmentBonus={equipmentBonus.luck}
           />
         </dl>
       </CardContent>
