@@ -16,6 +16,13 @@ export const DASHBOARD_ENDPOINTS = {
   logs: "/api/logs",
 } as const;
 
+export const INVENTORY_ENDPOINTS = {
+  list: "/api/inventory",
+  equip: "/api/inventory/equip",
+  unequip: "/api/inventory/unequip",
+  discard: "/api/inventory/discard",
+} as const;
+
 export const IS_MSW_ENABLED =
   import.meta.env.DEV && import.meta.env.VITE_ENABLE_MSW === "true";
 

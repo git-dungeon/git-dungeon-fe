@@ -1,6 +1,6 @@
 import type { DungeonAction } from "@/entities/dungeon-log/model/types";
 
-export type EquipmentSlot = "weapon" | "armor";
+export type EquipmentSlot = "helmet" | "armor" | "weapon" | "ring";
 
 export type EquipmentRarity =
   | "common"
@@ -20,6 +20,10 @@ export interface EquippedItem {
   slot: EquipmentSlot;
   rarity: EquipmentRarity;
   modifiers: EquipmentModifier[];
+  effect?: {
+    type: string;
+    description: string;
+  };
 }
 
 export interface DashboardState {
@@ -37,8 +41,10 @@ export interface DashboardState {
   floorProgress: number;
   gold: number;
   ap: number;
-  equippedWeapon?: EquippedItem;
+  equippedHelmet?: EquippedItem;
   equippedArmor?: EquippedItem;
+  equippedWeapon?: EquippedItem;
+  equippedRing?: EquippedItem;
   currentAction?: CurrentAction;
   lastActionCompletedAt?: string;
   nextActionStartAt?: string;

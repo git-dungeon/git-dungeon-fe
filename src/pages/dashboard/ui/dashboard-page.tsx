@@ -40,8 +40,10 @@ export function DashboardPage() {
           nextActionStartAt={state.nextActionStartAt}
         />
         <DashboardEquipment
-          weapon={state.equippedWeapon}
+          helmet={state.equippedHelmet}
           armor={state.equippedArmor}
+          weapon={state.equippedWeapon}
+          ring={state.equippedRing}
         />
       </section>
 

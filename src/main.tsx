@@ -2,15 +2,12 @@ import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { routeTree } from "./routeTree.gen";
-import {
-  queryClient,
-  queryClientPersistOptions,
-} from "@/shared/lib/query/query-client";
+import { queryClient } from "@/shared/lib/query/query-client";
 import type { RouterContext } from "@/shared/lib/router/router-context";
 import { createAuthService } from "@/entities/auth/lib/auth-service";
 import { IS_MSW_ENABLED } from "@/shared/config/env";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import "./index.css";
 
 const authService = createAuthService(queryClient);
@@ -30,20 +27,10 @@ declare module "@tanstack/react-router" {
 }
 
 export function App() {
-  if (queryClientPersistOptions) {
-    return (
-      <PersistQueryClientProvider
-        client={queryClient}
-        persistOptions={queryClientPersistOptions}
-      >
-        <RouterProvider router={router} />
-      </PersistQueryClientProvider>
-    );
-  }
-
   return (
     <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
 }

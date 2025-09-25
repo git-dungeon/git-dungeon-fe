@@ -8,7 +8,7 @@ function createTimestamp(minutesAgo: number): string {
   return subMinutes(new Date(), minutesAgo).toISOString();
 }
 
-const MOCK_DASHBOARD_STATE: DashboardResponse = {
+export const mockDashboardResponse: DashboardResponse = {
   state: {
     userId: "user-123",
     level: 8,
@@ -25,23 +25,40 @@ const MOCK_DASHBOARD_STATE: DashboardResponse = {
     gold: 640,
     ap: 18,
     equippedWeapon: {
-      id: "weapon-iron-dagger",
-      name: "Steel Sword",
+      id: "weapon-longsword",
+      name: "Longsword",
       slot: "weapon",
       rarity: "rare",
+      modifiers: [{ stat: "atk", value: 5 }],
+    },
+    equippedHelmet: {
+      id: "helmet-steel-helm",
+      name: "Steel Helm",
+      slot: "helmet",
+      rarity: "uncommon",
       modifiers: [
-        { stat: "atk", value: 4 },
-        { stat: "luck", value: 1 },
+        { stat: "def", value: 4 },
+        { stat: "hp", value: 2 },
       ],
     },
     equippedArmor: {
-      id: "armor-dragon-scale",
-      name: "Dragon Scale",
+      id: "armor-steel-armor",
+      name: "Steel Armor",
       slot: "armor",
-      rarity: "epic",
+      rarity: "uncommon",
       modifiers: [
-        { stat: "def", value: 8 },
-        { stat: "hp", value: 5 },
+        { stat: "def", value: 4 },
+        { stat: "luck", value: 1 },
+      ],
+    },
+    equippedRing: {
+      id: "ring-topaz",
+      name: "Topaz Ring",
+      slot: "ring",
+      rarity: "uncommon",
+      modifiers: [
+        { stat: "luck", value: 2 },
+        { stat: "hp", value: 2 },
       ],
     },
     currentAction: {
@@ -53,7 +70,7 @@ const MOCK_DASHBOARD_STATE: DashboardResponse = {
   },
 };
 
-const MOCK_DUNGEON_LOGS: DungeonLogEntry[] = [
+export const mockDungeonLogs: DungeonLogEntry[] = [
   {
     id: "log-001",
     floor: 13,
@@ -216,7 +233,7 @@ const MOCK_DUNGEON_LOGS: DungeonLogEntry[] = [
 
 export const dashboardHandlers = [
   http.get(DASHBOARD_ENDPOINTS.state, () => {
-    return HttpResponse.json(MOCK_DASHBOARD_STATE);
+    return HttpResponse.json(mockDashboardResponse);
   }),
   http.get(DASHBOARD_ENDPOINTS.logs, ({ request }) => {
     const url = new URL(request.url);
@@ -228,15 +245,12 @@ export const dashboardHandlers = [
       Number.isFinite(limit) && limit !== 0 ? Math.abs(limit) : 10;
 
     const startIndex = cursor
-      ? Math.max(MOCK_DUNGEON_LOGS.findIndex((log) => log.id === cursor) + 1, 0)
+      ? Math.max(mockDungeonLogs.findIndex((log) => log.id === cursor) + 1, 0)
       : 0;
 
-    const logs = MOCK_DUNGEON_LOGS.slice(
-      startIndex,
-      startIndex + resolvedLimit
-    );
+    const logs = mockDungeonLogs.slice(startIndex, startIndex + resolvedLimit);
     const lastItem = logs.at(-1);
-    const hasMore = startIndex + resolvedLimit < MOCK_DUNGEON_LOGS.length;
+    const hasMore = startIndex + resolvedLimit < mockDungeonLogs.length;
 
     return HttpResponse.json({
       logs,

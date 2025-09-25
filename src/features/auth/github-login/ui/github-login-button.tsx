@@ -1,14 +1,21 @@
-import type { ButtonHTMLAttributes, MouseEvent } from "react";
+import type { MouseEvent } from "react";
 import { cn } from "@/shared/lib/utils";
 import { useGithubLogin } from "@/features/auth/github-login/model/use-github-login";
+import { Button, type ButtonProps } from "@/shared/ui/button";
 
-export interface GithubLoginButtonProps
-  extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "onClick"> {
+export interface GithubLoginButtonProps extends Omit<ButtonProps, "onClick"> {
   redirectTo?: string;
 }
 
 export function GithubLoginButton(props: GithubLoginButtonProps) {
-  const { redirectTo, className, children, ...rest } = props;
+  const {
+    redirectTo,
+    className,
+    children,
+    disabled,
+    size = "lg",
+    ...rest
+  } = props;
   const { login, isLoading } = useGithubLogin({ redirectTo });
 
   const handleClick = async (event: MouseEvent<HTMLButtonElement>) => {
@@ -20,20 +27,22 @@ export function GithubLoginButton(props: GithubLoginButtonProps) {
     }
   };
 
+  const isDisabled = isLoading || disabled;
+
   return (
-    <button
+    <Button
       type="button"
+      size={size}
       {...rest}
       onClick={handleClick}
-      disabled={isLoading || rest.disabled}
-      aria-disabled={isLoading || rest.disabled}
+      disabled={isDisabled}
+      aria-disabled={isDisabled}
       className={cn(
-        "bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-11 items-center justify-center rounded-md px-4 text-sm font-medium transition",
         isLoading ? "pointer-events-none opacity-70" : undefined,
         className
       )}
     >
       {children ?? "GitHub로 계속하기"}
-    </button>
+    </Button>
   );
 }
