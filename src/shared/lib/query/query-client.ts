@@ -1,6 +1,4 @@
 import { QueryClient } from "@tanstack/react-query";
-import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
-import type { PersistQueryClientOptions } from "@tanstack/react-query-persist-client";
 
 function createQueryClient() {
   return new QueryClient({
@@ -18,34 +16,4 @@ function createQueryClient() {
   });
 }
 
-function createPersister() {
-  if (typeof window === "undefined") {
-    return undefined;
-  }
-
-  return createSyncStoragePersister({
-    storage: window.localStorage,
-  });
-}
-
-const persister = createPersister();
-
 export const queryClient = createQueryClient();
-
-type PersistOptions = Omit<PersistQueryClientOptions, "queryClient">;
-
-export const queryClientPersistOptions: PersistOptions | undefined = persister
-  ? {
-      persister,
-      dehydrateOptions: {
-        shouldDehydrateQuery: (query) => {
-          const rootKey = query.queryKey.at(0);
-          if (rootKey === "auth") {
-            return false;
-          }
-
-          return query.state.status === "success";
-        },
-      },
-    }
-  : undefined;
