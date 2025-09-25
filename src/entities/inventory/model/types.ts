@@ -36,6 +36,7 @@ export interface InventorySummary {
 }
 
 export interface InventoryResponse {
+  version: number;
   items: InventoryItem[];
   equipped: InventoryEquippedMap;
   summary: InventorySummary;

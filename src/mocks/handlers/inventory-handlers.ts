@@ -11,6 +11,8 @@ import type {
 import type { EquipmentSlot } from "@/entities/dashboard/model/types";
 import { mockDashboardResponse } from "@/mocks/handlers/dashboard-handlers";
 
+let inventoryVersion = 1;
+
 function createTimestamp(minutesAgo: number): string {
   return subMinutes(new Date(), minutesAgo).toISOString();
 }
@@ -584,6 +586,7 @@ function buildInventoryResponse(): InventoryResponse {
   });
 
   return {
+    version: inventoryVersion,
     items: inventoryItems.map((item) => ({ ...item })),
     equipped,
     summary: {
@@ -623,11 +626,21 @@ export const inventoryHandlers = [
       );
     }
 
+    let changed = false;
+
     inventoryItems.forEach((item) => {
       if (item.slot === target.slot) {
-        item.isEquipped = item.id === target.id;
+        const nextEquipped = item.id === target.id;
+        if (item.isEquipped !== nextEquipped) {
+          item.isEquipped = nextEquipped;
+          changed = true;
+        }
       }
     });
+
+    if (changed) {
+      inventoryVersion += 1;
+    }
 
     return HttpResponse.json(buildInventoryResponse());
   }),
@@ -652,7 +665,10 @@ export const inventoryHandlers = [
       );
     }
 
-    target.isEquipped = false;
+    if (target.isEquipped) {
+      target.isEquipped = false;
+      inventoryVersion += 1;
+    }
 
     return HttpResponse.json(buildInventoryResponse());
   }),
@@ -680,6 +696,8 @@ export const inventoryHandlers = [
     }
 
     const [removed] = inventoryItems.splice(index, 1);
+
+    inventoryVersion += 1;
 
     if (removed.isEquipped) {
       setDashboardSlot(removed.slot, null);
