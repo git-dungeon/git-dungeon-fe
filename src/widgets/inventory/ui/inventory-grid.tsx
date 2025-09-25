@@ -14,8 +14,6 @@ interface InventoryGridProps {
   onSelect: (item: InventoryItem) => void;
 }
 
-const GRID_COLUMNS = 5;
-const GRID_ROWS = 4;
 const SLOT_ORDER: Record<EquipmentSlot, number> = {
   helmet: 0,
   armor: 1,
@@ -36,28 +34,14 @@ export function InventoryGrid({ items, onSelect }: InventoryGridProps) {
     return new Date(b.obtainedAt).getTime() - new Date(a.obtainedAt).getTime();
   });
 
-  const slotCells: Array<InventoryItem | null> = sortedItems.slice(
-    0,
-    GRID_COLUMNS * GRID_ROWS
-  );
-
-  while (slotCells.length < GRID_COLUMNS * GRID_ROWS) {
-    slotCells.push(null);
-  }
-
   return (
     <Card>
       <CardHeader>
         <CardTitle>인벤토리</CardTitle>
       </CardHeader>
       <CardContent>
-        <div
-          className="grid gap-3"
-          style={{
-            gridTemplateColumns: `repeat(${GRID_COLUMNS}, minmax(0, 1fr))`,
-          }}
-        >
-          {slotCells.map((item, index) => (
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+          {sortedItems.map((item, index) => (
             <InventoryGridCell
               key={item ? item.id : `placeholder-${index}`}
               item={item}
@@ -71,25 +55,11 @@ export function InventoryGrid({ items, onSelect }: InventoryGridProps) {
 }
 
 interface InventoryGridCellProps {
-  item: InventoryItem | null;
+  item: InventoryItem;
   onSelect: (item: InventoryItem) => void;
 }
 
 function InventoryGridCell({ item, onSelect }: InventoryGridCellProps) {
-  if (!item) {
-    return (
-      <Button
-        type="button"
-        variant="outline"
-        className={cn(
-          "relative flex h-auto flex-col items-center justify-center gap-2 border-dashed transition"
-        )}
-      >
-        <span className="truncate text-[11px] font-medium">빈 슬롯</span>
-      </Button>
-    );
-  }
-
   const tooltip = buildTooltip(item);
 
   return (
