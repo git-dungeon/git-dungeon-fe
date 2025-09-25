@@ -1,12 +1,11 @@
 import type { InventoryItem } from "@/entities/inventory/model/types";
 import type { EquipmentSlot } from "@/entities/dashboard/model/types";
-import {
-  formatModifier,
-  formatRarity,
-} from "@/entities/dashboard/lib/formatters";
+import { InventoryItemCard } from "@/entities/inventory/ui/inventory-item-card";
+import { buildInventoryItemTooltip } from "@/entities/inventory/lib/formatters";
 import { Button } from "@/shared/ui/button";
-import { cn } from "@/shared/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
+import { cn } from "@/shared/lib/utils";
+import { Badge } from "@/shared/ui/badge";
 
 interface InventoryGridProps {
   items: InventoryItem[];
@@ -41,12 +40,8 @@ export function InventoryGrid({ items, onSelect }: InventoryGridProps) {
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-          {sortedItems.map((item, index) => (
-            <InventoryGridCell
-              key={item ? item.id : `placeholder-${index}`}
-              item={item}
-              onSelect={onSelect}
-            />
+          {sortedItems.map((item) => (
+            <InventoryGridCell key={item.id} item={item} onSelect={onSelect} />
           ))}
         </div>
       </CardContent>
@@ -60,7 +55,7 @@ interface InventoryGridCellProps {
 }
 
 function InventoryGridCell({ item, onSelect }: InventoryGridCellProps) {
-  const tooltip = buildTooltip(item);
+  const tooltip = buildInventoryItemTooltip(item);
 
   return (
     <Button
@@ -69,29 +64,13 @@ function InventoryGridCell({ item, onSelect }: InventoryGridCellProps) {
       variant="outline"
       onClick={() => onSelect(item)}
       className={cn(
-        "relative flex h-auto flex-col items-center justify-center gap-2 transition",
-        item.isEquipped ? "" : ""
+        "group bg-background relative flex h-auto w-full flex-col items-center justify-center p-3"
       )}
     >
-      <img
-        src={item.sprite}
-        alt={item.name}
-        loading="lazy"
-        className="pointer-events-none h-14 w-14 object-cover"
-      />
-      <span className="truncate text-[11px] font-medium">{item.name}</span>
+      <InventoryItemCard item={item} />
       {item.isEquipped ? (
-        <span className="bg-primary text-primary-foreground absolute top-1 left-1 rounded px-1 text-[10px] font-bold">
-          E
-        </span>
+        <Badge className="absolute top-1 left-1">장착</Badge>
       ) : null}
     </Button>
   );
-}
-
-function buildTooltip(item: InventoryItem): string {
-  const modifiers = item.modifiers.map((modifier) => formatModifier(modifier));
-  return `${item.name} · ${formatRarity(item.rarity)}${
-    modifiers.length > 0 ? `\n${modifiers.join(", ")}` : ""
-  }`;
 }
