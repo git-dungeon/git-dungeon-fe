@@ -28,7 +28,7 @@ export function InventoryCharacterPanel({
           <p className="mt-4 text-sm">현재 능력치</p>
         </div>
 
-        <dl className="grid grid-cols-2 gap-3 text-sm">
+        <div className="grid grid-cols-2 gap-3 text-sm">
           <StatItem
             title="HP"
             caption="체력"
@@ -53,7 +53,7 @@ export function InventoryCharacterPanel({
             total={total.luck}
             equipmentBonus={equipmentBonus.luck}
           />
-        </dl>
+        </div>
       </CardContent>
     </Card>
   );

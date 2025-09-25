@@ -51,7 +51,7 @@ export function InventoryPage() {
         </Card>
       ) : null}
 
-      {!showLoading && !isFetching && items.length === 0 ? (
+      {!showLoading && !isFetching && !isError && items.length === 0 ? (
         <Card>
           <CardContent className="text-muted-foreground p-6 text-sm">
             아직 획득한 장비가 없습니다.
