@@ -4,17 +4,26 @@ import {
   type FetchDungeonLogsParams,
 } from "@/entities/dungeon-log/api/get-dungeon-logs";
 
-const DEFAULT_LIMIT = 10;
+export const DUNGEON_LOGS_DEFAULT_LIMIT = 10;
 
 export function dungeonLogsQueryKey(params?: FetchDungeonLogsParams) {
-  const { limit = DEFAULT_LIMIT, cursor } = params ?? {};
-  return ["dungeon-logs", { limit, cursor }] as const;
+  const { limit = DUNGEON_LOGS_DEFAULT_LIMIT, cursor, type } = params ?? {};
+
+  return [
+    "dungeon-logs",
+    {
+      limit,
+      cursor: cursor ?? null,
+      type: type ?? null,
+    },
+  ] as const;
 }
 
 export function dungeonLogsQueryOptions(params?: FetchDungeonLogsParams) {
   const queryParams: FetchDungeonLogsParams = {
-    limit: params?.limit ?? DEFAULT_LIMIT,
+    limit: params?.limit ?? DUNGEON_LOGS_DEFAULT_LIMIT,
     cursor: params?.cursor,
+    type: params?.type,
   };
 
   return queryOptions({

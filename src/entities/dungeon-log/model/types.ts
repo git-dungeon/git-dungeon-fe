@@ -1,10 +1,15 @@
+export type DungeonLogCategory = "exploration" | "status";
+
 export type DungeonAction =
   | "battle"
   | "treasure"
   | "empty"
   | "rest"
   | "trap"
-  | "move";
+  | "move"
+  | "equip"
+  | "unequip"
+  | "discard";
 
 export type DungeonLogStatus = "started" | "completed";
 
@@ -15,10 +20,12 @@ export interface DungeonLogDelta {
   exp?: number;
   item?: string;
   progress?: number;
+  slot?: string;
 }
 
 export interface DungeonLogEntry {
   id: string;
+  category: DungeonLogCategory;
   floor: number;
   action: DungeonAction;
   status: DungeonLogStatus;

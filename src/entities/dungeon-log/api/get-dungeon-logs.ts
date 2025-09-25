@@ -1,6 +1,9 @@
 import { DASHBOARD_ENDPOINTS } from "@/shared/config/env";
 import { httpGet } from "@/shared/api/http-client";
-import type { DungeonLogEntry } from "@/entities/dungeon-log/model/types";
+import type {
+  DungeonLogCategory,
+  DungeonLogEntry,
+} from "@/entities/dungeon-log/model/types";
 
 export interface DungeonLogsResponse {
   logs: DungeonLogEntry[];
@@ -10,12 +13,13 @@ export interface DungeonLogsResponse {
 export interface FetchDungeonLogsParams {
   limit?: number;
   cursor?: string;
+  type?: DungeonLogCategory;
 }
 
 export async function getDungeonLogs(
   params: FetchDungeonLogsParams = {}
 ): Promise<DungeonLogsResponse> {
-  const { limit, cursor } = params;
+  const { limit, cursor, type } = params;
   const searchParams = new URLSearchParams();
 
   if (typeof limit === "number") {
@@ -24,6 +28,10 @@ export async function getDungeonLogs(
 
   if (cursor) {
     searchParams.set("cursor", cursor);
+  }
+
+  if (type) {
+    searchParams.set("type", type);
   }
 
   const endpoint = searchParams.size

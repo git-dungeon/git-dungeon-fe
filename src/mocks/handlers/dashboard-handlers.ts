@@ -73,6 +73,7 @@ export const mockDashboardResponse: DashboardResponse = {
 export const mockDungeonLogs: DungeonLogEntry[] = [
   {
     id: "log-001",
+    category: "exploration",
     floor: 13,
     action: "battle",
     status: "started",
@@ -83,6 +84,7 @@ export const mockDungeonLogs: DungeonLogEntry[] = [
   },
   {
     id: "log-002",
+    category: "exploration",
     floor: 13,
     action: "empty",
     status: "completed",
@@ -94,6 +96,7 @@ export const mockDungeonLogs: DungeonLogEntry[] = [
   },
   {
     id: "log-003",
+    category: "exploration",
     floor: 13,
     action: "empty",
     status: "started",
@@ -103,7 +106,21 @@ export const mockDungeonLogs: DungeonLogEntry[] = [
     },
   },
   {
+    id: "log-015",
+    category: "status",
+    floor: 13,
+    action: "equip",
+    status: "completed",
+    timestamp: createTimestamp(4),
+    delta: {
+      ap: 0,
+      item: "Steel Helm",
+      slot: "helmet",
+    },
+  },
+  {
     id: "log-004",
+    category: "exploration",
     floor: 13,
     action: "treasure",
     status: "completed",
@@ -117,6 +134,7 @@ export const mockDungeonLogs: DungeonLogEntry[] = [
   },
   {
     id: "log-005",
+    category: "exploration",
     floor: 13,
     action: "treasure",
     status: "started",
@@ -126,7 +144,21 @@ export const mockDungeonLogs: DungeonLogEntry[] = [
     },
   },
   {
+    id: "log-016",
+    category: "status",
+    floor: 13,
+    action: "unequip",
+    status: "completed",
+    timestamp: createTimestamp(7),
+    delta: {
+      ap: 0,
+      item: "Bronze Helm",
+      slot: "helmet",
+    },
+  },
+  {
     id: "log-006",
+    category: "exploration",
     floor: 13,
     action: "battle",
     status: "completed",
@@ -141,6 +173,7 @@ export const mockDungeonLogs: DungeonLogEntry[] = [
   },
   {
     id: "log-007",
+    category: "exploration",
     floor: 13,
     action: "battle",
     status: "started",
@@ -150,7 +183,34 @@ export const mockDungeonLogs: DungeonLogEntry[] = [
     },
   },
   {
+    id: "log-017",
+    category: "status",
+    floor: 13,
+    action: "equip",
+    status: "completed",
+    timestamp: createTimestamp(10),
+    delta: {
+      ap: 0,
+      item: "Knight's Helm",
+      slot: "helmet",
+    },
+  },
+  {
+    id: "log-018",
+    category: "status",
+    floor: 13,
+    action: "discard",
+    status: "completed",
+    timestamp: createTimestamp(11),
+    delta: {
+      ap: 0,
+      item: "Leather Cap",
+      slot: "helmet",
+    },
+  },
+  {
     id: "log-008",
+    category: "exploration",
     floor: 13,
     action: "trap",
     status: "completed",
@@ -164,6 +224,7 @@ export const mockDungeonLogs: DungeonLogEntry[] = [
   },
   {
     id: "log-009",
+    category: "exploration",
     floor: 13,
     action: "trap",
     status: "started",
@@ -173,7 +234,34 @@ export const mockDungeonLogs: DungeonLogEntry[] = [
     },
   },
   {
+    id: "log-019",
+    category: "status",
+    floor: 13,
+    action: "equip",
+    status: "completed",
+    timestamp: createTimestamp(14),
+    delta: {
+      ap: 0,
+      item: "Topaz Ring",
+      slot: "ring",
+    },
+  },
+  {
+    id: "log-020",
+    category: "status",
+    floor: 13,
+    action: "unequip",
+    status: "completed",
+    timestamp: createTimestamp(15),
+    delta: {
+      ap: 0,
+      item: "Bronze Ring",
+      slot: "ring",
+    },
+  },
+  {
     id: "log-010",
+    category: "exploration",
     floor: 13,
     action: "rest",
     status: "completed",
@@ -186,6 +274,7 @@ export const mockDungeonLogs: DungeonLogEntry[] = [
   },
   {
     id: "log-011",
+    category: "exploration",
     floor: 13,
     action: "rest",
     status: "started",
@@ -195,7 +284,34 @@ export const mockDungeonLogs: DungeonLogEntry[] = [
     },
   },
   {
+    id: "log-021",
+    category: "status",
+    floor: 13,
+    action: "discard",
+    status: "completed",
+    timestamp: createTimestamp(18),
+    delta: {
+      ap: 0,
+      item: "Rusty Sword",
+      slot: "weapon",
+    },
+  },
+  {
+    id: "log-022",
+    category: "status",
+    floor: 13,
+    action: "equip",
+    status: "completed",
+    timestamp: createTimestamp(19),
+    delta: {
+      ap: 0,
+      item: "Longsword",
+      slot: "weapon",
+    },
+  },
+  {
     id: "log-012",
+    category: "exploration",
     floor: 13,
     action: "move",
     status: "completed",
@@ -207,6 +323,7 @@ export const mockDungeonLogs: DungeonLogEntry[] = [
   },
   {
     id: "log-013",
+    category: "exploration",
     floor: 12,
     action: "move",
     status: "started",
@@ -216,7 +333,34 @@ export const mockDungeonLogs: DungeonLogEntry[] = [
     },
   },
   {
+    id: "log-023",
+    category: "status",
+    floor: 12,
+    action: "equip",
+    status: "completed",
+    timestamp: createTimestamp(22),
+    delta: {
+      ap: 0,
+      item: "Steel Armor",
+      slot: "armor",
+    },
+  },
+  {
+    id: "log-024",
+    category: "status",
+    floor: 12,
+    action: "discard",
+    status: "completed",
+    timestamp: createTimestamp(23),
+    delta: {
+      ap: 0,
+      item: "Leather Armor",
+      slot: "armor",
+    },
+  },
+  {
     id: "log-014",
+    category: "exploration",
     floor: 12,
     action: "battle",
     status: "completed",
@@ -239,18 +383,29 @@ export const dashboardHandlers = [
     const url = new URL(request.url);
     const limitParam = url.searchParams.get("limit");
     const cursor = url.searchParams.get("cursor");
+    const typeParam = url.searchParams.get("type");
 
     const limit = limitParam ? Number.parseInt(limitParam, 10) : 10;
     const resolvedLimit =
       Number.isFinite(limit) && limit !== 0 ? Math.abs(limit) : 10;
 
-    const startIndex = cursor
-      ? Math.max(mockDungeonLogs.findIndex((log) => log.id === cursor) + 1, 0)
-      : 0;
+    const normalizedType =
+      typeParam === "exploration" || typeParam === "status"
+        ? typeParam
+        : undefined;
 
-    const logs = mockDungeonLogs.slice(startIndex, startIndex + resolvedLimit);
+    const sourceLogs = normalizedType
+      ? mockDungeonLogs.filter((log) => log.category === normalizedType)
+      : mockDungeonLogs;
+
+    const cursorIndex = cursor
+      ? sourceLogs.findIndex((log) => log.id === cursor)
+      : -1;
+    const startIndex = cursorIndex >= 0 ? cursorIndex + 1 : 0;
+
+    const logs = sourceLogs.slice(startIndex, startIndex + resolvedLimit);
     const lastItem = logs.at(-1);
-    const hasMore = startIndex + resolvedLimit < mockDungeonLogs.length;
+    const hasMore = startIndex + resolvedLimit < sourceLogs.length;
 
     return HttpResponse.json({
       logs,

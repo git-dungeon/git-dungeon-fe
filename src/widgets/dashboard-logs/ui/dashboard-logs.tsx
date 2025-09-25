@@ -1,6 +1,6 @@
 import type { DungeonLogEntry } from "@/entities/dungeon-log/model/types";
 import { DashboardLogItem } from "@/widgets/dashboard-logs/ui/dashboard-log-item";
-import { DeltaList } from "@/widgets/dashboard-logs/ui/delta-list";
+import { DeltaList } from "@/entities/dungeon-log/ui/delta-list";
 
 interface DashboardLogsProps {
   logs: DungeonLogEntry[];

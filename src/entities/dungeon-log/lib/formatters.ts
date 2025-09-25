@@ -8,6 +8,7 @@ import {
 } from "date-fns";
 import type {
   DungeonAction,
+  DungeonLogCategory,
   DungeonLogDelta,
   DungeonLogEntry,
   DungeonLogStatus,
@@ -20,6 +21,9 @@ const ACTION_LABEL_MAP: Record<DungeonAction, string> = {
   rest: "휴식",
   trap: "함정",
   move: "층 이동",
+  equip: "장착",
+  unequip: "해제",
+  discard: "폐기",
 };
 
 const STATUS_ACTION_LABEL_MAP: Record<
@@ -33,6 +37,9 @@ const STATUS_ACTION_LABEL_MAP: Record<
     empty: "탐색을 시작했습니다",
     rest: "휴식을 준비합니다",
     move: "다음 층으로 이동을 준비합니다",
+    equip: "아이템을 장착합니다",
+    unequip: "아이템을 해제합니다",
+    discard: "아이템을 버립니다",
   },
   completed: {
     battle: "전투에서 승리했습니다",
@@ -41,6 +48,9 @@ const STATUS_ACTION_LABEL_MAP: Record<
     empty: "아무 일도 일어나지 않았습니다",
     rest: "휴식을 마쳤습니다",
     move: "다음 층으로 진입했습니다",
+    equip: "아이템을 장착했습니다",
+    unequip: "아이템을 해제했습니다",
+    discard: "아이템을 버렸습니다",
   },
 };
 
@@ -69,6 +79,24 @@ export function resolveStatusLabel(
 const RELATIVE_TIME_FORMATTER = new Intl.RelativeTimeFormat("ko", {
   numeric: "auto",
 });
+
+const SLOT_LABEL_MAP: Record<string, string> = {
+  helmet: "투구",
+  armor: "방어구",
+  weapon: "무기",
+  ring: "반지",
+};
+
+export function resolveLogCategoryLabel(category: DungeonLogCategory): string {
+  switch (category) {
+    case "exploration":
+      return "탐험 로그";
+    case "status":
+      return "상태 로그";
+    default:
+      return category;
+  }
+}
 
 export function formatRelativeTime(iso: string): string {
   const targetDate = parseISO(iso);
@@ -114,6 +142,10 @@ export function formatDelta(delta: DungeonLogDelta): string[] {
   }
   if (delta.item) {
     entries.push(`아이템 ${delta.item}`);
+  }
+  if (delta.slot) {
+    const label = SLOT_LABEL_MAP[delta.slot] ?? delta.slot;
+    entries.push(`슬롯 ${label}`);
   }
   return entries;
 }
