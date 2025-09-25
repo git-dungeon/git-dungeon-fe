@@ -1,7 +1,6 @@
 import type { InventoryItem } from "@/entities/inventory/model/types";
 import type { EquipmentSlot } from "@/entities/dashboard/model/types";
 import { InventoryItemCard } from "@/entities/inventory/ui/inventory-item-card";
-import { buildInventoryItemTooltip } from "@/entities/inventory/lib/formatters";
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { cn } from "@/shared/lib/utils";
@@ -55,12 +54,10 @@ interface InventoryGridCellProps {
 }
 
 function InventoryGridCell({ item, onSelect }: InventoryGridCellProps) {
-  const tooltip = buildInventoryItemTooltip(item);
-
   return (
     <Button
       type="button"
-      title={tooltip}
+      title={item.name}
       variant="outline"
       onClick={() => onSelect(item)}
       className={cn(
@@ -69,7 +66,7 @@ function InventoryGridCell({ item, onSelect }: InventoryGridCellProps) {
     >
       <InventoryItemCard item={item} />
       {item.isEquipped ? (
-        <Badge className="absolute top-1 left-1">장착</Badge>
+        <Badge className="absolute top-2 left-2">장착</Badge>
       ) : null}
     </Button>
   );

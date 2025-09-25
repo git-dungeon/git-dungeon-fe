@@ -20,6 +20,10 @@ export interface EquippedItem {
   slot: EquipmentSlot;
   rarity: EquipmentRarity;
   modifiers: EquipmentModifier[];
+  effect?: {
+    type: string;
+    description: string;
+  };
 }
 
 export interface DashboardState {

@@ -4,6 +4,7 @@ import {
   formatModifier,
   formatRarity,
 } from "@/entities/dashboard/lib/formatters";
+import { formatInventoryEffect } from "@/entities/inventory/lib/formatters";
 import { Badge } from "@/shared/ui/badge";
 import { cn } from "@/shared/lib/utils";
 
@@ -57,6 +58,11 @@ export function InventoryItemCard({
             {formatModifier(modifier)}
           </Badge>
         ))}
+        {item.effect ? (
+          <Badge variant="outline" className="text-[10px]">
+            {formatInventoryEffect(item.effect)}
+          </Badge>
+        ) : null}
       </div>
     </div>
   );

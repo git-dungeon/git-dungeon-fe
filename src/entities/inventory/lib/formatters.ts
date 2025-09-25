@@ -1,8 +1,8 @@
-import type { InventoryItem } from "@/entities/inventory/model/types";
-import {
-  formatModifier,
-  formatRarity,
-} from "@/entities/dashboard/lib/formatters";
+import type { InventoryItemEffect } from "@/entities/inventory/model/types";
+
+const EFFECT_LABEL_MAP: Record<string, string> = {
+  resurrection: "부활",
+};
 
 const obtainedAtFormatter = new Intl.DateTimeFormat("ko-KR", {
   dateStyle: "medium",
@@ -13,9 +13,6 @@ export function formatObtainedAt(value: string): string {
   return obtainedAtFormatter.format(new Date(value));
 }
 
-export function buildInventoryItemTooltip(item: InventoryItem): string {
-  const modifiers = item.modifiers.map((modifier) => formatModifier(modifier));
-  return `${item.name} · ${formatRarity(item.rarity)}${
-    modifiers.length > 0 ? `\n${modifiers.join(", ")}` : ""
-  }`;
+export function formatInventoryEffect(effect: InventoryItemEffect): string {
+  return EFFECT_LABEL_MAP[effect.type] ?? effect.type;
 }

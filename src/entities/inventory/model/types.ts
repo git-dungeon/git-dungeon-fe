@@ -10,9 +10,15 @@ export interface InventoryItem {
   slot: EquipmentSlot;
   rarity: EquipmentRarity;
   modifiers: EquipmentModifier[];
+  effect?: InventoryItemEffect;
   sprite: string;
   obtainedAt: string;
   isEquipped: boolean;
+}
+
+export interface InventoryItemEffect {
+  type: string;
+  description: string;
 }
 
 export type InventoryEquippedMap = Record<EquipmentSlot, InventoryItem | null>;

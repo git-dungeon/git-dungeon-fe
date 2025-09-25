@@ -4,7 +4,10 @@ import {
   formatModifier,
   formatRarity,
 } from "@/entities/dashboard/lib/formatters";
-import { formatObtainedAt } from "@/entities/inventory/lib/formatters";
+import {
+  formatInventoryEffect,
+  formatObtainedAt,
+} from "@/entities/inventory/lib/formatters";
 import {
   Dialog,
   DialogClose,
@@ -116,10 +119,23 @@ export function InventoryModal({
               ))}
               {item.modifiers.length === 0 ? <li>추가 스탯 없음</li> : null}
             </ul>
-            <p className="text-xs">
-              획득일: {formatObtainedAt(item.obtainedAt)}
-            </p>
           </section>
+
+          {item.effect ? (
+            <section className="flex flex-col gap-2 text-sm">
+              <h3 className="text-xs">특수 효과</h3>
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge variant="outline">
+                  {formatInventoryEffect(item.effect)}
+                </Badge>
+                <p className="text-muted-foreground text-sm">
+                  {item.effect.description}
+                </p>
+              </div>
+            </section>
+          ) : null}
+
+          <p className="text-xs">획득일: {formatObtainedAt(item.obtainedAt)}</p>
 
           {error ? (
             <p className="text-destructive text-xs">{error.message}</p>

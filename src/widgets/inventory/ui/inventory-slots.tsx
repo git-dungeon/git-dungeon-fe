@@ -5,7 +5,6 @@ import type {
 import type { EquipmentSlot } from "@/entities/dashboard/model/types";
 import { InventoryItemCard } from "@/entities/inventory/ui/inventory-item-card";
 import { getInventorySlotLabel } from "@/entities/inventory/config/slot-labels";
-import { buildInventoryItemTooltip } from "@/entities/inventory/lib/formatters";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import { cn } from "@/shared/lib/utils";
@@ -38,7 +37,7 @@ export function InventorySlots({ equipped, onSelect }: InventorySlotsProps) {
                   onSelect(item, slot);
                 }
               }}
-              title={item ? buildInventoryItemTooltip(item) : undefined}
+              title={item ? item.name : undefined}
               className={cn(
                 "group bg-background flex h-auto w-full flex-col items-center justify-center gap-2 p-3 text-center transition"
               )}

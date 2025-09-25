@@ -4,6 +4,7 @@ import { INVENTORY_ENDPOINTS } from "@/shared/config/env";
 import type {
   InventoryEquippedMap,
   InventoryItem,
+  InventoryItemEffect,
   InventoryResponse,
   InventoryStatValues,
 } from "@/entities/inventory/model/types";
@@ -37,6 +38,7 @@ interface RawInventoryItem {
   spriteLabel: string;
   obtainedMinutesAgo: number;
   isEquipped?: boolean;
+  effect?: InventoryItemEffect;
 }
 
 const RAW_INVENTORY_ITEMS: RawInventoryItem[] = [
@@ -467,6 +469,10 @@ const RAW_INVENTORY_ITEMS: RawInventoryItem[] = [
     modifiers: [],
     spriteLabel: "AR",
     obtainedMinutesAgo: 1340,
+    effect: {
+      type: "resurrection",
+      description: "HP가 0이 되면 한 번 부활합니다",
+    },
   },
 ];
 
@@ -476,6 +482,7 @@ const inventoryItems: InventoryItem[] = RAW_INVENTORY_ITEMS.map((item) => ({
   slot: item.slot,
   rarity: item.rarity,
   modifiers: item.modifiers.map((modifier) => ({ ...modifier })),
+  effect: item.effect ? { ...item.effect } : undefined,
   sprite: createSprite(item.spriteLabel, RARITY_COLOR_MAP[item.rarity]),
   obtainedAt: createTimestamp(item.obtainedMinutesAgo),
   isEquipped: Boolean(item.isEquipped),
@@ -500,6 +507,7 @@ function setDashboardSlot(slot: EquipmentSlot, item: InventoryItem | null) {
         slot: item.slot,
         rarity: item.rarity,
         modifiers: item.modifiers,
+        effect: item.effect ? { ...item.effect } : undefined,
       }
     : undefined;
 
