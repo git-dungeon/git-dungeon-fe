@@ -2,6 +2,7 @@ import { http, HttpResponse } from "msw";
 import { DASHBOARD_ENDPOINTS } from "@/shared/config/env";
 import type { DungeonLogEntry } from "@/entities/dungeon-log/model/types";
 import { mockTimestampMinutesAgo } from "@/mocks/handlers/shared/time";
+import giantRatImage from "@/assets/Giant Rat.png";
 
 export const mockDungeonLogs: DungeonLogEntry[] = [
   {
@@ -13,6 +14,16 @@ export const mockDungeonLogs: DungeonLogEntry[] = [
     createdAt: mockTimestampMinutesAgo(1),
     delta: {
       ap: -1,
+    },
+    details: {
+      type: "battle",
+      monster: {
+        id: "monster-giant-rat",
+        name: "거대 쥐",
+        hp: 24,
+        atk: 3,
+        sprite: giantRatImage,
+      },
     },
   },
   {
@@ -49,6 +60,10 @@ export const mockDungeonLogs: DungeonLogEntry[] = [
       ap: 0,
       item: "Steel Helm",
       slot: "helmet",
+      stats: {
+        def: 4,
+        hp: 2,
+      },
     },
   },
   {
@@ -103,6 +118,16 @@ export const mockDungeonLogs: DungeonLogEntry[] = [
       gold: 30,
       progress: 20,
     },
+    details: {
+      type: "battle",
+      monster: {
+        id: "monster-giant-rat",
+        name: "거대 쥐",
+        hp: 24,
+        atk: 3,
+        sprite: giantRatImage,
+      },
+    },
   },
   {
     id: "log-007",
@@ -113,6 +138,16 @@ export const mockDungeonLogs: DungeonLogEntry[] = [
     createdAt: mockTimestampMinutesAgo(9),
     delta: {
       ap: -1,
+    },
+    details: {
+      type: "battle",
+      monster: {
+        id: "monster-giant-rat",
+        name: "거대 쥐",
+        hp: 24,
+        atk: 3,
+        sprite: giantRatImage,
+      },
     },
   },
   {
@@ -126,6 +161,10 @@ export const mockDungeonLogs: DungeonLogEntry[] = [
       ap: 0,
       item: "Knight's Helm",
       slot: "helmet",
+      stats: {
+        def: 6,
+        hp: 4,
+      },
     },
   },
   {
@@ -139,6 +178,9 @@ export const mockDungeonLogs: DungeonLogEntry[] = [
       ap: 0,
       item: "Leather Cap",
       slot: "helmet",
+      stats: {
+        def: -1,
+      },
     },
   },
   {
@@ -177,6 +219,10 @@ export const mockDungeonLogs: DungeonLogEntry[] = [
       ap: 0,
       item: "Topaz Ring",
       slot: "ring",
+      stats: {
+        luck: 2,
+        hp: 2,
+      },
     },
   },
   {
@@ -190,6 +236,9 @@ export const mockDungeonLogs: DungeonLogEntry[] = [
       ap: 0,
       item: "Bronze Ring",
       slot: "ring",
+      stats: {
+        luck: -1,
+      },
     },
   },
   {
@@ -227,6 +276,9 @@ export const mockDungeonLogs: DungeonLogEntry[] = [
       ap: 0,
       item: "Rusty Sword",
       slot: "weapon",
+      stats: {
+        atk: -2,
+      },
     },
   },
   {
@@ -240,6 +292,9 @@ export const mockDungeonLogs: DungeonLogEntry[] = [
       ap: 0,
       item: "Longsword",
       slot: "weapon",
+      stats: {
+        atk: 5,
+      },
     },
   },
   {
@@ -276,6 +331,10 @@ export const mockDungeonLogs: DungeonLogEntry[] = [
       ap: 0,
       item: "Steel Armor",
       slot: "armor",
+      stats: {
+        def: 4,
+        luck: 1,
+      },
     },
   },
   {
@@ -289,6 +348,9 @@ export const mockDungeonLogs: DungeonLogEntry[] = [
       ap: 0,
       item: "Leather Armor",
       slot: "armor",
+      stats: {
+        def: -1,
+      },
     },
   },
   {
@@ -304,6 +366,16 @@ export const mockDungeonLogs: DungeonLogEntry[] = [
       exp: 12,
       gold: 18,
       progress: 20,
+    },
+    details: {
+      type: "battle",
+      monster: {
+        id: "monster-giant-rat",
+        name: "거대 쥐",
+        hp: 24,
+        atk: 3,
+        sprite: giantRatImage,
+      },
     },
   },
 ];

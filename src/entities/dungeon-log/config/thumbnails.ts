@@ -98,6 +98,14 @@ export function buildLogThumbnails(
 ): LogThumbnailDescriptor[] {
   const thumbnails: LogThumbnailDescriptor[] = [];
 
+  if (entry.details?.type === "battle" && entry.details.monster.sprite) {
+    thumbnails.push({
+      id: `${entry.id}-monster`,
+      src: entry.details.monster.sprite,
+      alt: entry.details.monster.name,
+    });
+  }
+
   if (entry.action === "equip" || entry.action === "unequip") {
     const itemThumbnail = resolveItemThumbnail(
       entry.delta.item,

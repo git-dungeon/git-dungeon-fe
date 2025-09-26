@@ -106,6 +106,9 @@ export function formatDelta(delta: DungeonLogDelta): string[] {
   if (delta.item) {
     entries.push(`아이템 ${delta.item}`);
   }
+  if (delta.stats) {
+    entries.push(...formatStatsDelta(delta.stats));
+  }
 
   return entries;
 }
@@ -120,13 +123,46 @@ function formatProgressDelta(value: number): string {
   return `층 진행도 ${valuePrefix}${value}%`;
 }
 
+function formatStatsDelta(
+  stats: NonNullable<DungeonLogDelta["stats"]>
+): string[] {
+  const STAT_LABEL_MAP: Record<
+    keyof NonNullable<DungeonLogDelta["stats"]>,
+    string
+  > = {
+    hp: "HP",
+    atk: "ATK",
+    def: "DEF",
+    luck: "LUK",
+  };
+
+  return Object.entries(stats)
+    .filter(([, value]) => typeof value === "number" && value !== 0)
+    .map(([key, value]) => {
+      const label = STAT_LABEL_MAP[key as keyof typeof STAT_LABEL_MAP] ?? key;
+      const valuePrefix = (value as number) > 0 ? "+" : "";
+      return `${label} ${valuePrefix}${value}`;
+    });
+}
+
 export function buildLogDescription(entry: DungeonLogEntry): string {
   const statusLabel = resolveStatusLabel(entry.status, entry.action);
+  const detailsLabel = buildDetailsAttachment(entry);
   const deltaEntries = formatDelta(entry.delta);
 
   if (deltaEntries.length === 0) {
-    return statusLabel;
+    return detailsLabel ? `${statusLabel} ${detailsLabel}` : statusLabel;
   }
 
-  return `${statusLabel} (${deltaEntries.join(", ")})`;
+  const base = `${statusLabel} (${deltaEntries.join(", ")})`;
+  return detailsLabel ? `${base} ${detailsLabel}` : base;
+}
+
+function buildDetailsAttachment(entry: DungeonLogEntry): string | undefined {
+  if (entry.details?.type === "battle") {
+    const { monster } = entry.details;
+    return monster.name ? `상대: ${monster.name}` : undefined;
+  }
+
+  return undefined;
 }

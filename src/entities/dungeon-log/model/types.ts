@@ -21,7 +21,27 @@ export interface DungeonLogDelta {
   item?: string;
   progress?: number;
   slot?: string;
+  stats?: DungeonLogStatDelta;
 }
+
+export interface DungeonLogStatDelta {
+  hp?: number;
+  atk?: number;
+  def?: number;
+  luck?: number;
+}
+
+export interface DungeonLogMonster {
+  id: string;
+  name: string;
+  hp: number;
+  atk: number;
+  sprite?: string;
+}
+
+export type DungeonLogDetails =
+  | { type: "battle"; monster: DungeonLogMonster }
+  | { type: "generic" };
 
 export interface DungeonLogEntry {
   id: string;
@@ -31,4 +51,5 @@ export interface DungeonLogEntry {
   status: DungeonLogStatus;
   createdAt: string;
   delta: DungeonLogDelta;
+  details?: DungeonLogDetails;
 }
