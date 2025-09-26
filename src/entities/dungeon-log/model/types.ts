@@ -29,6 +29,6 @@ export interface DungeonLogEntry {
   floor: number;
   action: DungeonAction;
   status: DungeonLogStatus;
-  timestamp: string;
+  createdAt: string;
   delta: DungeonLogDelta;
 }

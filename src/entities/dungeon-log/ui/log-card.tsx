@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import type { DungeonLogEntry } from "@/entities/dungeon-log/model/types";
 import {
   buildLogDescription,
-  formatRelativeTime,
+  formatLogTimestamp,
   resolveActionLabel,
   resolveLogCategoryLabel,
   resolveStatusLabel,
@@ -22,7 +22,7 @@ interface LogCardProps {
 export function LogCard({
   log,
   renderDelta,
-  showCategoryBadge = false,
+  showCategoryBadge = true,
   renderThumbnail,
   onClick,
 }: LogCardProps) {
@@ -63,7 +63,7 @@ export function LogCard({
           </div>
         </div>
         <span className="text-muted-foreground text-xs whitespace-nowrap">
-          {formatRelativeTime(log.timestamp)}
+          {formatLogTimestamp(log.createdAt)}
         </span>
       </CardHeader>
       <CardContent className="flex min-h-16 justify-between gap-3">

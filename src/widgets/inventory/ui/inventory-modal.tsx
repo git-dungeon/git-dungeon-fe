@@ -4,10 +4,8 @@ import {
   formatModifier,
   formatRarity,
 } from "@/entities/dashboard/lib/formatters";
-import {
-  formatInventoryEffect,
-  formatObtainedAt,
-} from "@/entities/inventory/lib/formatters";
+import { formatInventoryEffect } from "@/entities/inventory/lib/formatters";
+import { formatDateTime } from "@/shared/lib/datetime/formatters";
 import {
   Dialog,
   DialogClose,
@@ -135,7 +133,7 @@ export function InventoryModal({
             </section>
           ) : null}
 
-          <p className="text-xs">획득일: {formatObtainedAt(item.obtainedAt)}</p>
+          <p className="text-xs">획득일: {formatDateTime(item.createdAt)}</p>
 
           {error ? (
             <p className="text-destructive text-xs">{error.message}</p>

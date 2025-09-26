@@ -1,11 +1,3 @@
-import {
-  differenceInDays,
-  differenceInHours,
-  differenceInMinutes,
-  isAfter,
-  isValid,
-  parseISO,
-} from "date-fns";
 import type {
   DungeonAction,
   DungeonLogCategory,
@@ -13,6 +5,10 @@ import type {
   DungeonLogEntry,
   DungeonLogStatus,
 } from "@/entities/dungeon-log/model/types";
+import {
+  formatDateTime,
+  formatRelativeTime as formatRelativeTimeInternal,
+} from "@/shared/lib/datetime/formatters";
 
 const ACTION_LABEL_MAP: Record<DungeonAction, string> = {
   battle: "전투",
@@ -76,10 +72,6 @@ export function resolveStatusLabel(
   return `${actionLabel}을(를) ${STATUS_FALLBACK_LABEL[status] ?? "진행했습니다"}`;
 }
 
-const RELATIVE_TIME_FORMATTER = new Intl.RelativeTimeFormat("ko", {
-  numeric: "auto",
-});
-
 export function resolveLogCategoryLabel(category: DungeonLogCategory): string {
   switch (category) {
     case "exploration":
@@ -91,30 +83,8 @@ export function resolveLogCategoryLabel(category: DungeonLogCategory): string {
   }
 }
 
-export function formatRelativeTime(iso: string): string {
-  const targetDate = parseISO(iso);
-
-  if (!isValid(targetDate) || isAfter(targetDate, new Date())) {
-    return "방금";
-  }
-
-  const now = new Date();
-  const minutes = differenceInMinutes(now, targetDate);
-  if (minutes < 1) {
-    return "방금";
-  }
-  if (minutes < 60) {
-    return RELATIVE_TIME_FORMATTER.format(-minutes, "minute");
-  }
-
-  const hours = differenceInHours(now, targetDate);
-  if (hours < 24) {
-    return RELATIVE_TIME_FORMATTER.format(-hours, "hour");
-  }
-
-  const days = differenceInDays(now, targetDate);
-  return RELATIVE_TIME_FORMATTER.format(-days, "day");
-}
+export const formatRelativeTime = formatRelativeTimeInternal;
+export const formatLogTimestamp = formatDateTime;
 
 export function formatDelta(delta: DungeonLogDelta): string[] {
   const entries: string[] = [];

@@ -1,5 +1,4 @@
 import { http, HttpResponse } from "msw";
-import { subMinutes } from "date-fns";
 import { INVENTORY_ENDPOINTS } from "@/shared/config/env";
 import type {
   InventoryEquippedMap,
@@ -10,12 +9,9 @@ import type {
 } from "@/entities/inventory/model/types";
 import type { EquipmentSlot } from "@/entities/dashboard/model/types";
 import { mockDashboardResponse } from "@/mocks/handlers/dashboard-handlers";
+import { mockTimestampMinutesAgo } from "@/mocks/handlers/shared/time";
 
 let inventoryVersion = 1;
-
-function createTimestamp(minutesAgo: number): string {
-  return subMinutes(new Date(), minutesAgo).toISOString();
-}
 
 const RARITY_COLOR_MAP: Record<InventoryItem["rarity"], string> = {
   common: "#6b7280",
@@ -486,7 +482,7 @@ const inventoryItems: InventoryItem[] = RAW_INVENTORY_ITEMS.map((item) => ({
   modifiers: item.modifiers.map((modifier) => ({ ...modifier })),
   effect: item.effect ? { ...item.effect } : undefined,
   sprite: createSprite(item.spriteLabel, RARITY_COLOR_MAP[item.rarity]),
-  obtainedAt: createTimestamp(item.obtainedMinutesAgo),
+  createdAt: mockTimestampMinutesAgo(item.obtainedMinutesAgo),
   isEquipped: Boolean(item.isEquipped),
 }));
 
