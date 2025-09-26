@@ -23,7 +23,7 @@ const ACTION_LABEL_MAP: Record<DungeonAction, string> = {
   move: "층 이동",
   equip: "장착",
   unequip: "해제",
-  discard: "폐기",
+  discard: "버리기",
 };
 
 const STATUS_ACTION_LABEL_MAP: Record<
@@ -79,13 +79,6 @@ export function resolveStatusLabel(
 const RELATIVE_TIME_FORMATTER = new Intl.RelativeTimeFormat("ko", {
   numeric: "auto",
 });
-
-const SLOT_LABEL_MAP: Record<string, string> = {
-  helmet: "투구",
-  armor: "방어구",
-  weapon: "무기",
-  ring: "반지",
-};
 
 export function resolveLogCategoryLabel(category: DungeonLogCategory): string {
   switch (category) {
@@ -143,10 +136,7 @@ export function formatDelta(delta: DungeonLogDelta): string[] {
   if (delta.item) {
     entries.push(`아이템 ${delta.item}`);
   }
-  if (delta.slot) {
-    const label = SLOT_LABEL_MAP[delta.slot] ?? delta.slot;
-    entries.push(`슬롯 ${label}`);
-  }
+
   return entries;
 }
 

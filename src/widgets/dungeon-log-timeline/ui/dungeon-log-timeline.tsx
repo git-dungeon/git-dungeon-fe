@@ -1,9 +1,16 @@
-import type { DungeonLogCategory } from "@/entities/dungeon-log/model/types";
+import { useState } from "react";
+import type {
+  DungeonLogCategory,
+  DungeonLogEntry,
+} from "@/entities/dungeon-log/model/types";
 import { DeltaList } from "@/entities/dungeon-log/ui/delta-list";
 import { LogCard } from "@/entities/dungeon-log/ui/log-card";
+import { LogThumbnailStack } from "@/entities/dungeon-log/ui/log-thumbnail-stack";
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent } from "@/shared/ui/card";
 import { useDungeonLogTimeline } from "@/widgets/dungeon-log-timeline/model/use-dungeon-log-timeline";
+import { buildLogThumbnails } from "@/entities/dungeon-log/config/thumbnails";
+import { DungeonLogDetailDialog } from "@/widgets/dungeon-log-timeline/ui/dungeon-log-detail-dialog";
 
 interface DungeonLogTimelineProps {
   category?: DungeonLogCategory;
@@ -20,6 +27,7 @@ export function DungeonLogTimeline({ category }: DungeonLogTimelineProps) {
     refetch,
     sentinelRef,
   } = useDungeonLogTimeline({ category });
+  const [selectedLog, setSelectedLog] = useState<DungeonLogEntry | null>(null);
 
   if (status === "pending") {
     return <LoadingState />;
@@ -36,15 +44,22 @@ export function DungeonLogTimeline({ category }: DungeonLogTimelineProps) {
   return (
     <div className="space-y-4">
       <ul className="space-y-3">
-        {logs.map((log) => (
-          <li key={log.id}>
-            <LogCard
-              log={log}
-              renderDelta={(delta) => <DeltaList delta={delta} />}
-              showCategoryBadge={true}
-            />
-          </li>
-        ))}
+        {logs.map((log) => {
+          const thumbnails = buildLogThumbnails(log);
+          return (
+            <li key={log.id}>
+              <LogCard
+                log={log}
+                renderDelta={(delta) => <DeltaList delta={delta} />}
+                showCategoryBadge={!category}
+                renderThumbnail={() => (
+                  <LogThumbnailStack thumbnails={thumbnails} />
+                )}
+                onClick={() => setSelectedLog(log)}
+              />
+            </li>
+          );
+        })}
       </ul>
       <div ref={sentinelRef} className="flex justify-center py-6">
         {isFetchingNextPage ? (
@@ -61,6 +76,15 @@ export function DungeonLogTimeline({ category }: DungeonLogTimelineProps) {
           </span>
         )}
       </div>
+      <DungeonLogDetailDialog
+        log={selectedLog}
+        open={Boolean(selectedLog)}
+        onOpenChange={(open) => {
+          if (!open) {
+            setSelectedLog(null);
+          }
+        }}
+      />
     </div>
   );
 }

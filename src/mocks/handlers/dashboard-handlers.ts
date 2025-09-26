@@ -128,7 +128,7 @@ export const mockDungeonLogs: DungeonLogEntry[] = [
     delta: {
       ap: 0,
       gold: 45,
-      item: "Iron Shield",
+      item: "Copper Band",
       progress: 10,
     },
   },

@@ -168,7 +168,7 @@ const RAW_INVENTORY_ITEMS: RawInventoryItem[] = [
   },
   {
     id: "armor-iron-shield",
-    name: "Iron Shield",
+    name: "Copper Band",
     slot: "armor",
     rarity: "common",
     modifiers: [{ stat: "def", value: 2 }],
