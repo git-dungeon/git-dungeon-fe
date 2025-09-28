@@ -1,11 +1,11 @@
 import type { InventoryItem } from "@/entities/inventory/model/types";
 import type { EquipmentSlot } from "@/entities/dashboard/model/types";
-import {
-  formatModifier,
-  formatRarity,
-} from "@/entities/dashboard/lib/formatters";
+import { formatRarity } from "@/entities/dashboard/lib/formatters";
 import { formatInventoryEffect } from "@/entities/inventory/lib/formatters";
 import { formatDateTime } from "@/shared/lib/datetime/formatters";
+import { cn } from "@/shared/lib/utils";
+import { formatStatChange } from "@/shared/lib/stats/format";
+import { BADGE_TONE_CLASSES } from "@/shared/ui/tone";
 import {
   Dialog,
   DialogClose,
@@ -107,14 +107,25 @@ export function InventoryModal({
           <section className="flex flex-col gap-2 text-sm">
             <h3 className="text-xs">추가 스탯</h3>
             <ul className="flex flex-wrap gap-2">
-              {item.modifiers.map((modifier, index) => (
-                <li
-                  key={`${item.id}-modifier-${index}`}
-                  className="font-medium"
-                >
-                  <Badge variant="outline">{formatModifier(modifier)}</Badge>
-                </li>
-              ))}
+              {item.modifiers.map((modifier, index) => {
+                const { text, tone } = formatStatChange(
+                  modifier.stat,
+                  modifier.value
+                );
+                return (
+                  <li
+                    key={`${item.id}-modifier-${index}`}
+                    className="font-medium"
+                  >
+                    <Badge
+                      variant="outline"
+                      className={cn("text-[10px]", BADGE_TONE_CLASSES[tone])}
+                    >
+                      {text}
+                    </Badge>
+                  </li>
+                );
+              })}
               {item.modifiers.length === 0 ? <li>추가 스탯 없음</li> : null}
             </ul>
           </section>

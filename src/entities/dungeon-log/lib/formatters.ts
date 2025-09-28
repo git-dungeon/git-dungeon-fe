@@ -9,6 +9,11 @@ import {
   formatDateTime,
   formatRelativeTime as formatRelativeTimeInternal,
 } from "@/shared/lib/datetime/formatters";
+import {
+  determineItemTone,
+  formatStatChange,
+  type StatTone,
+} from "@/shared/lib/stats/format";
 
 const ACTION_LABEL_MAP: Record<DungeonAction, string> = {
   battle: "전투",
@@ -86,69 +91,97 @@ export function resolveLogCategoryLabel(category: DungeonLogCategory): string {
 export const formatRelativeTime = formatRelativeTimeInternal;
 export const formatLogTimestamp = formatDateTime;
 
-export function formatDelta(delta: DungeonLogDelta): string[] {
-  const entries: string[] = [];
-  if (typeof delta.ap === "number" && delta.ap !== 0) {
-    entries.push(formatDeltaEntry("AP", delta.ap));
-  }
-  if (typeof delta.hp === "number" && delta.hp !== 0) {
-    entries.push(formatDeltaEntry("HP", delta.hp));
-  }
-  if (typeof delta.gold === "number" && delta.gold !== 0) {
-    entries.push(formatDeltaEntry("Gold", delta.gold));
-  }
-  if (typeof delta.exp === "number" && delta.exp !== 0) {
-    entries.push(formatDeltaEntry("EXP", delta.exp));
-  }
-  if (typeof delta.progress === "number" && delta.progress !== 0) {
-    entries.push(formatProgressDelta(delta.progress));
-  }
+export interface FormattedDeltaEntry {
+  id: string;
+  text: string;
+  tone: StatTone;
+}
+
+export function formatDelta(entry: DungeonLogEntry): FormattedDeltaEntry[] {
+  const { delta } = entry;
+  const entries: FormattedDeltaEntry[] = [];
+
+  pushNumeric(entries, entry.id, "AP", delta.ap);
+  pushNumeric(entries, entry.id, "HP", delta.hp);
+  pushNumeric(entries, entry.id, "Gold", delta.gold);
+  pushNumeric(entries, entry.id, "EXP", delta.exp);
+  pushProgress(entries, entry.id, delta.progress);
+
   if (delta.item) {
-    entries.push(`아이템 ${delta.item}`);
+    entries.push({
+      id: `${entry.id}-item`,
+      text: `아이템 ${delta.item}`,
+      tone: resolveItemTone(entry.action),
+    });
   }
+
   if (delta.stats) {
-    entries.push(...formatStatsDelta(delta.stats));
+    entries.push(...formatStatsDelta(entry.id, delta.stats));
   }
 
   return entries;
 }
 
-function formatDeltaEntry(label: string, value: number): string {
-  const valuePrefix = value > 0 ? "+" : "";
-  return `${label} ${valuePrefix}${value}`;
+function pushNumeric(
+  acc: FormattedDeltaEntry[],
+  entryId: string,
+  label: string,
+  value?: number
+) {
+  if (typeof value !== "number" || value === 0) {
+    return;
+  }
+  const tone = value > 0 ? "gain" : "loss";
+  const prefix = value > 0 ? "+" : "";
+  acc.push({
+    id: `${entryId}-${label.toLowerCase()}-${acc.length}`,
+    text: `${label} ${prefix}${value}`,
+    tone,
+  });
 }
 
-function formatProgressDelta(value: number): string {
-  const valuePrefix = value > 0 ? "+" : "";
-  return `층 진행도 ${valuePrefix}${value}%`;
+function pushProgress(
+  acc: FormattedDeltaEntry[],
+  entryId: string,
+  value?: number
+) {
+  if (typeof value !== "number" || value === 0) {
+    return;
+  }
+  const tone = value > 0 ? "gain" : "loss";
+  const prefix = value > 0 ? "+" : "";
+  acc.push({
+    id: `${entryId}-progress-${acc.length}`,
+    text: `층 진행도 ${prefix}${value}%`,
+    tone,
+  });
 }
 
 function formatStatsDelta(
+  entryId: string,
   stats: NonNullable<DungeonLogDelta["stats"]>
-): string[] {
-  const STAT_LABEL_MAP: Record<
-    keyof NonNullable<DungeonLogDelta["stats"]>,
-    string
-  > = {
-    hp: "HP",
-    atk: "ATK",
-    def: "DEF",
-    luck: "LUK",
-  };
-
+): FormattedDeltaEntry[] {
   return Object.entries(stats)
     .filter(([, value]) => typeof value === "number" && value !== 0)
     .map(([key, value]) => {
-      const label = STAT_LABEL_MAP[key as keyof typeof STAT_LABEL_MAP] ?? key;
-      const valuePrefix = (value as number) > 0 ? "+" : "";
-      return `${label} ${valuePrefix}${value}`;
+      const numericValue = value as number;
+      const { text, tone } = formatStatChange(key, numericValue);
+      return {
+        id: `${entryId}-stat-${key}`,
+        text,
+        tone,
+      } satisfies FormattedDeltaEntry;
     });
+}
+
+function resolveItemTone(action: DungeonAction): StatTone {
+  return determineItemTone(action);
 }
 
 export function buildLogDescription(entry: DungeonLogEntry): string {
   const statusLabel = resolveStatusLabel(entry.status, entry.action);
   const detailsLabel = buildDetailsAttachment(entry);
-  const deltaEntries = formatDelta(entry.delta);
+  const deltaEntries = formatDelta(entry).map((item) => item.text);
 
   if (deltaEntries.length === 0) {
     return detailsLabel ? `${statusLabel} ${detailsLabel}` : statusLabel;

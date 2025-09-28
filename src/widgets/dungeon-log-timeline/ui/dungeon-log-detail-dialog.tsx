@@ -81,7 +81,7 @@ export function DungeonLogDetailDialog({
 
             <div className="space-y-2">
               <p className="text-muted-foreground text-xs">변동 내역</p>
-              <DeltaList delta={log.delta} />
+              <DeltaList entry={log} />
             </div>
           </>
         ) : null}

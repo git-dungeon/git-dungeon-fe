@@ -18,7 +18,7 @@ export function DashboardLogs({ logs }: DashboardLogsProps) {
           <DashboardLogItem
             key={log.id}
             log={log}
-            renderDelta={(delta) => <DeltaList delta={delta} />}
+            renderDelta={(entry) => <DeltaList entry={entry} />}
           />
         ))}
       </ul>

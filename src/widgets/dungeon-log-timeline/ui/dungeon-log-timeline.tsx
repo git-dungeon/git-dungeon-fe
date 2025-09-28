@@ -50,7 +50,7 @@ export function DungeonLogTimeline({ category }: DungeonLogTimelineProps) {
             <li key={log.id}>
               <LogCard
                 log={log}
-                renderDelta={(delta) => <DeltaList delta={delta} />}
+                renderDelta={(entry) => <DeltaList entry={entry} />}
                 renderThumbnail={() => (
                   <LogThumbnailStack thumbnails={thumbnails} />
                 )}

@@ -6,7 +6,7 @@ import { LogThumbnailStack } from "@/entities/dungeon-log/ui/log-thumbnail-stack
 
 interface DashboardLogItemProps {
   log: DungeonLogEntry;
-  renderDelta: (delta: DungeonLogEntry["delta"]) => ReactNode;
+  renderDelta: (entry: DungeonLogEntry) => ReactNode;
 }
 
 export function DashboardLogItem({ log, renderDelta }: DashboardLogItemProps) {

@@ -13,7 +13,7 @@ import { cn } from "@/shared/lib/utils";
 
 interface LogCardProps {
   log: DungeonLogEntry;
-  renderDelta?: (delta: DungeonLogEntry["delta"]) => ReactNode;
+  renderDelta?: (entry: DungeonLogEntry) => ReactNode;
   showCategoryBadge?: boolean;
   renderThumbnail?: () => ReactNode;
   onClick?: () => void;
@@ -26,7 +26,7 @@ export function LogCard({
   renderThumbnail,
   onClick,
 }: LogCardProps) {
-  const deltaContent = renderDelta?.(log.delta);
+  const deltaContent = renderDelta?.(log);
   const isInteractive = typeof onClick === "function";
 
   return (

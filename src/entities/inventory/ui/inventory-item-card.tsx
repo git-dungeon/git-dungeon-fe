@@ -1,12 +1,11 @@
 import type { InventoryItem } from "@/entities/inventory/model/types";
 import { getInventorySlotLabel } from "@/entities/inventory/config/slot-labels";
-import {
-  formatModifier,
-  formatRarity,
-} from "@/entities/dashboard/lib/formatters";
+import { formatRarity } from "@/entities/dashboard/lib/formatters";
 import { formatInventoryEffect } from "@/entities/inventory/lib/formatters";
 import { Badge } from "@/shared/ui/badge";
 import { cn } from "@/shared/lib/utils";
+import { formatStatChange } from "@/shared/lib/stats/format";
+import { BADGE_TONE_CLASSES } from "@/shared/ui/tone";
 
 interface InventoryItemCardProps {
   item: InventoryItem;
@@ -49,15 +48,21 @@ export function InventoryItemCard({
         >
           {formatRarity(item.rarity)}
         </Badge>
-        {item.modifiers.map((modifier) => (
-          <Badge
-            key={`${modifier.stat}-${modifier.value}`}
-            variant="outline"
-            className="text-[10px]"
-          >
-            {formatModifier(modifier)}
-          </Badge>
-        ))}
+        {item.modifiers.map((modifier) => {
+          const { text, tone } = formatStatChange(
+            modifier.stat,
+            modifier.value
+          );
+          return (
+            <Badge
+              key={`${modifier.stat}-${modifier.value}`}
+              variant="outline"
+              className={cn("text-[10px]", BADGE_TONE_CLASSES[tone])}
+            >
+              {text}
+            </Badge>
+          );
+        })}
         {item.effect ? (
           <Badge variant="outline" className="text-[10px]">
             {formatInventoryEffect(item.effect)}
