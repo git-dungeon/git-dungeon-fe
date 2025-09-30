@@ -50,7 +50,10 @@ export function DashboardEmbeddingBanner({
       />
 
       <section className="grid gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
-        <CharacterStatGrid stats={stats} />
+        <div className="space-y-3">
+          <h3 className="text-foreground text-sm font-semibold">능력치</h3>
+          <CharacterStatGrid stats={stats} />
+        </div>
         <div className="space-y-3">
           <h3 className="text-foreground text-sm font-semibold">착용 장비</h3>
           <EquipmentSlotGrid equipped={equipment} />
