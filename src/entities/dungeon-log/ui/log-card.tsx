@@ -34,11 +34,24 @@ export function LogCard({
       role={isInteractive ? "button" : undefined}
       tabIndex={isInteractive ? 0 : undefined}
       onClick={onClick}
+      onKeyDown={(event) => {
+        if (!isInteractive) {
+          return;
+        }
+
+        if (event.key === " " || event.key === "Enter") {
+          event.preventDefault();
+
+          if (event.key === "Enter") {
+            onClick?.();
+          }
+        }
+      }}
       onKeyUp={(event) => {
         if (!isInteractive) {
           return;
         }
-        if (event.key === "Enter" || event.key === " ") {
+        if (event.key === " ") {
           event.preventDefault();
           onClick?.();
         }

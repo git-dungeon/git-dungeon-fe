@@ -30,20 +30,25 @@ export function formatRelativeTime(value: string | number | Date): string {
 
   const diff = now - targetTime;
 
-  if (diff < MINUTE_IN_MS) {
+  const absDiff = Math.abs(diff);
+
+  if (absDiff < MINUTE_IN_MS) {
     return "방금";
   }
 
-  if (diff < HOUR_IN_MS) {
-    const minutes = Math.round(diff / MINUTE_IN_MS);
-    return RELATIVE_TIME_FORMATTER.format(-minutes, "minute");
+  if (absDiff < HOUR_IN_MS) {
+    const minutes = Math.round(absDiff / MINUTE_IN_MS);
+    const amount = diff < 0 ? minutes : -minutes;
+    return RELATIVE_TIME_FORMATTER.format(amount, "minute");
   }
 
-  if (diff < DAY_IN_MS) {
-    const hours = Math.round(diff / HOUR_IN_MS);
-    return RELATIVE_TIME_FORMATTER.format(-hours, "hour");
+  if (absDiff < DAY_IN_MS) {
+    const hours = Math.round(absDiff / HOUR_IN_MS);
+    const amount = diff < 0 ? hours : -hours;
+    return RELATIVE_TIME_FORMATTER.format(amount, "hour");
   }
 
-  const days = Math.round(diff / DAY_IN_MS);
-  return RELATIVE_TIME_FORMATTER.format(-days, "day");
+  const days = Math.round(absDiff / DAY_IN_MS);
+  const amount = diff < 0 ? days : -days;
+  return RELATIVE_TIME_FORMATTER.format(amount, "day");
 }

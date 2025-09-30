@@ -48,14 +48,14 @@ export function InventoryItemCard({
         >
           {formatRarity(item.rarity)}
         </Badge>
-        {item.modifiers.map((modifier) => {
+        {item.modifiers.map((modifier, index) => {
           const { text, tone } = formatStatChange(
             modifier.stat,
             modifier.value
           );
           return (
             <Badge
-              key={`${modifier.stat}-${modifier.value}`}
+              key={`${modifier.stat}-${modifier.value}-${index}`}
               variant="outline"
               className={cn("text-[10px]", BADGE_TONE_CLASSES[tone])}
             >
