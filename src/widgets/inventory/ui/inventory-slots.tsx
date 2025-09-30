@@ -55,7 +55,7 @@ export function InventorySlots({ equipped, onSelect }: InventorySlotsProps) {
   );
 }
 
-function EmptySlot({ slot }: { slot: EquipmentSlot }) {
+export function EmptySlot({ slot }: { slot: EquipmentSlot }) {
   return (
     <div className="flex w-full flex-col items-center gap-2 text-center">
       <div className="border-border flex size-14 items-center justify-center rounded-md border border-dashed" />

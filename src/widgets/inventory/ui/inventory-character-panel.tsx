@@ -1,15 +1,16 @@
-import type { InventorySummary } from "@/entities/inventory/model/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { StatItem } from "@/entities/inventory/ui/stat-item";
+import type { CharacterStatSummary } from "@/features/character-summary/lib/build-character-overview";
+import { formatNumber } from "@/entities/dashboard/lib/formatters";
 
 interface InventoryCharacterPanelProps {
-  summary: InventorySummary;
+  stats: CharacterStatSummary;
 }
 
 export function InventoryCharacterPanel({
-  summary,
+  stats,
 }: InventoryCharacterPanelProps) {
-  const { total, equipmentBonus } = summary;
+  const { total, equipmentBonus } = stats;
 
   return (
     <Card>
@@ -28,10 +29,10 @@ export function InventoryCharacterPanel({
           <p className="mt-4 text-sm">현재 능력치</p>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 text-sm">
+        <div className="grid gap-3 text-sm sm:grid-cols-2">
           <StatItem
             title="HP"
-            caption="체력"
+            caption={`최대 HP ${formatNumber(total.maxHp)}`}
             total={total.hp}
             equipmentBonus={equipmentBonus.hp}
           />
@@ -52,6 +53,12 @@ export function InventoryCharacterPanel({
             caption="행운"
             total={total.luck}
             equipmentBonus={equipmentBonus.luck}
+          />
+          <StatItem
+            title="AP"
+            caption="행동력"
+            total={total.ap}
+            equipmentBonus={equipmentBonus.ap}
           />
         </div>
       </CardContent>
