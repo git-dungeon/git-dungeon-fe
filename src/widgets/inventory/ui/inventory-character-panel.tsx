@@ -54,12 +54,6 @@ export function InventoryCharacterPanel({
             total={total.luck}
             equipmentBonus={equipmentBonus.luck}
           />
-          <StatItem
-            title="AP"
-            caption="행동력"
-            total={total.ap}
-            equipmentBonus={equipmentBonus.ap}
-          />
         </div>
       </CardContent>
     </Card>

@@ -26,9 +26,6 @@ interface DashboardEmbeddingBannerProps {
   layoutClassName?: string;
 }
 
-const SUMMARY_TILE_CLASSNAME =
-  "border-border bg-card flex flex-col gap-1 rounded-lg border p-4 shadow-sm";
-
 export function DashboardEmbeddingBanner({
   level,
   exp,
@@ -63,8 +60,9 @@ export function DashboardEmbeddingBanner({
       <header className="grid gap-4 lg:grid-cols-4">
         <SummaryTile title="레벨" value={`Lv. ${level}`}>
           <p className="text-muted-foreground text-xs">
-            다음 레벨까지 {formatNumber(Math.max(expToLevel - exp, 0))} EXP
+            {formatNumber(exp)} / {formatNumber(expToLevel)}
           </p>
+          <ProgressBar value={expPercent} />
         </SummaryTile>
         <SummaryTile
           title="층 진행"
@@ -78,12 +76,8 @@ export function DashboardEmbeddingBanner({
         <SummaryTile title="골드" value={`${formatNumber(gold)} G`}>
           <p className="text-muted-foreground text-xs">총 보유 골드</p>
         </SummaryTile>
-        <SummaryTile
-          title="경험치"
-          value={`${formatNumber(exp)} / ${formatNumber(expToLevel)}`}
-        >
-          <p className="text-muted-foreground text-xs">진행률 {expPercent}%</p>
-          <ProgressBar value={expPercent} />
+        <SummaryTile title="AP" value={`${formatNumber(stats.total.ap)}`}>
+          <p className="text-muted-foreground text-xs">행동력</p>
         </SummaryTile>
       </header>
 
@@ -128,7 +122,7 @@ interface SummaryTileProps {
 
 function SummaryTile({ title, value, children }: SummaryTileProps) {
   return (
-    <div className={SUMMARY_TILE_CLASSNAME}>
+    <div className="border-border bg-card flex flex-col gap-1 rounded-lg border p-4 shadow-sm">
       <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
         {title}
       </p>
@@ -184,13 +178,6 @@ function renderStatItems(stats: CharacterStatSummary) {
       caption: "행운",
       total: stats.total.luck,
       bonus: stats.equipmentBonus.luck,
-    },
-    {
-      key: "ap",
-      title: "AP",
-      caption: "행동력",
-      total: stats.total.ap,
-      bonus: stats.equipmentBonus.ap,
     },
   ];
 
