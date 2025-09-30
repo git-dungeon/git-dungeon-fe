@@ -1,17 +1,19 @@
-import {
-  differenceInDays,
-  differenceInHours,
-  differenceInMinutes,
-  isAfter,
-  isValid,
-  parseISO,
-} from "date-fns";
 import type {
   DungeonAction,
+  DungeonLogCategory,
   DungeonLogDelta,
   DungeonLogEntry,
   DungeonLogStatus,
 } from "@/entities/dungeon-log/model/types";
+import {
+  formatDateTime,
+  formatRelativeTime as formatRelativeTimeInternal,
+} from "@/shared/lib/datetime/formatters";
+import {
+  determineItemTone,
+  formatStatChange,
+  type StatTone,
+} from "@/shared/lib/stats/format";
 
 const ACTION_LABEL_MAP: Record<DungeonAction, string> = {
   battle: "전투",
@@ -20,6 +22,9 @@ const ACTION_LABEL_MAP: Record<DungeonAction, string> = {
   rest: "휴식",
   trap: "함정",
   move: "층 이동",
+  equip: "장착",
+  unequip: "해제",
+  discard: "버리기",
 };
 
 const STATUS_ACTION_LABEL_MAP: Record<
@@ -33,6 +38,9 @@ const STATUS_ACTION_LABEL_MAP: Record<
     empty: "탐색을 시작했습니다",
     rest: "휴식을 준비합니다",
     move: "다음 층으로 이동을 준비합니다",
+    equip: "아이템을 장착합니다",
+    unequip: "아이템을 해제합니다",
+    discard: "아이템을 버립니다",
   },
   completed: {
     battle: "전투에서 승리했습니다",
@@ -41,6 +49,9 @@ const STATUS_ACTION_LABEL_MAP: Record<
     empty: "아무 일도 일어나지 않았습니다",
     rest: "휴식을 마쳤습니다",
     move: "다음 층으로 진입했습니다",
+    equip: "아이템을 장착했습니다",
+    unequip: "아이템을 해제했습니다",
+    discard: "아이템을 버렸습니다",
   },
 };
 
@@ -66,75 +77,125 @@ export function resolveStatusLabel(
   return `${actionLabel}을(를) ${STATUS_FALLBACK_LABEL[status] ?? "진행했습니다"}`;
 }
 
-const RELATIVE_TIME_FORMATTER = new Intl.RelativeTimeFormat("ko", {
-  numeric: "auto",
-});
-
-export function formatRelativeTime(iso: string): string {
-  const targetDate = parseISO(iso);
-
-  if (!isValid(targetDate) || isAfter(targetDate, new Date())) {
-    return "방금";
+export function resolveLogCategoryLabel(category: DungeonLogCategory): string {
+  switch (category) {
+    case "exploration":
+      return "탐험 로그";
+    case "status":
+      return "상태 로그";
+    default:
+      return category;
   }
-
-  const now = new Date();
-  const minutes = differenceInMinutes(now, targetDate);
-  if (minutes < 1) {
-    return "방금";
-  }
-  if (minutes < 60) {
-    return RELATIVE_TIME_FORMATTER.format(-minutes, "minute");
-  }
-
-  const hours = differenceInHours(now, targetDate);
-  if (hours < 24) {
-    return RELATIVE_TIME_FORMATTER.format(-hours, "hour");
-  }
-
-  const days = differenceInDays(now, targetDate);
-  return RELATIVE_TIME_FORMATTER.format(-days, "day");
 }
 
-export function formatDelta(delta: DungeonLogDelta): string[] {
-  const entries: string[] = [];
-  if (typeof delta.ap === "number" && delta.ap !== 0) {
-    entries.push(formatDeltaEntry("AP", delta.ap));
-  }
-  if (typeof delta.hp === "number" && delta.hp !== 0) {
-    entries.push(formatDeltaEntry("HP", delta.hp));
-  }
-  if (typeof delta.gold === "number" && delta.gold !== 0) {
-    entries.push(formatDeltaEntry("Gold", delta.gold));
-  }
-  if (typeof delta.exp === "number" && delta.exp !== 0) {
-    entries.push(formatDeltaEntry("EXP", delta.exp));
-  }
-  if (typeof delta.progress === "number" && delta.progress !== 0) {
-    entries.push(formatProgressDelta(delta.progress));
-  }
+export const formatRelativeTime = formatRelativeTimeInternal;
+export const formatLogTimestamp = formatDateTime;
+
+export interface FormattedDeltaEntry {
+  id: string;
+  text: string;
+  tone: StatTone;
+}
+
+export function formatDelta(entry: DungeonLogEntry): FormattedDeltaEntry[] {
+  const { delta } = entry;
+  const entries: FormattedDeltaEntry[] = [];
+
+  pushNumeric(entries, entry.id, "AP", delta.ap);
+  pushNumeric(entries, entry.id, "HP", delta.hp);
+  pushNumeric(entries, entry.id, "Gold", delta.gold);
+  pushNumeric(entries, entry.id, "EXP", delta.exp);
+  pushProgress(entries, entry.id, delta.progress);
+
   if (delta.item) {
-    entries.push(`아이템 ${delta.item}`);
+    entries.push({
+      id: `${entry.id}-item`,
+      text: `아이템 ${delta.item}`,
+      tone: resolveItemTone(entry.action),
+    });
   }
+
+  if (delta.stats) {
+    entries.push(...formatStatsDelta(entry.id, delta.stats));
+  }
+
   return entries;
 }
 
-function formatDeltaEntry(label: string, value: number): string {
-  const valuePrefix = value > 0 ? "+" : "";
-  return `${label} ${valuePrefix}${value}`;
+function pushNumeric(
+  acc: FormattedDeltaEntry[],
+  entryId: string,
+  label: string,
+  value?: number
+) {
+  if (typeof value !== "number" || value === 0) {
+    return;
+  }
+  const tone = value > 0 ? "gain" : "loss";
+  const prefix = value > 0 ? "+" : "";
+  acc.push({
+    id: `${entryId}-${label.toLowerCase()}-${acc.length}`,
+    text: `${label} ${prefix}${value}`,
+    tone,
+  });
 }
 
-function formatProgressDelta(value: number): string {
-  const valuePrefix = value > 0 ? "+" : "";
-  return `층 진행도 ${valuePrefix}${value}%`;
+function pushProgress(
+  acc: FormattedDeltaEntry[],
+  entryId: string,
+  value?: number
+) {
+  if (typeof value !== "number" || value === 0) {
+    return;
+  }
+  const tone = value > 0 ? "gain" : "loss";
+  const prefix = value > 0 ? "+" : "";
+  acc.push({
+    id: `${entryId}-progress-${acc.length}`,
+    text: `층 진행도 ${prefix}${value}%`,
+    tone,
+  });
+}
+
+function formatStatsDelta(
+  entryId: string,
+  stats: NonNullable<DungeonLogDelta["stats"]>
+): FormattedDeltaEntry[] {
+  return Object.entries(stats)
+    .filter(([, value]) => typeof value === "number" && value !== 0)
+    .map(([key, value]) => {
+      const numericValue = value as number;
+      const { text, tone } = formatStatChange(key, numericValue);
+      return {
+        id: `${entryId}-stat-${key}`,
+        text,
+        tone,
+      } satisfies FormattedDeltaEntry;
+    });
+}
+
+function resolveItemTone(action: DungeonAction): StatTone {
+  return determineItemTone(action);
 }
 
 export function buildLogDescription(entry: DungeonLogEntry): string {
   const statusLabel = resolveStatusLabel(entry.status, entry.action);
-  const deltaEntries = formatDelta(entry.delta);
+  const detailsLabel = buildDetailsAttachment(entry);
+  const deltaEntries = formatDelta(entry).map((item) => item.text);
 
   if (deltaEntries.length === 0) {
-    return statusLabel;
+    return detailsLabel ? `${statusLabel} ${detailsLabel}` : statusLabel;
   }
 
-  return `${statusLabel} (${deltaEntries.join(", ")})`;
+  const base = `${statusLabel} (${deltaEntries.join(", ")})`;
+  return detailsLabel ? `${base} ${detailsLabel}` : base;
+}
+
+function buildDetailsAttachment(entry: DungeonLogEntry): string | undefined {
+  if (entry.details?.type === "battle") {
+    const { monster } = entry.details;
+    return monster.name ? `상대: ${monster.name}` : undefined;
+  }
+
+  return undefined;
 }

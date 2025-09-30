@@ -5,10 +5,10 @@ import type { CurrentAction } from "@/entities/dashboard/model/types";
 import type { DungeonLogEntry } from "@/entities/dungeon-log/model/types";
 import {
   buildLogDescription,
-  formatRelativeTime,
   resolveActionLabel,
   resolveStatusLabel,
 } from "@/entities/dungeon-log/lib/formatters";
+import { formatDateTime } from "@/shared/lib/datetime/formatters";
 
 export interface DashboardActivityViewParams {
   latestLog?: DungeonLogEntry;
@@ -58,7 +58,7 @@ export function useDashboardActivityView(
         message: "남은 AP가 없어 탐험이 중단되었습니다.",
         meta:
           hasCompletedHistory && lastActionCompletedAt
-            ? `마지막 행동 완료 ${formatRelativeTime(lastActionCompletedAt)}`
+            ? `마지막 행동 완료 ${formatDateTime(lastActionCompletedAt)}`
             : undefined,
         timestampLabel: "AP 부족",
       } satisfies DashboardActivityViewModel;
@@ -72,8 +72,8 @@ export function useDashboardActivityView(
           latestStartedLog.status,
           latestStartedLog.action
         )}`,
-        timestampLabel: formatRelativeTime(
-          currentAction?.startedAt ?? latestStartedLog.timestamp
+        timestampLabel: formatDateTime(
+          currentAction?.startedAt ?? latestStartedLog.createdAt
         ),
       } satisfies DashboardActivityViewModel;
     }
@@ -83,7 +83,7 @@ export function useDashboardActivityView(
         title: "탐험 중 …",
         message: "남은 AP를 사용해 곧 다음 행동을 실행합니다.",
         meta: parsedNextActionStart
-          ? `다음 행동 예정 ${formatRelativeTime(nextActionStartAt!)}`
+          ? `다음 행동 예정 ${formatDateTime(nextActionStartAt!)}`
           : `남은 AP ${apRemaining}`,
         timestampLabel: "대기 중",
       } satisfies DashboardActivityViewModel;
@@ -97,7 +97,7 @@ export function useDashboardActivityView(
           latestLog.status,
           latestLog.action
         )}`,
-        timestampLabel: formatRelativeTime(latestLog.timestamp),
+        timestampLabel: formatDateTime(latestLog.createdAt),
       } satisfies DashboardActivityViewModel;
     }
 

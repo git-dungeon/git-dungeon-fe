@@ -2,6 +2,7 @@ import type {
   EquipmentModifier,
   EquipmentRarity,
 } from "@/entities/dashboard/model/types";
+import { formatStatChange } from "@/shared/lib/stats/format";
 
 const RARITY_LABEL_MAP: Record<EquipmentRarity, string> = {
   common: "일반",
@@ -28,8 +29,12 @@ export function formatRarity(rarity: EquipmentRarity): string {
 }
 
 export function formatModifier(modifier: EquipmentModifier): string {
-  const label =
-    MODIFIER_LABEL_MAP[modifier.stat] ?? modifier.stat.toUpperCase();
-  const valuePrefix = modifier.value > 0 ? "+" : "";
-  return `${label} ${valuePrefix}${modifier.value}`;
+  if (modifier.stat in MODIFIER_LABEL_MAP) {
+    const { text } = formatStatChange(modifier.stat, modifier.value);
+    return text;
+  }
+
+  const label = modifier.stat.toUpperCase();
+  const prefix = modifier.value > 0 ? "+" : "";
+  return `${label} ${prefix}${modifier.value}`;
 }

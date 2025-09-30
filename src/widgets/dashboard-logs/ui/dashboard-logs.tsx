@@ -1,6 +1,6 @@
 import type { DungeonLogEntry } from "@/entities/dungeon-log/model/types";
 import { DashboardLogItem } from "@/widgets/dashboard-logs/ui/dashboard-log-item";
-import { DeltaList } from "@/widgets/dashboard-logs/ui/delta-list";
+import { DeltaList } from "@/entities/dungeon-log/ui/delta-list";
 
 interface DashboardLogsProps {
   logs: DungeonLogEntry[];
@@ -18,7 +18,7 @@ export function DashboardLogs({ logs }: DashboardLogsProps) {
           <DashboardLogItem
             key={log.id}
             log={log}
-            renderDelta={(delta) => <DeltaList delta={delta} />}
+            renderDelta={(entry) => <DeltaList entry={entry} />}
           />
         ))}
       </ul>

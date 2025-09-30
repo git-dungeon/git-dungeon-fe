@@ -29,7 +29,7 @@ export function InventoryGrid({ items, onSelect }: InventoryGridProps) {
       return SLOT_ORDER[a.slot] - SLOT_ORDER[b.slot];
     }
 
-    return new Date(b.obtainedAt).getTime() - new Date(a.obtainedAt).getTime();
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });
 
   return (

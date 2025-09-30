@@ -12,7 +12,7 @@ export interface InventoryItem {
   modifiers: EquipmentModifier[];
   effect?: InventoryItemEffect;
   sprite: string;
-  obtainedAt: string;
+  createdAt: string;
   isEquipped: boolean;
 }
 

@@ -1,40 +1,23 @@
 import type { ReactNode } from "react";
 import type { DungeonLogEntry } from "@/entities/dungeon-log/model/types";
-import {
-  buildLogDescription,
-  formatRelativeTime,
-  resolveActionLabel,
-  resolveStatusLabel,
-} from "@/entities/dungeon-log/lib/formatters";
-import { Card, CardContent, CardHeader } from "@/shared/ui/card";
+import { buildLogThumbnails } from "@/entities/dungeon-log/config/thumbnails";
+import { LogCard } from "@/entities/dungeon-log/ui/log-card";
+import { LogThumbnailStack } from "@/entities/dungeon-log/ui/log-thumbnail-stack";
 
 interface DashboardLogItemProps {
   log: DungeonLogEntry;
-  renderDelta: (delta: DungeonLogEntry["delta"]) => ReactNode;
+  renderDelta: (entry: DungeonLogEntry) => ReactNode;
 }
 
 export function DashboardLogItem({ log, renderDelta }: DashboardLogItemProps) {
+  const thumbnails = buildLogThumbnails(log);
   return (
     <li>
-      <Card>
-        <CardHeader className="flex flex-row items-start justify-between space-y-0">
-          <div>
-            <p className="text-foreground text-sm font-medium">
-              {resolveActionLabel(log.action)}
-            </p>
-            <p className="text-muted-foreground mt-1 text-sm">
-              {buildLogDescription(log)}
-            </p>
-            <p className="text-muted-foreground mt-1 text-xs">
-              {`${log.floor}층 · ${resolveStatusLabel(log.status, log.action)}`}
-            </p>
-          </div>
-          <span className="text-muted-foreground text-xs whitespace-nowrap">
-            {formatRelativeTime(log.timestamp)}
-          </span>
-        </CardHeader>
-        <CardContent>{renderDelta(log.delta)}</CardContent>
-      </Card>
+      <LogCard
+        log={log}
+        renderDelta={renderDelta}
+        renderThumbnail={() => <LogThumbnailStack thumbnails={thumbnails} />}
+      />
     </li>
   );
 }
