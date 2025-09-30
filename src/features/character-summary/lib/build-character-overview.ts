@@ -33,6 +33,7 @@ export interface CharacterOverview {
   exp: number;
   expToLevel: number;
   gold: number;
+  ap: number;
   floor: {
     current: number;
     best: number;
@@ -65,6 +66,7 @@ export function buildCharacterOverview(
     exp: state.exp,
     expToLevel: state.expToLevel,
     gold: state.gold,
+    ap: state.ap,
     floor: {
       current: state.floor,
       best: state.maxFloor,

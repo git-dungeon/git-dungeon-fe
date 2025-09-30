@@ -35,6 +35,7 @@ export function DashboardPage() {
         exp={character.exp}
         expToLevel={character.expToLevel}
         gold={character.gold}
+        ap={character.ap}
         floor={character.floor}
         stats={character.stats}
         equipment={character.equipment}
