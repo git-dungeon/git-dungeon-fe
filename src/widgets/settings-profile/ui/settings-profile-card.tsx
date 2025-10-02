@@ -33,8 +33,8 @@ export function SettingsProfileCard({
         <ProfileIdentity profile={profile} />
         <ProfileFieldList
           fields={[
-            { label: "이메일", value: profile.email ?? "-" },
-            { label: "사용자 ID", value: profile.userId },
+            { id: "email", label: "이메일", value: profile.email ?? "-" },
+            { id: "user-id", label: "사용자 ID", value: profile.userId },
           ]}
         />
       </CardContent>

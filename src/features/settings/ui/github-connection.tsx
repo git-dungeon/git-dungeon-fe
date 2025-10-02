@@ -29,7 +29,7 @@ export function GithubConnection({ connections }: GithubConnectionProps) {
       </div>
       {github?.profileUrl ? (
         <Button variant="outline" size="sm" className="gap-2" asChild>
-          <a href={github.profileUrl} target="_blank" rel="noreferrer">
+          <a href={github.profileUrl} target="_blank" rel="noopener noreferrer">
             GitHub 프로필 열기
             <ExternalLink className="size-3.5" aria-hidden />
           </a>

@@ -10,6 +10,7 @@ import type {
 import type { EquipmentSlot } from "@/entities/dashboard/model/types";
 import { mockDashboardResponse } from "@/mocks/handlers/dashboard-handlers";
 import { mockTimestampMinutesAgo } from "@/mocks/handlers/shared/time";
+import { createSpriteFromLabel } from "@/shared/lib/sprite-utils";
 
 let inventoryVersion = 1;
 
@@ -20,12 +21,6 @@ const RARITY_COLOR_MAP: Record<InventoryItem["rarity"], string> = {
   epic: "#a855f7",
   legendary: "#facc15",
 };
-
-function createSprite(label: string, color: string): string {
-  const safeLabel = label.slice(0, 2).toUpperCase();
-  const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='10' fill='${color}'/><text x='50%' y='52%' font-size='26' text-anchor='middle' fill='white' font-family='Inter, Arial, sans-serif' font-weight='700'>${safeLabel}</text></svg>`;
-  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
-}
 
 interface RawInventoryItem {
   id: string;
@@ -481,7 +476,10 @@ const inventoryItems: InventoryItem[] = RAW_INVENTORY_ITEMS.map((item) => ({
   rarity: item.rarity,
   modifiers: item.modifiers.map((modifier) => ({ ...modifier })),
   effect: item.effect ? { ...item.effect } : undefined,
-  sprite: createSprite(item.spriteLabel, RARITY_COLOR_MAP[item.rarity]),
+  sprite: createSpriteFromLabel(
+    item.spriteLabel,
+    RARITY_COLOR_MAP[item.rarity]
+  ),
   createdAt: mockTimestampMinutesAgo(item.obtainedMinutesAgo),
   isEquipped: Boolean(item.isEquipped),
 }));
