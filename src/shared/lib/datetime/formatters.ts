@@ -7,6 +7,9 @@ const DATE_FORMATTER = new Intl.DateTimeFormat("ko-KR", DEFAULT_DATE_OPTIONS);
 
 export function formatDateTime(value: string | number | Date): string {
   const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return "알 수 없음";
+  }
   return DATE_FORMATTER.format(date);
 }
 
