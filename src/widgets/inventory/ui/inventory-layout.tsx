@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 import type {
   InventoryEquippedMap,
   InventoryItem,
-  InventorySummary,
 } from "@/entities/inventory/model/types";
 import type { EquipmentSlot } from "@/entities/dashboard/model/types";
 import { InventorySlots } from "@/widgets/inventory/ui/inventory-slots";
@@ -10,11 +9,12 @@ import { InventoryCharacterPanel } from "@/widgets/inventory/ui/inventory-charac
 import { InventoryGrid } from "@/widgets/inventory/ui/inventory-grid";
 import { InventoryModal } from "@/widgets/inventory/ui/inventory-modal";
 import { HintCard } from "@/entities/inventory/ui/hint-card";
+import type { CharacterStatSummary } from "@/features/character-summary/lib/build-character-overview";
 
 interface InventoryLayoutProps {
   items: InventoryItem[];
   equipped: InventoryEquippedMap;
-  summary: InventorySummary;
+  stats: CharacterStatSummary;
   isPending: boolean;
   error: Error | null;
   onEquip: (itemId: string) => Promise<unknown>;
@@ -25,7 +25,7 @@ interface InventoryLayoutProps {
 export function InventoryLayout({
   items,
   equipped,
-  summary,
+  stats,
   isPending,
   error,
   onEquip,
@@ -63,7 +63,7 @@ export function InventoryLayout({
         />
 
         <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_260px]">
-          <InventoryCharacterPanel summary={summary} />
+          <InventoryCharacterPanel stats={stats} />
           <HintCard />
         </div>
       </div>

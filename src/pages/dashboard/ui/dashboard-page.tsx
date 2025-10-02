@@ -1,22 +1,23 @@
-import { DashboardSummary } from "@/widgets/dashboard-summary/ui/dashboard-summary";
 import { DashboardActivity } from "@/widgets/dashboard-activity/ui/dashboard-activity";
-import { DashboardEquipment } from "@/widgets/dashboard-equipment/ui/dashboard-equipment";
 import { DashboardLogs } from "@/widgets/dashboard-logs/ui/dashboard-logs";
-import { useDashboardState } from "@/entities/dashboard/model/use-dashboard-state";
 import { useDungeonLogs } from "@/entities/dungeon-log/model/use-dungeon-logs";
 import { DASHBOARD_RECENT_LOG_LIMIT } from "@/pages/dashboard/config/constants";
+import { DashboardEmbeddingBanner } from "@/widgets/dashboard-embedding/ui/dashboard-embedding-banner";
+import { useCharacterOverview } from "@/features/character-summary/model/use-character-overview";
 
 export function DashboardPage() {
-  const { data: dashboardData } = useDashboardState();
+  const overview = useCharacterOverview();
   const { data: logsData } = useDungeonLogs({
     limit: DASHBOARD_RECENT_LOG_LIMIT,
   });
 
-  if (!dashboardData) {
+  const state = overview.dashboard.data?.state;
+  const character = overview.data;
+
+  if (!state || !character) {
     return null;
   }
 
-  const { state } = dashboardData;
   const logs = logsData?.logs ?? [];
   const latestLog = logs.at(0);
 
@@ -29,23 +30,26 @@ export function DashboardPage() {
         </p>
       </header>
 
-      <DashboardSummary state={state} />
+      <DashboardEmbeddingBanner
+        level={character.level}
+        exp={character.exp}
+        expToLevel={character.expToLevel}
+        gold={character.gold}
+        ap={character.ap}
+        floor={character.floor}
+        stats={character.stats}
+        equipment={character.equipment}
+      />
 
-      <section className="grid gap-4 lg:grid-cols-[1.2fr_1fr]">
+      <div>
         <DashboardActivity
           latestLog={latestLog}
-          apRemaining={state.ap}
+          apRemaining={character.stats.total.ap}
           currentAction={state.currentAction}
           lastActionCompletedAt={state.lastActionCompletedAt}
           nextActionStartAt={state.nextActionStartAt}
         />
-        <DashboardEquipment
-          helmet={state.equippedHelmet}
-          armor={state.equippedArmor}
-          weapon={state.equippedWeapon}
-          ring={state.equippedRing}
-        />
-      </section>
+      </div>
 
       <DashboardLogs logs={logs} />
     </section>

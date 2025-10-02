@@ -23,6 +23,14 @@ export const INVENTORY_ENDPOINTS = {
   discard: "/api/inventory/discard",
 } as const;
 
+export const SETTINGS_ENDPOINTS = {
+  profile: "/api/settings",
+} as const;
+
+export const EMBEDDING_ENDPOINTS = {
+  preview: "/api/embedding/preview",
+} as const;
+
 export const IS_MSW_ENABLED =
   import.meta.env.DEV && import.meta.env.VITE_ENABLE_MSW === "true";
 

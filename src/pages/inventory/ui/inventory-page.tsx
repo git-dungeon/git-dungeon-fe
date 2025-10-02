@@ -1,15 +1,16 @@
-import { useInventory } from "@/entities/inventory/model/use-inventory";
 import { Card, CardContent } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import { InventoryLayout } from "@/widgets/inventory/ui/inventory-layout";
 import { useInventoryActions } from "@/features/inventory/model/use-inventory-actions";
+import { useCharacterOverview } from "@/features/character-summary/model/use-character-overview";
 
 export function InventoryPage() {
-  const { data, isLoading, isError, refetch, isFetching } = useInventory();
+  const overview = useCharacterOverview();
   const actions = useInventoryActions();
 
-  const showLoading = isLoading && !data;
-  const items = data?.items ?? [];
+  const inventoryData = overview.inventory.data;
+  const items = inventoryData?.items ?? [];
+  const showLoading = overview.isLoading && !inventoryData;
 
   return (
     <section className="space-y-6">
@@ -20,7 +21,7 @@ export function InventoryPage() {
         </p>
       </header>
 
-      {isError ? (
+      {overview.isError ? (
         <Card className="border-destructive/30">
           <CardContent className="flex flex-wrap items-center justify-between gap-3 p-4 text-sm">
             <span className="text-destructive">
@@ -31,7 +32,7 @@ export function InventoryPage() {
               variant="outline"
               size="sm"
               onClick={() => {
-                void refetch();
+                void overview.refetch();
               }}
               className="text-xs"
             >
@@ -51,7 +52,10 @@ export function InventoryPage() {
         </Card>
       ) : null}
 
-      {!showLoading && !isFetching && !isError && items.length === 0 ? (
+      {!showLoading &&
+      !overview.isFetching &&
+      !overview.isError &&
+      items.length === 0 ? (
         <Card>
           <CardContent className="text-muted-foreground p-6 text-sm">
             아직 획득한 장비가 없습니다.
@@ -59,11 +63,11 @@ export function InventoryPage() {
         </Card>
       ) : null}
 
-      {data ? (
+      {inventoryData && overview.data ? (
         <InventoryLayout
-          items={data.items}
-          equipped={data.equipped}
-          summary={data.summary}
+          items={inventoryData.items}
+          equipped={inventoryData.equipped}
+          stats={overview.data.stats}
           isPending={actions.isPending}
           error={actions.error}
           onEquip={actions.equip}

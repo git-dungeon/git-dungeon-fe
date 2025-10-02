@@ -10,11 +10,13 @@ import {
 import { DeltaList } from "@/entities/dungeon-log/ui/delta-list";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/shared/ui/dialog";
+import { Button } from "@/shared/ui/button";
 
 interface DungeonLogDetailDialogProps {
   log: DungeonLogEntry | null;
@@ -41,6 +43,16 @@ export function DungeonLogDetailDialog({
               <DialogDescription className="text-left">
                 {buildLogDescription(log)}
               </DialogDescription>
+              <DialogClose asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label="닫기"
+                  className="absolute top-4 right-4"
+                >
+                  ✕
+                </Button>
+              </DialogClose>
             </DialogHeader>
 
             <div className="space-y-2">

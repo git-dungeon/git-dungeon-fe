@@ -1,6 +1,7 @@
 import type { DungeonAction } from "@/entities/dungeon-log/model/types";
 
-export type EquipmentSlot = "helmet" | "armor" | "weapon" | "ring";
+export const EQUIPMENT_SLOTS = ["helmet", "armor", "weapon", "ring"];
+export type EquipmentSlot = (typeof EQUIPMENT_SLOTS)[number];
 
 export type EquipmentRarity =
   | "common"
