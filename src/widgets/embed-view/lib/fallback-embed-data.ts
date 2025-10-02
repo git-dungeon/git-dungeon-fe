@@ -1,10 +1,8 @@
-import { useEffect } from "react";
 import type { InventoryItem } from "@/entities/inventory/model/types";
 import type { CharacterStatSummary } from "@/features/character-summary/lib/build-character-overview";
-import { DashboardEmbeddingBanner } from "@/widgets/dashboard-embedding/ui/dashboard-embedding-banner";
 import { createSpriteFromName } from "@/shared/lib/sprite-utils";
 
-const FALLBACK_STATS: CharacterStatSummary = {
+export const embedFallbackStats: CharacterStatSummary = {
   total: {
     hp: 320,
     maxHp: 320,
@@ -31,7 +29,7 @@ const FALLBACK_STATS: CharacterStatSummary = {
   },
 };
 
-const FALLBACK_EQUIPMENT: InventoryItem[] = [
+export const embedFallbackEquipment: InventoryItem[] = [
   {
     id: "equip-helmet",
     name: "Aegis Helm",
@@ -85,39 +83,3 @@ const FALLBACK_EQUIPMENT: InventoryItem[] = [
     isEquipped: true,
   },
 ];
-
-export function EmbedShell() {
-  useEffect(() => {
-    document.title = "Git Dungeon Embed";
-
-    const robotsMeta = document.querySelector<HTMLMetaElement>(
-      'meta[name="robots"]'
-    );
-
-    if (robotsMeta) {
-      robotsMeta.content = "noindex, nofollow";
-      return;
-    }
-
-    const meta = document.createElement("meta");
-    meta.name = "robots";
-    meta.content = "noindex, nofollow";
-    document.head.appendChild(meta);
-  }, []);
-
-  return (
-    <div className="flex w-full justify-center bg-transparent px-4 py-6">
-      <DashboardEmbeddingBanner
-        level={27}
-        exp={1840}
-        expToLevel={2500}
-        gold={7260}
-        ap={4}
-        floor={{ current: 27, best: 32, progress: 0.58 }}
-        stats={FALLBACK_STATS}
-        equipment={FALLBACK_EQUIPMENT}
-        layoutClassName="max-w-3xl"
-      />
-    </div>
-  );
-}

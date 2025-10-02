@@ -1,10 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { EmbedShell } from "@/pages/embed/ui/embed-shell";
+import { EmbedPage } from "@/pages/embed/ui/embed-page";
+import { parseEmbedSearch } from "@/pages/embed/model/embed-search-params";
 
 export const Route = createFileRoute("/embed")({
+  validateSearch: parseEmbedSearch,
   component: EmbedRoute,
 });
 
 function EmbedRoute() {
-  return <EmbedShell />;
+  const search = Route.useSearch();
+
+  return <EmbedPage search={search} />;
 }
