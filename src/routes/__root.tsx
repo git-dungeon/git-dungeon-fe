@@ -6,6 +6,7 @@ import {
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import type { RouterContext } from "@/shared/lib/router/router-context";
+import { cn } from "@/shared/lib/utils";
 
 const NAVIGATION_LINKS = [
   { to: "/dashboard", label: "대시보드" },
@@ -20,11 +21,19 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 
 function RootComponent() {
   const routerState = useRouterState();
-  const isLoginScreen = routerState.location.pathname.startsWith("/login");
+  const pathname = routerState.location.pathname;
+  const isLoginScreen = pathname.startsWith("/login");
+  const isEmbedScreen = pathname.startsWith("/embed");
+  const shouldRenderHeader = !isLoginScreen && !isEmbedScreen;
 
   return (
-    <div className="bg-background text-foreground flex min-h-screen flex-col">
-      {isLoginScreen ? null : (
+    <div
+      className={cn(
+        "text-foreground flex min-h-screen flex-col",
+        isEmbedScreen ? "bg-transparent" : "bg-background"
+      )}
+    >
+      {shouldRenderHeader ? (
         <header className="bg-card border-b">
           <nav className="mx-auto flex w-full max-w-5xl items-center gap-6 px-6 py-4">
             <Link
@@ -46,11 +55,20 @@ function RootComponent() {
             </div>
           </nav>
         </header>
-      )}
-      <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-6 py-8">
+      ) : null}
+      <main
+        className={cn(
+          "flex w-full flex-1 flex-col",
+          isEmbedScreen
+            ? "items-center justify-center px-0 py-0"
+            : "mx-auto max-w-5xl px-6 py-8"
+        )}
+      >
         <Outlet />
       </main>
-      {import.meta.env.DEV ? <TanStackRouterDevtools /> : null}
+      {import.meta.env.DEV && !isEmbedScreen ? (
+        <TanStackRouterDevtools />
+      ) : null}
     </div>
   );
 }

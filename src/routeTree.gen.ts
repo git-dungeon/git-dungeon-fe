@@ -13,6 +13,7 @@ import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as LogsRouteImport } from './routes/logs'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as InventoryRouteImport } from './routes/inventory'
+import { Route as EmbedRouteImport } from './routes/embed'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -36,6 +37,11 @@ const InventoryRoute = InventoryRouteImport.update({
   path: '/inventory',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EmbedRoute = EmbedRouteImport.update({
+  id: '/embed',
+  path: '/embed',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -50,6 +56,7 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
+  '/embed': typeof EmbedRoute
   '/inventory': typeof InventoryRoute
   '/login': typeof LoginRoute
   '/logs': typeof LogsRoute
@@ -58,6 +65,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
+  '/embed': typeof EmbedRoute
   '/inventory': typeof InventoryRoute
   '/login': typeof LoginRoute
   '/logs': typeof LogsRoute
@@ -67,6 +75,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
+  '/embed': typeof EmbedRoute
   '/inventory': typeof InventoryRoute
   '/login': typeof LoginRoute
   '/logs': typeof LogsRoute
@@ -77,16 +86,25 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/dashboard'
+    | '/embed'
     | '/inventory'
     | '/login'
     | '/logs'
     | '/settings'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/inventory' | '/login' | '/logs' | '/settings'
+  to:
+    | '/'
+    | '/dashboard'
+    | '/embed'
+    | '/inventory'
+    | '/login'
+    | '/logs'
+    | '/settings'
   id:
     | '__root__'
     | '/'
     | '/dashboard'
+    | '/embed'
     | '/inventory'
     | '/login'
     | '/logs'
@@ -96,6 +114,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRoute
+  EmbedRoute: typeof EmbedRoute
   InventoryRoute: typeof InventoryRoute
   LoginRoute: typeof LoginRoute
   LogsRoute: typeof LogsRoute
@@ -132,6 +151,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InventoryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/embed': {
+      id: '/embed'
+      path: '/embed'
+      fullPath: '/embed'
+      preLoaderRoute: typeof EmbedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard': {
       id: '/dashboard'
       path: '/dashboard'
@@ -152,6 +178,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRoute,
+  EmbedRoute: EmbedRoute,
   InventoryRoute: InventoryRoute,
   LoginRoute: LoginRoute,
   LogsRoute: LogsRoute,
