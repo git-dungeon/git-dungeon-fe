@@ -1,19 +1,24 @@
+import {
+  EMBED_LANGUAGE_VALUES,
+  EMBED_PREVIEW_SIZE_VALUES,
+  EMBED_THEME_VALUES,
+} from "@/entities/embed/model/types";
 import { z } from "zod";
-
-const EMBED_THEME_VALUES = ["light", "dark"] as const;
-
-export const embedThemeSchema = z.enum(EMBED_THEME_VALUES);
 
 const embedSearchSchema = z
   .object({
     userId: z.string().trim().min(1, {
       message: "userId query parameter cannot be empty",
     }),
-    theme: embedThemeSchema.optional(),
+    theme: z.enum(EMBED_THEME_VALUES).optional(),
+    size: z.enum(EMBED_PREVIEW_SIZE_VALUES).optional(),
+    language: z.enum(EMBED_LANGUAGE_VALUES).optional(),
   })
   .transform((value) => ({
     userId: value.userId,
     theme: value.theme ?? "dark",
+    size: value.size ?? "wide",
+    language: value.language ?? "ko",
   }));
 
 type EmbedSearchResult = z.infer<typeof embedSearchSchema>;
@@ -21,6 +26,8 @@ type EmbedSearchResult = z.infer<typeof embedSearchSchema>;
 export interface EmbedSearchParams {
   userId: string | null;
   theme: EmbedSearchResult["theme"];
+  size: EmbedSearchResult["size"];
+  language: EmbedSearchResult["language"];
   error?: string;
 }
 
@@ -33,6 +40,8 @@ export function parseEmbedSearch(search: unknown): EmbedSearchParams {
     return {
       userId: null,
       theme: "dark",
+      size: "wide",
+      language: "ko",
       error: message,
     };
   }
@@ -40,6 +49,8 @@ export function parseEmbedSearch(search: unknown): EmbedSearchParams {
   return {
     userId: result.data.userId,
     theme: result.data.theme,
+    size: result.data.size,
+    language: result.data.language,
   };
 }
 

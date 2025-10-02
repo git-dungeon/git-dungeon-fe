@@ -1,6 +1,11 @@
 import { z } from "zod";
 import { dashboardResponseSchema } from "@/entities/dashboard/model/types";
 import { inventoryResponseSchema } from "@/entities/inventory/model/types";
+import {
+  EMBED_LANGUAGE_VALUES,
+  EMBED_PREVIEW_SIZE_VALUES,
+  EMBED_THEME_VALUES,
+} from "@/entities/embed/model/types";
 
 const apiMetaSchema = z
   .object({
@@ -20,7 +25,9 @@ const apiErrorSchema = z.object({
 });
 
 export const embedPreviewPayloadSchema = z.object({
-  theme: z.string().default("dark"),
+  theme: z.enum(EMBED_THEME_VALUES).default("dark"),
+  size: z.enum(EMBED_PREVIEW_SIZE_VALUES).default("wide"),
+  language: z.enum(EMBED_LANGUAGE_VALUES).default("ko"),
   generatedAt: z.string().optional(),
   dashboard: dashboardResponseSchema,
   inventory: inventoryResponseSchema,

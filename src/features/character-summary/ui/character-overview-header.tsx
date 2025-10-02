@@ -1,6 +1,7 @@
 import { SummaryTile } from "@/shared/ui/summary-tile";
 import { formatNumber } from "@/entities/dashboard/lib/formatters";
 import { Progress } from "@/shared/ui/progress";
+import { cn } from "@/shared/lib/utils";
 
 interface CharacterOverviewHeaderProps {
   level: number;
@@ -13,6 +14,7 @@ interface CharacterOverviewHeaderProps {
   };
   gold: number;
   ap: number;
+  layoutMode?: "responsive" | "desktop";
 }
 
 export function CharacterOverviewHeader({
@@ -22,12 +24,15 @@ export function CharacterOverviewHeader({
   floor,
   gold,
   ap,
+  layoutMode = "responsive",
 }: CharacterOverviewHeaderProps) {
   const expPercent = resolvePercent(exp, expToLevel);
   const floorPercent = resolvePercent(floor.progress, 100);
+  const gridLayoutClass =
+    layoutMode === "desktop" ? "grid-cols-4" : "lg:grid-cols-4";
 
   return (
-    <div className="grid gap-4 lg:grid-cols-4">
+    <div className={cn("grid gap-4", gridLayoutClass)}>
       <SummaryTile title="레벨" value={`Lv. ${level}`}>
         <p className="text-muted-foreground text-xs">
           {formatNumber(exp)} / {formatNumber(expToLevel)}

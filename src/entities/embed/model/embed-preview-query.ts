@@ -4,7 +4,14 @@ import type { EmbedPreviewQueryParams } from "@/entities/embed/model/types";
 
 export const embedPreviewQueryOptions = (params: EmbedPreviewQueryParams) =>
   queryOptions({
-    queryKey: ["embed", "preview", params.userId, params.theme] as const,
+    queryKey: [
+      "embed",
+      "preview",
+      params.userId,
+      params.theme,
+      params.size,
+      params.language,
+    ] as const,
     queryFn: () => getEmbedPreview(params),
     staleTime: 1000 * 60,
   });

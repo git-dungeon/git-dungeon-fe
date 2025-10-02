@@ -19,6 +19,7 @@ interface DashboardEmbeddingBannerProps {
   stats: CharacterStatSummary;
   equipment: InventoryItem[];
   layoutClassName?: string;
+  layoutMode?: "responsive" | "desktop";
 }
 
 export function DashboardEmbeddingBanner({
@@ -31,7 +32,13 @@ export function DashboardEmbeddingBanner({
   stats,
   equipment,
   layoutClassName,
+  layoutMode = "responsive",
 }: DashboardEmbeddingBannerProps) {
+  const gridLayoutClass =
+    layoutMode === "desktop"
+      ? "grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]"
+      : "lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]";
+
   return (
     <section
       className={cn(
@@ -47,9 +54,10 @@ export function DashboardEmbeddingBanner({
         floor={floor}
         gold={gold}
         ap={ap}
+        layoutMode={layoutMode}
       />
 
-      <section className="grid gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+      <section className={cn("grid gap-4", gridLayoutClass)}>
         <div className="space-y-3">
           <h3 className="text-foreground text-sm font-semibold">능력치</h3>
           <CharacterStatGrid stats={stats} />

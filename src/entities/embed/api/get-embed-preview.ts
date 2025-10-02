@@ -19,7 +19,9 @@ class EmbedApiError extends Error {
 
 export interface GetEmbedPreviewParams {
   userId: string;
-  theme: string;
+  theme: EmbedPreviewQueryParams["theme"];
+  size: EmbedPreviewQueryParams["size"];
+  language: EmbedPreviewQueryParams["language"];
 }
 
 export async function getEmbedPreview(
@@ -28,6 +30,8 @@ export async function getEmbedPreview(
   const search = new URLSearchParams({
     userId: params.userId,
     theme: params.theme,
+    size: params.size,
+    language: params.language,
   });
 
   const raw = await httpGet<unknown>(
@@ -53,22 +57,17 @@ export async function getEmbedPreview(
   const dashboard = data.dashboard;
   const inventory = data.inventory;
   const overview = buildCharacterOverview(dashboard.state, inventory);
+  const size = data.size ?? params.size;
+  const language = data.language ?? params.language;
 
   return {
     userId: dashboard.state.userId,
     theme: data.theme ?? params.theme,
+    size,
+    language,
     generatedAt,
     overview,
     dashboard,
     inventory,
-  };
-}
-
-export function toEmbedPreviewQueryParams(
-  response: EmbedPreviewResult
-): EmbedPreviewQueryParams {
-  return {
-    userId: response.userId,
-    theme: response.theme,
   };
 }
