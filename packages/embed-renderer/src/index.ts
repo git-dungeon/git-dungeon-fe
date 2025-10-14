@@ -3,6 +3,7 @@ export { renderEmbedSvg } from "./render-embed-svg";
 export type { RenderEmbedSvgOptions } from "./render-embed-svg";
 export {
   DashboardEmbeddingBannerSatori,
+  resolveDashboardEmbeddingBannerLayout,
 } from "./components/dashboard-embedding-banner-satori";
 export {
   EMBED_SATORI_DEFAULT_FONT_FAMILY,

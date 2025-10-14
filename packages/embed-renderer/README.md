@@ -91,6 +91,18 @@ response.setHeader("Content-Type", "image/svg+xml; charset=utf-8").send(svg);
 
 `packages/embed-renderer/examples/basic.ts` 파일을 참고하면 최소 구성으로 SVG를 생성하는 방법을 확인할 수 있습니다.
 
+또한 Express 기반 테스트 서버(`packages/embed-renderer/examples/express-server.js`)를 제공하여 실제 HTTP 응답을 검증할 수 있습니다.
+
+```bash
+# 1) 패키지 빌드
+pnpm --filter "@git-dungeon/embed-renderer" build
+
+# 2) Express 테스트 서버 실행 (기본 포트 4173)
+pnpm --filter "@git-dungeon/embed-renderer" run example:express
+```
+
+서버는 `/embed.svg` 엔드포인트에서 캐시된 폰트와 샘플 데이터를 이용해 SVG 문자열을 반환하며, `?theme=dark&size=wide&lang=en` 등 쿼리 파라미터로 옵션을 바꿔볼 수 있습니다.
+
 ## 라이선스
 
 Internal use only.

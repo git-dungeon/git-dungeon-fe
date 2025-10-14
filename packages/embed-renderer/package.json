@@ -24,14 +24,18 @@
   },
   "scripts": {
     "build": "tsc --project tsconfig.json --emitDeclarationOnly true && tsup src/index.ts src/browser.ts src/server.ts --format esm,cjs --splitting false",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "example:express": "node examples/express-server.js"
   },
   "peerDependencies": {
     "react": "^19.1.0",
     "satori": "^0.18.3"
   },
   "dependencies": {},
-  "devDependencies": {},
+  "devDependencies": {
+    "express": "^4.21.1",
+    "@types/express": "^4.17.21"
+  },
   "typesVersions": {
     "*": {
       "browser": [

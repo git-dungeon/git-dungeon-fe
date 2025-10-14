@@ -1,8 +1,7 @@
-import { DashboardEmbeddingBannerSatori } from "./components/dashboard-embedding-banner-satori";
 import {
-  resolveEmbedSatoriPreset,
-  resolveEmbedSatoriPalette,
-} from "./lib/satori-presets";
+  DashboardEmbeddingBannerSatori,
+  resolveDashboardEmbeddingBannerLayout,
+} from "./components/dashboard-embedding-banner-satori";
 import type {
   EmbedFontConfig,
   EmbedFontStyle,
@@ -69,10 +68,21 @@ export async function renderEmbedSvg({
 }: RenderEmbedSvgOptions) {
   ensureProcessEnv();
 
-  const preset = resolveEmbedSatoriPreset(size);
   const loadedSatori = satori ?? (await loadSatoriInstance());
 
-  const palette = resolveEmbedSatoriPalette(theme);
+  const layout = resolveDashboardEmbeddingBannerLayout({
+    level: overview.level,
+    exp: overview.exp,
+    expToLevel: overview.expToLevel,
+    gold: overview.gold,
+    ap: overview.ap,
+    floor: overview.floor,
+    stats: overview.stats,
+    equipment: overview.equipment,
+    theme,
+    size,
+    language,
+  });
 
   return loadedSatori(
     <DashboardEmbeddingBannerSatori
@@ -89,8 +99,8 @@ export async function renderEmbedSvg({
       language={language}
     />,
     {
-      width: preset.width,
-      height: preset.height,
+      width: layout.preset.width,
+      height: layout.height,
       fonts: fonts.map((font) => {
         const weight = (font.weight ?? 400) as EmbedFontWeight;
         const style: EmbedFontStyle = font.style ?? "normal";

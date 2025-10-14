@@ -28,6 +28,7 @@ const BADGE_TONE_COLORS: Record<"gain" | "loss" | "neutral", string> = {
   neutral: "#6b7280",
 };
 
+
 const STAT_KEYS = ["hp", "atk", "def", "luck"] as const;
 const SUMMARY_CARD_HEIGHT = 160;
 const STATS_CARD_HEIGHT = 176;
@@ -72,10 +73,20 @@ function estimateBannerHeight(
         (equipmentRows - 1) * EQUIPMENT_ITEM_GAP
       : 0;
 
-  return preset.paddingY * 2 + summaryHeight + statsHeight + equipmentHeight;
+  const rootGap = 24; // gap between header section and content section
+  const contentGap = 16; // gap between stats and equipment sections
+
+  return (
+    preset.paddingY * 2 +
+    summaryHeight +
+    (statsHeight > 0 || equipmentHeight > 0 ? rootGap : 0) +
+    statsHeight +
+    (statsHeight > 0 && equipmentHeight > 0 ? contentGap : 0) +
+    equipmentHeight
+  );
 }
 
-interface DashboardEmbeddingBannerSatoriProps {
+export interface DashboardEmbeddingBannerSatoriProps {
   level: number;
   exp: number;
   expToLevel: number;
@@ -93,6 +104,44 @@ interface DashboardEmbeddingBannerSatoriProps {
   language: EmbedPreviewLanguage;
 }
 
+export function resolveDashboardEmbeddingBannerLayout(
+  props: DashboardEmbeddingBannerSatoriProps
+): {
+  preset: ReturnType<typeof resolveEmbedSatoriPreset>;
+  strings: ReturnType<typeof resolveEmbedSatoriStrings>;
+  headerItems: SummaryCardItem[];
+  height: number;
+} {
+  const preset = resolveEmbedSatoriPreset(props.size);
+  const strings = resolveEmbedSatoriStrings(props.language);
+  const headerItems = buildHeaderItems({
+    level: props.level,
+    exp: props.exp,
+    expToLevel: props.expToLevel,
+    floor: props.floor,
+    gold: props.gold,
+    ap: props.ap,
+    strings,
+    language: props.language,
+  });
+
+  const estimatedHeight = estimateBannerHeight(
+    preset,
+    headerItems.length,
+    STAT_KEYS.length,
+    EQUIPMENT_SLOTS.length
+  );
+
+  const height = Math.max(preset.height, Math.ceil(estimatedHeight));
+
+  return {
+    preset,
+    strings,
+    headerItems,
+    height,
+  };
+}
+
 export function DashboardEmbeddingBannerSatori({
   level,
   exp,
@@ -106,34 +155,29 @@ export function DashboardEmbeddingBannerSatori({
   size,
   language,
 }: DashboardEmbeddingBannerSatoriProps) {
-  const preset = resolveEmbedSatoriPreset(size);
+  const { preset, strings, headerItems, height } =
+    resolveDashboardEmbeddingBannerLayout({
+      level,
+      exp,
+      expToLevel,
+      gold,
+      ap,
+      floor,
+      stats,
+      equipment,
+      theme,
+      size,
+      language,
+    });
   const palette = resolveEmbedSatoriPalette(theme);
   const isDarkTheme = theme === "dark";
-  const strings = resolveEmbedSatoriStrings(language);
 
   const headerColumns = Math.max(1, preset.headerColumns);
   const headerGap = 16;
-  const headerItems = buildHeaderItems({
-    level,
-    exp,
-    expToLevel,
-    floor,
-    gold,
-    ap,
-    strings,
-    language,
-  });
-
-  const estimatedHeight = estimateBannerHeight(
-    preset,
-    headerItems.length,
-    STAT_KEYS.length,
-    EQUIPMENT_SLOTS.length
-  );
 
   const rootStyle: CSSProperties = {
     width: preset.width,
-    height: Math.max(preset.height, Math.ceil(estimatedHeight)),
+    height,
     padding: `${preset.paddingY}px ${preset.paddingX}px`,
     boxSizing: "border-box",
     borderRadius: 24,
@@ -145,6 +189,7 @@ export function DashboardEmbeddingBannerSatori({
     flexDirection: "column",
     gap: 24,
     boxShadow: `0 18px 36px rgba(15, 23, 42, ${isDarkTheme ? 0.35 : 0.12})`,
+    overflow: "hidden",
   };
 
   const headerWrapperStyle: CSSProperties = {
@@ -523,6 +568,12 @@ function StatsGrid({ stats, columns, palette, language }: StatsGridProps) {
                       entry.bonus > 0
                         ? BADGE_TONE_COLORS.gain
                         : BADGE_TONE_COLORS.loss,
+                    ...(entry.bonus > 0
+                      ? {
+                          textShadow:
+                            "0 0 4px rgba(16, 185, 129, 0.45), 0 0 12px rgba(16, 185, 129, 0.25)",
+                        }
+                      : {}),
                   }}
                 >
                   ({entry.bonus > 0 ? "+" : ""}
