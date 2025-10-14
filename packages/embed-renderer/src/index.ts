@@ -5,6 +5,7 @@ export {
   DashboardEmbeddingBannerSatori,
   resolveDashboardEmbeddingBannerLayout,
 } from "./components/dashboard-embedding-banner-satori";
+export { injectBonusAnimation } from "./lib/inject-bonus-animation";
 export {
   EMBED_SATORI_DEFAULT_FONT_FAMILY,
   EMBED_SATORI_LOCALE_STRINGS,

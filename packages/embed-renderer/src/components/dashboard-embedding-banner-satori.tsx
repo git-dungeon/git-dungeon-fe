@@ -28,7 +28,6 @@ const BADGE_TONE_COLORS: Record<"gain" | "loss" | "neutral", string> = {
   neutral: "#6b7280",
 };
 
-
 const STAT_KEYS = ["hp", "atk", "def", "luck"] as const;
 const SUMMARY_CARD_HEIGHT = 160;
 const STATS_CARD_HEIGHT = 176;
@@ -301,7 +300,7 @@ function SummaryCard({
         borderRadius: 12,
         backgroundColor: palette.cardBackground,
         border: `1px solid ${palette.border}`,
-        boxShadow: `0 10px 20px rgba(15, 23, 42, ${isDark ? 0.28 : 0.08})`,
+        // boxShadow: `0 10px 20px rgba(15, 23, 42, ${isDark ? 0.28 : 0.08})`,
       }}
     >
       <span
@@ -487,6 +486,9 @@ function StatsGrid({ stats, columns, palette, language }: StatsGridProps) {
   };
 
   const isKorean = language === "ko";
+  const resolveBonusSign = (value: number) =>
+    value > 0 ? "positive" : value < 0 ? "negative" : "zero";
+
   const entries = [
     {
       key: "hp",
@@ -496,6 +498,7 @@ function StatsGrid({ stats, columns, palette, language }: StatsGridProps) {
         : `Max HP ${formatLocaleNumber(stats.total.maxHp, language)}`,
       total: stats.total.hp,
       bonus: stats.equipmentBonus.hp,
+      bonusSign: resolveBonusSign(stats.equipmentBonus.hp),
     },
     {
       key: "atk",
@@ -503,6 +506,7 @@ function StatsGrid({ stats, columns, palette, language }: StatsGridProps) {
       caption: isKorean ? "공격력" : "Attack",
       total: stats.total.atk,
       bonus: stats.equipmentBonus.atk,
+      bonusSign: resolveBonusSign(stats.equipmentBonus.atk),
     },
     {
       key: "def",
@@ -510,6 +514,7 @@ function StatsGrid({ stats, columns, palette, language }: StatsGridProps) {
       caption: isKorean ? "방어력" : "Defense",
       total: stats.total.def,
       bonus: stats.equipmentBonus.def,
+      bonusSign: resolveBonusSign(stats.equipmentBonus.def),
     },
     {
       key: "luck",
@@ -517,6 +522,7 @@ function StatsGrid({ stats, columns, palette, language }: StatsGridProps) {
       caption: isKorean ? "행운" : "Luck",
       total: stats.total.luck,
       bonus: stats.equipmentBonus.luck,
+      bonusSign: resolveBonusSign(stats.equipmentBonus.luck),
     },
   ];
 
@@ -568,13 +574,9 @@ function StatsGrid({ stats, columns, palette, language }: StatsGridProps) {
                       entry.bonus > 0
                         ? BADGE_TONE_COLORS.gain
                         : BADGE_TONE_COLORS.loss,
-                    ...(entry.bonus > 0
-                      ? {
-                          textShadow:
-                            "0 0 4px rgba(16, 185, 129, 0.45), 0 0 12px rgba(16, 185, 129, 0.25)",
-                        }
-                      : {}),
                   }}
+                  data-embed-anim="stat-bonus"
+                  data-embed-bonus-sign={entry.bonusSign}
                 >
                   ({entry.bonus > 0 ? "+" : ""}
                   {formatLocaleNumber(Math.abs(entry.bonus), language)})

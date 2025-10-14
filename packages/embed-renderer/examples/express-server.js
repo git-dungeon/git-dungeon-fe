@@ -116,6 +116,8 @@ app.get("/embed.svg", async (req, res) => {
         ? req.query.size
         : "square";
     const language = req.query.lang === "en" ? "en" : "ko";
+    const enableAnimation =
+      req.query.animate === "false" || req.query.animate === "0" ? false : true;
 
     const fonts = await ensureFonts();
 
@@ -125,6 +127,7 @@ app.get("/embed.svg", async (req, res) => {
       language,
       overview: sampleOverview,
       fonts,
+      enableAnimation,
     });
 
     res.type("image/svg+xml").send(svg);
@@ -150,6 +153,7 @@ app.get("/", (_req, res) => {
           <li><code>?theme=dark</code></li>
           <li><code>?size=compact</code> or <code>?size=wide</code></li>
           <li><code>?lang=en</code></li>
+          <li><code>?animate=false</code> (SMIL 애니메이션 비활성화)</li>
         </ul>
       </body>
     </html>

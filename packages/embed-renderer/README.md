@@ -9,6 +9,7 @@ Satori 기반으로 Git Dungeon 대시보드 임베딩 배너를 SVG로 렌더�
   - 브라우저: `loadFontsFromUrls`
   - 서버(Node/Nest): `loadFontsFromFiles`
 - 기존 대시보드 컴포넌트와 동일한 레이아웃/프리셋/다국어 구성을 그대로 유지
+- 보너스 스탯 샤이닝 애니메이션을 위한 SMIL 기반 후처리(`enableAnimation`, `injectBonusAnimation`) 제공
 - React/Satori를 peer dependency로 두어 앱과 버전을 공유
 
 ## 설치
@@ -44,6 +45,7 @@ const svg = await renderEmbedSvg({
   language: "ko",
   overview: characterOverview,
   fonts,
+  enableAnimation: true,
 });
 ```
 
@@ -67,6 +69,7 @@ const svg = await renderEmbedSvg({
   language: "en",
   overview: characterOverview,
   fonts,
+  enableAnimation: true,
 });
 
 response.setHeader("Content-Type", "image/svg+xml; charset=utf-8").send(svg);
@@ -78,9 +81,18 @@ response.setHeader("Content-Type", "image/svg+xml; charset=utf-8").send(svg);
 | -------------------------------- | ------------------------------------------------ |
 | `renderEmbedSvg(options)`        | Satori를 사용해 TSX 컴포넌트를 SVG 문자열로 변환 |
 | `DashboardEmbeddingBannerSatori` | Satori 친화적으로 구성된 배너 컴포넌트           |
+| `injectBonusAnimation(svg)`      | 기존 SVG에 보너스 스탯 SMIL 애니메이션을 주입       |
 | `resolveEmbedSatoriPreset` 등    | 사이즈/테마/언어 프리셋 유틸                     |
 | `loadFontsFromUrls`              | 브라우저용 폰트 로더                             |
 | `loadFontsFromFiles`             | 서버용 폰트 로더                                 |
+
+### 애니메이션 옵션
+
+`enableAnimation` 플래그를 `renderEmbedSvg` 인자로 전달하면 보너스 스탯 수치에 SMIL 샤이닝 애니메이션이 자동으로 주입됩니다.  
+기존 SVG 문자열에 직접 애니메이션을 적용하고 싶다면 `injectBonusAnimation(svg)` 유틸을 사용하세요.
+
+- Chrome / Firefox / Edge 등 SMIL을 지원하는 브라우저에서는 `<img src="data:image/svg+xml">` 형태로도 애니메이션이 재생됩니다.
+- OG 이미지 생성기 등 SVG를 즉시 래스터라이즈하는 환경에서는 정적 SVG로 폴백됩니다.
 
 ## 개발 스크립트
 

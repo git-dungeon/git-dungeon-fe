@@ -2,6 +2,7 @@ import {
   DashboardEmbeddingBannerSatori,
   resolveDashboardEmbeddingBannerLayout,
 } from "./components/dashboard-embedding-banner-satori";
+import { injectBonusAnimation } from "./lib/inject-bonus-animation";
 import type {
   EmbedFontConfig,
   EmbedFontStyle,
@@ -16,7 +17,9 @@ const DEFAULT_NODE_ENV =
 
 declare global {
   // eslint-disable-next-line no-var
-  var __EMBED_RENDERER_SATORI__: Promise<typeof import("satori").default> | null;
+  var __EMBED_RENDERER_SATORI__: Promise<
+    typeof import("satori").default
+  > | null;
 }
 
 function ensureProcessEnv() {
@@ -56,6 +59,11 @@ export interface RenderEmbedSvgOptions extends EmbedRenderParams {
    * Optional Satori instance to reuse in constrained environments.
    */
   satori?: typeof import("satori").default;
+  /**
+   * SVG 후처리 애니메이션을 활성화할지 여부.
+   * 기본값은 false이며, 활성화 시 보너스 스탯 영역에 글로우/연기 이펙트를 주입한다.
+   */
+  enableAnimation?: boolean;
 }
 
 export async function renderEmbedSvg({
@@ -65,6 +73,7 @@ export async function renderEmbedSvg({
   overview,
   fonts,
   satori,
+  enableAnimation = true,
 }: RenderEmbedSvgOptions) {
   ensureProcessEnv();
 
@@ -84,7 +93,7 @@ export async function renderEmbedSvg({
     language,
   });
 
-  return loadedSatori(
+  const svg = await loadedSatori(
     <DashboardEmbeddingBannerSatori
       level={overview.level}
       exp={overview.exp}
@@ -113,4 +122,10 @@ export async function renderEmbedSvg({
       }),
     }
   );
+
+  if (!enableAnimation) {
+    return svg;
+  }
+
+  return injectBonusAnimation(svg);
 }
