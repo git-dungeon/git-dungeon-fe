@@ -5,7 +5,7 @@ import { CharacterOverviewHeader } from "@/features/character-summary/ui/charact
 import { CharacterStatGrid } from "@/features/character-summary/ui/character-stat-grid";
 import { EquipmentSlotGrid } from "@/entities/inventory/ui/equipment-slot-grid";
 
-interface DashboardEmbeddingBannerProps {
+export interface DashboardEmbeddingBannerProps {
   level: number;
   exp: number;
   expToLevel: number;
