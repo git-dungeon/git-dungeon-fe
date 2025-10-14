@@ -31,11 +31,10 @@ export function isApiSuccessResponse<T>(
 }
 
 export function extractApiData<T>(response: ApiResponse<T>): T {
-  console.log(response);
-  if (response.success) {
+  if (isApiSuccessResponse(response)) {
     return response.data;
   }
 
-  const message = response.error?.message ?? "API 요청이 실패했습니다.";
+  const message = response.error.message ?? "API 요청이 실패했습니다.";
   throw new Error(message);
 }

@@ -51,9 +51,10 @@ export function createAuthService(queryClient: QueryClient): AuthService {
       if (!session) {
         throw redirect({
           to: "/login",
-          search: {
+          search: (prev) => ({
+            ...prev,
             redirect: resolveRedirectTarget(location, redirectTo),
-          },
+          }),
         });
       }
 
@@ -67,7 +68,6 @@ export function createAuthService(queryClient: QueryClient): AuthService {
       if (session) {
         throw redirect({
           to: redirectTo ?? resolveRedirectTarget(location),
-          search: undefined,
         });
       }
     },

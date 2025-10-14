@@ -47,7 +47,7 @@ export async function getEmbedPreview(
     throw new EmbedApiError("임베드 응답 스키마가 올바르지 않습니다.");
   }
 
-  if (!parsed.data.success) {
+  if (parsed.data.success === false) {
     throw new EmbedApiError(parsed.data.error.message);
   }
 
