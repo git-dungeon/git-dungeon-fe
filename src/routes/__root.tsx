@@ -23,14 +23,13 @@ function RootComponent() {
   const routerState = useRouterState();
   const pathname = routerState.location.pathname;
   const isLoginScreen = pathname.startsWith("/login");
-  const isEmbedScreen = pathname.startsWith("/embed");
-  const shouldRenderHeader = !isLoginScreen && !isEmbedScreen;
+  const shouldRenderHeader = !isLoginScreen;
 
   return (
     <div
       className={cn(
         "text-foreground flex min-h-screen flex-col",
-        isEmbedScreen ? "bg-transparent" : "bg-background"
+        "bg-background"
       )}
     >
       {shouldRenderHeader ? (
@@ -59,16 +58,12 @@ function RootComponent() {
       <main
         className={cn(
           "flex w-full flex-1 flex-col",
-          isEmbedScreen
-            ? "items-center justify-center px-0 py-0"
-            : "mx-auto max-w-5xl px-6 py-8"
+          "mx-auto max-w-5xl px-6 py-8"
         )}
       >
         <Outlet />
       </main>
-      {import.meta.env.DEV && !isEmbedScreen ? (
-        <TanStackRouterDevtools />
-      ) : null}
+      {import.meta.env.DEV ? <TanStackRouterDevtools /> : null}
     </div>
   );
 }

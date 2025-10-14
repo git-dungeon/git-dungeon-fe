@@ -26,6 +26,7 @@ import {
   getEmbedPreviewAspectClass,
   getEmbedPreviewContainerClass,
 } from "@/widgets/embed-view/ui/embed-container";
+import { EMBEDDING_ENDPOINTS, resolveApiUrl } from "@/shared/config/env";
 
 const EMBEDDING_SIZE_OPTIONS: Array<{
   value: EmbeddingSize;
@@ -180,9 +181,11 @@ function renderPreviewContent({
 }: RenderPreviewContentParams) {
   const containerClassName = getEmbedPreviewContainerClass(size);
   const aspectClassName = getEmbedPreviewAspectClass(size);
-  const exampleUrl = `/embed?userId=${encodeURIComponent(
-    userId
-  )}&size=${size}&theme=${theme}&language=${language}`;
+  const exampleUrl = resolveApiUrl(
+    `${EMBEDDING_ENDPOINTS.preview}?userId=${encodeURIComponent(
+      userId
+    )}&size=${size}&theme=${theme}&language=${language}`
+  );
 
   return (
     <div className="space-y-4">
