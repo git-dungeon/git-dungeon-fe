@@ -1,13 +1,16 @@
-import { useEffect, useState } from "react";
 import type { CharacterOverview } from "@/features/character-summary/lib/build-character-overview";
 import { formatDateTime } from "@/shared/lib/datetime/formatters";
+import { cn } from "@/shared/lib/utils";
 import type {
   EmbedPreviewLanguage,
   EmbedPreviewSize,
   EmbedPreviewTheme,
 } from "@/entities/embed/model/types";
-import { getEmbedPreviewContainerClass } from "@/widgets/embed-view/ui/embed-container";
-import { generateEmbedPreviewSvg } from "@/widgets/embed-view/lib/generate-embed-preview-svg";
+import {
+  getEmbedPreviewAspectClass,
+  getEmbedPreviewContainerClass,
+} from "@/widgets/embed-view/ui/embed-container";
+import { useEmbedPreviewSvg } from "@/shared/lib/embed-renderer/use-embed-preview-svg";
 import { EmbedPreviewSkeleton } from "@/widgets/embed-view/ui/embed-preview-skeleton";
 import { EmbedErrorCard } from "@/widgets/embed-view/ui/embed-error-card";
 
@@ -29,43 +32,12 @@ export function EmbedPreview({
   overview,
 }: EmbedPreviewProps) {
   const generatedAtLabel = formatDateTime(new Date(generatedAt));
-  const [svgMarkup, setSvgMarkup] = useState<string | null>(null);
-  const [renderError, setRenderError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    setSvgMarkup(null);
-    setRenderError(null);
-
-    async function renderSvg() {
-      try {
-        const svg = await generateEmbedPreviewSvg({
-          theme,
-          size,
-          language,
-          overview,
-        });
-
-        if (!cancelled) {
-          setSvgMarkup(svg);
-        }
-      } catch (error) {
-        if (!cancelled) {
-          setRenderError(
-            error instanceof Error
-              ? error.message
-              : "SVG 렌더링 중 알 수 없는 오류가 발생했습니다."
-          );
-        }
-      }
-    }
-
-    void renderSvg();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [theme, size, language, overview]);
+  const { svgDataUrl, renderError } = useEmbedPreviewSvg({
+    theme,
+    size,
+    language,
+    overview,
+  });
 
   if (renderError) {
     return (
@@ -80,7 +52,7 @@ export function EmbedPreview({
     );
   }
 
-  if (!svgMarkup) {
+  if (!svgDataUrl) {
     return <EmbedPreviewSkeleton size={size} language={language} />;
   }
 
@@ -92,12 +64,19 @@ export function EmbedPreview({
         data-embed-size={size}
         data-embed-language={language}
       >
-        <div className="border-border bg-background overflow-hidden rounded-2xl border">
-          <div
-            aria-label="임베드 SVG 프리뷰"
-            dangerouslySetInnerHTML={{ __html: svgMarkup }}
+        <figure
+          className={cn(
+            "border-border bg-background overflow-hidden rounded-2xl border",
+            getEmbedPreviewAspectClass(size)
+          )}
+        >
+          <img
+            src={svgDataUrl}
+            alt="임베드 SVG 프리뷰"
+            className="h-full w-full object-cover"
+            loading="lazy"
           />
-        </div>
+        </figure>
         <div className="text-muted-foreground flex flex-col gap-2 text-xs sm:flex-row sm:items-center sm:justify-between">
           <span>생성 시각: {generatedAtLabel}</span>
           <span>

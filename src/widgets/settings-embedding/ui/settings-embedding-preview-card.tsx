@@ -11,9 +11,21 @@ import {
 import { Button, buttonVariants } from "@/shared/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { formatDateTime } from "@/shared/lib/datetime/formatters";
-import { DashboardEmbeddingBanner } from "@/widgets/dashboard-embedding/ui/dashboard-embedding-banner";
 import { useCharacterOverview } from "@/features/character-summary/model/use-character-overview";
-import type { CharacterOverview } from "@/features/character-summary/lib/build-character-overview";
+import { useEmbedPreviewSvg } from "@/shared/lib/embed-renderer/use-embed-preview-svg";
+import { useSettingsPreferences } from "@/features/settings/model/use-settings-preferences";
+import { resolveThemePreference } from "@/shared/lib/preferences/preferences";
+import type {
+  EmbedPreviewLanguage,
+  EmbedPreviewSize,
+  EmbedPreviewTheme,
+} from "@/entities/embed/model/types";
+import { EmbedPreviewSkeleton } from "@/widgets/embed-view/ui/embed-preview-skeleton";
+import { EmbedErrorCard } from "@/widgets/embed-view/ui/embed-error-card";
+import {
+  getEmbedPreviewAspectClass,
+  getEmbedPreviewContainerClass,
+} from "@/widgets/embed-view/ui/embed-container";
 
 const EMBEDDING_SIZE_OPTIONS: Array<{
   value: EmbeddingSize;
@@ -28,9 +40,30 @@ const EMBEDDING_SIZE_OPTIONS: Array<{
 export function SettingsEmbeddingPreviewCard() {
   const [size, setSize] = useState<EmbeddingSize>("compact");
   const overview = useCharacterOverview();
+  const { theme: themePreference, language: languagePreference } =
+    useSettingsPreferences();
 
-  const isPending = overview.isLoading || overview.isFetching;
+  const embedTheme = resolveThemePreference(
+    themePreference
+  ) as EmbedPreviewTheme;
+  const embedLanguage = languagePreference as EmbedPreviewLanguage;
+  const embedSize = size as EmbedPreviewSize;
+
   const character = overview.data;
+  const {
+    svgDataUrl,
+    renderError: embedRenderError,
+    isRendering,
+  } = useEmbedPreviewSvg({
+    theme: embedTheme,
+    size: embedSize,
+    language: embedLanguage,
+    overview: character,
+  });
+
+  const isFetchingOverview = overview.isLoading || overview.isFetching;
+  const isBusy = isFetchingOverview || isRendering || !character;
+  const userId = overview.dashboard.data?.state.userId ?? "me";
 
   const generatedAtLabel = useMemo(() => {
     return formatDateTime(new Date());
@@ -58,7 +91,7 @@ export function SettingsEmbeddingPreviewCard() {
                 "flex flex-col gap-0 text-xs"
               )}
               onClick={() => setSize(option.value)}
-              disabled={isPending}
+              disabled={isBusy}
             >
               <span>{option.label}</span>
               <span className="text-muted-foreground text-[10px]">
@@ -70,51 +103,25 @@ export function SettingsEmbeddingPreviewCard() {
       </CardHeader>
       <CardContent className="space-y-6">
         {overview.isError
-          ? renderErrorState(overview.refetch)
-          : isPending
-            ? renderSkeletonPreview()
-            : character
-              ? renderPreviewContent(size, character, generatedAtLabel)
-              : null}
+          ? renderOverviewError(overview.refetch)
+          : embedRenderError
+            ? renderEmbedError(embedRenderError, embedSize, embedLanguage)
+            : !svgDataUrl
+              ? renderSkeleton(embedSize, embedLanguage)
+              : renderPreviewContent({
+                  svgDataUrl,
+                  size: embedSize,
+                  theme: embedTheme,
+                  language: embedLanguage,
+                  generatedAtLabel,
+                  userId,
+                })}
       </CardContent>
     </Card>
   );
 }
 
-function renderPreviewContent(
-  size: EmbeddingSize,
-  character: CharacterOverview,
-  generatedAtLabel: string
-) {
-  const layoutClassName = resolveLayoutClassName(size);
-
-  return (
-    <div className="space-y-4">
-      <DashboardEmbeddingBanner
-        level={character.level}
-        exp={character.exp}
-        expToLevel={character.expToLevel}
-        gold={character.gold}
-        ap={character.ap}
-        floor={character.floor}
-        stats={character.stats}
-        equipment={character.equipment}
-        layoutClassName={layoutClassName}
-      />
-      <div className="text-muted-foreground flex flex-col gap-2 text-xs sm:flex-row sm:items-center sm:justify-between">
-        <span>생성 시각: {generatedAtLabel}</span>
-        <span>
-          URL 예시:{" "}
-          <code className="font-mono text-xs">
-            /render?userId=me&amp;size={size}
-          </code>
-        </span>
-      </div>
-    </div>
-  );
-}
-
-function renderErrorState(onRetry: () => Promise<void>) {
+function renderOverviewError(onRetry: () => Promise<void>) {
   return (
     <div className="bg-destructive/5 text-destructive border-destructive/20 flex flex-col items-start gap-3 rounded-lg border p-6">
       <div>
@@ -130,23 +137,78 @@ function renderErrorState(onRetry: () => Promise<void>) {
   );
 }
 
-function renderSkeletonPreview() {
+function renderEmbedError(
+  message: string,
+  size: EmbedPreviewSize,
+  language: EmbedPreviewLanguage
+) {
   return (
-    <div className="space-y-4">
-      <div className="bg-muted/20 h-64 animate-pulse rounded-2xl" />
-      <div className="bg-muted/20 h-4 w-1/3 animate-pulse rounded" />
+    <div className="flex w-full justify-center">
+      <EmbedErrorCard
+        title="SVG 렌더링에 실패했습니다"
+        message={message}
+        size={size}
+        language={language}
+      />
     </div>
   );
 }
 
-function resolveLayoutClassName(size: EmbeddingSize): string | undefined {
-  if (size === "compact") {
-    return "p-4 text-sm";
-  }
+function renderSkeleton(
+  size: EmbedPreviewSize,
+  language: EmbedPreviewLanguage
+) {
+  return <EmbedPreviewSkeleton size={size} language={language} />;
+}
 
-  if (size === "wide") {
-    return "p-8";
-  }
+interface RenderPreviewContentParams {
+  svgDataUrl: string;
+  size: EmbedPreviewSize;
+  theme: EmbedPreviewTheme;
+  language: EmbedPreviewLanguage;
+  generatedAtLabel: string;
+  userId: string;
+}
 
-  return undefined;
+function renderPreviewContent({
+  svgDataUrl,
+  size,
+  theme,
+  language,
+  generatedAtLabel,
+  userId,
+}: RenderPreviewContentParams) {
+  const containerClassName = getEmbedPreviewContainerClass(size);
+  const aspectClassName = getEmbedPreviewAspectClass(size);
+  const exampleUrl = `/embed?userId=${encodeURIComponent(
+    userId
+  )}&size=${size}&theme=${theme}&language=${language}`;
+
+  return (
+    <div className="space-y-4">
+      <section
+        className={containerClassName}
+        data-embed-theme={theme}
+        data-embed-size={size}
+        data-embed-language={language}
+      >
+        <figure
+          className={cn("bg-background overflow-hidden", aspectClassName)}
+        >
+          <img
+            src={svgDataUrl}
+            alt="임베드 SVG 프리뷰"
+            className="h-full w-full object-contain"
+            loading="lazy"
+          />
+        </figure>
+        <div className="text-muted-foreground flex flex-col gap-2 text-xs sm:flex-row sm:items-center sm:justify-between">
+          <span>생성 시각: {generatedAtLabel}</span>
+          <span className="truncate">
+            URL 예시: <code className="font-mono text-xs">{exampleUrl}</code>
+          </span>
+        </div>
+      </section>
+    </div>
+  );
 }
