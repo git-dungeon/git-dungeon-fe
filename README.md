@@ -1,102 +1,69 @@
-# React + TypeScript + Vite
+# Git Dungeon Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+TanStack Router, React 19, Vite를 기반으로 한 Git Dungeon 프런트엔드 애플리케이션입니다. 인증, 대시보드, 인벤토리, 로그, 임베딩 등 주요 도메인을 FSD 구조로 관리합니다.
 
-Currently, two official plugins are available:
+## 시작하기
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+pnpm install
+pnpm dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- 개발 서버: http://localhost:5173
+- 테스트: `pnpm test`
+- 타입 검사: `pnpm typecheck`
+- 임베드 렌더러 패키지 빌드: `pnpm run build:packages`
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 환경 변수
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+| Key                 | 설명                                            |
+| ------------------- | ----------------------------------------------- |
+| `VITE_API_BASE_URL` | (선택) API 기본 URL. 미지정 시 동일 오리진 사용 |
+| `VITE_ENABLE_MSW`   | 개발 환경에서 MSW 활성화 여부                   |
+
+`.env` 예시는 다음과 같습니다.
+
+```env
+VITE_ENABLE_MSW=true
 ```
+
+## GitHub OAuth 연동 개요
+
+- 프런트엔드는 `/auth/github` 엔드포인트로 리다이렉트하여 로그인 플로우를 시작합니다.
+- 백엔드는 better-auth 기반으로 GitHub Authorization Code 교환과 Access/Refresh 토큰 발급을 전담합니다.
+- 프런트엔드에서 별도 OAuth 환경 변수나 PKCE 설정은 필요하지 않습니다.
+
+## 코드 구조 요약
+
+- `src/shared`: 공통 유틸, config, API 클라이언트.
+- `src/entities`: 도메인 데이터 모델, 타입, 조회 API.
+- `src/features`: 사용자 액션/뮤테이션, UI + 비즈니스 로직 단위.
+- `src/widgets`: 여러 feature/entity를 조합한 UI 블록.
+- `src/pages`: 페이지 단위 레이아웃.
+- `src/routes`: TanStack Router 경로 정의.
+
 ## Embed Renderer Workspace
 
-- `packages/embed-renderer`는 프런트엔드와 Nest 서버가 공유하는 Satori 기반 SVG 렌더러를 제공합니다.
+- `packages/embed-renderer`는 프런트엔드와 Nest 서버가 공유하는 Satori 기반 SVG 렌더러입니다.
 - 주요 API
-  - `renderEmbedSvg(params)`로 동일한 데이터 구조를 입력해 즉시 SVG 문자열을 생성합니다.
-  - 브라우저용 `loadFontsFromUrls`, 서버용 `loadFontsFromFiles`로 환경별 폰트 로더를 구성합니다.
-  - `DashboardEmbeddingBannerSatori`, `resolveEmbedSatoriPreset` 등 기존 프리셋/컴포넌트는 패키지에서 재노출됩니다.
+  - `renderEmbedSvg(params)`로 동일한 데이터 구조를 입력해 SVG 문자열을 생성합니다.
+  - 브라우저용 `loadFontsFromUrls`, 서버용 `loadFontsFromFiles`로 환경별 폰트 로더를 제공합니다.
+  - `DashboardEmbeddingBannerSatori`, `resolveEmbedSatoriPreset` 등 기존 프리셋/컴포넌트를 재노출합니다.
 - 빌드 방법: `pnpm run build:packages`
   - 선언 파일은 `tsc --emitDeclarationOnly`, 번들은 `tsup`으로 `dist/`에 출력됩니다.
 - 사용 예제: `packages/embed-renderer/examples/basic.ts`
   - Nest 백엔드에서는 `@git-dungeon/embed-renderer/server`, 프런트에서는 `@git-dungeon/embed-renderer/browser`를 import 해 동일한 UI를 재사용할 수 있습니다.
 
-## API Error Handling
+## API Error Handling 메모
 
-- `apiClient`는 `ky.create()`/`extend()` 기반 공통 클라이언트이며 before/after 훅에서 토큰 부착과 401 재시도(옵션)를 처리합니다.
-- `configureApiClientAuthentication`으로 액세스 토큰 공급자/새로고침 핸들러/세션 초기화를 주입할 수 있습니다.
-- `requestWithSchema`/`httpGetWithSchema` 유틸은 ky 응답을 받은 뒤 Zod 스키마와 `ApiResponse` 구조를 동시에 검증합니다.
-- 검증 실패 시 `ApiError`가 발생하며, `status` 422와 Zod 이슈 목록을 `payload.issues`에 담아 로깅·알림 시스템에서 활용할 수 있습니다.
-- 서버가 `success: false`를 반환하면 `ApiError`의 `payload`에 `error`/`meta` 정보를 포함해 호출부가 세부 코드를 분기할 수 있도록 했습니다.
-- 공통 응답 메타(`requestId`, `generatedAt` 등)는 `apiResponseMetaSchema`에서 관리하며 추후 서비스별 확장을 허용합니다.
+- `apiClient`는 `ky.create()/extend()` 기반 공통 클라이언트입니다.
+- `configureApiClientAuthentication`으로 액세스 토큰 공급자/새로고침 핸들러/세션 초기화를 주입합니다.
+- `requestWithSchema`/`httpGetWithSchema` 유틸은 응답을 받은 뒤 Zod 스키마와 공통 `ApiResponse` 구조를 동시에 검증합니다.
+- 검증 실패 시 `ApiError`가 발생하며, `status` 422 + Zod 이슈 목록을 `payload.issues`에 담습니다.
+- 서버가 `success: false`를 반환하면 `ApiError.payload.error`/`meta` 정보를 바탕으로 호출부가 분기 처리를 수행합니다.
 
-## Domain Schemas
+## 테스트
 
-- 인증·설정·던전 로그 등 도메인 응답은 각 `src/entities/**/model/types.ts`에서 Zod 스키마(`*Schema`)로 정의되고 `z.infer` 타입을 재사용합니다.
-- `settingsProfileSchema`, `embeddingPreviewSchema`, `dungeonLogsResponseSchema`처럼 응답 구조를 명시적으로 표현해 런타임/정적 타입 간 일관성을 유지합니다.
-- 인증 세션 응답(`authSessionPayloadSchema`)과 임베드 프리뷰(`embedPreviewPayloadSchema`)도 공통 `ApiResponse` 패턴과 함께 사용돼 토큰 만료나 스키마 오류를 조기에 감지할 수 있습니다.
-- 후속 API 모듈에서는 이 스키마를 그대로 사용해 `httpGetWithSchema`와 결합함으로써 계약 위반 시 빠르게 오류를 감지할 수 있습니다.
-
-## Testing
-
-- Vitest 환경을 도입했으며 `pnpm test`로 단위 테스트를 실행할 수 있습니다. (CI 환경에서만 실행하도록 권장)
-- 테스트 실행 전 `jsdom` 및 `msw` 핸들러가 초기화되도록 `src/mocks/tests/setup.ts`에서 공통 설정을 구성했습니다.
-- 로컬에서는 `pnpm test src/entities/auth/api/get-auth-session.test.ts` 처럼 개별 파일을 지정해 빠르게 피드백을 받을 수 있습니다.
+- Vitest 환경을 도입했으며 `pnpm test`로 단위 테스트를 실행할 수 있습니다.
+- 테스트 실행 전 `src/mocks/tests/setup.ts`에서 MSW 핸들러가 초기화됩니다.
+- 로컬에서는 `pnpm test src/entities/auth/api/get-auth-session.test.ts`처럼 개별 파일 실행이 가능합니다.

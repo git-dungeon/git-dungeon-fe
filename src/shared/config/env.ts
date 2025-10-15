@@ -1,4 +1,5 @@
-const RAW_API_BASE_URL = import.meta.env.VITE_API_BASE_URL?.trim();
+const RAW_API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 const IS_VITEST_ENV =
   typeof process !== "undefined" && process.env?.VITEST === "true";
 
