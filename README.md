@@ -32,6 +32,12 @@ VITE_ENABLE_MSW=true
 - 프런트엔드는 `/auth/github` 엔드포인트로 리다이렉트하여 로그인 플로우를 시작합니다.
 - 백엔드는 better-auth 기반으로 GitHub Authorization Code 교환과 Access/Refresh 토큰 발급을 전담합니다.
 - 프런트엔드에서 별도 OAuth 환경 변수나 PKCE 설정은 필요하지 않습니다.
+- 리다이렉트 시 프런트에서 전달하는 쿼리 파라미터는 `redirect`(선택) 하나만 사용하며, 값은 `sanitizeRedirectPath`로 검증됩니다.
+- API 계약(공통 `ApiResponse` 스키마 준수):
+  - `GET /api/auth/session` → `{ success: true, data: { session?: AuthSession | null, accessToken?: string } }`
+  - `POST /api/auth/logout` → `{ success: true, data: { success: boolean } }`
+  - 개발(MSW) 환경에서만 `POST /auth/github` 모킹을 사용하며, 실제 프로덕션에서는 `GET /auth/github?redirect=/target` 리다이렉션만 수행합니다.
+- 응답이 `success: false`이거나 401/403일 경우 프런트엔드는 세션/토큰을 초기화하고 로그인 페이지로 유도합니다.
 
 ## 코드 구조 요약
 
