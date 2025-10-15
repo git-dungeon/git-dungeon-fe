@@ -61,7 +61,7 @@ export interface RenderEmbedSvgOptions extends EmbedRenderParams {
   satori?: typeof import("satori").default;
   /**
    * SVG 후처리 애니메이션을 활성화할지 여부.
-   * 기본값은 false이며, 활성화 시 보너스 스탯 영역에 글로우/연기 이펙트를 주입한다.
+   * 기본값은 true이며, 활성화 시 보너스 스탯 영역에 글로우/연기 이펙트를 주입한다.
    */
   enableAnimation?: boolean;
 }

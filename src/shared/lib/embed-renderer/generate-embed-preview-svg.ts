@@ -39,13 +39,14 @@ async function ensureFonts(): Promise<EmbedFontConfig[]> {
   }
 
   if (!pendingFonts) {
-    pendingFonts = loadFontsFromUrls(browserFontSources).then(
-      (fonts: EmbedFontConfig[]) => {
+    pendingFonts = loadFontsFromUrls(browserFontSources)
+      .then((fonts: EmbedFontConfig[]) => {
         cachedFonts = fonts;
-        pendingFonts = null;
         return fonts;
-      }
-    );
+      })
+      .finally(() => {
+        pendingFonts = null;
+      });
   }
 
   return pendingFonts!;

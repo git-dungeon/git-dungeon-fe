@@ -53,7 +53,7 @@ export async function getEmbedPreview(
 
   const successPayload = embedPreviewSuccessSchema.parse(parsed.data);
   const data = successPayload.data;
-  const generatedAt = data.generatedAt ?? new Date().toISOString();
+  const generatedAt = data.generatedAt;
   const dashboard = data.dashboard;
   const inventory = data.inventory;
   const overview = buildCharacterOverview(dashboard.state, inventory);

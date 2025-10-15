@@ -28,7 +28,7 @@ export const embedPreviewPayloadSchema = z.object({
   theme: z.enum(EMBED_THEME_VALUES).default("dark"),
   size: z.enum(EMBED_PREVIEW_SIZE_VALUES).default("wide"),
   language: z.enum(EMBED_LANGUAGE_VALUES).default("ko"),
-  generatedAt: z.string().optional(),
+  generatedAt: z.string(),
   dashboard: dashboardResponseSchema,
   inventory: inventoryResponseSchema,
 });

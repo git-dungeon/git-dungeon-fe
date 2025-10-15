@@ -73,7 +73,7 @@ function estimateBannerHeight(
       : 0;
 
   const rootGap = 24; // gap between header section and content section
-  const contentGap = 16; // gap between stats and equipment sections
+  const contentGap = 24; // gap between stats and equipment sections (내용 레이아웃 gap과 일치)
 
   return (
     preset.paddingY * 2 +
