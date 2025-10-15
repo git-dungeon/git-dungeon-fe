@@ -1,6 +1,12 @@
 import ky, { HTTPError, type Options } from "ky";
+import { z } from "zod";
 import { resolveApiUrl } from "@/shared/config/env";
 import { getAccessTokenFromProvider } from "@/shared/api/access-token-provider";
+import {
+  createApiResponseSchema,
+  formatZodError,
+  type ApiResponse,
+} from "@/shared/api/api-response";
 
 type ExtendedHeadersInit = HeadersInit | Record<string, string | undefined>;
 
@@ -40,7 +46,7 @@ export class ApiError extends Error {
   readonly status: number;
   readonly payload: unknown;
 
-  constructor(message: string, status: number, payload: unknown) {
+  constructor(message: string, status = 0, payload: unknown = null) {
     super(message);
     this.name = "ApiError";
     this.status = status;
@@ -130,4 +136,43 @@ export async function httpGet<TResponse>(
     method: "GET",
     ...config,
   });
+}
+
+export interface HttpGetWithSchemaOptions<TSchema extends z.ZodTypeAny>
+  extends Omit<HttpRequestConfig, "method"> {
+  mapData?: (data: z.infer<TSchema>) => z.infer<TSchema>;
+}
+
+export async function httpGetWithSchema<TSchema extends z.ZodTypeAny>(
+  path: string,
+  schema: TSchema,
+  config: HttpGetWithSchemaOptions<TSchema> = {}
+): Promise<z.infer<TSchema>> {
+  const { mapData, ...requestConfig } = config;
+  const raw = await httpGet<unknown>(path, requestConfig);
+  const responseSchema = createApiResponseSchema(schema);
+  const parsed = responseSchema.safeParse(raw);
+
+  if (!parsed.success) {
+    throw new ApiError(
+      "API 응답 스키마가 올바르지 않습니다.",
+      422,
+      formatZodError(parsed.error)
+    );
+  }
+
+  const response = parsed.data as ApiResponse<z.infer<TSchema>>;
+
+  if (!response.success) {
+    const errorPayload = response.error;
+    throw new ApiError(errorPayload.message, 200, {
+      error: errorPayload,
+      meta: response.meta,
+    });
+  }
+
+  const data = response.data;
+  const mapper = mapData;
+
+  return mapper ? mapper(data) : data;
 }

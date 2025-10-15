@@ -78,3 +78,10 @@ export default tseslint.config([
   - 선언 파일은 `tsc --emitDeclarationOnly`, 번들은 `tsup`으로 `dist/`에 출력됩니다.
 - 사용 예제: `packages/embed-renderer/examples/basic.ts`
   - Nest 백엔드에서는 `@git-dungeon/embed-renderer/server`, 프런트에서는 `@git-dungeon/embed-renderer/browser`를 import 해 동일한 UI를 재사용할 수 있습니다.
+
+## API Error Handling
+
+- `httpGetWithSchema` 유틸은 ky 기반 `httpGet` 위에서 동작하며 Zod 스키마와 `ApiResponse` 구조를 동시에 검증합니다.
+- 검증 실패 시 `ApiError`가 발생하며, `status` 422와 Zod 이슈 목록을 `payload.issues`에 담아 로깅·알림 시스템에서 활용할 수 있습니다.
+- 서버가 `success: false`를 반환하면 `ApiError`의 `payload`에 `error`/`meta` 정보를 포함해 호출부가 세부 코드를 분기할 수 있도록 했습니다.
+- 공통 응답 메타(`requestId`, `generatedAt` 등)는 `apiResponseMetaSchema`에서 관리하며 추후 서비스별 확장을 허용합니다.
