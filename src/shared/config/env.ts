@@ -25,6 +25,7 @@ export const INVENTORY_ENDPOINTS = {
 
 export const SETTINGS_ENDPOINTS = {
   profile: "/api/settings",
+  preview: "/api/settings/preview",
 } as const;
 
 export const EMBEDDING_ENDPOINTS = {

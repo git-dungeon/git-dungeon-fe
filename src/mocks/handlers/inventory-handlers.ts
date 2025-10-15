@@ -543,7 +543,7 @@ function buildEquippedMap(): InventoryEquippedMap {
   return equipped;
 }
 
-function buildInventoryResponse(): InventoryResponse {
+export function buildInventoryResponse(): InventoryResponse {
   const equipped = buildEquippedMap();
   const { hp, atk, def, luck } = mockDashboardResponse.state;
 

@@ -1,5 +1,5 @@
 import { http, HttpResponse } from "msw";
-import { EMBEDDING_ENDPOINTS, SETTINGS_ENDPOINTS } from "@/shared/config/env";
+import { SETTINGS_ENDPOINTS } from "@/shared/config/env";
 import { mockDashboardResponse } from "@/mocks/handlers/dashboard-handlers";
 import { mockTimestampMinutesAgo } from "@/mocks/handlers/shared/time";
 import type { EmbeddingSize } from "@/entities/settings/model/types";
@@ -120,7 +120,7 @@ export const settingsHandlers = [
   http.get(SETTINGS_ENDPOINTS.profile, () => {
     return HttpResponse.json({ settings: mockSettingsResponse });
   }),
-  http.get(EMBEDDING_ENDPOINTS.preview, ({ request }) => {
+  http.get(SETTINGS_ENDPOINTS.preview, ({ request }) => {
     const url = new URL(request.url);
     const sizeParam = url.searchParams.get("size");
     const size = resolveEmbeddingSize(sizeParam);
