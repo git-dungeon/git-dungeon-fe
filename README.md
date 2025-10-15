@@ -78,3 +78,25 @@ export default tseslint.config([
   - 선언 파일은 `tsc --emitDeclarationOnly`, 번들은 `tsup`으로 `dist/`에 출력됩니다.
 - 사용 예제: `packages/embed-renderer/examples/basic.ts`
   - Nest 백엔드에서는 `@git-dungeon/embed-renderer/server`, 프런트에서는 `@git-dungeon/embed-renderer/browser`를 import 해 동일한 UI를 재사용할 수 있습니다.
+
+## API Error Handling
+
+- `apiClient`는 `ky.create()`/`extend()` 기반 공통 클라이언트이며 before/after 훅에서 토큰 부착과 401 재시도(옵션)를 처리합니다.
+- `configureApiClientAuthentication`으로 액세스 토큰 공급자/새로고침 핸들러/세션 초기화를 주입할 수 있습니다.
+- `requestWithSchema`/`httpGetWithSchema` 유틸은 ky 응답을 받은 뒤 Zod 스키마와 `ApiResponse` 구조를 동시에 검증합니다.
+- 검증 실패 시 `ApiError`가 발생하며, `status` 422와 Zod 이슈 목록을 `payload.issues`에 담아 로깅·알림 시스템에서 활용할 수 있습니다.
+- 서버가 `success: false`를 반환하면 `ApiError`의 `payload`에 `error`/`meta` 정보를 포함해 호출부가 세부 코드를 분기할 수 있도록 했습니다.
+- 공통 응답 메타(`requestId`, `generatedAt` 등)는 `apiResponseMetaSchema`에서 관리하며 추후 서비스별 확장을 허용합니다.
+
+## Domain Schemas
+
+- 인증·설정·던전 로그 등 도메인 응답은 각 `src/entities/**/model/types.ts`에서 Zod 스키마(`*Schema`)로 정의되고 `z.infer` 타입을 재사용합니다.
+- `settingsProfileSchema`, `embeddingPreviewSchema`, `dungeonLogsResponseSchema`처럼 응답 구조를 명시적으로 표현해 런타임/정적 타입 간 일관성을 유지합니다.
+- 인증 세션 응답(`authSessionPayloadSchema`)과 임베드 프리뷰(`embedPreviewPayloadSchema`)도 공통 `ApiResponse` 패턴과 함께 사용돼 토큰 만료나 스키마 오류를 조기에 감지할 수 있습니다.
+- 후속 API 모듈에서는 이 스키마를 그대로 사용해 `httpGetWithSchema`와 결합함으로써 계약 위반 시 빠르게 오류를 감지할 수 있습니다.
+
+## Testing
+
+- Vitest 환경을 도입했으며 `pnpm test`로 단위 테스트를 실행할 수 있습니다. (CI 환경에서만 실행하도록 권장)
+- 테스트 실행 전 `jsdom` 및 `msw` 핸들러가 초기화되도록 `src/mocks/tests/setup.ts`에서 공통 설정을 구성했습니다.
+- 로컬에서는 `pnpm test src/entities/auth/api/get-auth-session.test.ts` 처럼 개별 파일을 지정해 빠르게 피드백을 받을 수 있습니다.

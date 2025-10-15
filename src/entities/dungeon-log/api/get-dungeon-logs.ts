@@ -1,14 +1,12 @@
 import { DASHBOARD_ENDPOINTS } from "@/shared/config/env";
-import { httpGet } from "@/shared/api/http-client";
+import { requestWithSchema } from "@/shared/api/http-client";
 import type {
   DungeonLogCategory,
-  DungeonLogEntry,
+  DungeonLogsResponse,
 } from "@/entities/dungeon-log/model/types";
+import { dungeonLogsResponseSchema } from "@/entities/dungeon-log/model/types";
 
-export interface DungeonLogsResponse {
-  logs: DungeonLogEntry[];
-  nextCursor?: string;
-}
+export type { DungeonLogsResponse } from "@/entities/dungeon-log/model/types";
 
 export interface FetchDungeonLogsParams {
   limit?: number;
@@ -38,5 +36,5 @@ export async function getDungeonLogs(
     ? `${DASHBOARD_ENDPOINTS.logs}?${searchParams.toString()}`
     : DASHBOARD_ENDPOINTS.logs;
 
-  return httpGet<DungeonLogsResponse>(endpoint);
+  return requestWithSchema(endpoint, dungeonLogsResponseSchema);
 }

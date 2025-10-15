@@ -1,14 +1,14 @@
-import { httpGet } from "@/shared/api/http-client";
+import { requestWithSchema } from "@/shared/api/http-client";
 import { SETTINGS_ENDPOINTS } from "@/shared/config/env";
-import type {
-  SettingsData,
-  SettingsResponse,
+import {
+  settingsResponseSchema,
+  type SettingsData,
 } from "@/entities/settings/model/types";
 
 export async function getSettings(): Promise<SettingsData> {
-  const response = await httpGet<SettingsResponse>(SETTINGS_ENDPOINTS.profile, {
-    parseAs: "json",
-  });
-
+  const response = await requestWithSchema(
+    SETTINGS_ENDPOINTS.profile,
+    settingsResponseSchema
+  );
   return response.settings;
 }

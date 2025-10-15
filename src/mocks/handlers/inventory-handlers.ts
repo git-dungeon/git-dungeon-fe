@@ -11,6 +11,7 @@ import type { EquipmentSlot } from "@/entities/dashboard/model/types";
 import { mockDashboardResponse } from "@/mocks/handlers/dashboard-handlers";
 import { mockTimestampMinutesAgo } from "@/mocks/handlers/shared/time";
 import { createSpriteFromLabel } from "@/shared/lib/sprite-utils";
+import { respondWithSuccess } from "@/mocks/lib/api-response";
 
 let inventoryVersion = 1;
 
@@ -597,7 +598,7 @@ export function buildInventoryResponse(): InventoryResponse {
 
 export const inventoryHandlers = [
   http.get(INVENTORY_ENDPOINTS.list, () => {
-    return HttpResponse.json(buildInventoryResponse());
+    return respondWithSuccess(buildInventoryResponse());
   }),
   http.post(INVENTORY_ENDPOINTS.equip, async ({ request }) => {
     const payload = (await request

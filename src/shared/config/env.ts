@@ -1,4 +1,6 @@
 const RAW_API_BASE_URL = import.meta.env.VITE_API_BASE_URL?.trim();
+const IS_VITEST_ENV =
+  typeof process !== "undefined" && process.env?.VITEST === "true";
 
 export const API_BASE_URL =
   RAW_API_BASE_URL && RAW_API_BASE_URL.length > 0
@@ -43,6 +45,10 @@ export function resolveApiUrl(path: string): string {
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
 
   if (!API_BASE_URL) {
+    if (typeof window === "undefined" || IS_VITEST_ENV) {
+      return new URL(normalizedPath, "http://localhost").toString();
+    }
+
     return normalizedPath;
   }
 

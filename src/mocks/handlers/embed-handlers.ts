@@ -1,7 +1,8 @@
-import { http, HttpResponse } from "msw";
+import { http } from "msw";
 import { EMBEDDING_ENDPOINTS } from "@/shared/config/env";
 import { mockDashboardResponse } from "@/mocks/handlers/dashboard-handlers";
 import { buildInventoryResponse } from "@/mocks/handlers/inventory-handlers";
+import { respondWithError, respondWithSuccess } from "@/mocks/lib/api-response";
 
 export const embedHandlers = [
   http.get(EMBEDDING_ENDPOINTS.preview, ({ request }) => {
@@ -9,29 +10,25 @@ export const embedHandlers = [
     const userId = url.searchParams.get("userId");
 
     if (!userId) {
-      return HttpResponse.json(
-        {
-          success: false,
-          error: {
-            message: "userId query parameter is required",
-            code: "EMBED_USER_ID_REQUIRED",
-          },
-        },
-        { status: 400 }
-      );
+      return respondWithError("userId query parameter is required", {
+        status: 400,
+        code: "EMBED_USER_ID_REQUIRED",
+      });
     }
 
     const dashboard = JSON.parse(JSON.stringify(mockDashboardResponse));
     const inventory = buildInventoryResponse();
+    const theme = url.searchParams.get("theme") ?? "dark";
+    const size = url.searchParams.get("size") ?? "wide";
+    const language = url.searchParams.get("language") ?? "ko";
 
-    return HttpResponse.json({
-      success: true,
-      data: {
-        theme: url.searchParams.get("theme") ?? "dark",
-        generatedAt: new Date().toISOString(),
-        dashboard,
-        inventory,
-      },
+    return respondWithSuccess({
+      theme,
+      size,
+      language,
+      generatedAt: new Date().toISOString(),
+      dashboard,
+      inventory,
     });
   }),
 ];

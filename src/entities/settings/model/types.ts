@@ -1,89 +1,98 @@
-import type { AuthSession } from "@/entities/auth/model/types";
-import type {
-  EquipmentModifier,
-  EquipmentRarity,
-  EquipmentSlot,
+import { z } from "zod";
+import { authSessionSchema } from "@/entities/auth/model/types";
+import {
+  equipmentModifierSchema,
+  equipmentRaritySchema,
+  equipmentSlotSchema,
 } from "@/entities/dashboard/model/types";
-import type { InventoryItemEffect } from "@/entities/inventory/model/types";
+import { inventoryItemEffectSchema } from "@/entities/inventory/model/types";
 export type {
   LanguagePreference,
   ThemePreference,
 } from "@/shared/lib/preferences/types";
 
-export interface SettingsProfile extends AuthSession {
-  email?: string;
-  joinedAt?: string;
-  lastLoginAt?: string;
-}
+export const settingsProfileSchema = authSessionSchema.extend({
+  email: z.string().optional(),
+  joinedAt: z.string().optional(),
+  lastLoginAt: z.string().optional(),
+});
+export type SettingsProfile = z.infer<typeof settingsProfileSchema>;
 
-export interface SettingsConnections {
-  github?: {
-    connected: boolean;
-    lastSyncAt?: string;
-    profileUrl?: string;
-  };
-}
+const settingsGithubConnectionSchema = z.object({
+  connected: z.boolean(),
+  lastSyncAt: z.string().optional(),
+  profileUrl: z.string().optional(),
+});
 
-export interface SettingsData {
-  profile: SettingsProfile;
-  connections: SettingsConnections;
-}
+export const settingsConnectionsSchema = z.object({
+  github: settingsGithubConnectionSchema.optional(),
+});
+export type SettingsConnections = z.infer<typeof settingsConnectionsSchema>;
 
-export interface SettingsResponse {
-  settings: SettingsData;
-}
+export const settingsDataSchema = z.object({
+  profile: settingsProfileSchema,
+  connections: settingsConnectionsSchema,
+});
+export type SettingsData = z.infer<typeof settingsDataSchema>;
 
-export type EmbeddingSize = "compact" | "square" | "wide";
+export const settingsResponseSchema = z.object({
+  settings: settingsDataSchema,
+});
+export type SettingsResponse = z.infer<typeof settingsResponseSchema>;
 
-export interface EmbeddingStatBlock {
-  hp: {
-    current: number;
-    max: number;
-    equipmentBonus?: number;
-  };
-  atk: {
-    total: number;
-    equipmentBonus?: number;
-  };
-  def: {
-    total: number;
-    equipmentBonus?: number;
-  };
-  luck: {
-    total: number;
-    equipmentBonus?: number;
-  };
-  ap: {
-    total: number;
-    equipmentBonus?: number;
-  };
-}
+export const embeddingSizeSchema = z.enum(["compact", "square", "wide"]);
+export type EmbeddingSize = z.infer<typeof embeddingSizeSchema>;
 
-export interface EmbeddingEquipment {
-  id: string;
-  name: string;
-  slot: EquipmentSlot;
-  rarity: EquipmentRarity;
-  modifiers: EquipmentModifier[];
-  effect?: InventoryItemEffect | null;
-  sprite: string;
-}
+const embeddingStatValueSchema = z.object({
+  total: z.number(),
+  equipmentBonus: z.number().optional(),
+});
 
-export interface EmbeddingPreview {
-  userId: string;
-  size: EmbeddingSize;
-  level: number;
-  exp: number;
-  expToLevel: number;
-  gold: number;
-  bestFloor: number;
-  currentFloor: number;
-  floorProgress: number;
-  stats: EmbeddingStatBlock;
-  equipment: EmbeddingEquipment[];
-  generatedAt: string;
-}
+const embeddingHpSchema = z.object({
+  current: z.number(),
+  max: z.number(),
+  equipmentBonus: z.number().optional(),
+});
 
-export interface EmbeddingPreviewResponse {
-  preview: EmbeddingPreview;
-}
+export const embeddingStatBlockSchema = z.object({
+  hp: embeddingHpSchema,
+  atk: embeddingStatValueSchema,
+  def: embeddingStatValueSchema,
+  luck: embeddingStatValueSchema,
+  ap: embeddingStatValueSchema,
+});
+export type EmbeddingStatBlock = z.infer<typeof embeddingStatBlockSchema>;
+
+export const embeddingEquipmentSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  slot: equipmentSlotSchema,
+  rarity: equipmentRaritySchema,
+  modifiers: z.array(equipmentModifierSchema),
+  effect: inventoryItemEffectSchema.nullable().optional(),
+  sprite: z.string(),
+});
+export type EmbeddingEquipment = z.infer<typeof embeddingEquipmentSchema>;
+
+export const embeddingPreviewSchema = z.object({
+  userId: z.string(),
+  size: embeddingSizeSchema,
+  level: z.number(),
+  exp: z.number(),
+  expToLevel: z.number(),
+  gold: z.number(),
+  bestFloor: z.number(),
+  currentFloor: z.number(),
+  floorProgress: z.number(),
+  stats: embeddingStatBlockSchema,
+  equipment: z.array(embeddingEquipmentSchema),
+  generatedAt: z.string(),
+});
+export type EmbeddingPreview = z.infer<typeof embeddingPreviewSchema>;
+
+export const embeddingPreviewResponseSchema = z.object({
+  preview: embeddingPreviewSchema,
+});
+export type EmbeddingPreviewResponse = z.infer<
+  typeof embeddingPreviewResponseSchema
+>;
