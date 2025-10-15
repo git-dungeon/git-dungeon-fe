@@ -141,7 +141,7 @@ export const apiClient: KyInstance = baseClient.extend({
           return;
         }
 
-        const requestOrigin = new URL(request.url).origin;
+        const requestOrigin = new URL(request.url, DEFAULT_BASE_URL).origin;
         if (requestOrigin !== DEFAULT_BASE_ORIGIN) {
           return;
         }
@@ -155,6 +155,23 @@ export const apiClient: KyInstance = baseClient.extend({
     afterResponse: [
       async (request, options, response) => {
         if (response.status !== 401) {
+          return;
+        }
+
+        const includeAuthOption = (
+          options as Options & { includeAuthToken?: boolean }
+        ).includeAuthToken;
+        const skipAuthHeader = request.headers.get(SKIP_AUTH_HEADER) === "true";
+        const resolvedRequestUrl = new URL(request.url, DEFAULT_BASE_URL);
+        const isExternalRequest =
+          /^https?:/i.test(request.url) &&
+          resolvedRequestUrl.origin !== DEFAULT_BASE_ORIGIN;
+
+        if (
+          skipAuthHeader ||
+          includeAuthOption === false ||
+          isExternalRequest
+        ) {
           return;
         }
 
@@ -218,10 +235,16 @@ export async function httpRequest<TResponse>(
   }
 
   try {
-    const response = await apiClient(requestPath, {
+    const requestOptions: Options & { includeAuthToken?: boolean } = {
       ...rest,
       headers: headerOverride,
-    });
+    };
+
+    if (typeof includeAuthToken !== "undefined") {
+      requestOptions.includeAuthToken = includeAuthToken;
+    }
+
+    const response = await apiClient(requestPath, requestOptions);
 
     if (response.status === 204 || parseAs === "none") {
       return undefined as TResponse;
