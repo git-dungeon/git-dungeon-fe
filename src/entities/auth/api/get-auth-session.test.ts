@@ -6,15 +6,10 @@ import { authStore } from "@/entities/auth/model/access-token-store";
 import { respondWithError, respondWithSuccess } from "@/mocks/lib/api-response";
 import { server } from "@/mocks/tests/server";
 
-const sessionUrl = new URL(
-  AUTH_ENDPOINTS.session,
-  "http://localhost"
-).toString();
-
 describe("getAuthSession", () => {
   it("세션 정보와 액세스 토큰을 저장한다", async () => {
     server.use(
-      http.get(sessionUrl, () =>
+      http.get(AUTH_ENDPOINTS.session, () =>
         respondWithSuccess({
           session: {
             userId: "test-user",
@@ -39,7 +34,7 @@ describe("getAuthSession", () => {
   it("401 응답 시 null을 반환하고 액세스 토큰을 초기화한다", async () => {
     authStore.setAccessToken("stale-token");
     server.use(
-      http.get(sessionUrl, () =>
+      http.get(AUTH_ENDPOINTS.session, () =>
         respondWithError("Unauthorized", {
           status: 401,
           code: "AUTH_UNAUTHORIZED",

@@ -1,5 +1,5 @@
 import { EMBEDDING_ENDPOINTS } from "@/shared/config/env";
-import { ApiError, httpGetWithSchema } from "@/shared/api/http-client";
+import { ApiError, requestWithSchema } from "@/shared/api/http-client";
 import { embedPreviewPayloadSchema } from "@/entities/embed/model/embed-preview-schema";
 import {
   type EmbedPreviewQueryParams,
@@ -32,7 +32,7 @@ export async function getEmbedPreview(
   });
 
   try {
-    const data = await httpGetWithSchema(
+    const data = await requestWithSchema(
       `${EMBEDDING_ENDPOINTS.preview}?${search.toString()}`,
       embedPreviewPayloadSchema,
       {

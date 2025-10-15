@@ -1,11 +1,11 @@
 import { AUTH_ENDPOINTS } from "@/shared/config/env";
-import { ApiError, httpGetWithSchema } from "@/shared/api/http-client";
+import { ApiError, requestWithSchema } from "@/shared/api/http-client";
 import { authStore } from "@/entities/auth/model/access-token-store";
 import { authSessionPayloadSchema, type AuthSession } from "../model/types";
 
 export async function getAuthSession(): Promise<AuthSession | null> {
   try {
-    const payload = await httpGetWithSchema(
+    const payload = await requestWithSchema(
       AUTH_ENDPOINTS.session,
       authSessionPayloadSchema
     );

@@ -1,4 +1,7 @@
 import path from "path";
+/// <reference types="vitest" />
+/// <reference types="vite/client" />
+
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig, type PluginOption } from "vite";
@@ -24,10 +27,5 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
-  },
-  test: {
-    environment: "jsdom",
-    setupFiles: ["./src/mocks/tests/setup.ts"],
-    globals: true,
   },
 });

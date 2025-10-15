@@ -1,5 +1,5 @@
 import { DASHBOARD_ENDPOINTS } from "@/shared/config/env";
-import { httpGetWithSchema } from "@/shared/api/http-client";
+import { requestWithSchema } from "@/shared/api/http-client";
 import type {
   DungeonLogCategory,
   DungeonLogsResponse,
@@ -36,5 +36,5 @@ export async function getDungeonLogs(
     ? `${DASHBOARD_ENDPOINTS.logs}?${searchParams.toString()}`
     : DASHBOARD_ENDPOINTS.logs;
 
-  return httpGetWithSchema(endpoint, dungeonLogsResponseSchema);
+  return requestWithSchema(endpoint, dungeonLogsResponseSchema);
 }

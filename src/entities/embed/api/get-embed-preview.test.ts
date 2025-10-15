@@ -8,11 +8,6 @@ import { ApiError } from "@/shared/api/http-client";
 import { mockDashboardResponse } from "@/mocks/handlers/dashboard-handlers";
 import { buildInventoryResponse } from "@/mocks/handlers/inventory-handlers";
 
-const previewUrl = new URL(
-  EMBEDDING_ENDPOINTS.preview,
-  "http://localhost"
-).toString();
-
 const baseParams = {
   userId: "user-123",
   theme: "dark",
@@ -23,7 +18,7 @@ const baseParams = {
 describe("getEmbedPreview", () => {
   it("요청 성공 시 임베드 미리보기 데이터를 반환한다", async () => {
     server.use(
-      http.get(previewUrl, () =>
+      http.get(EMBEDDING_ENDPOINTS.preview, () =>
         respondWithSuccess({
           theme: baseParams.theme,
           size: baseParams.size,
@@ -47,7 +42,7 @@ describe("getEmbedPreview", () => {
 
   it("서버가 실패 응답을 반환하면 ApiError를 던진다", async () => {
     server.use(
-      http.get(previewUrl, () =>
+      http.get(EMBEDDING_ENDPOINTS.preview, () =>
         respondWithError("Preview failed", {
           status: 500,
           code: "EMBED_PREVIEW_FAILED",

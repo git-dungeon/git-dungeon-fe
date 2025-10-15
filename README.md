@@ -81,7 +81,9 @@ export default tseslint.config([
 
 ## API Error Handling
 
-- `httpGetWithSchema` 유틸은 ky 기반 `httpGet` 위에서 동작하며 Zod 스키마와 `ApiResponse` 구조를 동시에 검증합니다.
+- `apiClient`는 `ky.create()`/`extend()` 기반 공통 클라이언트이며 before/after 훅에서 토큰 부착과 401 재시도(옵션)를 처리합니다.
+- `configureApiClientAuthentication`으로 액세스 토큰 공급자/새로고침 핸들러/세션 초기화를 주입할 수 있습니다.
+- `requestWithSchema`/`httpGetWithSchema` 유틸은 ky 응답을 받은 뒤 Zod 스키마와 `ApiResponse` 구조를 동시에 검증합니다.
 - 검증 실패 시 `ApiError`가 발생하며, `status` 422와 Zod 이슈 목록을 `payload.issues`에 담아 로깅·알림 시스템에서 활용할 수 있습니다.
 - 서버가 `success: false`를 반환하면 `ApiError`의 `payload`에 `error`/`meta` 정보를 포함해 호출부가 세부 코드를 분기할 수 있도록 했습니다.
 - 공통 응답 메타(`requestId`, `generatedAt` 등)는 `apiResponseMetaSchema`에서 관리하며 추후 서비스별 확장을 허용합니다.

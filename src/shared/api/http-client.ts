@@ -1,6 +1,6 @@
-import ky, { HTTPError, type Options } from "ky";
+import ky, { HTTPError, type KyInstance, type Options } from "ky";
 import { z } from "zod";
-import { resolveApiUrl } from "@/shared/config/env";
+import { API_BASE_URL } from "@/shared/config/env";
 import { getAccessTokenFromProvider } from "@/shared/api/access-token-provider";
 import {
   createApiResponseSchema,
@@ -8,7 +8,77 @@ import {
   type ApiResponse,
 } from "@/shared/api/api-response";
 
+const SKIP_AUTH_HEADER = "x-skip-auth";
+const REFRESH_ATTEMPT_HEADER = "x-refresh-attempted";
+const AUTH_REFRESH_ENDPOINT_SEGMENT = "/auth/refresh";
+
+const DEFAULT_BASE_URL =
+  API_BASE_URL ??
+  (typeof window !== "undefined" ? window.location.origin : "http://localhost");
+const DEFAULT_BASE_ORIGIN = new URL(DEFAULT_BASE_URL).origin;
+
 type ExtendedHeadersInit = HeadersInit | Record<string, string | undefined>;
+
+export class ApiError extends Error {
+  readonly status: number;
+  readonly payload: unknown;
+
+  constructor(message: string, status = 0, payload: unknown = null) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+    this.payload = payload;
+  }
+}
+
+export type AccessTokenProvider = () => string | undefined;
+export type RefreshTokenHandler = () => Promise<boolean>;
+export type ClearSessionHandler = () => void;
+
+interface AuthenticationHandlers {
+  getAccessToken: AccessTokenProvider | null;
+  refreshAccessToken: RefreshTokenHandler | null;
+  clearSession: ClearSessionHandler | null;
+}
+
+interface ConfigureAuthenticationOptions {
+  getAccessToken?: AccessTokenProvider;
+  refreshAccessToken?: RefreshTokenHandler;
+  clearSession?: ClearSessionHandler;
+}
+
+const authenticationHandlers: AuthenticationHandlers = {
+  getAccessToken: () => getAccessTokenFromProvider(),
+  refreshAccessToken: null,
+  clearSession: null,
+};
+
+export function configureApiClientAuthentication({
+  getAccessToken,
+  refreshAccessToken,
+  clearSession,
+}: ConfigureAuthenticationOptions = {}): void {
+  authenticationHandlers.getAccessToken =
+    getAccessToken ?? authenticationHandlers.getAccessToken;
+  authenticationHandlers.refreshAccessToken =
+    refreshAccessToken ?? authenticationHandlers.refreshAccessToken;
+  authenticationHandlers.clearSession =
+    clearSession ?? authenticationHandlers.clearSession;
+}
+
+export function resetApiClientAuthentication(): void {
+  authenticationHandlers.getAccessToken = () => getAccessTokenFromProvider();
+  authenticationHandlers.refreshAccessToken = null;
+  authenticationHandlers.clearSession = null;
+}
+
+const baseClient: KyInstance = ky.create({
+  prefixUrl: DEFAULT_BASE_URL,
+  credentials: "include",
+  retry: {
+    limit: 0,
+  },
+});
 
 function toHeaders(init?: ExtendedHeadersInit): Headers {
   if (!init) {
@@ -34,25 +104,99 @@ function toHeaders(init?: ExtendedHeadersInit): Headers {
   return headers;
 }
 
-function isTrustedOrigin(url: URL): boolean {
-  if (typeof window !== "undefined") {
-    return url.origin === window.location.origin;
+function hasRefreshAttempted(request: Request, options: Options): boolean {
+  if (request.headers.get(REFRESH_ATTEMPT_HEADER) === "true") {
+    return true;
   }
 
-  return false;
-}
+  const optionHeaders = options.headers;
 
-export class ApiError extends Error {
-  readonly status: number;
-  readonly payload: unknown;
-
-  constructor(message: string, status = 0, payload: unknown = null) {
-    super(message);
-    this.name = "ApiError";
-    this.status = status;
-    this.payload = payload;
+  if (!optionHeaders) {
+    return false;
   }
+
+  if (optionHeaders instanceof Headers) {
+    return optionHeaders.get(REFRESH_ATTEMPT_HEADER) === "true";
+  }
+
+  if (Array.isArray(optionHeaders)) {
+    return optionHeaders.some(
+      ([key, value]) =>
+        key.toLowerCase() === REFRESH_ATTEMPT_HEADER && value === "true"
+    );
+  }
+
+  return (
+    typeof optionHeaders === "object" &&
+    optionHeaders[REFRESH_ATTEMPT_HEADER] === "true"
+  );
 }
+
+export const apiClient: KyInstance = baseClient.extend({
+  hooks: {
+    beforeRequest: [
+      (request) => {
+        if (request.headers.get(SKIP_AUTH_HEADER) === "true") {
+          request.headers.delete(SKIP_AUTH_HEADER);
+          return;
+        }
+
+        const requestOrigin = new URL(request.url).origin;
+        if (requestOrigin !== DEFAULT_BASE_ORIGIN) {
+          return;
+        }
+
+        const accessToken = authenticationHandlers.getAccessToken?.();
+        if (accessToken) {
+          request.headers.set("Authorization", `Bearer ${accessToken}`);
+        }
+      },
+    ],
+    afterResponse: [
+      async (request, options, response) => {
+        if (response.status !== 401) {
+          return;
+        }
+
+        const { refreshAccessToken, clearSession } = authenticationHandlers;
+        const alreadyRefreshed = hasRefreshAttempted(request, options);
+        const isRefreshRequest = request.url.includes(
+          AUTH_REFRESH_ENDPOINT_SEGMENT
+        );
+
+        if (alreadyRefreshed || isRefreshRequest || !refreshAccessToken) {
+          clearSession?.();
+          return;
+        }
+
+        try {
+          const succeeded = await refreshAccessToken();
+          if (!succeeded) {
+            clearSession?.();
+            return;
+          }
+        } catch (error) {
+          clearSession?.();
+          throw error;
+        }
+
+        const retryHeaders = new Headers(request.headers);
+        retryHeaders.set(REFRESH_ATTEMPT_HEADER, "true");
+
+        const retryRequest = new Request(request, {
+          headers: retryHeaders,
+        });
+
+        const mergedOptions: Options = {
+          ...options,
+          headers: retryHeaders,
+        };
+
+        return apiClient(retryRequest, mergedOptions);
+      },
+    ],
+  },
+});
 
 export interface HttpRequestConfig extends Options {
   parseAs?: "json" | "text" | "none";
@@ -63,34 +207,20 @@ export async function httpRequest<TResponse>(
   path: string,
   config: HttpRequestConfig = {}
 ): Promise<TResponse> {
-  const {
-    parseAs = "json",
-    headers,
-    credentials,
-    includeAuthToken,
-    ...rest
-  } = config;
-  const resolvedUrl = resolveApiUrl(path);
-  const parsedUrl = new URL(
-    resolvedUrl,
-    typeof window !== "undefined" ? window.location.origin : "http://localhost"
-  );
-  const accessToken = getAccessTokenFromProvider();
+  const { parseAs = "json", includeAuthToken, headers, ...rest } = config;
+
+  const isAbsoluteUrl = /^https?:/i.test(path);
+  const requestPath = isAbsoluteUrl ? path : path.replace(/^\//, "");
+  const headerOverride = toHeaders(headers);
+
+  if (includeAuthToken === false) {
+    headerOverride.set(SKIP_AUTH_HEADER, "true");
+  }
 
   try {
-    const headerOverride = toHeaders(headers);
-    const shouldAttachToken =
-      includeAuthToken ??
-      (!/^https?:/i.test(resolvedUrl) || isTrustedOrigin(parsedUrl));
-
-    if (shouldAttachToken && accessToken) {
-      headerOverride.set("Authorization", `Bearer ${accessToken}`);
-    }
-
-    const response = await ky(resolvedUrl, {
-      credentials: credentials ?? "include",
-      headers: headerOverride,
+    const response = await apiClient(requestPath, {
       ...rest,
+      headers: headerOverride,
     });
 
     if (response.status === 204 || parseAs === "none") {
@@ -128,28 +258,18 @@ export async function httpRequest<TResponse>(
   }
 }
 
-export async function httpGet<TResponse>(
-  path: string,
-  config: Omit<HttpRequestConfig, "method"> = {}
-): Promise<TResponse> {
-  return httpRequest<TResponse>(path, {
-    method: "GET",
-    ...config,
-  });
-}
-
-export interface HttpGetWithSchemaOptions<TSchema extends z.ZodTypeAny>
-  extends Omit<HttpRequestConfig, "method"> {
+export interface RequestWithSchemaOptions<TSchema extends z.ZodTypeAny>
+  extends Omit<HttpRequestConfig, "parseAs"> {
   mapData?: (data: z.infer<TSchema>) => z.infer<TSchema>;
 }
 
-export async function httpGetWithSchema<TSchema extends z.ZodTypeAny>(
+export async function requestWithSchema<TSchema extends z.ZodTypeAny>(
   path: string,
   schema: TSchema,
-  config: HttpGetWithSchemaOptions<TSchema> = {}
+  config: RequestWithSchemaOptions<TSchema> = {}
 ): Promise<z.infer<TSchema>> {
   const { mapData, ...requestConfig } = config;
-  const raw = await httpGet<unknown>(path, requestConfig);
+  const raw = await httpRequest<unknown>(path, requestConfig);
   const responseSchema = createApiResponseSchema(schema);
   const parsed = responseSchema.safeParse(raw);
 
@@ -172,7 +292,16 @@ export async function httpGetWithSchema<TSchema extends z.ZodTypeAny>(
   }
 
   const data = response.data;
-  const mapper = mapData;
+  return mapData ? mapData(data) : data;
+}
 
-  return mapper ? mapper(data) : data;
+export function httpGetWithSchema<TSchema extends z.ZodTypeAny>(
+  path: string,
+  schema: TSchema,
+  config: RequestWithSchemaOptions<TSchema> = {}
+): Promise<z.infer<TSchema>> {
+  return requestWithSchema(path, schema, {
+    method: "GET",
+    ...config,
+  });
 }

@@ -1,4 +1,4 @@
-import { httpGetWithSchema } from "@/shared/api/http-client";
+import { requestWithSchema } from "@/shared/api/http-client";
 import { SETTINGS_ENDPOINTS } from "@/shared/config/env";
 import {
   settingsResponseSchema,
@@ -6,7 +6,7 @@ import {
 } from "@/entities/settings/model/types";
 
 export async function getSettings(): Promise<SettingsData> {
-  const response = await httpGetWithSchema(
+  const response = await requestWithSchema(
     SETTINGS_ENDPOINTS.profile,
     settingsResponseSchema
   );
