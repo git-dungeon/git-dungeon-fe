@@ -85,3 +85,9 @@ export default tseslint.config([
 - 검증 실패 시 `ApiError`가 발생하며, `status` 422와 Zod 이슈 목록을 `payload.issues`에 담아 로깅·알림 시스템에서 활용할 수 있습니다.
 - 서버가 `success: false`를 반환하면 `ApiError`의 `payload`에 `error`/`meta` 정보를 포함해 호출부가 세부 코드를 분기할 수 있도록 했습니다.
 - 공통 응답 메타(`requestId`, `generatedAt` 등)는 `apiResponseMetaSchema`에서 관리하며 추후 서비스별 확장을 허용합니다.
+
+## Domain Schemas
+
+- 인증·설정·던전 로그 등 도메인 응답은 각 `src/entities/**/model/types.ts`에서 Zod 스키마(`*Schema`)로 정의되고 `z.infer` 타입을 재사용합니다.
+- `settingsProfileSchema`, `embeddingPreviewSchema`, `dungeonLogsResponseSchema`처럼 응답 구조를 명시적으로 표현해 런타임/정적 타입 간 일관성을 유지합니다.
+- 후속 API 모듈에서는 이 스키마를 그대로 사용해 `httpGetWithSchema`와 결합함으로써 계약 위반 시 빠르게 오류를 감지할 수 있습니다.

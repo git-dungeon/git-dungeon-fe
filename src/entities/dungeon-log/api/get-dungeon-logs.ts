@@ -2,13 +2,10 @@ import { DASHBOARD_ENDPOINTS } from "@/shared/config/env";
 import { httpGet } from "@/shared/api/http-client";
 import type {
   DungeonLogCategory,
-  DungeonLogEntry,
+  DungeonLogsResponse,
 } from "@/entities/dungeon-log/model/types";
 
-export interface DungeonLogsResponse {
-  logs: DungeonLogEntry[];
-  nextCursor?: string;
-}
+export type { DungeonLogsResponse } from "@/entities/dungeon-log/model/types";
 
 export interface FetchDungeonLogsParams {
   limit?: number;
