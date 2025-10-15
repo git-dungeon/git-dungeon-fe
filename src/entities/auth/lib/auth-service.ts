@@ -73,6 +73,9 @@ export function createAuthService(queryClient: QueryClient): AuthService {
     },
     setSession(session) {
       queryClient.setQueryData(AUTH_SESSION_QUERY_KEY, session);
+      if (!session) {
+        authStore.clear();
+      }
     },
     async invalidateSession() {
       queryClient.setQueryData(AUTH_SESSION_QUERY_KEY, null);

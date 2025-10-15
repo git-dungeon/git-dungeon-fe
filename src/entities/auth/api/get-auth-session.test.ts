@@ -47,4 +47,21 @@ describe("getAuthSession", () => {
     expect(session).toBeNull();
     expect(authStore.getAccessToken()).toBeUndefined();
   });
+
+  it("success: false 응답 시 null을 반환하고 액세스 토큰을 초기화한다", async () => {
+    authStore.setAccessToken("stale-token");
+    server.use(
+      http.get(AUTH_ENDPOINTS.session, () =>
+        respondWithError("TokenExpired", {
+          status: 200,
+          code: "AUTH_TOKEN_EXPIRED",
+        })
+      )
+    );
+
+    const session = await getAuthSession();
+
+    expect(session).toBeNull();
+    expect(authStore.getAccessToken()).toBeUndefined();
+  });
 });
