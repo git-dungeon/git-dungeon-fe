@@ -7,6 +7,7 @@ import {
 import type { AuthSession } from "@/entities/auth/model/types";
 import { authStore } from "@/entities/auth/model/access-token-store";
 import { sanitizeRedirectPath } from "@/shared/lib/navigation/sanitize-redirect-path";
+import { NetworkError } from "@/shared/api/http-client";
 
 interface AuthorizeParams {
   location: ParsedLocation;
@@ -46,7 +47,16 @@ export function createAuthService(queryClient: QueryClient): AuthService {
       return queryClient.ensureQueryData(authSessionQueryOptions);
     },
     async authorize({ location, redirectTo }: AuthorizeParams) {
-      const session = await this.ensureSession();
+      let session: AuthSession | null;
+      try {
+        session = await this.ensureSession();
+      } catch (error) {
+        if (error instanceof NetworkError) {
+          session = null;
+        } else {
+          throw error;
+        }
+      }
 
       if (!session) {
         throw redirect({
@@ -64,7 +74,15 @@ export function createAuthService(queryClient: QueryClient): AuthService {
       location,
       redirectTo,
     }: RedirectIfAuthenticatedParams) {
-      const session = await this.ensureSession();
+      let session: AuthSession | null;
+      try {
+        session = await this.ensureSession();
+      } catch (error) {
+        if (error instanceof NetworkError) {
+          return;
+        }
+        throw error;
+      }
       if (session) {
         throw redirect({
           to: redirectTo ?? resolveRedirectTarget(location),

@@ -31,6 +31,16 @@ export class ApiError extends Error {
   }
 }
 
+export class NetworkError extends Error {
+  constructor(
+    message = "Network request failed",
+    public readonly cause?: unknown
+  ) {
+    super(message);
+    this.name = "NetworkError";
+  }
+}
+
 export type AccessTokenProvider = () => string | undefined;
 export type RefreshTokenHandler = () => Promise<boolean>;
 export type ClearSessionHandler = () => void;
@@ -275,6 +285,10 @@ export async function httpRequest<TResponse>(
         response.status,
         payload
       );
+    }
+
+    if (error instanceof TypeError) {
+      throw new NetworkError("Network request failed", error);
     }
 
     throw error;

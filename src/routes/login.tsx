@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { GithubLoginButton } from "@/features/auth/github-login/ui/github-login-button";
 import { useAuthSession } from "@/entities/auth/model/use-auth-session";
@@ -20,12 +20,41 @@ export const Route = createFileRoute("/login")({
   component: LoginRoute,
 });
 
-function LoginRoute() {
-  const { redirect } = Route.useSearch();
+interface LoginContentProps {
+  safeRedirect: string;
+}
+
+export function LoginContent({ safeRedirect }: LoginContentProps) {
   const navigate = useNavigate();
-  const { data: session } = useAuthSession();
-  const safeRedirect = sanitizeRedirectPath(redirect, "/dashboard");
+  const sessionQuery = useAuthSession();
+  const session = sessionQuery.data ?? null;
   const [loginError, setLoginError] = useState<string | null>(null);
+
+  const isPending =
+    (sessionQuery as { isPending?: boolean }).isPending ?? false;
+  const isFetching = sessionQuery.isFetching ?? false;
+  const isRefetching =
+    (sessionQuery as { isRefetching?: boolean }).isRefetching ?? false;
+
+  const isCheckingServer = isPending || isFetching || isRefetching;
+  const isServerUnavailable = Boolean(sessionQuery.isError);
+  const isButtonDisabled = isCheckingServer || isServerUnavailable;
+
+  const status = useMemo(() => {
+    if (isCheckingServer) {
+      return { text: "서버 확인 중 ...", type: "info" as const };
+    }
+    if (isServerUnavailable) {
+      return {
+        text: "서버에 문제가 있어 로그인할 수 없습니다.",
+        type: "error" as const,
+      };
+    }
+    if (loginError) {
+      return { text: loginError, type: "error" as const };
+    }
+    return null;
+  }, [isCheckingServer, isServerUnavailable, loginError]);
 
   useEffect(() => {
     if (!session) {
@@ -50,23 +79,37 @@ function LoginRoute() {
           redirectTo={safeRedirect}
           onLoginStart={() => setLoginError(null)}
           onLoginError={(error) => setLoginError(error.message)}
+          disabled={isButtonDisabled}
         >
           GitHub로 계속하기
         </GithubLoginButton>
-        {loginError ? (
+        {status ? (
           <p
-            role="alert"
-            aria-live="polite"
-            className="text-destructive text-xs"
+            role={status.type === "info" ? "status" : "alert"}
+            aria-live={status.type === "info" ? "polite" : "assertive"}
+            className={
+              status.type === "info"
+                ? "text-muted-foreground flex items-center justify-center gap-2 text-xs"
+                : "text-destructive text-xs"
+            }
           >
-            {loginError}
+            {status.type === "info" ? (
+              <>
+                <span className="inline-block h-3 w-3 animate-spin rounded-full border border-current border-t-transparent" />
+                {status.text}
+              </>
+            ) : (
+              status.text
+            )}
           </p>
         ) : null}
-        <p className="text-muted-foreground text-xs">
-          로그인 시 세션 쿠키가 발급되며, GitHub 기여 데이터를 기반으로 AP가
-          계산됩니다.
-        </p>
       </div>
     </section>
   );
+}
+
+function LoginRoute() {
+  const { redirect } = Route.useSearch();
+  const safeRedirect = sanitizeRedirectPath(redirect, "/dashboard");
+  return <LoginContent safeRedirect={safeRedirect} />;
 }
