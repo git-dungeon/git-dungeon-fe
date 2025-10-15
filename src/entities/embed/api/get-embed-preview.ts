@@ -1,18 +1,15 @@
 import { EMBEDDING_ENDPOINTS } from "@/shared/config/env";
-import { httpGet } from "@/shared/api/http-client";
-import {
-  embedPreviewApiResponseSchema,
-  embedPreviewSuccessSchema,
-} from "@/entities/embed/model/embed-preview-schema";
+import { ApiError, httpGetWithSchema } from "@/shared/api/http-client";
+import { embedPreviewPayloadSchema } from "@/entities/embed/model/embed-preview-schema";
 import {
   type EmbedPreviewQueryParams,
   type EmbedPreviewResult,
 } from "@/entities/embed/model/types";
 import { buildCharacterOverview } from "@/features/character-summary/lib/build-character-overview";
 
-class EmbedApiError extends Error {
-  constructor(message: string) {
-    super(message);
+class EmbedApiError extends ApiError {
+  constructor(error: ApiError) {
+    super(error.message, error.status, error.payload);
     this.name = "EmbedApiError";
   }
 }
@@ -34,40 +31,37 @@ export async function getEmbedPreview(
     language: params.language,
   });
 
-  const raw = await httpGet<unknown>(
-    `${EMBEDDING_ENDPOINTS.preview}?${search.toString()}`,
-    {
-      includeAuthToken: false,
+  try {
+    const data = await httpGetWithSchema(
+      `${EMBEDDING_ENDPOINTS.preview}?${search.toString()}`,
+      embedPreviewPayloadSchema,
+      {
+        includeAuthToken: false,
+      }
+    );
+
+    const generatedAt = data.generatedAt;
+    const dashboard = data.dashboard;
+    const inventory = data.inventory;
+    const overview = buildCharacterOverview(dashboard.state, inventory);
+    const size = data.size ?? params.size;
+    const language = data.language ?? params.language;
+
+    return {
+      userId: dashboard.state.userId,
+      theme: data.theme ?? params.theme,
+      size,
+      language,
+      generatedAt,
+      overview,
+      dashboard,
+      inventory,
+    };
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw new EmbedApiError(error);
     }
-  );
 
-  const parsed = embedPreviewApiResponseSchema.safeParse(raw);
-
-  if (!parsed.success) {
-    throw new EmbedApiError("임베드 응답 스키마가 올바르지 않습니다.");
+    throw error;
   }
-
-  if (parsed.data.success === false) {
-    throw new EmbedApiError(parsed.data.error.message);
-  }
-
-  const successPayload = embedPreviewSuccessSchema.parse(parsed.data);
-  const data = successPayload.data;
-  const generatedAt = data.generatedAt;
-  const dashboard = data.dashboard;
-  const inventory = data.inventory;
-  const overview = buildCharacterOverview(dashboard.state, inventory);
-  const size = data.size ?? params.size;
-  const language = data.language ?? params.language;
-
-  return {
-    userId: dashboard.state.userId,
-    theme: data.theme ?? params.theme,
-    size,
-    language,
-    generatedAt,
-    overview,
-    dashboard,
-    inventory,
-  };
 }

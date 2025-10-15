@@ -8,6 +8,7 @@ import {
   encodeSessionCookie,
 } from "@/entities/auth/lib/auth-cookie";
 import { sanitizeRedirectPath } from "@/shared/lib/navigation/sanitize-redirect-path";
+import { respondWithError, respondWithSuccess } from "@/mocks/lib/api-response";
 
 const DEFAULT_SESSION: AuthSession = {
   userId: "user-123",
@@ -61,7 +62,10 @@ function createLogoutHeaders() {
 export const authHandlers = [
   http.get(AUTH_ENDPOINTS.session, ({ cookies }) => {
     if (cookies[MSW_AUTH_COOKIE_KEY] !== "1") {
-      return HttpResponse.json({ message: "Unauthenticated" }, { status: 401 });
+      return respondWithError("Unauthenticated", {
+        status: 401,
+        code: "AUTH_UNAUTHENTICATED",
+      });
     }
 
     const session = decodeSessionCookie(
@@ -69,7 +73,7 @@ export const authHandlers = [
       DEFAULT_SESSION
     );
 
-    return HttpResponse.json({
+    return respondWithSuccess({
       session,
       accessToken: createAccessToken(session),
     });

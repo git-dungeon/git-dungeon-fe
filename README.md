@@ -90,4 +90,11 @@ export default tseslint.config([
 
 - 인증·설정·던전 로그 등 도메인 응답은 각 `src/entities/**/model/types.ts`에서 Zod 스키마(`*Schema`)로 정의되고 `z.infer` 타입을 재사용합니다.
 - `settingsProfileSchema`, `embeddingPreviewSchema`, `dungeonLogsResponseSchema`처럼 응답 구조를 명시적으로 표현해 런타임/정적 타입 간 일관성을 유지합니다.
+- 인증 세션 응답(`authSessionPayloadSchema`)과 임베드 프리뷰(`embedPreviewPayloadSchema`)도 공통 `ApiResponse` 패턴과 함께 사용돼 토큰 만료나 스키마 오류를 조기에 감지할 수 있습니다.
 - 후속 API 모듈에서는 이 스키마를 그대로 사용해 `httpGetWithSchema`와 결합함으로써 계약 위반 시 빠르게 오류를 감지할 수 있습니다.
+
+## Testing
+
+- Vitest 환경을 도입했으며 `pnpm test`로 단위 테스트를 실행할 수 있습니다. (CI 환경에서만 실행하도록 권장)
+- 테스트 실행 전 `jsdom` 및 `msw` 핸들러가 초기화되도록 `src/mocks/tests/setup.ts`에서 공통 설정을 구성했습니다.
+- 로컬에서는 `pnpm test src/entities/auth/api/get-auth-session.test.ts` 처럼 개별 파일을 지정해 빠르게 피드백을 받을 수 있습니다.

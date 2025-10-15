@@ -43,6 +43,10 @@ export function resolveApiUrl(path: string): string {
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
 
   if (!API_BASE_URL) {
+    if (typeof window === "undefined" || process.env.VITEST === "true") {
+      return new URL(normalizedPath, "http://localhost").toString();
+    }
+
     return normalizedPath;
   }
 

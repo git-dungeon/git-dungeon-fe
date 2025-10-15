@@ -1,43 +1,42 @@
 import { AUTH_ENDPOINTS } from "@/shared/config/env";
-import { ApiError, httpGet } from "@/shared/api/http-client";
+import { ApiError, httpGetWithSchema } from "@/shared/api/http-client";
 import { authStore } from "@/entities/auth/model/access-token-store";
-import type { AuthSession } from "../model/types";
-
-interface AuthSessionResponse {
-  session?: AuthSession;
-  accessToken?: string;
-}
+import { authSessionPayloadSchema, type AuthSession } from "../model/types";
 
 export async function getAuthSession(): Promise<AuthSession | null> {
   try {
-    const response = await httpGet<AuthSessionResponse | undefined>(
+    const payload = await httpGetWithSchema(
       AUTH_ENDPOINTS.session,
-      {
-        parseAs: "json",
-      }
+      authSessionPayloadSchema
     );
 
-    if (!response?.session) {
+    const session = payload.session ?? null;
+
+    if (!session) {
       authStore.clear();
       return null;
     }
 
-    if (response.accessToken) {
-      authStore.setAccessToken(response.accessToken);
+    if (payload.accessToken) {
+      authStore.setAccessToken(payload.accessToken);
     }
 
-    return response.session;
+    return session;
   } catch (error) {
     if (error instanceof ApiError) {
       if ([401, 403, 404].includes(error.status)) {
         authStore.clear();
         return null;
       }
-    }
 
-    if (error instanceof SyntaxError) {
-      authStore.clear();
-      return null;
+      const payloadError = (
+        error.payload as { error?: { code?: string } } | undefined
+      )?.error;
+
+      if (payloadError) {
+        authStore.clear();
+        return null;
+      }
     }
 
     throw error;

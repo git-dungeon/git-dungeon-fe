@@ -1,7 +1,8 @@
-import { http, HttpResponse } from "msw";
+import { http } from "msw";
 import { DASHBOARD_ENDPOINTS } from "@/shared/config/env";
 import type { DashboardResponse } from "@/entities/dashboard/model/types";
 import { mockTimestampMinutesAgo } from "@/mocks/handlers/shared/time";
+import { respondWithSuccess } from "@/mocks/lib/api-response";
 
 export const mockDashboardResponse: DashboardResponse = {
   state: {
@@ -66,6 +67,6 @@ export const mockDashboardResponse: DashboardResponse = {
 };
 export const dashboardHandlers = [
   http.get(DASHBOARD_ENDPOINTS.state, () => {
-    return HttpResponse.json(mockDashboardResponse);
+    return respondWithSuccess(mockDashboardResponse);
   }),
 ];

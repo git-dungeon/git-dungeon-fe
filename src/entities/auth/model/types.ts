@@ -8,3 +8,10 @@ export const authSessionSchema = z.object({
 });
 
 export type AuthSession = z.infer<typeof authSessionSchema>;
+
+export const authSessionPayloadSchema = z.object({
+  session: authSessionSchema.nullable().optional(),
+  accessToken: z.string().optional(),
+});
+
+export type AuthSessionPayload = z.infer<typeof authSessionPayloadSchema>;

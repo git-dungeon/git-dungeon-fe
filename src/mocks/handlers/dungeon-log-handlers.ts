@@ -1,8 +1,9 @@
-import { http, HttpResponse } from "msw";
+import { http } from "msw";
 import { DASHBOARD_ENDPOINTS } from "@/shared/config/env";
 import type { DungeonLogEntry } from "@/entities/dungeon-log/model/types";
 import { mockTimestampMinutesAgo } from "@/mocks/handlers/shared/time";
 import giantRatImage from "@/assets/Giant Rat.png";
+import { respondWithSuccess } from "@/mocks/lib/api-response";
 
 export const mockDungeonLogs: DungeonLogEntry[] = [
   {
@@ -409,7 +410,7 @@ export const dungeonLogHandlers = [
     const lastItem = logs.at(-1);
     const hasMore = startIndex + resolvedLimit < sourceLogs.length;
 
-    return HttpResponse.json({
+    return respondWithSuccess({
       logs,
       nextCursor: hasMore && lastItem ? lastItem.id : undefined,
     });

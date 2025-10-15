@@ -1,8 +1,9 @@
-import { http, HttpResponse } from "msw";
+import { http } from "msw";
 import { SETTINGS_ENDPOINTS } from "@/shared/config/env";
 import { mockDashboardResponse } from "@/mocks/handlers/dashboard-handlers";
 import { mockTimestampMinutesAgo } from "@/mocks/handlers/shared/time";
 import type { EmbeddingSize } from "@/entities/settings/model/types";
+import { respondWithSuccess } from "@/mocks/lib/api-response";
 
 const DEFAULT_USER_ID = "user-123";
 
@@ -118,14 +119,14 @@ function createMockEmbeddingPreview(size: EmbeddingSize) {
 
 export const settingsHandlers = [
   http.get(SETTINGS_ENDPOINTS.profile, () => {
-    return HttpResponse.json({ settings: mockSettingsResponse });
+    return respondWithSuccess({ settings: mockSettingsResponse });
   }),
   http.get(SETTINGS_ENDPOINTS.preview, ({ request }) => {
     const url = new URL(request.url);
     const sizeParam = url.searchParams.get("size");
     const size = resolveEmbeddingSize(sizeParam);
 
-    return HttpResponse.json({
+    return respondWithSuccess({
       preview: createMockEmbeddingPreview(size),
     });
   }),
