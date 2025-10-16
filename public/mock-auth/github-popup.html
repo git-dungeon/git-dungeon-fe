@@ -46,10 +46,30 @@
         var params = new URLSearchParams(window.location.search);
         var CHANNEL = "git-dungeon:auth:github";
         var openerWindow = window.opener;
-        var openerOrigin =
-          openerWindow && openerWindow.location
-            ? openerWindow.location.origin
-            : undefined;
+        function resolveOpenerOrigin() {
+          if (typeof document !== "undefined" && document.referrer) {
+            try {
+              return new URL(document.referrer).origin;
+            } catch (error) {
+              // referrer가 유효하지 않은 경우 무시
+            }
+          }
+
+          if (!openerWindow) {
+            return undefined;
+          }
+
+          try {
+            if (openerWindow.location && openerWindow.location.origin) {
+              return openerWindow.location.origin;
+            }
+          } catch (error) {
+            // cross-origin 접근 오류 시 무시
+          }
+
+          return undefined;
+        }
+        var openerOrigin = resolveOpenerOrigin();
         var parentOrigin = params.get("parent") || openerOrigin || "*";
         var mode = params.get("mode"); // success|cancel|error
         var safeRedirect = params.get("redirect") || "/dashboard";

@@ -1,9 +1,30 @@
-const RAW_API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const RAW_API_BASE_URL = import.meta.env.VITE_API_BASE_URL?.trim();
 
-const IS_VITEST_ENV =
-  typeof process !== "undefined" && process.env?.VITEST === "true";
+function detectVitestEnv(): boolean {
+  if (typeof process !== "undefined" && process.env?.VITEST === "true") {
+    return true;
+  }
 
-const LOCAL_ORIGIN =
+  try {
+    const envFlag = import.meta.env?.VITEST;
+    if (envFlag === "true" || envFlag === true) {
+      return true;
+    }
+
+    const runtimeFlag = (import.meta as { vitest?: unknown }).vitest;
+    if (runtimeFlag === true) {
+      return true;
+    }
+  } catch {
+    // ignore environments that do not expose import.meta
+  }
+
+  return false;
+}
+
+export const IS_VITEST_ENV = detectVitestEnv();
+
+const BROWSER_ORIGIN =
   typeof window !== "undefined" && window.location?.origin
     ? window.location.origin
     : "http://localhost";
@@ -17,37 +38,46 @@ export const IS_MSW_ENABLED =
   IS_VITEST_ENV ||
   (import.meta.env.DEV && import.meta.env.VITE_ENABLE_MSW === "true");
 
-function determineEffectiveBaseUrl(): string {
+function parseUrl(value: string, base?: string): URL | null {
+  try {
+    return base ? new URL(value, base) : new URL(value);
+  } catch {
+    return null;
+  }
+}
+
+function computeEffectiveApiBaseUrl(): string {
   if (!API_BASE_URL) {
-    return LOCAL_ORIGIN;
+    return BROWSER_ORIGIN;
   }
 
-  if (IS_MSW_ENABLED && typeof window !== "undefined") {
-    try {
-      const configured = new URL(API_BASE_URL);
+  if (!IS_MSW_ENABLED || typeof window === "undefined") {
+    return API_BASE_URL;
+  }
 
-      if (configured.origin !== window.location.origin) {
-        if (import.meta.env.DEV) {
-          console.warn(
-            "[env] MSW 활성화 상태에서 VITE_API_BASE_URL이 현재 오리진과 다릅니다. 개발 환경에서는 동일 오리진을 사용하도록 window.location.origin을 대신 사용합니다.",
-            {
-              configured: configured.origin,
-              fallback: window.location.origin,
-            }
-          );
+  const configured = parseUrl(API_BASE_URL);
+  if (!configured) {
+    return API_BASE_URL;
+  }
+
+  if (configured.origin !== window.location.origin) {
+    if (import.meta.env.DEV) {
+      console.warn(
+        "[env] VITE_API_BASE_URL과 현재 오리진이 다릅니다. MSW 활성화 환경에서는 window.location.origin을 사용합니다.",
+        {
+          configured: configured.origin,
+          fallback: window.location.origin,
         }
-
-        return window.location.origin;
-      }
-    } catch {
-      return API_BASE_URL;
+      );
     }
+
+    return window.location.origin;
   }
 
   return API_BASE_URL;
 }
 
-export const EFFECTIVE_API_BASE_URL = determineEffectiveBaseUrl();
+export const EFFECTIVE_API_BASE_URL = computeEffectiveApiBaseUrl();
 
 if (!API_BASE_URL && !IS_VITEST_ENV && import.meta.env.PROD) {
   throw new Error(
@@ -91,7 +121,7 @@ export function resolveApiUrl(path: string): string {
 
   if (!API_BASE_URL) {
     if (typeof window === "undefined" || IS_VITEST_ENV) {
-      return new URL(normalizedPath, LOCAL_ORIGIN).toString();
+      return new URL(normalizedPath, BROWSER_ORIGIN).toString();
     }
 
     return normalizedPath;

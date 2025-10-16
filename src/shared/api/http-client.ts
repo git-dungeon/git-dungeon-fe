@@ -13,7 +13,21 @@ const REFRESH_ATTEMPT_HEADER = "x-refresh-attempted";
 const AUTH_REFRESH_ENDPOINT_SEGMENT = "/auth/refresh";
 
 const DEFAULT_BASE_URL = EFFECTIVE_API_BASE_URL;
-const DEFAULT_BASE_ORIGIN = new URL(DEFAULT_BASE_URL).origin;
+const DEFAULT_BASE_ORIGIN = (() => {
+  try {
+    return new URL(DEFAULT_BASE_URL).origin;
+  } catch {
+    if (typeof window !== "undefined" && window.location?.origin) {
+      try {
+        return new URL(DEFAULT_BASE_URL, window.location.origin).origin;
+      } catch {
+        return window.location.origin;
+      }
+    }
+
+    return "http://localhost";
+  }
+})();
 
 type ExtendedHeadersInit = HeadersInit | Record<string, string | undefined>;
 
@@ -93,23 +107,21 @@ function toHeaders(init?: ExtendedHeadersInit): Headers {
     return new Headers();
   }
 
-  if (init instanceof Headers) {
+  if (init instanceof Headers || Array.isArray(init)) {
     return new Headers(init);
   }
 
-  if (Array.isArray(init)) {
-    return new Headers(init);
-  }
+  const definedEntries = Object.entries(init).reduce<[string, string][]>(
+    (acc, [key, value]) => {
+      if (typeof value !== "undefined") {
+        acc.push([key, value]);
+      }
+      return acc;
+    },
+    []
+  );
 
-  const headers = new Headers();
-  Object.entries(init).forEach(([key, value]) => {
-    if (typeof value === "undefined") {
-      return;
-    }
-
-    headers.set(key, value);
-  });
-  return headers;
+  return new Headers(definedEntries);
 }
 
 function hasRefreshAttempted(request: Request, options: Options): boolean {
@@ -117,27 +129,15 @@ function hasRefreshAttempted(request: Request, options: Options): boolean {
     return true;
   }
 
-  const optionHeaders = options.headers;
-
-  if (!optionHeaders) {
+  if (!options.headers) {
     return false;
   }
 
-  if (optionHeaders instanceof Headers) {
-    return optionHeaders.get(REFRESH_ATTEMPT_HEADER) === "true";
-  }
+  const retryHeader = new Headers(
+    options.headers as HeadersInit | undefined
+  ).get(REFRESH_ATTEMPT_HEADER);
 
-  if (Array.isArray(optionHeaders)) {
-    return optionHeaders.some(
-      ([key, value]) =>
-        key.toLowerCase() === REFRESH_ATTEMPT_HEADER && value === "true"
-    );
-  }
-
-  return (
-    typeof optionHeaders === "object" &&
-    optionHeaders[REFRESH_ATTEMPT_HEADER] === "true"
-  );
+  return retryHeader === "true";
 }
 
 export const apiClient: KyInstance = baseClient.extend({
@@ -242,73 +242,96 @@ export async function httpRequest<TResponse>(
     headerOverride.set(SKIP_AUTH_HEADER, "true");
   }
 
+  const requestOptions: Options & { includeAuthToken?: boolean } = {
+    ...rest,
+    headers: headerOverride,
+  };
+
+  if (typeof includeAuthToken !== "undefined") {
+    requestOptions.includeAuthToken = includeAuthToken;
+  }
+
   try {
-    const requestOptions: Options & { includeAuthToken?: boolean } = {
-      ...rest,
-      headers: headerOverride,
-    };
-
-    if (typeof includeAuthToken !== "undefined") {
-      requestOptions.includeAuthToken = includeAuthToken;
-    }
-
     const response = await apiClient(requestPath, requestOptions);
-
-    if (response.status === 204 || parseAs === "none") {
-      return undefined as TResponse;
-    }
-
-    if (parseAs === "text") {
-      return (await response.text()) as TResponse;
-    }
-
-    const responseForDebug = response.clone();
-    try {
-      return (await response.json()) as TResponse;
-    } catch (error) {
-      if (error instanceof SyntaxError) {
-        let preview = "";
-        try {
-          preview = await responseForDebug.text();
-        } catch {
-          preview = "";
-        }
-
-        throw new NetworkError(
-          "API 응답이 JSON 형식이 아닙니다. 백엔드 URL 또는 프록시 설정을 확인하세요.",
-          preview ? { error, preview } : error
-        );
-      }
-
-      throw error;
-    }
+    return parseResponseBody<TResponse>(response, parseAs);
   } catch (error) {
-    if (error instanceof HTTPError) {
-      const { response } = error;
-      let payload: unknown = null;
+    return handleRequestError(error);
+  }
+}
 
-      try {
-        payload = await response.clone().json();
-      } catch {
-        try {
-          payload = await response.clone().text();
-        } catch {
-          payload = null;
-        }
-      }
+async function parseResponseBody<TResponse>(
+  response: Response,
+  mode: HttpRequestConfig["parseAs"]
+): Promise<TResponse> {
+  if (response.status === 204 || mode === "none") {
+    return undefined as TResponse;
+  }
 
-      throw new ApiError(
-        `HTTP ${response.status} ${response.statusText}`,
-        response.status,
-        payload
+  if (mode === "text") {
+    return (await response.text()) as TResponse;
+  }
+
+  return parseJsonBody<TResponse>(response);
+}
+
+async function parseJsonBody<TResponse>(
+  response: Response
+): Promise<TResponse> {
+  const responseForDebug = response.clone();
+
+  try {
+    return (await response.json()) as TResponse;
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      const preview = await readTextSafely(responseForDebug);
+      const context = preview ? { error, preview } : error;
+
+      throw new NetworkError(
+        "API 응답이 JSON 형식이 아닙니다. 백엔드 URL 또는 프록시 설정을 확인하세요.",
+        context
       );
     }
 
-    if (error instanceof TypeError) {
-      throw new NetworkError("Network request failed", error);
-    }
-
     throw error;
+  }
+}
+
+async function readTextSafely(response: Response): Promise<string> {
+  try {
+    return await response.text();
+  } catch {
+    return "";
+  }
+}
+
+async function handleRequestError(error: unknown): Promise<never> {
+  if (error instanceof HTTPError) {
+    const { response } = error;
+    const payload = await extractResponsePayload(response);
+
+    throw new ApiError(
+      `HTTP ${response.status} ${response.statusText}`,
+      response.status,
+      payload
+    );
+  }
+
+  if (error instanceof TypeError) {
+    throw new NetworkError("Network request failed", error);
+  }
+
+  throw error;
+}
+
+async function extractResponsePayload(response: Response): Promise<unknown> {
+  try {
+    return await response.clone().json();
+  } catch {
+    try {
+      return await response.clone().text();
+    } catch {
+      return null;
+    }
   }
 }
 
@@ -345,8 +368,7 @@ export async function requestWithSchema<TSchema extends z.ZodTypeAny>(
     });
   }
 
-  const data = response.data;
-  return mapData ? mapData(data) : data;
+  return mapData ? mapData(response.data) : response.data;
 }
 
 export function httpGetWithSchema<TSchema extends z.ZodTypeAny>(
