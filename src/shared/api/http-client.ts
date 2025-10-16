@@ -30,12 +30,12 @@ export class ApiError extends Error {
 }
 
 export class NetworkError extends Error {
-  constructor(
-    message = "Network request failed",
-    public readonly cause?: unknown
-  ) {
+  readonly cause?: unknown;
+
+  constructor(message = "Network request failed", cause?: unknown) {
     super(message);
     this.name = "NetworkError";
+    this.cause = cause;
   }
 }
 
