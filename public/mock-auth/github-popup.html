@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <title>Mock GitHub OAuth</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      :root {
+        color-scheme: dark light;
+      }
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          sans-serif;
+        margin: 0;
+        padding: 16px;
+        display: grid;
+        place-items: center;
+        background: #0f172a;
+        color: #f8fafc;
+      }
+      .panel {
+        max-width: 320px;
+        text-align: center;
+      }
+      .panel h1 {
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+      }
+      .panel p {
+        font-size: 0.875rem;
+        line-height: 1.4;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="panel">
+      <h1>GitHub 로그인 진행 중</h1>
+      <p>창을 닫지 마세요. 인증 완료 후 자동으로 닫힙니다.</p>
+    </main>
+    <script>
+      (function () {
+        var params = new URLSearchParams(window.location.search);
+        var CHANNEL = "git-dungeon:auth:github";
+        var openerWindow = window.opener;
+        function resolveOpenerOrigin() {
+          if (typeof document !== "undefined" && document.referrer) {
+            try {
+              return new URL(document.referrer).origin;
+            } catch (error) {
+              // referrer가 유효하지 않은 경우 무시
+            }
+          }
+
+          if (!openerWindow) {
+            return undefined;
+          }
+
+          try {
+            if (openerWindow.location && openerWindow.location.origin) {
+              return openerWindow.location.origin;
+            }
+          } catch (error) {
+            // cross-origin 접근 오류 시 무시
+          }
+
+          return undefined;
+        }
+        var openerOrigin = resolveOpenerOrigin();
+        var parentOrigin = params.get("parent") || openerOrigin || "*";
+        var mode = params.get("mode"); // success|cancel|error
+        var safeRedirect = params.get("redirect") || "/dashboard";
+
+        function closeWith(status, payload) {
+          try {
+            if (openerWindow) {
+              openerWindow.postMessage(
+                { type: CHANNEL, status: status, payload: payload },
+                parentOrigin
+              );
+            }
+          } finally {
+            window.close();
+          }
+        }
+
+        if (!openerWindow) {
+          closeWith("error", { message: "opener not found" });
+          return;
+        }
+
+        if (mode === "cancel") {
+          closeWith("cancelled");
+          return;
+        }
+
+        function selectFetch() {
+          if (openerWindow && typeof openerWindow.fetch === "function") {
+            return openerWindow.fetch.bind(openerWindow);
+          }
+          return window.fetch.bind(window);
+        }
+
+        function waitForMockServiceWorker() {
+          if (!("serviceWorker" in navigator)) {
+            return Promise.resolve();
+          }
+          if (navigator.serviceWorker.controller) {
+            return Promise.resolve();
+          }
+          return navigator.serviceWorker.ready.catch(function () {
+            return undefined;
+          });
+        }
+
+        function requestSession() {
+          return selectFetch()("/auth/github", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ redirect: safeRedirect }),
+          });
+        }
+
+        waitForMockServiceWorker()
+          .then(requestSession)
+          .then(async function (response) {
+            var data = {};
+            try {
+              data = await response.json();
+            } catch (error) {
+              // ignore parsing error, handled below
+            }
+
+            if (!response.ok) {
+              var message =
+                (data && data.error && data.error.message) ||
+                "인증 요청이 실패했습니다.";
+              throw new Error(message);
+            }
+
+            return data;
+          })
+          .then(function (data) {
+            closeWith("success", {
+              redirect: data && data.redirect ? data.redirect : safeRedirect,
+              session: data ? data.session || null : null,
+              accessToken: data ? data.accessToken || null : null,
+            });
+          })
+          .catch(function (error) {
+            closeWith("error", {
+              message:
+                (error && error.message) || "알 수 없는 이유로 인증이 실패했습니다.",
+            });
+          });
+      })();
+    </script>
+  </body>
+</html>

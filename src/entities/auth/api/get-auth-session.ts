@@ -1,5 +1,9 @@
 import { AUTH_ENDPOINTS } from "@/shared/config/env";
-import { ApiError, requestWithSchema } from "@/shared/api/http-client";
+import {
+  ApiError,
+  NetworkError,
+  requestWithSchema,
+} from "@/shared/api/http-client";
 import { authStore } from "@/entities/auth/model/access-token-store";
 import { authSessionPayloadSchema, type AuthSession } from "../model/types";
 
@@ -37,6 +41,10 @@ export async function getAuthSession(): Promise<AuthSession | null> {
         authStore.clear();
         return null;
       }
+    }
+
+    if (error instanceof NetworkError) {
+      authStore.clear();
     }
 
     throw error;
