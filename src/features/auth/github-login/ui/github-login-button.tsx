@@ -39,6 +39,7 @@ export function GithubLoginButton(props: GithubLoginButtonProps) {
   };
 
   const isDisabled = isLoading || disabled;
+  const content = children ?? "GitHub로 계속하기";
 
   return (
     <Button
@@ -48,12 +49,26 @@ export function GithubLoginButton(props: GithubLoginButtonProps) {
       onClick={handleClick}
       disabled={isDisabled}
       aria-disabled={isDisabled}
+      aria-busy={isLoading}
+      data-state={isLoading ? "loading" : undefined}
       className={cn(
+        "gap-2",
         isLoading ? "pointer-events-none opacity-70" : undefined,
         className
       )}
     >
-      {children ?? "GitHub로 계속하기"}
+      {isLoading ? (
+        <>
+          <span
+            aria-hidden="true"
+            className="inline-flex h-4 w-4 animate-spin rounded-full border border-current border-t-transparent"
+          />
+          <span>{content}</span>
+          <span className="sr-only">GitHub 로그인 진행 중</span>
+        </>
+      ) : (
+        content
+      )}
     </Button>
   );
 }

@@ -19,13 +19,14 @@ vi.mock("@/entities/auth/model/use-auth-session", () => ({
 }));
 
 const loginMock = vi.fn();
+const useGithubLoginMock = vi.fn(() => ({
+  login: loginMock,
+  isLoading: false,
+  error: null,
+}));
 
 vi.mock("@/features/auth/github-login/model/use-github-login", () => ({
-  useGithubLogin: () => ({
-    login: loginMock,
-    isLoading: false,
-    error: null,
-  }),
+  useGithubLogin: () => useGithubLoginMock(),
 }));
 
 function render(ui: React.ReactElement) {
@@ -56,6 +57,11 @@ describe("/login 화면", () => {
   beforeEach(() => {
     loginMock.mockReset();
     navigateMock.mockReset();
+    useGithubLoginMock.mockReturnValue({
+      login: loginMock,
+      isLoading: false,
+      error: null,
+    });
     useAuthSessionMock.mockReturnValue({
       data: null,
       isError: false,
@@ -138,6 +144,29 @@ describe("/login 화면", () => {
 
     const button = container.querySelector("button") as HTMLButtonElement;
     expect(button.disabled).toBe(true);
+
+    unmount();
+  });
+
+  it("로그인 진행 중에는 버튼에 스피너와 aria-busy 속성을 표시한다", () => {
+    useGithubLoginMock.mockReturnValue({
+      login: loginMock,
+      isLoading: true,
+      error: null,
+    });
+
+    const { container, unmount } = render(
+      <LoginContent safeRedirect="/dashboard" />
+    );
+
+    const button = container.querySelector("button") as HTMLButtonElement;
+    expect(button).not.toBeNull();
+    expect(button.disabled).toBe(true);
+    expect(button.getAttribute("aria-busy")).toBe("true");
+    const spinner = button.querySelector('[aria-hidden="true"]');
+    expect(spinner).not.toBeNull();
+    expect(spinner?.className).toContain("animate-spin");
+    expect(button.textContent).toContain("GitHub로 계속하기");
 
     unmount();
   });
