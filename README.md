@@ -36,7 +36,7 @@ VITE_ENABLE_MSW=true
 - API 계약(공통 `ApiResponse` 스키마 준수):
   - `GET /api/auth/session` → `{ success: true, data: { session?: AuthSession | null, accessToken?: string } }`
   - `POST /api/auth/logout` → `{ success: true, data: { success: boolean } }`
-  - 개발(MSW) 환경에서만 `POST /auth/github` 모킹을 사용하며, 실제 프로덕션에서는 `GET /auth/github?redirect=/target` 리다이렉션만 수행합니다.
+- 개발 및 프로덕션 모두 `GET /auth/github?redirect=/target` 리다이렉트로 로그인 흐름을 시작하며, MSW는 302 응답과 쿠키 설정을 모사해 팝업 없이 동일한 UX를 제공합니다.
 - 응답이 `success: false`이거나 401/403일 경우 프런트엔드는 세션/토큰을 초기화하고 로그인 페이지로 유도합니다.
 
 ## 코드 구조 요약
