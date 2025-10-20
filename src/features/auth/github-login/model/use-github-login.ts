@@ -1,6 +1,11 @@
 import { useCallback, useRef, useState } from "react";
-import { AUTH_ENDPOINTS, resolveApiUrl } from "@/shared/config/env";
+import {
+  AUTH_ENDPOINTS,
+  IS_MSW_ENABLED,
+  resolveApiUrl,
+} from "@/shared/config/env";
 import { sanitizeRedirectPath } from "@/shared/lib/navigation/sanitize-redirect-path";
+import type { AuthSession } from "@/entities/auth/model/types";
 
 export interface UseGithubLoginOptions {
   redirectTo?: string;
@@ -12,18 +17,34 @@ const REDIRECT_GENERIC_ERROR_MESSAGE =
   "로그인 중 문제가 발생했습니다. 잠시 후 다시 시도하세요.";
 
 function buildGithubRedirectUrl(safeRedirect: string): string {
-  const resolved = resolveApiUrl(AUTH_ENDPOINTS.startGithubOAuth);
-
   if (typeof window === "undefined" || !window.location?.origin) {
-    return resolved;
+    return resolveApiUrl(AUTH_ENDPOINTS.startGithubOAuth);
   }
 
+  if (IS_MSW_ENABLED) {
+    const baseUrl = new URL(
+      AUTH_ENDPOINTS.startGithubOAuth,
+      window.location.origin
+    );
+    baseUrl.searchParams.set("redirect", safeRedirect);
+    return baseUrl.toString();
+  }
+
+  const resolved = resolveApiUrl(AUTH_ENDPOINTS.startGithubOAuth);
   const baseUrl = resolved.startsWith("http")
     ? new URL(resolved)
     : new URL(resolved, window.location.origin);
 
   baseUrl.searchParams.set("redirect", safeRedirect);
   return baseUrl.toString();
+}
+
+declare global {
+  interface Window {
+    __mswAuth?: {
+      login: (session?: Partial<AuthSession>) => Promise<void>;
+    };
+  }
 }
 
 export function useGithubLogin(options: UseGithubLoginOptions = {}) {
@@ -48,6 +69,13 @@ export function useGithubLogin(options: UseGithubLoginOptions = {}) {
       }
 
       const targetUrl = buildGithubRedirectUrl(safeRedirect);
+
+      if (IS_MSW_ENABLED && window.__mswAuth) {
+        await window.__mswAuth.login();
+        window.location.assign(safeRedirect);
+        return;
+      }
+
       window.location.assign(targetUrl);
     } catch (rawError) {
       const nextError =

@@ -38,6 +38,7 @@ vi.mock("@/shared/config/env", () => {
       session: "/api/auth/session",
       logout: "/api/auth/logout",
     },
+    IS_MSW_ENABLED: false,
     resolveApiUrl: vi.fn((path: string) => path),
   };
 });

@@ -76,7 +76,8 @@ export const authHandlers = [
     const safeRedirect = resolveRedirectFromUrl(request.url);
     const session = DEFAULT_SESSION;
     const headers = createLoginHeaders(session);
-    headers.set("Location", safeRedirect);
+    const redirectLocation = new URL(safeRedirect, request.url).toString();
+    headers.set("Location", redirectLocation);
 
     return new HttpResponse(null, {
       status: 302,
