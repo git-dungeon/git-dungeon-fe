@@ -17,18 +17,6 @@ const DEFAULT_SESSION: AuthSession = {
   avatarUrl: "https://avatars.githubusercontent.com/u/1?v=4",
 };
 
-function resolveSession(body: unknown): AuthSession {
-  if (!body || typeof body !== "object") {
-    return DEFAULT_SESSION;
-  }
-
-  const partial = body as Partial<AuthSession>;
-  return {
-    ...DEFAULT_SESSION,
-    ...partial,
-  } satisfies AuthSession;
-}
-
 function createAccessToken(session: AuthSession) {
   return `mock-access-${session.userId}-${Date.now()}`;
 }
@@ -59,6 +47,12 @@ function createLogoutHeaders() {
   return headers;
 }
 
+function resolveRedirectFromUrl(url: string): string {
+  const parsedUrl = new URL(url);
+  const redirectValue = parsedUrl.searchParams.get("redirect") ?? undefined;
+  return sanitizeRedirectPath(redirectValue, "/dashboard");
+}
+
 export const authHandlers = [
   http.get(AUTH_ENDPOINTS.session, ({ cookies }) => {
     if (cookies[MSW_AUTH_COOKIE_KEY] !== "1") {
@@ -78,36 +72,16 @@ export const authHandlers = [
       accessToken: createAccessToken(session),
     });
   }),
-  http.post(AUTH_ENDPOINTS.startGithubOAuth, async ({ request }) => {
-    try {
-      const rawBody = await request.json();
-      const redirectValue =
-        typeof rawBody === "object" && rawBody !== null && "redirect" in rawBody
-          ? (rawBody as Record<string, unknown>).redirect
-          : undefined;
-      const safeRedirect = sanitizeRedirectPath(
-        typeof redirectValue === "string" ? redirectValue : undefined,
-        "/dashboard"
-      );
-      const session = resolveSession(rawBody);
-      return HttpResponse.json(
-        {
-          session,
-          accessToken: createAccessToken(session),
-          redirect: safeRedirect,
-        },
-        { headers: createLoginHeaders(session) }
-      );
-    } catch {
-      return HttpResponse.json(
-        {
-          session: DEFAULT_SESSION,
-          accessToken: createAccessToken(DEFAULT_SESSION),
-          redirect: "/dashboard",
-        },
-        { headers: createLoginHeaders(DEFAULT_SESSION) }
-      );
-    }
+  http.get(AUTH_ENDPOINTS.startGithubOAuth, ({ request }) => {
+    const safeRedirect = resolveRedirectFromUrl(request.url);
+    const session = DEFAULT_SESSION;
+    const headers = createLoginHeaders(session);
+    headers.set("Location", safeRedirect);
+
+    return new HttpResponse(null, {
+      status: 302,
+      headers,
+    });
   }),
   http.post(AUTH_ENDPOINTS.logout, () => {
     return HttpResponse.json(

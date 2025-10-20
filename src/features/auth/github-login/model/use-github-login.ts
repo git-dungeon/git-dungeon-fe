@@ -11,12 +11,6 @@ const REDIRECT_BROWSER_REQUIRED_MESSAGE =
 const REDIRECT_GENERIC_ERROR_MESSAGE =
   "로그인 중 문제가 발생했습니다. 잠시 후 다시 시도하세요.";
 
-/**
- * @deprecated 팝업 기반 로그인 로직 제거에 따라 더 이상 사용되지 않습니다.
- *             추후 테스트 리팩터링 단계에서 정리될 예정입니다.
- */
-export const GITHUB_POPUP_MESSAGE_CHANNEL = "git-dungeon:auth:github";
-
 function buildGithubRedirectUrl(safeRedirect: string): string {
   const resolved = resolveApiUrl(AUTH_ENDPOINTS.startGithubOAuth);
 

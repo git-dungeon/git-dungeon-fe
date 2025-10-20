@@ -16,29 +16,17 @@ export async function startMockServiceWorker() {
   if (typeof window !== "undefined") {
     window.__mswAuth = {
       login: async (session?: Partial<AuthSession>) => {
-        const response = await fetch(AUTH_ENDPOINTS.startGithubOAuth, {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(session ?? {}),
-        });
+        const resolvedSession: AuthSession = {
+          userId: session?.userId ?? "user-123",
+          username: session?.username ?? "mock-user",
+          displayName: session?.displayName ?? "Mocked Adventurer",
+          avatarUrl:
+            session?.avatarUrl ??
+            "https://avatars.githubusercontent.com/u/1?v=4",
+        };
 
-        try {
-          const json = (await response.json()) as {
-            session?: AuthSession;
-            accessToken?: string;
-          };
-          if (json.session) {
-            writeAuthCookies(json.session);
-          }
-          if (json.accessToken) {
-            authStore.setAccessToken(json.accessToken);
-          }
-        } catch {
-          // ignore
-        }
+        writeAuthCookies(resolvedSession);
+        authStore.setAccessToken(`mock-access-${resolvedSession.userId}`);
       },
       logout: async () => {
         await fetch(AUTH_ENDPOINTS.logout, {
