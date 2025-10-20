@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { GithubLoginButton } from "@/features/auth/github-login/ui/github-login-button";
 import { useAuthSession } from "@/entities/auth/model/use-auth-session";
@@ -29,12 +29,21 @@ export function LoginContent({ safeRedirect }: LoginContentProps) {
   const sessionQuery = useAuthSession();
   const session = sessionQuery.data ?? null;
   const [loginError, setLoginError] = useState<string | null>(null);
+  const hasRefetchedSessionRef = useRef(false);
+  const {
+    isSuccess,
+    isFetching: sessionIsFetching,
+    isRefetching: sessionIsRefetching,
+    refetch: refetchSession,
+  } = sessionQuery;
 
   const isPending =
     (sessionQuery as { isPending?: boolean }).isPending ?? false;
-  const isFetching = sessionQuery.isFetching ?? false;
+  const isFetching = sessionIsFetching ?? false;
   const isRefetching =
-    (sessionQuery as { isRefetching?: boolean }).isRefetching ?? false;
+    (sessionQuery as { isRefetching?: boolean }).isRefetching ??
+    sessionIsRefetching ??
+    false;
 
   const isCheckingServer = isPending || isFetching || isRefetching;
   const isServerUnavailable = Boolean(sessionQuery.isError);
@@ -55,6 +64,28 @@ export function LoginContent({ safeRedirect }: LoginContentProps) {
     }
     return null;
   }, [isCheckingServer, isServerUnavailable, loginError]);
+
+  useEffect(() => {
+    if (hasRefetchedSessionRef.current) {
+      return;
+    }
+    if (!isSuccess || session !== null) {
+      return;
+    }
+    if (sessionIsFetching || sessionIsRefetching) {
+      return;
+    }
+    hasRefetchedSessionRef.current = true;
+    refetchSession().catch(() => {
+      // ignore refetch errors; 상태 메시지로 안내
+    });
+  }, [
+    isSuccess,
+    session,
+    sessionIsFetching,
+    sessionIsRefetching,
+    refetchSession,
+  ]);
 
   useEffect(() => {
     if (!session) {

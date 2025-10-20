@@ -64,6 +64,11 @@ export function useGithubLogin(options: UseGithubLoginOptions = {}) {
       processingRef.current = false;
       setIsLoading(false);
       throw nextError;
+    } finally {
+      // 네비게이션이 정상적으로 이루어지면 컴포넌트 언마운트 전까지는 잠시 로딩 상태가 유지될 수 있다.
+      // 테스트 환경이나 네비게이션이 차단된 상황을 위해 상태를 원복한다.
+      processingRef.current = false;
+      setIsLoading(false);
     }
   }, [redirectTo]);
 
