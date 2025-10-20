@@ -12,11 +12,14 @@ export const Route = createFileRoute("/login")({
   validateSearch: (search: Record<string, unknown>): LoginSearch => ({
     redirect: typeof search.redirect === "string" ? search.redirect : undefined,
   }),
-  beforeLoad: ({ context, location, search }) =>
-    context.auth.redirectIfAuthenticated({
+  beforeLoad: ({ context, location, search }) => {
+    const safeRedirect = sanitizeRedirectPath(search.redirect, "/dashboard");
+
+    return context.auth.redirectIfAuthenticated({
       location,
-      redirectTo: search.redirect,
-    }),
+      redirectTo: safeRedirect,
+    });
+  },
   component: LoginRoute,
 });
 

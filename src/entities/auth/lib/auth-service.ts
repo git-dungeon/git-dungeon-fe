@@ -84,8 +84,27 @@ export function createAuthService(queryClient: QueryClient): AuthService {
         throw error;
       }
       if (session) {
+        const resolvedRedirect = redirectTo ?? resolveRedirectTarget(location);
+
+        if (import.meta.env.DEV) {
+          console.debug("[auth.redirectIfAuthenticated]", {
+            reason: "session-exists",
+            redirectTo,
+            resolvedRedirect,
+            location: {
+              pathname: location.pathname,
+              search: location.searchStr,
+              hash: location.hash,
+            },
+            user: {
+              id: session.userId,
+              username: session.username,
+            },
+          });
+        }
+
         throw redirect({
-          to: redirectTo ?? resolveRedirectTarget(location),
+          to: resolvedRedirect,
         });
       }
     },
