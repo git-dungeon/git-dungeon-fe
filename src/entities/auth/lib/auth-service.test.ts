@@ -166,10 +166,47 @@ describe("createAuthService", () => {
     });
   });
 
+  it("authorize는 세션 API 오류 발생 시 로그인 경로로 redirect하고 액세스 토큰을 초기화한다", async () => {
+    const queryClient = createMockQueryClient();
+    const service = createAuthService(queryClient);
+    queryClient.ensureQueryData = vi
+      .fn()
+      .mockRejectedValue(new Error("Internal Server Error"));
+
+    authStore.setAccessToken("server-token");
+
+    await expect(
+      service.authorize({
+        location: createLocation("/protected"),
+        redirectTo: "/logs",
+      })
+    ).rejects.toMatchObject({
+      message: "redirect",
+      __redirect: expect.objectContaining({ to: "/login" }),
+    });
+
+    expect(authStore.getAccessToken()).toBeUndefined();
+  });
+
   it("redirectIfAuthenticated는 네트워크 오류 발생 시 에러 없이 종료한다", async () => {
     const queryClient = createMockQueryClient();
     const service = createAuthService(queryClient);
     queryClient.ensureQueryData = vi.fn().mockRejectedValue(new NetworkError());
+
+    await expect(
+      service.redirectIfAuthenticated({
+        location: createLocation("/login"),
+        redirectTo: "/dashboard",
+      })
+    ).resolves.toBeUndefined();
+  });
+
+  it("redirectIfAuthenticated는 세션 API 오류 발생 시 에러 없이 종료한다", async () => {
+    const queryClient = createMockQueryClient();
+    const service = createAuthService(queryClient);
+    queryClient.ensureQueryData = vi
+      .fn()
+      .mockRejectedValue(new Error("Internal Server Error"));
 
     await expect(
       service.redirectIfAuthenticated({

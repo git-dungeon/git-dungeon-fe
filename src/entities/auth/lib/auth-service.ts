@@ -44,7 +44,24 @@ function resolveRedirectTarget(location: ParsedLocation, fallback?: string) {
 export function createAuthService(queryClient: QueryClient): AuthService {
   return {
     async ensureSession() {
-      return queryClient.ensureQueryData(authSessionQueryOptions);
+      try {
+        return await queryClient.ensureQueryData(authSessionQueryOptions);
+      } catch (error) {
+        if (error instanceof NetworkError) {
+          throw error;
+        }
+
+        authStore.clear();
+
+        if (import.meta.env.DEV) {
+          console.debug("[auth.ensureSession]", {
+            reason: "session-fetch-failed",
+            error,
+          });
+        }
+
+        return null;
+      }
     },
     async authorize({ location, redirectTo }: AuthorizeParams) {
       let session: AuthSession | null;
