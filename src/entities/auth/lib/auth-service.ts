@@ -39,6 +39,46 @@ function resolveRedirectTarget(location: ParsedLocation, fallback?: string) {
   return locationPath;
 }
 
+function extractAuthError(location: ParsedLocation): string | null {
+  const searchStr = location.searchStr;
+  if (!searchStr || !searchStr.includes("authError=")) {
+    return null;
+  }
+
+  try {
+    const params = new URLSearchParams(searchStr);
+    const value = params.get("authError");
+    return value ?? null;
+  } catch {
+    return null;
+  }
+}
+
+function stripAuthErrorParam(path: string): string {
+  if (!path || !path.includes("authError")) {
+    return path;
+  }
+
+  try {
+    const base = "http://local";
+    const url = new URL(path, base);
+    url.searchParams.delete("authError");
+    const search = url.searchParams.toString();
+    const hash = url.hash ?? "";
+    const pathname = url.pathname;
+    return `${pathname}${search ? `?${search}` : ""}${hash}`;
+  } catch {
+    const hashIndex = path.indexOf("#");
+    const basePart = hashIndex >= 0 ? path.slice(0, hashIndex) : path;
+    const hashPart = hashIndex >= 0 ? path.slice(hashIndex) : "";
+    const [pathname, rawSearch = ""] = basePart.split("?");
+    const params = new URLSearchParams(rawSearch);
+    params.delete("authError");
+    const search = params.toString();
+    return `${pathname}${search ? `?${search}` : ""}${hashPart}`;
+  }
+}
+
 export function createAuthService(queryClient: QueryClient): AuthService {
   return {
     async ensureSession() {
@@ -60,6 +100,21 @@ export function createAuthService(queryClient: QueryClient): AuthService {
       }
     },
     async authorize({ location, redirectTo }: AuthorizeParams) {
+      const authError = extractAuthError(location);
+      if (authError) {
+        const resolvedRedirect = stripAuthErrorParam(
+          resolveRedirectTarget(location, redirectTo)
+        );
+
+        throw redirect({
+          to: "/login",
+          search: {
+            redirect: resolvedRedirect,
+            authError,
+          },
+        });
+      }
+
       let session: AuthSession | null;
       try {
         session = await this.ensureSession();
@@ -76,7 +131,9 @@ export function createAuthService(queryClient: QueryClient): AuthService {
           to: "/login",
           search: (prev) => ({
             ...prev,
-            redirect: resolveRedirectTarget(location, redirectTo),
+            redirect: stripAuthErrorParam(
+              resolveRedirectTarget(location, redirectTo)
+            ),
           }),
         });
       }
@@ -97,7 +154,9 @@ export function createAuthService(queryClient: QueryClient): AuthService {
         throw error;
       }
       if (session) {
-        const resolvedRedirect = redirectTo ?? resolveRedirectTarget(location);
+        const resolvedRedirect = stripAuthErrorParam(
+          redirectTo ?? resolveRedirectTarget(location)
+        );
 
         if (import.meta.env.DEV) {
           console.debug("[auth.redirectIfAuthenticated]", {

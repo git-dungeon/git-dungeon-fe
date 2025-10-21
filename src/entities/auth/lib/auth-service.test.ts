@@ -25,13 +25,25 @@ function createMockQueryClient() {
   } as unknown as QueryClient;
 }
 
-function createLocation(pathname = "/dashboard"): ParsedLocation {
+function createLocation(
+  pathname = "/dashboard",
+  searchStr?: string
+): ParsedLocation {
+  let actualPath = pathname;
+  let actualSearchStr = searchStr ?? "";
+
+  if (!searchStr && pathname.includes("?")) {
+    const [pathPart, queryPart] = pathname.split("?");
+    actualPath = pathPart;
+    actualSearchStr = queryPart ? `?${queryPart}` : "";
+  }
+
   return {
-    pathname,
-    path: pathname,
-    href: pathname,
+    pathname: actualPath,
+    path: actualPath,
+    href: `${actualPath}${actualSearchStr}`,
     search: {},
-    searchStr: "",
+    searchStr: actualSearchStr,
     hash: "",
     state: undefined,
     key: "test",
@@ -97,6 +109,28 @@ describe("createAuthService", () => {
     });
   });
 
+  it("authorize는 authError가 존재하면 로그인 경로로 redirect하며 코드와 redirect 정보를 전달한다", async () => {
+    const queryClient = createMockQueryClient();
+    const service = createAuthService(queryClient);
+    const location = createLocation(
+      "/dashboard",
+      "?authError=AUTH_PROVIDER_DENIED&view=latest"
+    );
+
+    await expect(service.authorize({ location })).rejects.toMatchObject({
+      message: "redirect",
+      __redirect: expect.objectContaining({
+        to: "/login",
+        search: {
+          redirect: "/dashboard?view=latest",
+          authError: "AUTH_PROVIDER_DENIED",
+        },
+      }),
+    });
+
+    expect(queryClient.ensureQueryData).not.toHaveBeenCalled();
+  });
+
   it("authorize는 세션이 있으면 세션 객체를 반환한다", async () => {
     const queryClient = createMockQueryClient();
     const service = createAuthService(queryClient);
@@ -131,6 +165,28 @@ describe("createAuthService", () => {
       __redirect: expect.objectContaining({
         to: "/dashboard",
       }),
+    });
+  });
+
+  it("redirectIfAuthenticated는 authError 쿼리를 제거한 뒤 리다이렉트한다", async () => {
+    const queryClient = createMockQueryClient();
+    const service = createAuthService(queryClient);
+    queryClient.ensureQueryData = vi.fn().mockResolvedValue({
+      userId: "user-1",
+      username: "tester",
+      email: "tester@example.com",
+    } satisfies AuthSession);
+
+    await expect(
+      service.redirectIfAuthenticated({
+        location: createLocation(
+          "/dashboard",
+          "?authError=AUTH_PROVIDER_ERROR&view=latest"
+        ),
+      })
+    ).rejects.toMatchObject({
+      message: "redirect",
+      __redirect: expect.objectContaining({ to: "/dashboard?view=latest" }),
     });
   });
 

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { GithubLoginButton } from "@/features/auth/github-login/ui/github-login-button";
 import { useAuthSession } from "@/entities/auth/model/use-auth-session";
@@ -6,11 +6,37 @@ import { sanitizeRedirectPath } from "@/shared/lib/navigation/sanitize-redirect-
 
 interface LoginSearch {
   redirect?: string;
+  authError?: string;
+}
+
+const AUTH_ERROR_MESSAGES: Record<string, string> = {
+  AUTH_PROVIDER_DENIED:
+    "GitHub 로그인 요청이 취소되었습니다. 다시 시도해주세요.",
+  AUTH_REDIRECT_INVALID: "로그인 요청이 만료되었습니다. 다시 시도해주세요.",
+  AUTH_SESSION_EXPIRED:
+    "세션이 만료되었습니다. 다시 로그인해 Git Dungeon을 계속하세요.",
+  AUTH_SESSION_INVALID: "로그인 세션이 유효하지 않습니다. 다시 로그인해주세요.",
+  AUTH_PROVIDER_ERROR:
+    "로그인 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.",
+};
+
+function resolveAuthErrorMessage(code?: string | null): string | null {
+  if (!code) {
+    return null;
+  }
+
+  const normalized = code.toUpperCase();
+  return (
+    AUTH_ERROR_MESSAGES[normalized] ??
+    "로그인 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요."
+  );
 }
 
 export const Route = createFileRoute("/login")({
   validateSearch: (search: Record<string, unknown>): LoginSearch => ({
     redirect: typeof search.redirect === "string" ? search.redirect : undefined,
+    authError:
+      typeof search.authError === "string" ? search.authError : undefined,
   }),
   beforeLoad: ({ context, location, search }) => {
     const safeRedirect = sanitizeRedirectPath(search.redirect, "/dashboard");
@@ -25,13 +51,19 @@ export const Route = createFileRoute("/login")({
 
 interface LoginContentProps {
   safeRedirect: string;
+  authErrorCode?: string;
 }
 
-export function LoginContent({ safeRedirect }: LoginContentProps) {
+export function LoginContent({
+  safeRedirect,
+  authErrorCode,
+}: LoginContentProps) {
   const navigate = useNavigate();
   const sessionQuery = useAuthSession();
   const session = sessionQuery.data ?? null;
-  const [loginError, setLoginError] = useState<string | null>(null);
+  const [loginError, setLoginError] = useState<string | null>(() =>
+    resolveAuthErrorMessage(authErrorCode)
+  );
   const hasRefetchedSessionRef = useRef(false);
   const {
     isSuccess,
@@ -47,6 +79,28 @@ export function LoginContent({ safeRedirect }: LoginContentProps) {
     (sessionQuery as { isRefetching?: boolean }).isRefetching ??
     sessionIsRefetching ??
     false;
+
+  useEffect(() => {
+    if (!authErrorCode) {
+      return;
+    }
+    setLoginError(resolveAuthErrorMessage(authErrorCode));
+  }, [authErrorCode]);
+
+  const clearAuthError = useCallback(() => {
+    const updateNavigate = navigate as unknown as (options: {
+      search: (prev: LoginSearch) => LoginSearch;
+      replace?: boolean;
+    }) => void;
+
+    updateNavigate({
+      search: (prev) => ({
+        ...prev,
+        authError: undefined,
+      }),
+      replace: true,
+    });
+  }, [navigate]);
 
   const isCheckingServer = isPending || isFetching || isRefetching;
   const isServerUnavailable = Boolean(sessionQuery.isError);
@@ -111,7 +165,12 @@ export function LoginContent({ safeRedirect }: LoginContentProps) {
       <div className="flex w-full flex-col gap-3">
         <GithubLoginButton
           redirectTo={safeRedirect}
-          onLoginStart={() => setLoginError(null)}
+          onLoginStart={() => {
+            if (authErrorCode) {
+              clearAuthError();
+            }
+            setLoginError(null);
+          }}
           onLoginError={(error) => setLoginError(error.message)}
           disabled={isButtonDisabled}
         >
@@ -143,7 +202,7 @@ export function LoginContent({ safeRedirect }: LoginContentProps) {
 }
 
 function LoginRoute() {
-  const { redirect } = Route.useSearch();
+  const { redirect, authError } = Route.useSearch();
   const safeRedirect = sanitizeRedirectPath(redirect, "/dashboard");
-  return <LoginContent safeRedirect={safeRedirect} />;
+  return <LoginContent safeRedirect={safeRedirect} authErrorCode={authError} />;
 }

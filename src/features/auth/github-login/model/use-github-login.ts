@@ -74,10 +74,7 @@ export function useGithubLogin(options: UseGithubLoginOptions = {}) {
 
       if (IS_MSW_ENABLED && window.__mswAuth) {
         await window.__mswAuth.login();
-        window.location.assign(safeRedirect);
-        return;
       }
-
       window.location.assign(targetUrl);
     } catch (rawError) {
       const nextError =

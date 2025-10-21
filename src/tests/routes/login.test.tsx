@@ -57,6 +57,7 @@ describe("/login 화면", () => {
   beforeEach(() => {
     loginMock.mockReset();
     navigateMock.mockReset();
+    loginMock.mockResolvedValue(undefined);
     useGithubLoginMock.mockReturnValue({
       login: loginMock,
       isLoading: false,
@@ -167,6 +168,41 @@ describe("/login 화면", () => {
     expect(spinner).not.toBeNull();
     expect(spinner?.className).toContain("animate-spin");
     expect(button.textContent).toContain("GitHub로 계속하기");
+
+    unmount();
+  });
+
+  it("authError 파라미터가 전달되면 메시지를 표시하고 재시도 시 쿼리를 제거한다", async () => {
+    const { container, unmount } = render(
+      <LoginContent safeRedirect="/logs" authErrorCode="AUTH_PROVIDER_DENIED" />
+    );
+
+    const alertElement = container.querySelector('[role="alert"]');
+    expect(alertElement).not.toBeNull();
+    expect(alertElement?.textContent).toBe(
+      "GitHub 로그인 요청이 취소되었습니다. 다시 시도해주세요."
+    );
+
+    const button = container.querySelector("button") as HTMLButtonElement;
+    await act(async () => {
+      button.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+
+    expect(navigateMock).toHaveBeenCalledTimes(1);
+    const [navigationArgs] = navigateMock.mock.calls;
+    const navigateOptions = (navigationArgs?.[0] ?? {}) as {
+      replace?: boolean;
+      search?: (prev: { redirect?: string; authError?: string }) => {
+        redirect?: string;
+        authError?: string;
+      };
+    };
+    expect(navigateOptions.replace).toBe(true);
+    const updatedSearch = navigateOptions.search?.({
+      redirect: "/logs",
+      authError: "AUTH_PROVIDER_DENIED",
+    });
+    expect(updatedSearch).toEqual({ redirect: "/logs", authError: undefined });
 
     unmount();
   });
