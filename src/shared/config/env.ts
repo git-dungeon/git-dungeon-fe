@@ -105,6 +105,7 @@ if (!API_BASE_URL && !IS_VITEST_ENV && import.meta.env.PROD) {
 
 export const AUTH_ENDPOINTS = {
   startGithubOAuth: "/auth/github",
+  completeGithubRedirect: "/auth/github/redirect",
   session: "/api/auth/session",
   logout: "/api/auth/logout",
 } as const;

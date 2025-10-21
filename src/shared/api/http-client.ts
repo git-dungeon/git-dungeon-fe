@@ -347,6 +347,7 @@ export async function requestWithSchema<TSchema extends z.ZodTypeAny>(
 ): Promise<z.infer<TSchema>> {
   const { mapData, ...requestConfig } = config;
   const raw = await httpRequest<unknown>(path, requestConfig);
+
   const responseSchema = createApiResponseSchema(schema);
   const parsed = responseSchema.safeParse(raw);
 

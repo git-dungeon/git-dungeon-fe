@@ -2,14 +2,13 @@ import { http } from "msw";
 import { describe, expect, it, vi } from "vitest";
 import { AUTH_ENDPOINTS } from "@/shared/config/env";
 import { getAuthSession } from "@/entities/auth/api/get-auth-session";
-import { authStore } from "@/entities/auth/model/access-token-store";
 import { respondWithError, respondWithSuccess } from "@/mocks/lib/api-response";
 import { server } from "@/mocks/tests/server";
 import * as httpClient from "@/shared/api/http-client";
 import { NetworkError } from "@/shared/api/http-client";
 
 describe("getAuthSession", () => {
-  it("세션 정보와 액세스 토큰을 저장한다", async () => {
+  it("세션 정보를 반환한다", async () => {
     server.use(
       http.get(AUTH_ENDPOINTS.session, () =>
         respondWithSuccess({
@@ -17,8 +16,9 @@ describe("getAuthSession", () => {
             userId: "test-user",
             username: "tester",
             displayName: "Tester",
+            email: "tester@example.com",
           },
-          accessToken: "token-123",
+          refreshed: false,
         })
       )
     );
@@ -29,12 +29,11 @@ describe("getAuthSession", () => {
       userId: "test-user",
       username: "tester",
       displayName: "Tester",
+      email: "tester@example.com",
     });
-    expect(authStore.getAccessToken()).toBe("token-123");
   });
 
-  it("401 응답 시 null을 반환하고 액세스 토큰을 초기화한다", async () => {
-    authStore.setAccessToken("stale-token");
+  it("401 응답 시 null을 반환한다", async () => {
     server.use(
       http.get(AUTH_ENDPOINTS.session, () =>
         respondWithError("Unauthorized", {
@@ -47,11 +46,9 @@ describe("getAuthSession", () => {
     const session = await getAuthSession();
 
     expect(session).toBeNull();
-    expect(authStore.getAccessToken()).toBeUndefined();
   });
 
-  it("success: false 응답 시 null을 반환하고 액세스 토큰을 초기화한다", async () => {
-    authStore.setAccessToken("stale-token");
+  it("success: false 응답 시 null을 반환한다", async () => {
     server.use(
       http.get(AUTH_ENDPOINTS.session, () =>
         respondWithError("TokenExpired", {
@@ -64,17 +61,14 @@ describe("getAuthSession", () => {
     const session = await getAuthSession();
 
     expect(session).toBeNull();
-    expect(authStore.getAccessToken()).toBeUndefined();
   });
 
-  it("네트워크 오류 시 NetworkError를 던지고 토큰을 초기화한다", async () => {
-    authStore.setAccessToken("stale-token");
+  it("네트워크 오류 시 NetworkError를 던진다", async () => {
     const requestWithSchemaSpy = vi
       .spyOn(httpClient, "requestWithSchema")
       .mockRejectedValueOnce(new NetworkError());
 
     await expect(getAuthSession()).rejects.toBeInstanceOf(NetworkError);
-    expect(authStore.getAccessToken()).toBeUndefined();
 
     requestWithSchemaSpy.mockRestore();
   });
