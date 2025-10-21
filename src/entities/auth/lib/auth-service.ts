@@ -5,7 +5,6 @@ import {
   authSessionQueryOptions,
 } from "@/entities/auth/model/auth-session-query";
 import type { AuthSession } from "@/entities/auth/model/types";
-import { authStore } from "@/entities/auth/model/access-token-store";
 import { sanitizeRedirectPath } from "@/shared/lib/navigation/sanitize-redirect-path";
 import { NetworkError } from "@/shared/api/http-client";
 
@@ -25,7 +24,6 @@ export interface AuthService {
   redirectIfAuthenticated(params: RedirectIfAuthenticatedParams): Promise<void>;
   setSession(session: AuthSession | null): void;
   invalidateSession(): Promise<void>;
-  setAccessToken(token?: string): void;
 }
 
 function resolveRedirectTarget(location: ParsedLocation, fallback?: string) {
@@ -50,8 +48,6 @@ export function createAuthService(queryClient: QueryClient): AuthService {
         if (error instanceof NetworkError) {
           throw error;
         }
-
-        authStore.clear();
 
         if (import.meta.env.DEV) {
           console.debug("[auth.ensureSession]", {
@@ -127,17 +123,10 @@ export function createAuthService(queryClient: QueryClient): AuthService {
     },
     setSession(session) {
       queryClient.setQueryData(AUTH_SESSION_QUERY_KEY, session);
-      if (!session) {
-        authStore.clear();
-      }
     },
     async invalidateSession() {
       queryClient.setQueryData(AUTH_SESSION_QUERY_KEY, null);
       await queryClient.invalidateQueries({ queryKey: AUTH_SESSION_QUERY_KEY });
-      authStore.clear();
-    },
-    setAccessToken(token) {
-      authStore.setAccessToken(token);
     },
   };
 }

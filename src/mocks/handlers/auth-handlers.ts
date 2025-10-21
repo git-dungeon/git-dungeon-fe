@@ -15,11 +15,8 @@ const DEFAULT_SESSION: AuthSession = {
   username: "mock-user",
   displayName: "Mocked Adventurer",
   avatarUrl: "https://avatars.githubusercontent.com/u/1?v=4",
+  email: "mock-user@example.com",
 };
-
-function createAccessToken(session: AuthSession) {
-  return `mock-access-${session.userId}-${Date.now()}`;
-}
 
 function createLoginHeaders(session: AuthSession) {
   const headers = new Headers();
@@ -69,15 +66,14 @@ export const authHandlers = [
 
     return respondWithSuccess({
       session,
-      accessToken: createAccessToken(session),
+      refreshed: false,
     });
   }),
   http.get(AUTH_ENDPOINTS.startGithubOAuth, ({ request }) => {
     const safeRedirect = resolveRedirectFromUrl(request.url);
     const session = DEFAULT_SESSION;
     const headers = createLoginHeaders(session);
-    const redirectLocation = new URL(safeRedirect, request.url).toString();
-    headers.set("Location", redirectLocation);
+    headers.set("Location", safeRedirect);
 
     return new HttpResponse(null, {
       status: 302,

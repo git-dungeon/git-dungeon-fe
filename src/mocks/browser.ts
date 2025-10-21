@@ -6,7 +6,6 @@ import {
   clearAuthCookies,
   writeAuthCookies,
 } from "@/entities/auth/lib/auth-cookie";
-import { authStore } from "@/entities/auth/model/access-token-store";
 
 export const worker = setupWorker(...handlers);
 
@@ -19,6 +18,7 @@ export async function startMockServiceWorker() {
         const resolvedSession: AuthSession = {
           userId: session?.userId ?? "user-123",
           username: session?.username ?? "mock-user",
+          email: session?.email ?? "mock-user@example.com",
           displayName: session?.displayName ?? "Mocked Adventurer",
           avatarUrl:
             session?.avatarUrl ??
@@ -26,7 +26,6 @@ export async function startMockServiceWorker() {
         };
 
         writeAuthCookies(resolvedSession);
-        authStore.setAccessToken(`mock-access-${resolvedSession.userId}`);
       },
       logout: async () => {
         await fetch(AUTH_ENDPOINTS.logout, {
@@ -35,7 +34,6 @@ export async function startMockServiceWorker() {
         });
 
         clearAuthCookies();
-        authStore.clear();
       },
       status: async () => {
         const response = await fetch(AUTH_ENDPOINTS.session, {
@@ -47,13 +45,18 @@ export async function startMockServiceWorker() {
         }
 
         const json = (await response.json()) as {
-          session?: AuthSession;
-          accessToken?: string;
+          success?: boolean;
+          data?: {
+            session?: AuthSession | null;
+            refreshed?: boolean;
+          };
         };
-        if (json.accessToken) {
-          authStore.setAccessToken(json.accessToken);
+
+        if (!json.success) {
+          return null;
         }
-        return json.session ?? null;
+
+        return json.data?.session ?? null;
       },
     };
   }
@@ -63,8 +66,8 @@ declare global {
   interface Window {
     __mswAuth?: {
       login: (session?: Partial<AuthSession>) => Promise<void>;
-      logout: () => Promise<void>;
-      status: () => Promise<AuthSession | null>;
+      logout?: () => Promise<void>;
+      status?: () => Promise<AuthSession | null>;
     };
   }
 }

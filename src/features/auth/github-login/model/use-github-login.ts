@@ -43,6 +43,8 @@ declare global {
   interface Window {
     __mswAuth?: {
       login: (session?: Partial<AuthSession>) => Promise<void>;
+      logout?: () => Promise<void>;
+      status?: () => Promise<AuthSession | null>;
     };
   }
 }
