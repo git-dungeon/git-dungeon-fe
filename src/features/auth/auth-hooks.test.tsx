@@ -35,6 +35,7 @@ vi.mock("@/shared/config/env", () => {
   return {
     AUTH_ENDPOINTS: {
       startGithubOAuth: "/auth/github",
+      completeGithubRedirect: "/auth/github/redirect",
       session: "/api/auth/session",
       logout: "/api/auth/logout",
     },
