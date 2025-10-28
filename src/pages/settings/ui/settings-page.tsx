@@ -46,10 +46,8 @@ export function SettingsPage() {
         </Button>
       </header>
 
-      {settingsQuery.isError ? renderErrorBanner(handleRetry) : null}
-
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-        {renderProfileSection(settingsQuery)}
+        {renderProfileSection(settingsQuery, handleRetry)}
         <SettingsPreferencesCard />
       </div>
 
@@ -59,7 +57,8 @@ export function SettingsPage() {
 }
 
 function renderProfileSection(
-  query: ReturnType<typeof useProfile>
+  query: ReturnType<typeof useProfile>,
+  onRetry: () => Promise<unknown>
 ): JSX.Element {
   if (query.isLoading) {
     return (
@@ -86,19 +85,22 @@ function renderProfileSection(
     );
   }
 
-  if (!query.data) {
+  if (query.isError || !query.data) {
     return (
-      <Card>
+      <Card className="bg-destructive/5 text-destructive border-destructive/20">
         <CardHeader>
           <CardTitle>계정 정보</CardTitle>
-          <CardDescription>세션 정보를 불러올 수 없습니다.</CardDescription>
+          <CardDescription>
+            설정 정보를 불러오지 못했습니다. 다시 시도해 주세요.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Button
             type="button"
-            variant="secondary"
-            className="gap-2"
-            onClick={() => void query.refetch()}
+            variant="destructive"
+            size="sm"
+            className="gap-2 text-white"
+            onClick={() => void onRetry()}
           >
             <RefreshCw className="size-4" aria-hidden />
             다시 시도
@@ -113,28 +115,5 @@ function renderProfileSection(
       profile={query.data.profile}
       connections={query.data.connections}
     />
-  );
-}
-
-function renderErrorBanner(onRetry: () => Promise<unknown>): JSX.Element {
-  return (
-    <div className="border-destructive/40 bg-destructive/10 text-destructive flex flex-wrap items-center justify-between gap-3 rounded-lg border px-4 py-3">
-      <div>
-        <p className="font-semibold">설정 정보를 불러오지 못했습니다.</p>
-        <p className="text-destructive/80 text-sm">
-          네트워크 상태를 확인한 뒤 다시 시도하세요.
-        </p>
-      </div>
-      <Button
-        type="button"
-        variant="destructive"
-        size="sm"
-        className="gap-2"
-        onClick={() => void onRetry()}
-      >
-        <RefreshCw className="size-4" aria-hidden />
-        다시 시도
-      </Button>
-    </div>
   );
 }

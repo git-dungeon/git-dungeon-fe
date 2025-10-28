@@ -8,14 +8,12 @@ export type {
 export const profileSchema = authSessionSchema.extend({
   email: z.string().optional(),
   joinedAt: z.string().optional(),
-  lastLoginAt: z.string().optional(),
 });
 export type Profile = z.infer<typeof profileSchema>;
 
 const profileGithubConnectionSchema = z.object({
   connected: z.boolean(),
   lastSyncAt: z.string().optional(),
-  profileUrl: z.string().optional(),
 });
 
 export const profileConnectionsSchema = z.object({

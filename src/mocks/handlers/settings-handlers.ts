@@ -18,13 +18,11 @@ const mockProfileOverview = {
     email: "mocked.adventurer@example.com",
     avatarUrl: "https://avatars.githubusercontent.com/u/1?v=4",
     joinedAt: "2023-11-02T12:00:00.000Z",
-    lastLoginAt: mockTimestampMinutesAgo(25),
   },
   connections: {
     github: {
       connected: true,
       lastSyncAt: mockTimestampMinutesAgo(45),
-      profileUrl: "https://github.com/mock-user",
     },
   },
 };

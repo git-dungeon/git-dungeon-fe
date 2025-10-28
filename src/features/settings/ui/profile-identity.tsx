@@ -15,6 +15,9 @@ export function ProfileIdentity({ profile }: ProfileIdentityProps) {
           {profile.displayName ?? profile.username}
         </p>
         <p className="text-muted-foreground text-sm">@{profile.username}</p>
+        {profile.email ? (
+          <p className="text-muted-foreground text-xs">{profile.email}</p>
+        ) : null}
       </div>
     </div>
   );
