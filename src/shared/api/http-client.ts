@@ -1,14 +1,12 @@
 import ky, { HTTPError, type KyInstance, type Options } from "ky";
 import { z } from "zod";
 import { EFFECTIVE_API_BASE_URL } from "@/shared/config/env";
-import { getAccessTokenFromProvider } from "@/shared/api/access-token-provider";
 import {
   createApiResponseSchema,
   formatZodError,
   type ApiResponse,
 } from "@/shared/api/api-response";
 
-const SKIP_AUTH_HEADER = "x-skip-auth";
 const REFRESH_ATTEMPT_HEADER = "x-refresh-attempted";
 const AUTH_REFRESH_ENDPOINT_SEGMENT = "/auth/refresh";
 
@@ -53,44 +51,36 @@ export class NetworkError extends Error {
   }
 }
 
-export type AccessTokenProvider = () => string | undefined;
-export type RefreshTokenHandler = () => Promise<boolean>;
+export type RefreshSessionHandler = () => Promise<boolean>;
 export type ClearSessionHandler = () => void;
 
 interface AuthenticationHandlers {
-  getAccessToken: AccessTokenProvider | null;
-  refreshAccessToken: RefreshTokenHandler | null;
+  refreshSession: RefreshSessionHandler | null;
   clearSession: ClearSessionHandler | null;
 }
 
 interface ConfigureAuthenticationOptions {
-  getAccessToken?: AccessTokenProvider;
-  refreshAccessToken?: RefreshTokenHandler;
+  refreshSession?: RefreshSessionHandler;
   clearSession?: ClearSessionHandler;
 }
 
 const authenticationHandlers: AuthenticationHandlers = {
-  getAccessToken: () => getAccessTokenFromProvider(),
-  refreshAccessToken: null,
+  refreshSession: null,
   clearSession: null,
 };
 
 export function configureApiClientAuthentication({
-  getAccessToken,
-  refreshAccessToken,
+  refreshSession,
   clearSession,
 }: ConfigureAuthenticationOptions = {}): void {
-  authenticationHandlers.getAccessToken =
-    getAccessToken ?? authenticationHandlers.getAccessToken;
-  authenticationHandlers.refreshAccessToken =
-    refreshAccessToken ?? authenticationHandlers.refreshAccessToken;
+  authenticationHandlers.refreshSession =
+    refreshSession ?? authenticationHandlers.refreshSession;
   authenticationHandlers.clearSession =
     clearSession ?? authenticationHandlers.clearSession;
 }
 
 export function resetApiClientAuthentication(): void {
-  authenticationHandlers.getAccessToken = () => getAccessTokenFromProvider();
-  authenticationHandlers.refreshAccessToken = null;
+  authenticationHandlers.refreshSession = null;
   authenticationHandlers.clearSession = null;
 }
 
@@ -142,60 +132,34 @@ function hasRefreshAttempted(request: Request, options: Options): boolean {
 
 export const apiClient: KyInstance = baseClient.extend({
   hooks: {
-    beforeRequest: [
-      (request) => {
-        if (request.headers.get(SKIP_AUTH_HEADER) === "true") {
-          request.headers.delete(SKIP_AUTH_HEADER);
-          return;
-        }
-
-        const requestOrigin = new URL(request.url, DEFAULT_BASE_URL).origin;
-        if (requestOrigin !== DEFAULT_BASE_ORIGIN) {
-          return;
-        }
-
-        const accessToken = authenticationHandlers.getAccessToken?.();
-        if (accessToken) {
-          request.headers.set("Authorization", `Bearer ${accessToken}`);
-        }
-      },
-    ],
     afterResponse: [
       async (request, options, response) => {
         if (response.status !== 401) {
           return;
         }
 
-        const includeAuthOption = (
-          options as Options & { includeAuthToken?: boolean }
-        ).includeAuthToken;
-        const skipAuthHeader = request.headers.get(SKIP_AUTH_HEADER) === "true";
         const resolvedRequestUrl = new URL(request.url, DEFAULT_BASE_URL);
         const isExternalRequest =
           /^https?:/i.test(request.url) &&
           resolvedRequestUrl.origin !== DEFAULT_BASE_ORIGIN;
 
-        if (
-          skipAuthHeader ||
-          includeAuthOption === false ||
-          isExternalRequest
-        ) {
+        if (isExternalRequest) {
           return;
         }
 
-        const { refreshAccessToken, clearSession } = authenticationHandlers;
+        const { refreshSession, clearSession } = authenticationHandlers;
         const alreadyRefreshed = hasRefreshAttempted(request, options);
         const isRefreshRequest = request.url.includes(
           AUTH_REFRESH_ENDPOINT_SEGMENT
         );
 
-        if (alreadyRefreshed || isRefreshRequest || !refreshAccessToken) {
+        if (alreadyRefreshed || isRefreshRequest || !refreshSession) {
           clearSession?.();
           return;
         }
 
         try {
-          const succeeded = await refreshAccessToken();
+          const succeeded = await refreshSession();
           if (!succeeded) {
             clearSession?.();
             return;
@@ -225,31 +189,22 @@ export const apiClient: KyInstance = baseClient.extend({
 
 export interface HttpRequestConfig extends Options {
   parseAs?: "json" | "text" | "none";
-  includeAuthToken?: boolean;
 }
 
 export async function httpRequest<TResponse>(
   path: string,
   config: HttpRequestConfig = {}
 ): Promise<TResponse> {
-  const { parseAs = "json", includeAuthToken, headers, ...rest } = config;
+  const { parseAs = "json", headers, ...rest } = config;
 
   const isAbsoluteUrl = /^https?:/i.test(path);
   const requestPath = isAbsoluteUrl ? path : path.replace(/^\//, "");
   const headerOverride = toHeaders(headers);
 
-  if (includeAuthToken === false) {
-    headerOverride.set(SKIP_AUTH_HEADER, "true");
-  }
-
-  const requestOptions: Options & { includeAuthToken?: boolean } = {
+  const requestOptions: Options = {
     ...rest,
     headers: headerOverride,
   };
-
-  if (typeof includeAuthToken !== "undefined") {
-    requestOptions.includeAuthToken = includeAuthToken;
-  }
 
   try {
     const response = await apiClient(requestPath, requestOptions);

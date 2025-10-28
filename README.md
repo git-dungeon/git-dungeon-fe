@@ -25,19 +25,20 @@ pnpm dev
 
 ```env
 VITE_ENABLE_MSW=true
+VITE_API_BASE_URL=https://api.gitdungeon.com
 ```
 
 ## GitHub OAuth 연동 개요
 
 - 프런트엔드는 `/auth/github` 엔드포인트로 리다이렉트하여 로그인 플로우를 시작합니다.
-- 백엔드는 better-auth 기반으로 GitHub Authorization Code 교환과 Access/Refresh 토큰 발급을 전담합니다.
+- 백엔드는 better-auth 기반으로 GitHub Authorization Code 교환과 세션 쿠키 발급을 전담합니다.
 - 프런트엔드에서 별도 OAuth 환경 변수나 PKCE 설정은 필요하지 않습니다.
 - 리다이렉트 시 프런트에서 전달하는 쿼리 파라미터는 `redirect`(선택) 하나만 사용하며, 값은 `sanitizeRedirectPath`로 검증됩니다.
 - API 계약(공통 `ApiResponse` 스키마 준수):
-  - `GET /api/auth/session` → `{ success: true, data: { session?: AuthSession | null, accessToken?: string } }`
+  - `GET /api/auth/session` → `{ success: true, data: { session?: AuthSession | null } }`
   - `POST /api/auth/logout` → `{ success: true, data: { success: boolean } }`
 - 개발 및 프로덕션 모두 `GET /auth/github?redirect=/target` 리다이렉트로 로그인 흐름을 시작하며, MSW는 302 응답과 쿠키 설정을 모사해 팝업 없이 동일한 UX를 제공합니다.
-- 응답이 `success: false`이거나 401/403일 경우 프런트엔드는 세션/토큰을 초기화하고 로그인 페이지로 유도합니다.
+- 응답이 `success: false`이거나 401/403일 경우 프런트엔드는 세션을 초기화하고 로그인 페이지로 유도합니다.
 
 ## 코드 구조 요약
 
@@ -63,7 +64,7 @@ VITE_ENABLE_MSW=true
 ## API Error Handling 메모
 
 - `apiClient`는 `ky.create()/extend()` 기반 공통 클라이언트입니다.
-- `configureApiClientAuthentication`으로 액세스 토큰 공급자/새로고침 핸들러/세션 초기화를 주입합니다.
+- `configureApiClientAuthentication`으로 401 응답 시 재검증 로직(예: 세션 리프레시, 세션 정리)을 주입할 수 있습니다.
 - `requestWithSchema`/`httpGetWithSchema` 유틸은 응답을 받은 뒤 Zod 스키마와 공통 `ApiResponse` 구조를 동시에 검증합니다.
 - 검증 실패 시 `ApiError`가 발생하며, `status` 422 + Zod 이슈 목록을 `payload.issues`에 담습니다.
 - 서버가 `success: false`를 반환하면 `ApiError.payload.error`/`meta` 정보를 바탕으로 호출부가 분기 처리를 수행합니다.

@@ -2,12 +2,15 @@ import { http } from "msw";
 import { SETTINGS_ENDPOINTS } from "@/shared/config/env";
 import { mockDashboardResponse } from "@/mocks/handlers/dashboard-handlers";
 import { mockTimestampMinutesAgo } from "@/mocks/handlers/shared/time";
-import type { EmbeddingSize } from "@/entities/settings/model/types";
+import {
+  EMBED_PREVIEW_SIZE_VALUES,
+  type EmbedPreviewSize,
+} from "@/entities/embed/model/types";
 import { respondWithSuccess } from "@/mocks/lib/api-response";
 
 const DEFAULT_USER_ID = "user-123";
 
-const mockSettingsResponse = {
+const mockProfileOverview = {
   profile: {
     userId: DEFAULT_USER_ID,
     username: "mock-user",
@@ -15,27 +18,25 @@ const mockSettingsResponse = {
     email: "mocked.adventurer@example.com",
     avatarUrl: "https://avatars.githubusercontent.com/u/1?v=4",
     joinedAt: "2023-11-02T12:00:00.000Z",
-    lastLoginAt: mockTimestampMinutesAgo(25),
   },
   connections: {
     github: {
       connected: true,
       lastSyncAt: mockTimestampMinutesAgo(45),
-      profileUrl: "https://github.com/mock-user",
     },
   },
 };
 
-const EMBEDDING_SIZE_FALLBACK: EmbeddingSize = "compact";
-const EMBEDDING_SIZES: EmbeddingSize[] = ["compact", "square", "wide"];
+const EMBEDDING_SIZE_FALLBACK: EmbedPreviewSize = "compact";
+const EMBEDDING_SIZES = new Set<EmbedPreviewSize>(EMBED_PREVIEW_SIZE_VALUES);
 
-function resolveEmbeddingSize(rawSize?: string | null): EmbeddingSize {
+function resolveEmbeddingSize(rawSize?: string | null): EmbedPreviewSize {
   if (!rawSize) {
     return EMBEDDING_SIZE_FALLBACK;
   }
 
-  if (EMBEDDING_SIZES.includes(rawSize as EmbeddingSize)) {
-    return rawSize as EmbeddingSize;
+  if (EMBEDDING_SIZES.has(rawSize as EmbedPreviewSize)) {
+    return rawSize as EmbedPreviewSize;
   }
 
   return EMBEDDING_SIZE_FALLBACK;
@@ -79,7 +80,7 @@ function buildSpriteFromName(name: string): string {
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
 }
 
-function createMockEmbeddingPreview(size: EmbeddingSize) {
+function createMockEmbeddingPreview(size: EmbedPreviewSize) {
   const { state } = mockDashboardResponse;
   const equipment = createMockEquipmentPreview();
 
@@ -119,7 +120,7 @@ function createMockEmbeddingPreview(size: EmbeddingSize) {
 
 export const settingsHandlers = [
   http.get(SETTINGS_ENDPOINTS.profile, () => {
-    return respondWithSuccess({ settings: mockSettingsResponse });
+    return respondWithSuccess(mockProfileOverview);
   }),
   http.get(SETTINGS_ENDPOINTS.preview, ({ request }) => {
     const url = new URL(request.url);

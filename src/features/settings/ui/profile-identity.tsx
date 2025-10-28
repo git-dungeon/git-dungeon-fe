@@ -1,7 +1,7 @@
-import type { SettingsProfile } from "@/entities/settings/model/types";
+import type { Profile } from "@/entities/profile/model/types";
 
 interface ProfileIdentityProps {
-  profile: SettingsProfile;
+  profile: Profile;
 }
 
 export function ProfileIdentity({ profile }: ProfileIdentityProps) {
@@ -15,12 +15,15 @@ export function ProfileIdentity({ profile }: ProfileIdentityProps) {
           {profile.displayName ?? profile.username}
         </p>
         <p className="text-muted-foreground text-sm">@{profile.username}</p>
+        {profile.email ? (
+          <p className="text-muted-foreground text-xs">{profile.email}</p>
+        ) : null}
       </div>
     </div>
   );
 }
 
-function resolveInitials(profile: SettingsProfile): string {
+function resolveInitials(profile: Profile): string {
   const label = profile.displayName ?? profile.username ?? "?";
   return label
     .split(" ")

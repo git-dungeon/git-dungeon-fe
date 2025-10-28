@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react";
-import type { EmbeddingSize } from "@/entities/settings/model/types";
 import {
   Card,
   CardAction,
@@ -29,7 +28,7 @@ import {
 import { EMBEDDING_ENDPOINTS, resolveApiUrl } from "@/shared/config/env";
 
 const EMBEDDING_SIZE_OPTIONS: Array<{
-  value: EmbeddingSize;
+  value: EmbedPreviewSize;
   label: string;
   hint: string;
 }> = [
@@ -39,7 +38,7 @@ const EMBEDDING_SIZE_OPTIONS: Array<{
 ];
 
 export function SettingsEmbeddingPreviewCard() {
-  const [size, setSize] = useState<EmbeddingSize>("compact");
+  const [size, setSize] = useState<EmbedPreviewSize>("compact");
   const overview = useCharacterOverview();
   const { theme: themePreference, language: languagePreference } =
     useSettingsPreferences();
