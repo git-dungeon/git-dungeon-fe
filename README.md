@@ -25,6 +25,7 @@ pnpm dev
 
 ```env
 VITE_ENABLE_MSW=true
+VITE_API_BASE_URL=https://api.gitdungeon.com
 ```
 
 ## GitHub OAuth 연동 개요
