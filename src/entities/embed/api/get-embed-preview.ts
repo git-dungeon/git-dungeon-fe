@@ -34,10 +34,7 @@ export async function getEmbedPreview(
   try {
     const data = await requestWithSchema(
       `${EMBEDDING_ENDPOINTS.preview}?${search.toString()}`,
-      embedPreviewPayloadSchema,
-      {
-        includeAuthToken: false,
-      }
+      embedPreviewPayloadSchema
     );
 
     const generatedAt = data.generatedAt;

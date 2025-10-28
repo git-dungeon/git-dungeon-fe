@@ -1,6 +1,5 @@
 import { afterAll, afterEach, beforeAll } from "vitest";
 import { server } from "./server";
-import { resetAccessTokenProvider } from "@/shared/api/access-token-provider";
 import { resetApiClientAuthentication } from "@/shared/api/http-client";
 
 beforeAll(() => {
@@ -11,7 +10,6 @@ beforeAll(() => {
 
 afterEach(() => {
   server.resetHandlers();
-  resetAccessTokenProvider();
   resetApiClientAuthentication();
 });
 
