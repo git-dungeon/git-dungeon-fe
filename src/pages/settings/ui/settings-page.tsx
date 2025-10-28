@@ -15,11 +15,11 @@ import {
 } from "@/shared/ui/card";
 
 export function SettingsPage() {
-  const settingsQuery = useProfile();
+  const profileQuery = useProfile();
   const logoutMutation = useLogout();
 
   const handleLogout = () => logoutMutation.mutateAsync();
-  const handleRetry = () => settingsQuery.refetch();
+  const handleRetry = () => profileQuery.refetch();
 
   return (
     <section className="space-y-6">
@@ -47,7 +47,7 @@ export function SettingsPage() {
       </header>
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-        {renderProfileSection(settingsQuery, handleRetry)}
+        {renderProfileSection(profileQuery, handleRetry)}
         <SettingsPreferencesCard />
       </div>
 
