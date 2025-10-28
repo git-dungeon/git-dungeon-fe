@@ -1,6 +1,6 @@
 import { Loader2, LogOut, RefreshCw } from "lucide-react";
 import type { JSX } from "react";
-import { useSettings } from "@/entities/settings/model/use-settings";
+import { useProfile } from "@/entities/profile/model/use-profile";
 import { SettingsProfileCard } from "@/widgets/settings-profile/ui/settings-profile-card";
 import { SettingsPreferencesCard } from "@/widgets/settings-preferences/ui/settings-preferences-card";
 import { SettingsEmbeddingPreviewCard } from "@/widgets/settings-embedding/ui/settings-embedding-preview-card";
@@ -15,7 +15,7 @@ import {
 } from "@/shared/ui/card";
 
 export function SettingsPage() {
-  const settingsQuery = useSettings();
+  const settingsQuery = useProfile();
   const logoutMutation = useLogout();
 
   const handleLogout = () => logoutMutation.mutateAsync();
@@ -59,7 +59,7 @@ export function SettingsPage() {
 }
 
 function renderProfileSection(
-  query: ReturnType<typeof useSettings>
+  query: ReturnType<typeof useProfile>
 ): JSX.Element {
   if (query.isLoading) {
     return (

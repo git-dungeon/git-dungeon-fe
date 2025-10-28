@@ -123,7 +123,7 @@ export const INVENTORY_ENDPOINTS = {
 } as const;
 
 export const SETTINGS_ENDPOINTS = {
-  profile: "/api/settings",
+  profile: "/api/settings/profile",
   preview: "/api/settings/preview",
 } as const;
 

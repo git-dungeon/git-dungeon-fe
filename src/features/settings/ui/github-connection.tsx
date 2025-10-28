@@ -2,10 +2,10 @@ import { ExternalLink } from "lucide-react";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { cn } from "@/shared/lib/utils";
-import type { SettingsConnections } from "@/entities/settings/model/types";
+import type { ProfileConnections } from "@/entities/profile/model/types";
 
 interface GithubConnectionProps {
-  connections: SettingsConnections;
+  connections: ProfileConnections;
 }
 
 export function GithubConnection({ connections }: GithubConnectionProps) {

@@ -1,7 +1,7 @@
 import type {
-  SettingsConnections,
-  SettingsProfile,
-} from "@/entities/settings/model/types";
+  ProfileConnections,
+  Profile,
+} from "@/entities/profile/model/types";
 import {
   Card,
   CardContent,
@@ -15,8 +15,8 @@ import { GithubConnection } from "@/features/settings/ui/github-connection";
 import { ProfileFieldList } from "@/features/settings/ui/profile-field-list";
 
 interface SettingsProfileCardProps {
-  profile: SettingsProfile;
-  connections: SettingsConnections;
+  profile: Profile;
+  connections: ProfileConnections;
 }
 
 export function SettingsProfileCard({
