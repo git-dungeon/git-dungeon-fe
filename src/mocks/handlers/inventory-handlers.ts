@@ -496,34 +496,33 @@ const EMPTY_EQUIPPED: InventoryEquippedMap = {
   ring: null,
 };
 
-function setDashboardSlot(slot: EquipmentSlot, item: InventoryItem | null) {
-  const normalized = item
-    ? {
-        id: item.id,
-        name: item.name,
-        slot: item.slot,
-        rarity: item.rarity,
-        modifiers: item.modifiers,
-        effect: item.effect ? { ...item.effect } : undefined,
-      }
-    : undefined;
-
-  switch (slot) {
-    case "helmet":
-      mockDashboardResponse.state.equippedHelmet = normalized;
-      break;
-    case "armor":
-      mockDashboardResponse.state.equippedArmor = normalized;
-      break;
-    case "weapon":
-      mockDashboardResponse.state.equippedWeapon = normalized;
-      break;
-    case "ring":
-      mockDashboardResponse.state.equippedRing = normalized;
-      break;
-    default:
-      break;
-  }
+function syncDashboardEquippedItems() {
+  mockDashboardResponse.state.equippedItems = inventoryItems
+    .filter((item) => item.isEquipped)
+    .map((item) => ({
+      id: item.id,
+      code: item.id,
+      name: item.name,
+      slot: item.slot,
+      rarity: item.rarity,
+      modifiers: item.modifiers.flatMap((modifier) =>
+        modifier.stat === "ap"
+          ? []
+          : [
+              {
+                kind: "stat" as const,
+                stat: modifier.stat,
+                mode: "flat" as const,
+                value: modifier.value,
+              },
+            ]
+      ),
+      effect: null,
+      sprite: item.sprite,
+      createdAt: item.createdAt,
+      isEquipped: true,
+      version: 1,
+    }));
 }
 
 function buildEquippedMap(): InventoryEquippedMap {
@@ -535,11 +534,7 @@ function buildEquippedMap(): InventoryEquippedMap {
     }
   });
 
-  (
-    Object.entries(equipped) as Array<[EquipmentSlot, InventoryItem | null]>
-  ).forEach(([slot, item]) => {
-    setDashboardSlot(slot, item);
-  });
+  syncDashboardEquippedItems();
 
   return equipped;
 }
@@ -690,13 +685,9 @@ export const inventoryHandlers = [
       );
     }
 
-    const [removed] = inventoryItems.splice(index, 1);
+    inventoryItems.splice(index, 1);
 
     inventoryVersion += 1;
-
-    if (removed.isEquipped) {
-      setDashboardSlot(removed.slot, null);
-    }
 
     return HttpResponse.json(buildInventoryResponse());
   }),

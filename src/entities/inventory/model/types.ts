@@ -1,9 +1,27 @@
 import { z } from "zod";
-import {
-  equipmentModifierSchema,
-  equipmentRaritySchema,
-  equipmentSlotSchema,
-} from "@/entities/dashboard/model/types";
+
+const EQUIPMENT_SLOTS = ["helmet", "armor", "weapon", "ring"] as const;
+const EQUIPMENT_RARITIES = [
+  "common",
+  "uncommon",
+  "rare",
+  "epic",
+  "legendary",
+] as const;
+
+const EQUIPMENT_STATS = ["hp", "atk", "def", "luck", "ap"] as const;
+
+export const equipmentSlotSchema = z.enum(EQUIPMENT_SLOTS);
+export type EquipmentSlot = z.infer<typeof equipmentSlotSchema>;
+
+export const equipmentRaritySchema = z.enum(EQUIPMENT_RARITIES);
+export type EquipmentRarity = z.infer<typeof equipmentRaritySchema>;
+
+export const equipmentModifierSchema = z.object({
+  stat: z.enum(EQUIPMENT_STATS),
+  value: z.number(),
+});
+export type EquipmentModifier = z.infer<typeof equipmentModifierSchema>;
 
 export const inventoryItemEffectSchema = z.object({
   type: z.string(),

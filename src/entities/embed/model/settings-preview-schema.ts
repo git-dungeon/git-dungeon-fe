@@ -3,8 +3,8 @@ import {
   equipmentModifierSchema,
   equipmentRaritySchema,
   equipmentSlotSchema,
-} from "@/entities/dashboard/model/types";
-import { inventoryItemEffectSchema } from "@/entities/inventory/model/types";
+  inventoryItemEffectSchema,
+} from "@/entities/inventory/model/types";
 import { EMBED_PREVIEW_SIZE_VALUES } from "@/entities/embed/model/types";
 
 const embedPreviewSizeSchema = z.enum(EMBED_PREVIEW_SIZE_VALUES);

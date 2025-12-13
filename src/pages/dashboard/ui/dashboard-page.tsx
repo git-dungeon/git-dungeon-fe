@@ -13,7 +13,7 @@ export function DashboardPage() {
     limit: DASHBOARD_RECENT_LOG_LIMIT,
   });
 
-  const state = overview.dashboard.data?.state ?? null;
+  const state = overview.dashboard.data ?? null;
   const character = overview.data;
   const showLoading = overview.isLoading && !character;
   const showError = overview.isError;
@@ -81,6 +81,7 @@ export function DashboardPage() {
               latestLog={latestLog}
               apRemaining={character.stats.total.ap}
               currentAction={state.currentAction}
+              currentActionStartedAt={state.currentActionStartedAt}
               lastActionCompletedAt={state.lastActionCompletedAt}
               nextActionStartAt={state.nextActionStartAt}
             />

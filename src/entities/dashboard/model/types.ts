@@ -1,7 +1,7 @@
 import { z } from "zod";
-import type { DungeonAction } from "@/entities/dungeon-log/model/types";
 
 export const EQUIPMENT_SLOTS = ["helmet", "armor", "weapon", "ring"] as const;
+const EQUIPMENT_ITEM_SLOTS = [...EQUIPMENT_SLOTS, "consumable"] as const;
 
 const EQUIPMENT_RARITIES = [
   "common",
@@ -11,60 +11,69 @@ const EQUIPMENT_RARITIES = [
   "legendary",
 ] as const;
 
-const EQUIPMENT_STATS = ["hp", "atk", "def", "luck", "ap"] as const;
-
-const DUNGEON_ACTIONS = [
-  "battle",
-  "treasure",
-  "empty",
-  "rest",
-  "trap",
-  "move",
-  "equip",
-  "unequip",
-  "discard",
-] as const satisfies readonly DungeonAction[];
-
 export const equipmentSlotSchema = z.enum(EQUIPMENT_SLOTS);
 export type EquipmentSlot = z.infer<typeof equipmentSlotSchema>;
+
+export const equipmentItemSlotSchema = z.enum(EQUIPMENT_ITEM_SLOTS);
+export type EquipmentItemSlot = z.infer<typeof equipmentItemSlotSchema>;
 
 export const equipmentRaritySchema = z.enum(EQUIPMENT_RARITIES);
 export type EquipmentRarity = z.infer<typeof equipmentRaritySchema>;
 
-const equipmentStatSchema = z.enum(EQUIPMENT_STATS);
+const inventoryStatSchema = z.enum(["hp", "atk", "def", "luck"]);
+const inventoryModifierModeSchema = z.enum(["flat", "percent"]);
 
-export const equipmentModifierSchema = z.object({
-  stat: equipmentStatSchema,
+export const inventoryModifierStatSchema = z.object({
+  kind: z.literal("stat"),
+  stat: inventoryStatSchema,
+  mode: inventoryModifierModeSchema,
   value: z.number(),
 });
-export type EquipmentModifier = z.infer<typeof equipmentModifierSchema>;
 
-const equipmentEffectSchema = z.object({
-  type: z.string(),
-  description: z.string(),
+export const inventoryModifierEffectSchema = z.object({
+  kind: z.literal("effect"),
+  effectCode: z.string(),
+  params: z.record(z.string(), z.unknown()).nullable().optional(),
 });
 
-export const equippedItemSchema = z.object({
+export const inventoryModifierSchema = z.union([
+  inventoryModifierStatSchema,
+  inventoryModifierEffectSchema,
+]);
+export type InventoryModifier = z.infer<typeof inventoryModifierSchema>;
+
+export const equipmentItemSchema = z.object({
   id: z.string(),
-  name: z.string(),
-  slot: equipmentSlotSchema,
+  code: z.string(),
+  name: z.string().nullable().optional(),
+  slot: equipmentItemSlotSchema,
   rarity: equipmentRaritySchema,
-  modifiers: z.array(equipmentModifierSchema),
-  effect: equipmentEffectSchema.optional(),
+  modifiers: z.array(inventoryModifierSchema),
+  effect: z.string().nullable().optional(),
+  sprite: z.string().nullable().optional(),
+  createdAt: z.string(),
+  isEquipped: z.boolean(),
+  version: z.number(),
 });
-export type EquippedItem = z.infer<typeof equippedItemSchema>;
+export type EquipmentItem = z.infer<typeof equipmentItemSchema>;
 
-const currentActionSchema = z.object({
-  action: z.enum(DUNGEON_ACTIONS),
-  startedAt: z.string(),
-});
-export type CurrentAction = z.infer<typeof currentActionSchema>;
+export const dashboardCurrentActionSchema = z.enum([
+  "IDLE",
+  "EXPLORING",
+  "BATTLE",
+  "REST",
+  "TREASURE",
+  "TRAP",
+]);
+export type DashboardCurrentAction = z.infer<
+  typeof dashboardCurrentActionSchema
+>;
 
 export const dashboardStateSchema = z.object({
   userId: z.string(),
   level: z.number(),
   exp: z.number(),
-  expToLevel: z.number(),
+  expToLevel: z.number().nullable().optional(),
   hp: z.number(),
   maxHp: z.number(),
   atk: z.number(),
@@ -75,11 +84,12 @@ export const dashboardStateSchema = z.object({
   floorProgress: z.number(),
   gold: z.number(),
   ap: z.number(),
-  equippedHelmet: equippedItemSchema.optional(),
-  equippedArmor: equippedItemSchema.optional(),
-  equippedWeapon: equippedItemSchema.optional(),
-  equippedRing: equippedItemSchema.optional(),
-  currentAction: currentActionSchema.optional(),
+  currentAction: dashboardCurrentActionSchema,
+  currentActionStartedAt: z.string().nullable().optional(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+  version: z.number(),
+  equippedItems: z.array(equipmentItemSchema),
   lastActionCompletedAt: z.string().optional(),
   nextActionStartAt: z.string().optional(),
 });

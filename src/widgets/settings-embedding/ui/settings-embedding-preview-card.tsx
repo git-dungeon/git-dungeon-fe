@@ -63,7 +63,7 @@ export function SettingsEmbeddingPreviewCard() {
 
   const isFetchingOverview = overview.isLoading || overview.isFetching;
   const isBusy = isFetchingOverview || isRendering || !character;
-  const userId = overview.dashboard.data?.state.userId ?? "me";
+  const userId = overview.dashboard.data?.userId ?? "me";
 
   const generatedAtLabel = useMemo(() => {
     return formatDateTime(new Date());

@@ -44,7 +44,8 @@ export function buildSummaryCards(
   const chartProgress = getChartFloorProgress(progress);
 
   const hpPercent = calcPercent(state.hp, state.maxHp);
-  const expPercent = calcPercent(state.exp, state.expToLevel);
+  const expToLevel = resolveExpToLevel(state);
+  const expPercent = calcPercent(state.exp, expToLevel);
 
   const combat: SummaryCardViewModel[] = [
     {
@@ -99,11 +100,11 @@ export function buildSummaryCards(
     },
     {
       title: "경험치",
-      value: `${state.exp} / ${state.expToLevel}`,
+      value: `${state.exp} / ${expToLevel}`,
       caption: "다음 레벨까지 필요 EXP",
       chart: {
         current: state.exp,
-        max: state.expToLevel,
+        max: expToLevel,
         color: "var(--color-chart-3)",
         secondaryLabel: `${Math.round(expPercent)}%`,
       },
@@ -124,4 +125,13 @@ export function buildSummaryCards(
     combat,
     resources,
   };
+}
+
+function resolveExpToLevel(state: DashboardState): number {
+  const expToLevel = state.expToLevel;
+  if (typeof expToLevel === "number" && Number.isFinite(expToLevel)) {
+    return Math.max(0, expToLevel);
+  }
+
+  return Math.max(0, state.level * 10);
 }

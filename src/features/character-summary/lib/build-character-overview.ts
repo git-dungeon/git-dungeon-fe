@@ -60,11 +60,12 @@ export function buildCharacterOverview(
   const equipmentBonus = calculateEquipmentBonus(equippedItems);
   const totalStats = extractTotalStats(state);
   const baseStats = calculateBaseStats(totalStats, equipmentBonus);
+  const expToLevel = resolveExpToLevel(state);
 
   return {
     level: state.level,
     exp: state.exp,
-    expToLevel: state.expToLevel,
+    expToLevel,
     gold: state.gold,
     ap: state.ap,
     floor: {
@@ -79,6 +80,15 @@ export function buildCharacterOverview(
     },
     equipment: equippedItems,
   };
+}
+
+function resolveExpToLevel(state: DashboardState): number {
+  const expToLevel = state.expToLevel;
+  if (typeof expToLevel === "number" && Number.isFinite(expToLevel)) {
+    return Math.max(0, expToLevel);
+  }
+
+  return Math.max(0, state.level * 10);
 }
 
 function extractEquippedItems(inventory: InventoryResponse): InventoryItem[] {

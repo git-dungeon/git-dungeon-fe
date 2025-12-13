@@ -45,25 +45,25 @@ function resolveEmbeddingSize(rawSize?: string | null): EmbedPreviewSize {
 function createMockEquipmentPreview() {
   const { state } = mockDashboardResponse;
 
-  const equipment = [
-    state.equippedWeapon,
-    state.equippedHelmet,
-    state.equippedArmor,
-    state.equippedRing,
-  ].filter(Boolean);
-
-  return equipment.map((item) => {
-    const safeItem = item!;
-    return {
-      id: safeItem.id,
-      name: safeItem.name,
-      slot: safeItem.slot,
-      rarity: safeItem.rarity,
-      modifiers: safeItem.modifiers,
-      effect: safeItem.effect ?? null,
-      sprite: buildSpriteFromName(safeItem.name),
-    };
-  });
+  return state.equippedItems
+    .filter((item) => item.slot !== "consumable")
+    .map((item) => {
+      const name = item.name ?? item.code;
+      return {
+        id: item.id,
+        name,
+        slot: item.slot,
+        rarity: item.rarity,
+        modifiers: item.modifiers
+          .filter((modifier) => modifier.kind === "stat")
+          .map((modifier) => ({
+            stat: modifier.stat,
+            value: modifier.value,
+          })),
+        effect: null,
+        sprite: buildSpriteFromName(name),
+      };
+    });
 }
 
 function buildSpriteFromName(name: string): string {
@@ -89,7 +89,7 @@ function createMockEmbeddingPreview(size: EmbedPreviewSize) {
     size,
     level: state.level,
     exp: state.exp,
-    expToLevel: state.expToLevel,
+    expToLevel: state.expToLevel ?? state.level * 10,
     gold: state.gold,
     bestFloor: state.maxFloor,
     currentFloor: state.floor,

@@ -25,7 +25,7 @@ export function useCharacterOverview(): UseCharacterOverviewResult {
       return null;
     }
 
-    return buildCharacterOverview(dashboard.data.state, inventory.data);
+    return buildCharacterOverview(dashboard.data, inventory.data);
   }, [dashboard.data, inventory.data]);
 
   const isLoading = dashboard.isLoading || inventory.isLoading;

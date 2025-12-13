@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { isAfter, isValid, parseISO } from "date-fns";
 
-import type { CurrentAction } from "@/entities/dashboard/model/types";
+import type { DashboardCurrentAction } from "@/entities/dashboard/model/types";
 import type { DungeonLogEntry } from "@/entities/dungeon-log/model/types";
 import {
   buildLogDescription,
@@ -13,7 +13,8 @@ import { formatDateTime } from "@/shared/lib/datetime/formatters";
 export interface DashboardActivityViewParams {
   latestLog?: DungeonLogEntry;
   apRemaining: number;
-  currentAction?: CurrentAction;
+  currentAction?: DashboardCurrentAction;
+  currentActionStartedAt?: string | null;
   lastActionCompletedAt?: string;
   nextActionStartAt?: string;
 }
@@ -32,12 +33,14 @@ export function useDashboardActivityView(
     latestLog,
     apRemaining,
     currentAction,
+    currentActionStartedAt,
     lastActionCompletedAt,
     nextActionStartAt,
   } = params;
 
   return useMemo(() => {
-    const isCurrentActionActive = Boolean(currentAction);
+    const isCurrentActionActive =
+      Boolean(currentAction) && currentAction !== "IDLE";
     const latestStartedLog =
       latestLog?.status === "started" ? latestLog : undefined;
     const latestCompletedLog =
@@ -73,8 +76,23 @@ export function useDashboardActivityView(
           latestStartedLog.action
         )}`,
         timestampLabel: formatDateTime(
-          currentAction?.startedAt ?? latestStartedLog.createdAt
+          currentActionStartedAt ?? latestStartedLog.createdAt
         ),
+      } satisfies DashboardActivityViewModel;
+    }
+
+    if (isCurrentActionActive && currentAction) {
+      const mapped = mapDashboardActionToDungeonAction(currentAction);
+      return {
+        title: mapped ? resolveActionLabel(mapped) : "탐험 중 …",
+        message: "현재 행동을 수행 중입니다. 잠시 후 결과를 확인하세요.",
+        meta:
+          currentActionStartedAt && isValid(parseISO(currentActionStartedAt))
+            ? `시작 ${formatDateTime(currentActionStartedAt)}`
+            : undefined,
+        timestampLabel: currentActionStartedAt
+          ? formatDateTime(currentActionStartedAt)
+          : "진행 중",
       } satisfies DashboardActivityViewModel;
     }
 
@@ -110,10 +128,31 @@ export function useDashboardActivityView(
   }, [
     apRemaining,
     currentAction,
+    currentActionStartedAt,
     lastActionCompletedAt,
     latestLog,
     nextActionStartAt,
   ]);
+}
+
+function mapDashboardActionToDungeonAction(
+  action: DashboardCurrentAction
+): DungeonLogEntry["action"] | null {
+  switch (action) {
+    case "BATTLE":
+      return "battle";
+    case "REST":
+      return "rest";
+    case "TREASURE":
+      return "treasure";
+    case "TRAP":
+      return "trap";
+    case "EXPLORING":
+      return "move";
+    case "IDLE":
+    default:
+      return null;
+  }
 }
 
 function parseIso(iso?: string): Date | undefined {

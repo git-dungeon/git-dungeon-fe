@@ -1,6 +1,6 @@
 import type {
-  EquippedItem,
   EquipmentSlot,
+  EquipmentItem,
 } from "@/entities/dashboard/model/types";
 import {
   formatModifier,
@@ -10,10 +10,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { EquipmentRow } from "@/widgets/dashboard-equipment/ui/equipment-row";
 
 interface DashboardEquipmentProps {
-  helmet?: EquippedItem;
-  armor?: EquippedItem;
-  weapon?: EquippedItem;
-  ring?: EquippedItem;
+  helmet?: EquipmentItem;
+  armor?: EquipmentItem;
+  weapon?: EquipmentItem;
+  ring?: EquipmentItem;
 }
 
 const EQUIPMENT_ROWS: Array<{
@@ -49,7 +49,7 @@ export function DashboardEquipment({
   weapon,
   ring,
 }: DashboardEquipmentProps) {
-  const itemsBySlot: Partial<Record<EquipmentSlot, EquippedItem | undefined>> =
+  const itemsBySlot: Partial<Record<EquipmentSlot, EquipmentItem | undefined>> =
     {
       helmet,
       armor,
@@ -80,6 +80,7 @@ export function DashboardEquipment({
   );
 }
 
-function formatEquipment(item: EquippedItem): string {
-  return `${item.name} · ${formatRarity(item.rarity)}`;
+function formatEquipment(item: EquipmentItem): string {
+  const name = item.name ?? item.code;
+  return `${name} · ${formatRarity(item.rarity)}`;
 }

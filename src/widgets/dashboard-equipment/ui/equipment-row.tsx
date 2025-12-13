@@ -1,11 +1,11 @@
-import type { EquippedItem } from "@/entities/dashboard/model/types";
+import type { EquipmentItem } from "@/entities/dashboard/model/types";
 
 interface EquipmentRowProps {
   label: string;
-  item?: EquippedItem;
+  item?: EquipmentItem;
   placeholder: string;
-  formatItem: (item: EquippedItem) => string;
-  formatModifier: (modifier: EquippedItem["modifiers"][number]) => string;
+  formatItem: (item: EquipmentItem) => string;
+  formatModifier: (modifier: EquipmentItem["modifiers"][number]) => string;
 }
 
 export function EquipmentRow({
