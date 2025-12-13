@@ -131,6 +131,10 @@ export const EMBEDDING_ENDPOINTS = {
   preview: "/api/embedding/preview",
 } as const;
 
+export const CATALOG_ENDPOINTS = {
+  catalog: "/api/catalog",
+} as const;
+
 export function resolveApiUrl(path: string): string {
   if (/^https?:/i.test(path)) {
     return path;

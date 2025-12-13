@@ -7,6 +7,9 @@ import {
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import type { RouterContext } from "@/shared/lib/router/router-context";
 import { cn } from "@/shared/lib/utils";
+import { ensureQueryDataSafe } from "@/shared/lib/query/ensure-query-data-safe";
+import { catalogQueryOptions } from "@/entities/catalog/model/catalog-query";
+import { getLanguagePreference } from "@/shared/lib/preferences/preferences";
 
 const NAVIGATION_LINKS = [
   { to: "/dashboard", label: "대시보드" },
@@ -16,6 +19,12 @@ const NAVIGATION_LINKS = [
 ] as const;
 
 export const Route = createRootRouteWithContext<RouterContext>()({
+  beforeLoad: async ({ context }) => {
+    await ensureQueryDataSafe(
+      context.queryClient,
+      catalogQueryOptions(getLanguagePreference())
+    );
+  },
   component: RootComponent,
 });
 

@@ -4,6 +4,7 @@ import { dungeonLogHandlers } from "./dungeon-log-handlers";
 import { inventoryHandlers } from "./inventory-handlers";
 import { settingsHandlers } from "./settings-handlers";
 import { embedHandlers } from "./embed-handlers";
+import { catalogHandlers } from "./catalog-handlers";
 
 export const handlers = [
   ...authHandlers,
@@ -11,5 +12,6 @@ export const handlers = [
   ...dungeonLogHandlers,
   ...inventoryHandlers,
   ...settingsHandlers,
+  ...catalogHandlers,
   ...embedHandlers,
 ];
