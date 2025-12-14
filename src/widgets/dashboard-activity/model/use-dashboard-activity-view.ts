@@ -42,9 +42,9 @@ export function useDashboardActivityView(
     const isCurrentActionActive =
       Boolean(currentAction) && currentAction !== "IDLE";
     const latestStartedLog =
-      latestLog?.status === "started" ? latestLog : undefined;
+      latestLog?.status === "STARTED" ? latestLog : undefined;
     const latestCompletedLog =
-      latestLog?.status === "completed" ? latestLog : undefined;
+      latestLog?.status === "COMPLETED" ? latestLog : undefined;
     const parsedNextActionStart = parseIso(nextActionStartAt);
     const isNextActionDue = parsedNextActionStart
       ? !isAfter(parsedNextActionStart, new Date())
@@ -71,7 +71,7 @@ export function useDashboardActivityView(
       return {
         title: resolveActionLabel(latestStartedLog.action),
         message: buildLogDescription(latestStartedLog),
-        meta: `${latestStartedLog.floor}층 · ${resolveStatusLabel(
+        meta: `${typeof latestStartedLog.floor === "number" ? `${latestStartedLog.floor}층` : "—"} · ${resolveStatusLabel(
           latestStartedLog.status,
           latestStartedLog.action
         )}`,
@@ -111,7 +111,7 @@ export function useDashboardActivityView(
       return {
         title: resolveActionLabel(latestLog.action),
         message: buildLogDescription(latestLog),
-        meta: `${latestLog.floor}층 · ${resolveStatusLabel(
+        meta: `${typeof latestLog.floor === "number" ? `${latestLog.floor}층` : "—"} · ${resolveStatusLabel(
           latestLog.status,
           latestLog.action
         )}`,
@@ -140,15 +140,15 @@ function mapDashboardActionToDungeonAction(
 ): DungeonLogEntry["action"] | null {
   switch (action) {
     case "BATTLE":
-      return "battle";
+      return "BATTLE";
     case "REST":
-      return "rest";
+      return "REST";
     case "TREASURE":
-      return "treasure";
+      return "TREASURE";
     case "TRAP":
-      return "trap";
+      return "TRAP";
     case "EXPLORING":
-      return "move";
+      return "MOVE";
     case "IDLE":
     default:
       return null;

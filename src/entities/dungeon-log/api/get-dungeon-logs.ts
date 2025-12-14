@@ -1,22 +1,22 @@
 import { DASHBOARD_ENDPOINTS } from "@/shared/config/env";
 import { requestWithSchema } from "@/shared/api/http-client";
 import type {
-  DungeonLogCategory,
-  DungeonLogsResponse,
+  DungeonLogsFilterType,
+  DungeonLogsPayload,
 } from "@/entities/dungeon-log/model/types";
-import { dungeonLogsResponseSchema } from "@/entities/dungeon-log/model/types";
+import { dungeonLogsPayloadSchema } from "@/entities/dungeon-log/model/types";
 
-export type { DungeonLogsResponse } from "@/entities/dungeon-log/model/types";
+export type { DungeonLogsPayload } from "@/entities/dungeon-log/model/types";
 
 export interface FetchDungeonLogsParams {
   limit?: number;
   cursor?: string;
-  type?: DungeonLogCategory;
+  type?: DungeonLogsFilterType;
 }
 
 export async function getDungeonLogs(
   params: FetchDungeonLogsParams = {}
-): Promise<DungeonLogsResponse> {
+): Promise<DungeonLogsPayload> {
   const { limit, cursor, type } = params;
   const searchParams = new URLSearchParams();
 
@@ -36,5 +36,5 @@ export async function getDungeonLogs(
     ? `${DASHBOARD_ENDPOINTS.logs}?${searchParams.toString()}`
     : DASHBOARD_ENDPOINTS.logs;
 
-  return requestWithSchema(endpoint, dungeonLogsResponseSchema);
+  return requestWithSchema(endpoint, dungeonLogsPayloadSchema);
 }

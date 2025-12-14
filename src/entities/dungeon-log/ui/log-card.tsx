@@ -85,7 +85,10 @@ export function LogCard({
             {buildLogDescription(log)}
           </p>
           <p className="text-muted-foreground text-xs">
-            {`${log.floor}층 · ${resolveStatusLabel(log.status, log.action)}`}
+            {`${typeof log.floor === "number" ? `${log.floor}층` : "—"} · ${resolveStatusLabel(
+              log.status,
+              log.action
+            )}`}
           </p>
         </div>
         {renderThumbnail ? (

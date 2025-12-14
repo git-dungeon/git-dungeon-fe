@@ -6,11 +6,13 @@ import { useDungeonLogs } from "@/entities/dungeon-log/model/use-dungeon-logs";
 import { DASHBOARD_RECENT_LOG_LIMIT } from "@/pages/dashboard/config/constants";
 import { DashboardEmbeddingBanner } from "@/widgets/dashboard-embedding/ui/dashboard-embedding-banner";
 import { useCharacterOverview } from "@/features/character-summary/model/use-character-overview";
+import type { DungeonLogsFilterType } from "@/entities/dungeon-log/model/types";
 
 export function DashboardPage() {
   const overview = useCharacterOverview();
   const { data: logsData } = useDungeonLogs({
     limit: DASHBOARD_RECENT_LOG_LIMIT,
+    type: "EXPLORATION" satisfies DungeonLogsFilterType,
   });
 
   const state = overview.dashboard.data ?? null;

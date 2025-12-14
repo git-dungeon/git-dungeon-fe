@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type {
-  DungeonLogCategory,
   DungeonLogEntry,
+  DungeonLogsFilterType,
 } from "@/entities/dungeon-log/model/types";
 import { DeltaList } from "@/entities/dungeon-log/ui/delta-list";
 import { LogCard } from "@/entities/dungeon-log/ui/log-card";
@@ -11,12 +11,17 @@ import { Card, CardContent } from "@/shared/ui/card";
 import { useDungeonLogTimeline } from "@/widgets/dungeon-log-timeline/model/use-dungeon-log-timeline";
 import { buildLogThumbnails } from "@/entities/dungeon-log/config/thumbnails";
 import { DungeonLogDetailDialog } from "@/widgets/dungeon-log-timeline/ui/dungeon-log-detail-dialog";
+import { ApiError } from "@/shared/api/http-client";
 
 interface DungeonLogTimelineProps {
-  category?: DungeonLogCategory;
+  filterType?: DungeonLogsFilterType;
+  onResetFilter?: () => void;
 }
 
-export function DungeonLogTimeline({ category }: DungeonLogTimelineProps) {
+export function DungeonLogTimeline({
+  filterType,
+  onResetFilter,
+}: DungeonLogTimelineProps) {
   const {
     logs,
     status,
@@ -26,7 +31,7 @@ export function DungeonLogTimeline({ category }: DungeonLogTimelineProps) {
     isFetchingNextPage,
     refetch,
     sentinelRef,
-  } = useDungeonLogTimeline({ category });
+  } = useDungeonLogTimeline({ filterType });
   const [selectedLog, setSelectedLog] = useState<DungeonLogEntry | null>(null);
 
   if (status === "pending") {
@@ -34,7 +39,20 @@ export function DungeonLogTimeline({ category }: DungeonLogTimelineProps) {
   }
 
   if (status === "error") {
-    return <ErrorState onRetry={refetch} error={error} />;
+    const apiErrorCode =
+      error instanceof ApiError
+        ? (error.payload as { error?: { code?: string } } | undefined)?.error
+            ?.code
+        : undefined;
+
+    return (
+      <ErrorState
+        onRetry={refetch}
+        error={error}
+        showInvalidQueryHint={apiErrorCode === "LOGS_INVALID_QUERY"}
+        onResetFilter={onResetFilter}
+      />
+    );
   }
 
   if (logs.length === 0) {
@@ -111,9 +129,16 @@ function LoadingState() {
 interface ErrorStateProps {
   error: unknown;
   onRetry: () => void;
+  showInvalidQueryHint?: boolean;
+  onResetFilter?: () => void;
 }
 
-function ErrorState({ error, onRetry }: ErrorStateProps) {
+function ErrorState({
+  error,
+  onRetry,
+  showInvalidQueryHint,
+  onResetFilter,
+}: ErrorStateProps) {
   const message = error instanceof Error ? error.message : undefined;
 
   return (
@@ -122,10 +147,21 @@ function ErrorState({ error, onRetry }: ErrorStateProps) {
         <p className="text-destructive">
           로그를 불러오는 중 문제가 발생했습니다.
         </p>
+        {showInvalidQueryHint ? (
+          <p className="text-muted-foreground text-xs">
+            선택한 필터가 유효하지 않습니다. 필터를 변경하거나 초기화한 뒤 다시
+            시도하세요.
+          </p>
+        ) : null}
         {message ? (
           <p className="text-muted-foreground text-xs">{message}</p>
         ) : null}
         <div>
+          {showInvalidQueryHint && onResetFilter ? (
+            <Button variant="outline" onClick={onResetFilter} className="mr-2">
+              필터 초기화
+            </Button>
+          ) : null}
           <Button variant="outline" onClick={onRetry}>
             다시 시도
           </Button>

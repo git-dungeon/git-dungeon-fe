@@ -1,21 +1,21 @@
 import { useEffect, useMemo, useRef } from "react";
-import type { DungeonLogCategory } from "@/entities/dungeon-log/model/types";
+import type { DungeonLogsFilterType } from "@/entities/dungeon-log/model/types";
 import { useInfiniteDungeonLogs } from "@/entities/dungeon-log/model/use-infinite-dungeon-logs";
 import { DUNGEON_LOGS_PAGE_SIZE } from "@/widgets/dungeon-log-timeline/config/constants";
 
 interface UseDungeonLogTimelineParams {
-  category?: DungeonLogCategory;
+  filterType?: DungeonLogsFilterType;
   pageSize?: number;
 }
 
 export function useDungeonLogTimeline(
   params: UseDungeonLogTimelineParams = {}
 ) {
-  const { category, pageSize = DUNGEON_LOGS_PAGE_SIZE } = params;
+  const { filterType, pageSize = DUNGEON_LOGS_PAGE_SIZE } = params;
 
   const query = useInfiniteDungeonLogs({
     limit: pageSize,
-    type: category,
+    type: filterType,
   });
 
   const {

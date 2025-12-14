@@ -1,5 +1,4 @@
 import battleImage from "@/assets/battle.png";
-import emptyImage from "@/assets/empty.png";
 import restImage from "@/assets/rest.png";
 import trapImage from "@/assets/trap.png";
 import treasureImage from "@/assets/treasure.png";
@@ -12,8 +11,8 @@ import copperBandImage from "@/assets/Copper Band.png";
 import giantRatImage from "@/assets/Giant Rat.png";
 
 import type {
-  DungeonAction,
   DungeonLogEntry,
+  DungeonLogAction,
 } from "@/entities/dungeon-log/model/types";
 
 export type LogThumbnailBadge = "gain" | "loss";
@@ -25,13 +24,12 @@ export interface LogThumbnailDescriptor {
   badge?: LogThumbnailBadge;
 }
 
-const ACTION_IMAGE_MAP: Partial<Record<DungeonAction, string>> = {
-  battle: battleImage,
-  treasure: treasureImage,
-  empty: emptyImage,
-  rest: restImage,
-  trap: trapImage,
-  move: moveImage,
+const ACTION_IMAGE_MAP: Partial<Record<DungeonLogAction, string>> = {
+  BATTLE: battleImage,
+  TREASURE: treasureImage,
+  REST: restImage,
+  TRAP: trapImage,
+  MOVE: moveImage,
 };
 
 const SLOT_FALLBACK_IMAGE: Record<string, string> = {
@@ -47,7 +45,6 @@ const ITEM_IMAGE_MAP: Record<string, string> = {
   "Wooden Sword": woodenSwordImage,
   "Copper Ring": copperBandImage,
   "Copper Band": copperBandImage,
-  "Giant Rat": giantRatImage,
 };
 
 const BADGE_PRESENTATIONS: Record<
@@ -65,32 +62,69 @@ export function resolveThumbnailBadgePresentation(badge?: LogThumbnailBadge) {
   return BADGE_PRESENTATIONS[badge];
 }
 
-export function resolveActionThumbnail(action: DungeonAction) {
+export function resolveActionThumbnail(action: DungeonLogAction) {
   return ACTION_IMAGE_MAP[action];
 }
 
-function resolveItemThumbnail(itemName?: string, slot?: string) {
-  if (!itemName && slot) {
+const MONSTER_SPRITE_MAP: Record<string, string> = {
+  monster_giant_rat: giantRatImage,
+};
+
+function resolveMonsterThumbnail(spriteId?: string) {
+  if (!spriteId) {
+    return undefined;
+  }
+  return MONSTER_SPRITE_MAP[spriteId];
+}
+
+function resolveItemThumbnail(itemKey?: string, slot?: string) {
+  if (itemKey && ITEM_IMAGE_MAP[itemKey]) {
+    return ITEM_IMAGE_MAP[itemKey];
+  }
+
+  if (slot) {
     return SLOT_FALLBACK_IMAGE[slot];
   }
 
-  if (!itemName) {
-    return undefined;
-  }
-
-  return (
-    ITEM_IMAGE_MAP[itemName] ?? (slot ? SLOT_FALLBACK_IMAGE[slot] : undefined)
-  );
+  return undefined;
 }
 
 function resolveGoldBadge(
   entry: DungeonLogEntry
 ): LogThumbnailBadge | undefined {
-  if (typeof entry.delta.gold !== "number" || entry.delta.gold === 0) {
+  const delta = entry.delta;
+  if (!delta) {
     return undefined;
   }
 
-  return entry.delta.gold > 0 ? "gain" : "loss";
+  const gold = (() => {
+    switch (delta.type) {
+      case "BATTLE":
+        return delta.detail.rewards?.gold;
+      case "TREASURE":
+        return delta.detail.rewards?.gold;
+      case "MOVE":
+      case "DEATH":
+      case "REVIVE":
+      case "REST":
+      case "TRAP":
+      case "ACQUIRE_ITEM":
+      case "EQUIP_ITEM":
+      case "UNEQUIP_ITEM":
+      case "DISCARD_ITEM":
+      case "BUFF_APPLIED":
+      case "BUFF_EXPIRED":
+      case "LEVEL_UP":
+      default:
+        return undefined;
+    }
+  })();
+
+  if (typeof gold !== "number" || gold === 0) {
+    return undefined;
+  }
+
+  return gold > 0 ? "gain" : "loss";
 }
 
 export function buildLogThumbnails(
@@ -98,39 +132,57 @@ export function buildLogThumbnails(
 ): LogThumbnailDescriptor[] {
   const thumbnails: LogThumbnailDescriptor[] = [];
 
-  if (entry.details?.type === "battle" && entry.details.monster.sprite) {
-    thumbnails.push({
-      id: `${entry.id}-monster`,
-      src: entry.details.monster.sprite,
-      alt: entry.details.monster.name,
-    });
+  if (entry.extra?.type === "BATTLE") {
+    const monster = entry.extra.details?.monster;
+    const monsterThumbnail = resolveMonsterThumbnail(monster?.spriteId);
+    if (monsterThumbnail) {
+      thumbnails.push({
+        id: `${entry.id}-monster`,
+        src: monsterThumbnail,
+        alt: monster?.name ?? "몬스터",
+      });
+    }
   }
 
-  if (entry.action === "equip" || entry.action === "unequip") {
-    const itemThumbnail = resolveItemThumbnail(
-      entry.delta.item,
-      entry.delta.slot
-    );
+  const delta = entry.delta;
+
+  if (
+    delta?.type === "EQUIP_ITEM" ||
+    delta?.type === "UNEQUIP_ITEM" ||
+    delta?.type === "DISCARD_ITEM" ||
+    delta?.type === "ACQUIRE_ITEM"
+  ) {
+    const inventory = delta.detail.inventory;
+    const primaryItem =
+      inventory.equipped ??
+      inventory.unequipped ??
+      inventory.added?.at(0) ??
+      inventory.removed?.at(0);
+
+    const slot = primaryItem?.slot;
+    const itemKey = primaryItem?.code;
+    const itemThumbnail = resolveItemThumbnail(itemKey, slot);
     if (itemThumbnail) {
       thumbnails.push({
         id: `${entry.id}-item`,
         src: itemThumbnail,
-        alt: entry.delta.item ?? "장비",
+        alt: itemKey ?? "아이템",
       });
     }
-    const goldBadge = resolveGoldBadge(entry);
-    if (goldBadge) {
-      thumbnails.push({
-        id: `${entry.id}-gold`,
-        src: goldImage,
-        alt: "골드 변화",
-        badge: goldBadge,
-      });
-    }
-    return thumbnails;
   }
 
-  const isDiscardAction = entry.action === "discard";
+  if (delta?.type === "TREASURE") {
+    const rewardItem = delta.detail.rewards?.items?.at(0);
+    const itemThumbnail = resolveItemThumbnail(rewardItem?.itemCode, undefined);
+    if (itemThumbnail) {
+      thumbnails.push({
+        id: `${entry.id}-reward-item`,
+        src: itemThumbnail,
+        alt: rewardItem?.itemCode ?? "보상 아이템",
+        badge: "gain",
+      });
+    }
+  }
 
   const actionThumbnail = resolveActionThumbnail(entry.action);
   if (actionThumbnail) {
@@ -149,26 +201,6 @@ export function buildLogThumbnails(
       alt: "골드 변화",
       badge: goldBadge,
     });
-  }
-
-  if (entry.delta.item) {
-    const itemThumbnail = resolveItemThumbnail(
-      entry.delta.item,
-      entry.delta.slot
-    );
-    if (itemThumbnail) {
-      thumbnails.push({
-        id: `${entry.id}-item`,
-        src: itemThumbnail,
-        alt: entry.delta.item,
-        badge:
-          entry.action === "treasure"
-            ? "gain"
-            : isDiscardAction
-              ? "loss"
-              : undefined,
-      });
-    }
   }
 
   return thumbnails;

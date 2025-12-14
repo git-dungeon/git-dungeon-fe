@@ -1,418 +1,516 @@
 import { http } from "msw";
 import { DASHBOARD_ENDPOINTS } from "@/shared/config/env";
-import type { DungeonLogEntry } from "@/entities/dungeon-log/model/types";
+import type {
+  DungeonLogEntry,
+  DungeonLogsFilterType,
+} from "@/entities/dungeon-log/model/types";
+import { DUNGEON_LOGS_FILTER_TYPES } from "@/entities/dungeon-log/model/types";
 import { mockTimestampMinutesAgo } from "@/mocks/handlers/shared/time";
-import giantRatImage from "@/assets/Giant Rat.png";
-import { respondWithSuccess } from "@/mocks/lib/api-response";
+import { respondWithError, respondWithSuccess } from "@/mocks/lib/api-response";
 
-export const mockDungeonLogs: DungeonLogEntry[] = [
+function base64UrlEncode(value: string): string {
+  if (typeof Buffer !== "undefined") {
+    return Buffer.from(value, "utf-8")
+      .toString("base64")
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=+$/g, "");
+  }
+
+  if (typeof btoa !== "undefined") {
+    return btoa(value)
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=+$/g, "");
+  }
+
+  return value;
+}
+
+function base64UrlDecode(value: string): string | null {
+  const normalized = value.replace(/-/g, "+").replace(/_/g, "/");
+  const padding =
+    normalized.length % 4 === 0 ? "" : "=".repeat(4 - (normalized.length % 4));
+  const base64 = normalized + padding;
+
+  try {
+    if (typeof Buffer !== "undefined") {
+      return Buffer.from(base64, "base64").toString("utf-8");
+    }
+    if (typeof atob !== "undefined") {
+      return atob(base64);
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
+function encodeCursor(sequence: number): string {
+  return base64UrlEncode(String(sequence));
+}
+
+function decodeCursor(cursor: string): number | null {
+  const decoded = base64UrlDecode(cursor);
+  if (!decoded) {
+    return null;
+  }
+
+  const parsed = Number.parseInt(decoded, 10);
+  if (!Number.isFinite(parsed) || parsed < 0) {
+    return null;
+  }
+
+  return parsed;
+}
+
+const mockDungeonLogs: DungeonLogEntry[] = [
   {
     id: "log-001",
-    category: "exploration",
+    category: "EXPLORATION",
     floor: 13,
-    action: "battle",
-    status: "started",
+    action: "BATTLE",
+    status: "STARTED",
     createdAt: mockTimestampMinutesAgo(1),
     delta: {
-      ap: -1,
+      type: "BATTLE",
+      detail: {
+        stats: { ap: -1 },
+      },
     },
-    details: {
-      type: "battle",
-      monster: {
-        id: "monster-giant-rat",
-        name: "거대 쥐",
-        hp: 24,
-        atk: 3,
-        sprite: giantRatImage,
+    extra: {
+      type: "BATTLE",
+      details: {
+        monster: {
+          id: "monster-giant-rat",
+          name: "거대 쥐",
+          hp: 24,
+          atk: 3,
+          def: 1,
+          spriteId: "monster_giant_rat",
+        },
+        result: "VICTORY",
       },
     },
   },
   {
     id: "log-002",
-    category: "exploration",
-    floor: 13,
-    action: "empty",
-    status: "completed",
+    category: "STATUS",
+    floor: null,
+    action: "EQUIP_ITEM",
+    status: "COMPLETED",
     createdAt: mockTimestampMinutesAgo(2),
+    stateVersionBefore: 12,
+    stateVersionAfter: 13,
     delta: {
-      ap: 0,
-      progress: 10,
+      type: "EQUIP_ITEM",
+      detail: {
+        inventory: {
+          equipped: {
+            itemId: "inv-002",
+            code: "helmet-steel-helm",
+            slot: "helmet",
+            rarity: "rare",
+          },
+          unequipped: {
+            itemId: "inv-001",
+            code: "helmet-bronze-helm",
+            slot: "helmet",
+            rarity: "common",
+          },
+        },
+        stats: { def: 4, hp: 2 },
+      },
+    },
+    extra: {
+      type: "EQUIP_ITEM",
+      details: {
+        item: {
+          id: "helmet-steel-helm",
+          code: "helmet-steel-helm",
+          name: "Steel Helm",
+          rarity: "rare",
+          modifiers: [{ stat: "def", value: 4 }],
+        },
+      },
     },
   },
   {
     id: "log-003",
-    category: "exploration",
+    category: "EXPLORATION",
     floor: 13,
-    action: "empty",
-    status: "started",
+    action: "TREASURE",
+    status: "COMPLETED",
     createdAt: mockTimestampMinutesAgo(3),
     delta: {
-      ap: -1,
+      type: "TREASURE",
+      detail: {
+        progress: { delta: 10 },
+        rewards: {
+          gold: 45,
+          items: [
+            {
+              itemCode: "ring-copper-band",
+              quantity: 1,
+            },
+          ],
+        },
+      },
     },
-  },
-  {
-    id: "log-015",
-    category: "status",
-    floor: 13,
-    action: "equip",
-    status: "completed",
-    createdAt: mockTimestampMinutesAgo(4),
-    delta: {
-      ap: 0,
-      item: "Steel Helm",
-      slot: "helmet",
-      stats: {
-        def: 4,
-        hp: 2,
+    extra: {
+      type: "TREASURE",
+      details: {
+        rewardCode: "treasure-basic",
+        rarity: "common",
       },
     },
   },
   {
     id: "log-004",
-    category: "exploration",
+    category: "EXPLORATION",
     floor: 13,
-    action: "treasure",
-    status: "completed",
-    createdAt: mockTimestampMinutesAgo(5),
+    action: "REST",
+    status: "COMPLETED",
+    createdAt: mockTimestampMinutesAgo(4),
     delta: {
-      ap: 0,
-      gold: 45,
-      item: "Copper Band",
-      progress: 10,
+      type: "REST",
+      detail: {
+        stats: { hp: 5, ap: -1 },
+        progress: { delta: 5 },
+      },
+    },
+    extra: {
+      type: "REST",
+      details: { source: "campfire" },
     },
   },
   {
     id: "log-005",
-    category: "exploration",
+    category: "EXPLORATION",
     floor: 13,
-    action: "treasure",
-    status: "started",
-    createdAt: mockTimestampMinutesAgo(6),
+    action: "TRAP",
+    status: "COMPLETED",
+    createdAt: mockTimestampMinutesAgo(5),
     delta: {
-      ap: -1,
+      type: "TRAP",
+      detail: {
+        stats: { hp: -3, ap: -1 },
+        progress: { delta: 5 },
+      },
     },
-  },
-  {
-    id: "log-016",
-    category: "status",
-    floor: 13,
-    action: "unequip",
-    status: "completed",
-    createdAt: mockTimestampMinutesAgo(7),
-    delta: {
-      ap: 0,
-      item: "Bronze Helm",
-      slot: "helmet",
+    extra: {
+      type: "TRAP",
+      details: { trapCode: "spike" },
     },
   },
   {
     id: "log-006",
-    category: "exploration",
+    category: "EXPLORATION",
     floor: 13,
-    action: "battle",
-    status: "completed",
-    createdAt: mockTimestampMinutesAgo(8),
+    action: "MOVE",
+    status: "COMPLETED",
+    createdAt: mockTimestampMinutesAgo(6),
     delta: {
-      ap: 0,
-      hp: -3,
-      exp: 14,
-      gold: 30,
-      progress: 20,
-    },
-    details: {
-      type: "battle",
-      monster: {
-        id: "monster-giant-rat",
-        name: "거대 쥐",
-        hp: 24,
-        atk: 3,
-        sprite: giantRatImage,
+      type: "MOVE",
+      detail: {
+        fromFloor: 12,
+        toFloor: 13,
+        previousProgress: 80,
+        progress: {
+          floor: 13,
+          floorProgress: 0,
+          previousProgress: 80,
+          delta: 20,
+        },
       },
+    },
+    extra: {
+      type: "MOVE",
+      details: { rewards: { gold: 10 } },
     },
   },
   {
     id: "log-007",
-    category: "exploration",
-    floor: 13,
-    action: "battle",
-    status: "started",
-    createdAt: mockTimestampMinutesAgo(9),
+    category: "STATUS",
+    floor: null,
+    action: "ACQUIRE_ITEM",
+    status: "COMPLETED",
+    createdAt: mockTimestampMinutesAgo(7),
     delta: {
-      ap: -1,
-    },
-    details: {
-      type: "battle",
-      monster: {
-        id: "monster-giant-rat",
-        name: "거대 쥐",
-        hp: 24,
-        atk: 3,
-        sprite: giantRatImage,
+      type: "ACQUIRE_ITEM",
+      detail: {
+        inventory: {
+          added: [
+            {
+              itemId: "inv-004",
+              code: "weapon-wooden-sword",
+              slot: "weapon",
+              quantity: 1,
+            },
+          ],
+        },
       },
     },
-  },
-  {
-    id: "log-017",
-    category: "status",
-    floor: 13,
-    action: "equip",
-    status: "completed",
-    createdAt: mockTimestampMinutesAgo(10),
-    delta: {
-      ap: 0,
-      item: "Knight's Helm",
-      slot: "helmet",
-      stats: {
-        def: 6,
-        hp: 4,
-      },
-    },
-  },
-  {
-    id: "log-018",
-    category: "status",
-    floor: 13,
-    action: "discard",
-    status: "completed",
-    createdAt: mockTimestampMinutesAgo(11),
-    delta: {
-      ap: 0,
-      item: "Leather Cap",
-      slot: "helmet",
-      stats: {
-        def: -1,
+    extra: {
+      type: "ACQUIRE_ITEM",
+      details: {
+        reward: {
+          source: "TREASURE",
+          drop: {
+            tableId: "drops-default",
+            isElite: false,
+            items: [{ itemCode: "weapon-wooden-sword", quantity: 1 }],
+          },
+        },
       },
     },
   },
   {
     id: "log-008",
-    category: "exploration",
-    floor: 13,
-    action: "trap",
-    status: "completed",
-    createdAt: mockTimestampMinutesAgo(12),
+    category: "STATUS",
+    floor: null,
+    action: "UNEQUIP_ITEM",
+    status: "COMPLETED",
+    createdAt: mockTimestampMinutesAgo(8),
     delta: {
-      ap: 0,
-      hp: -4,
-      gold: -10,
-      progress: 10,
-    },
-  },
-  {
-    id: "log-009",
-    category: "exploration",
-    floor: 13,
-    action: "trap",
-    status: "started",
-    createdAt: mockTimestampMinutesAgo(13),
-    delta: {
-      ap: -1,
-    },
-  },
-  {
-    id: "log-019",
-    category: "status",
-    floor: 13,
-    action: "equip",
-    status: "completed",
-    createdAt: mockTimestampMinutesAgo(14),
-    delta: {
-      ap: 0,
-      item: "Topaz Ring",
-      slot: "ring",
-      stats: {
-        luck: 2,
-        hp: 2,
+      type: "UNEQUIP_ITEM",
+      detail: {
+        inventory: {
+          unequipped: {
+            itemId: "inv-002",
+            code: "helmet-steel-helm",
+            slot: "helmet",
+          },
+        },
       },
     },
   },
   {
-    id: "log-020",
-    category: "status",
-    floor: 13,
-    action: "unequip",
-    status: "completed",
-    createdAt: mockTimestampMinutesAgo(15),
+    id: "log-009",
+    category: "STATUS",
+    floor: null,
+    action: "DISCARD_ITEM",
+    status: "COMPLETED",
+    createdAt: mockTimestampMinutesAgo(9),
     delta: {
-      ap: 0,
-      item: "Bronze Ring",
-      slot: "ring",
-      stats: {
-        luck: -1,
+      type: "DISCARD_ITEM",
+      detail: {
+        inventory: {
+          removed: [
+            {
+              itemId: "inv-003",
+              code: "ring-copper-band",
+              slot: "ring",
+              quantity: 1,
+            },
+          ],
+        },
       },
     },
   },
   {
     id: "log-010",
-    category: "exploration",
-    floor: 13,
-    action: "rest",
-    status: "completed",
-    createdAt: mockTimestampMinutesAgo(16),
+    category: "STATUS",
+    floor: null,
+    action: "BUFF_APPLIED",
+    status: "COMPLETED",
+    createdAt: mockTimestampMinutesAgo(10),
     delta: {
-      ap: 0,
-      hp: 6,
-      progress: 10,
+      type: "BUFF_APPLIED",
+      detail: {
+        applied: [
+          {
+            buffId: "buff-regen",
+            source: "REST",
+            totalTurns: 3,
+            remainingTurns: 3,
+          },
+        ],
+      },
     },
-  },
-  {
-    id: "log-011",
-    category: "exploration",
-    floor: 13,
-    action: "rest",
-    status: "started",
-    createdAt: mockTimestampMinutesAgo(17),
-    delta: {
-      ap: -1,
-    },
-  },
-  {
-    id: "log-021",
-    category: "status",
-    floor: 13,
-    action: "discard",
-    status: "completed",
-    createdAt: mockTimestampMinutesAgo(18),
-    delta: {
-      ap: 0,
-      item: "Rusty Sword",
-      slot: "weapon",
-      stats: {
-        atk: -2,
+    extra: {
+      type: "BUFF_APPLIED",
+      details: {
+        buffId: "buff-regen",
+        source: "REST",
+        spriteId: "buff_regen",
+        effect: "HP regen",
+        totalTurns: 3,
+        remainingTurns: 3,
       },
     },
   },
   {
-    id: "log-022",
-    category: "status",
-    floor: 13,
-    action: "equip",
-    status: "completed",
-    createdAt: mockTimestampMinutesAgo(19),
+    id: "log-011",
+    category: "STATUS",
+    floor: null,
+    action: "BUFF_EXPIRED",
+    status: "COMPLETED",
+    createdAt: mockTimestampMinutesAgo(11),
     delta: {
-      ap: 0,
-      item: "Longsword",
-      slot: "weapon",
-      stats: {
-        atk: 5,
+      type: "BUFF_EXPIRED",
+      detail: {
+        expired: [
+          { buffId: "buff-regen", expiredAtTurn: 18, consumedBy: "TURN" },
+        ],
+      },
+    },
+    extra: {
+      type: "BUFF_EXPIRED",
+      details: {
+        buffId: "buff-regen",
+        expiredAtTurn: 18,
+        consumedBy: "TURN",
       },
     },
   },
   {
     id: "log-012",
-    category: "exploration",
-    floor: 13,
-    action: "move",
-    status: "completed",
-    createdAt: mockTimestampMinutesAgo(20),
+    category: "STATUS",
+    floor: null,
+    action: "LEVEL_UP",
+    status: "COMPLETED",
+    createdAt: mockTimestampMinutesAgo(12),
     delta: {
-      ap: 0,
-      progress: -100,
+      type: "LEVEL_UP",
+      detail: {
+        stats: { level: 1, hp: 5, atk: 1 },
+        rewards: { skillPoints: 1 },
+      },
+    },
+    extra: {
+      type: "LEVEL_UP",
+      details: {
+        previousLevel: 3,
+        currentLevel: 4,
+        threshold: 100,
+        statsGained: { hp: 5, atk: 1 },
+      },
     },
   },
   {
     id: "log-013",
-    category: "exploration",
-    floor: 12,
-    action: "move",
-    status: "started",
-    createdAt: mockTimestampMinutesAgo(21),
+    category: "EXPLORATION",
+    floor: 13,
+    action: "DEATH",
+    status: "COMPLETED",
+    createdAt: mockTimestampMinutesAgo(13),
     delta: {
-      ap: -1,
-    },
-  },
-  {
-    id: "log-023",
-    category: "status",
-    floor: 12,
-    action: "equip",
-    status: "completed",
-    createdAt: mockTimestampMinutesAgo(22),
-    delta: {
-      ap: 0,
-      item: "Steel Armor",
-      slot: "armor",
-      stats: {
-        def: 4,
-        luck: 1,
+      type: "DEATH",
+      detail: {
+        stats: { hp: -999, ap: 0 },
+        progress: { floor: 13, floorProgress: 0, delta: 0 },
+        buffs: [{ buffId: "buff-regen", source: "REST" }],
       },
     },
-  },
-  {
-    id: "log-024",
-    category: "status",
-    floor: 12,
-    action: "discard",
-    status: "completed",
-    createdAt: mockTimestampMinutesAgo(23),
-    delta: {
-      ap: 0,
-      item: "Leather Armor",
-      slot: "armor",
-      stats: {
-        def: -1,
-      },
+    extra: {
+      type: "DEATH",
+      details: { cause: "BATTLE", handledBy: "respawn" },
     },
   },
   {
     id: "log-014",
-    category: "exploration",
-    floor: 12,
-    action: "battle",
-    status: "completed",
-    createdAt: mockTimestampMinutesAgo(25),
+    category: "EXPLORATION",
+    floor: 13,
+    action: "REVIVE",
+    status: "COMPLETED",
+    createdAt: mockTimestampMinutesAgo(14),
     delta: {
-      ap: 0,
-      hp: -2,
-      exp: 12,
-      gold: 18,
-      progress: 20,
-    },
-    details: {
-      type: "battle",
-      monster: {
-        id: "monster-giant-rat",
-        name: "거대 쥐",
-        hp: 24,
-        atk: 3,
-        sprite: giantRatImage,
+      type: "REVIVE",
+      detail: {
+        stats: { hp: 5, ap: 0 },
       },
     },
+    extra: null,
   },
 ];
+
+function isValidFilterType(type: string | null): type is DungeonLogsFilterType {
+  return Boolean(
+    type && (DUNGEON_LOGS_FILTER_TYPES as readonly string[]).includes(type)
+  );
+}
+
+function filterLogs(
+  logs: DungeonLogEntry[],
+  filterType?: DungeonLogsFilterType
+): DungeonLogEntry[] {
+  if (!filterType) {
+    return logs;
+  }
+  if (filterType === "EXPLORATION" || filterType === "STATUS") {
+    return logs.filter((log) => log.category === filterType);
+  }
+  return logs.filter((log) => log.action === filterType);
+}
+
+function resolveLimit(raw: string | null): number | null {
+  if (raw == null) {
+    return 10;
+  }
+  const parsed = Number.parseInt(raw, 10);
+  if (!Number.isFinite(parsed)) {
+    return null;
+  }
+  if (parsed < 1 || parsed > 50) {
+    return null;
+  }
+  return parsed;
+}
 
 export const dungeonLogHandlers = [
   http.get(DASHBOARD_ENDPOINTS.logs, ({ request }) => {
     const url = new URL(request.url);
-    const limitParam = url.searchParams.get("limit");
-    const cursor = url.searchParams.get("cursor");
+
+    const limit = resolveLimit(url.searchParams.get("limit"));
+    if (limit == null) {
+      return respondWithError("잘못된 로그 조회 요청입니다.", {
+        status: 400,
+        code: "LOGS_INVALID_QUERY",
+      });
+    }
+
     const typeParam = url.searchParams.get("type");
-
-    const limit = limitParam ? Number.parseInt(limitParam, 10) : 10;
-    const resolvedLimit =
-      Number.isFinite(limit) && limit !== 0 ? Math.abs(limit) : 10;
-
-    const normalizedType =
-      typeParam === "exploration" || typeParam === "status"
+    const filterType = typeParam
+      ? isValidFilterType(typeParam)
         ? typeParam
-        : undefined;
+        : null
+      : undefined;
+    if (filterType === null) {
+      return respondWithError("잘못된 로그 조회 요청입니다.", {
+        status: 400,
+        code: "LOGS_INVALID_QUERY",
+      });
+    }
 
-    const sourceLogs = normalizedType
-      ? mockDungeonLogs.filter((log) => log.category === normalizedType)
-      : mockDungeonLogs;
+    const cursorParam = url.searchParams.get("cursor");
 
-    const cursorIndex = cursor
-      ? sourceLogs.findIndex((log) => log.id === cursor)
-      : -1;
-    const startIndex = cursorIndex >= 0 ? cursorIndex + 1 : 0;
+    const sourceLogs = filterLogs(mockDungeonLogs, filterType);
 
-    const logs = sourceLogs.slice(startIndex, startIndex + resolvedLimit);
-    const lastItem = logs.at(-1);
-    const hasMore = startIndex + resolvedLimit < sourceLogs.length;
+    const cursor = cursorParam ? decodeCursor(cursorParam) : null;
+    if (cursorParam && cursor === null) {
+      return respondWithError("잘못된 로그 조회 요청입니다.", {
+        status: 400,
+        code: "LOGS_INVALID_QUERY",
+      });
+    }
+
+    if (typeof cursor === "number" && cursor >= sourceLogs.length) {
+      return respondWithError("잘못된 로그 조회 요청입니다.", {
+        status: 400,
+        code: "LOGS_INVALID_QUERY",
+      });
+    }
+
+    const startIndex = typeof cursor === "number" ? cursor + 1 : 0;
+    const page = sourceLogs.slice(startIndex, startIndex + limit);
+    const hasMore = startIndex + limit < sourceLogs.length;
+    const nextSequence = startIndex + page.length - 1;
 
     return respondWithSuccess({
-      logs,
-      nextCursor: hasMore && lastItem ? lastItem.id : undefined,
+      logs: page,
+      nextCursor: hasMore ? encodeCursor(nextSequence) : null,
     });
   }),
 ];
