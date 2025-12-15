@@ -1,9 +1,8 @@
-import { http, HttpResponse } from "msw";
+import { http } from "msw";
 import { INVENTORY_ENDPOINTS } from "@/shared/config/env";
 import type {
   InventoryEquippedMap,
   InventoryItem,
-  InventoryItemEffect,
   InventoryResponse,
   InventoryStatValues,
 } from "@/entities/inventory/model/types";
@@ -11,7 +10,7 @@ import type { EquipmentSlot } from "@/entities/dashboard/model/types";
 import { mockDashboardResponse } from "@/mocks/handlers/dashboard-handlers";
 import { mockTimestampMinutesAgo } from "@/mocks/handlers/shared/time";
 import { createSpriteFromLabel } from "@/shared/lib/sprite-utils";
-import { respondWithSuccess } from "@/mocks/lib/api-response";
+import { respondWithError, respondWithSuccess } from "@/mocks/lib/api-response";
 
 let inventoryVersion = 1;
 
@@ -28,11 +27,11 @@ interface RawInventoryItem {
   name: string;
   slot: EquipmentSlot;
   rarity: InventoryItem["rarity"];
-  modifiers: InventoryItem["modifiers"];
+  modifiers: Array<{ stat: string; value: number }>;
   spriteLabel: string;
   obtainedMinutesAgo: number;
   isEquipped?: boolean;
-  effect?: InventoryItemEffect;
+  effect?: { type: string; description: string };
 }
 
 const RAW_INVENTORY_ITEMS: RawInventoryItem[] = [
@@ -470,23 +469,44 @@ const RAW_INVENTORY_ITEMS: RawInventoryItem[] = [
   },
 ];
 
-const inventoryItems: InventoryItem[] = RAW_INVENTORY_ITEMS.map((item) => ({
-  id: item.id,
-  name: item.name,
-  slot: item.slot,
-  rarity: item.rarity,
-  modifiers: item.modifiers.map((modifier) => ({ ...modifier })),
-  effect: item.effect ? { ...item.effect } : undefined,
-  sprite: createSpriteFromLabel(
-    item.spriteLabel,
-    RARITY_COLOR_MAP[item.rarity]
-  ),
-  createdAt: mockTimestampMinutesAgo(item.obtainedMinutesAgo),
-  isEquipped: Boolean(item.isEquipped),
-}));
+function buildInventoryItems(): InventoryItem[] {
+  return RAW_INVENTORY_ITEMS.map((item) => ({
+    id: item.id,
+    code: item.id,
+    name: item.name,
+    slot: item.slot,
+    rarity: item.rarity,
+    modifiers: item.modifiers
+      .filter((modifier) => modifier.stat !== "ap")
+      .map((modifier) => ({
+        kind: "stat" as const,
+        stat: modifier.stat as "hp" | "atk" | "def" | "luck",
+        mode: "flat" as const,
+        value: modifier.value,
+      })),
+    effect: item.effect?.type ?? null,
+    sprite: createSpriteFromLabel(
+      item.spriteLabel,
+      RARITY_COLOR_MAP[item.rarity]
+    ),
+    createdAt: mockTimestampMinutesAgo(item.obtainedMinutesAgo),
+    isEquipped: Boolean(item.isEquipped),
+    version: 1,
+  }));
+}
+
+let inventoryItems: InventoryItem[] = buildInventoryItems();
+
+export function resetInventoryMockState() {
+  inventoryVersion = 1;
+  inventoryItems = buildInventoryItems();
+  syncDashboardEquippedItems();
+}
 
 interface InventoryActionRequestBody {
   itemId?: string;
+  expectedVersion?: number;
+  inventoryVersion?: number;
 }
 
 const EMPTY_EQUIPPED: InventoryEquippedMap = {
@@ -494,6 +514,7 @@ const EMPTY_EQUIPPED: InventoryEquippedMap = {
   armor: null,
   weapon: null,
   ring: null,
+  consumable: null,
 };
 
 function syncDashboardEquippedItems() {
@@ -501,24 +522,13 @@ function syncDashboardEquippedItems() {
     .filter((item) => item.isEquipped)
     .map((item) => ({
       id: item.id,
-      code: item.id,
+      code: item.code,
       name: item.name,
       slot: item.slot,
       rarity: item.rarity,
-      modifiers: item.modifiers.flatMap((modifier) =>
-        modifier.stat === "ap"
-          ? []
-          : [
-              {
-                kind: "stat" as const,
-                stat: modifier.stat,
-                mode: "flat" as const,
-                value: modifier.value,
-              },
-            ]
-      ),
-      effect: null,
-      sprite: item.sprite,
+      modifiers: item.modifiers,
+      effect: item.effect ?? null,
+      sprite: item.sprite ?? null,
       createdAt: item.createdAt,
       isEquipped: true,
       version: 1,
@@ -556,6 +566,13 @@ export function buildInventoryResponse(): InventoryResponse {
     }
 
     item.modifiers.forEach((modifier) => {
+      if (modifier.kind !== "stat") {
+        return;
+      }
+      if (modifier.mode !== "flat") {
+        return;
+      }
+
       switch (modifier.stat) {
         case "hp":
           equipmentBonus.hp += modifier.value;
@@ -596,24 +613,53 @@ export const inventoryHandlers = [
     return respondWithSuccess(buildInventoryResponse());
   }),
   http.post(INVENTORY_ENDPOINTS.equip, async ({ request }) => {
+    if (request.headers.get("x-msw-force-rate-limit") === "true") {
+      return respondWithError("요청이 너무 많습니다.", {
+        status: 429,
+        code: "INVENTORY_RATE_LIMITED",
+      });
+    }
+
     const payload = (await request
       .json()
       .catch(() => null)) as InventoryActionRequestBody | null;
 
-    if (!payload || typeof payload.itemId !== "string") {
-      return HttpResponse.json(
-        { message: "itemId가 필요합니다." },
-        { status: 400 }
-      );
+    if (
+      !payload ||
+      typeof payload.itemId !== "string" ||
+      typeof payload.expectedVersion !== "number" ||
+      typeof payload.inventoryVersion !== "number"
+    ) {
+      return respondWithError("요청 바디가 올바르지 않습니다.", {
+        status: 400,
+        code: "INVENTORY_INVALID_REQUEST",
+      });
+    }
+
+    if (
+      payload.expectedVersion !== inventoryVersion ||
+      payload.inventoryVersion !== inventoryVersion
+    ) {
+      return respondWithError("인벤토리 버전이 최신 상태가 아닙니다.", {
+        status: 412,
+        code: "INVENTORY_VERSION_MISMATCH",
+      });
     }
 
     const target = inventoryItems.find((item) => item.id === payload.itemId);
 
     if (!target) {
-      return HttpResponse.json(
-        { message: "존재하지 않는 아이템입니다." },
-        { status: 404 }
-      );
+      return respondWithError("존재하지 않는 아이템입니다.", {
+        status: 404,
+        code: "INVENTORY_ITEM_NOT_FOUND",
+      });
+    }
+
+    if (target.isEquipped) {
+      return respondWithError("이미 장착 중인 아이템입니다.", {
+        status: 409,
+        code: "INVENTORY_ALREADY_EQUIPPED",
+      });
     }
 
     let changed = false;
@@ -632,27 +678,56 @@ export const inventoryHandlers = [
       inventoryVersion += 1;
     }
 
-    return HttpResponse.json(buildInventoryResponse());
+    return respondWithSuccess(buildInventoryResponse());
   }),
   http.post(INVENTORY_ENDPOINTS.unequip, async ({ request }) => {
+    if (request.headers.get("x-msw-force-rate-limit") === "true") {
+      return respondWithError("요청이 너무 많습니다.", {
+        status: 429,
+        code: "INVENTORY_RATE_LIMITED",
+      });
+    }
+
     const payload = (await request
       .json()
       .catch(() => null)) as InventoryActionRequestBody | null;
 
-    if (!payload || typeof payload.itemId !== "string") {
-      return HttpResponse.json(
-        { message: "itemId가 필요합니다." },
-        { status: 400 }
-      );
+    if (
+      !payload ||
+      typeof payload.itemId !== "string" ||
+      typeof payload.expectedVersion !== "number" ||
+      typeof payload.inventoryVersion !== "number"
+    ) {
+      return respondWithError("요청 바디가 올바르지 않습니다.", {
+        status: 400,
+        code: "INVENTORY_INVALID_REQUEST",
+      });
+    }
+
+    if (
+      payload.expectedVersion !== inventoryVersion ||
+      payload.inventoryVersion !== inventoryVersion
+    ) {
+      return respondWithError("인벤토리 버전이 최신 상태가 아닙니다.", {
+        status: 412,
+        code: "INVENTORY_VERSION_MISMATCH",
+      });
     }
 
     const target = inventoryItems.find((item) => item.id === payload.itemId);
 
     if (!target) {
-      return HttpResponse.json(
-        { message: "존재하지 않는 아이템입니다." },
-        { status: 404 }
-      );
+      return respondWithError("존재하지 않는 아이템입니다.", {
+        status: 404,
+        code: "INVENTORY_ITEM_NOT_FOUND",
+      });
+    }
+
+    if (!target.isEquipped) {
+      return respondWithError("장착 중인 아이템이 아닙니다.", {
+        status: 409,
+        code: "INVENTORY_NOT_EQUIPPED",
+      });
     }
 
     if (target.isEquipped) {
@@ -660,18 +735,40 @@ export const inventoryHandlers = [
       inventoryVersion += 1;
     }
 
-    return HttpResponse.json(buildInventoryResponse());
+    return respondWithSuccess(buildInventoryResponse());
   }),
   http.post(INVENTORY_ENDPOINTS.discard, async ({ request }) => {
+    if (request.headers.get("x-msw-force-rate-limit") === "true") {
+      return respondWithError("요청이 너무 많습니다.", {
+        status: 429,
+        code: "INVENTORY_RATE_LIMITED",
+      });
+    }
+
     const payload = (await request
       .json()
       .catch(() => null)) as InventoryActionRequestBody | null;
 
-    if (!payload || typeof payload.itemId !== "string") {
-      return HttpResponse.json(
-        { message: "itemId가 필요합니다." },
-        { status: 400 }
-      );
+    if (
+      !payload ||
+      typeof payload.itemId !== "string" ||
+      typeof payload.expectedVersion !== "number" ||
+      typeof payload.inventoryVersion !== "number"
+    ) {
+      return respondWithError("요청 바디가 올바르지 않습니다.", {
+        status: 400,
+        code: "INVENTORY_INVALID_REQUEST",
+      });
+    }
+
+    if (
+      payload.expectedVersion !== inventoryVersion ||
+      payload.inventoryVersion !== inventoryVersion
+    ) {
+      return respondWithError("인벤토리 버전이 최신 상태가 아닙니다.", {
+        status: 412,
+        code: "INVENTORY_VERSION_MISMATCH",
+      });
     }
 
     const index = inventoryItems.findIndex(
@@ -679,16 +776,16 @@ export const inventoryHandlers = [
     );
 
     if (index < 0) {
-      return HttpResponse.json(
-        { message: "존재하지 않는 아이템입니다." },
-        { status: 404 }
-      );
+      return respondWithError("존재하지 않는 아이템입니다.", {
+        status: 404,
+        code: "INVENTORY_ITEM_NOT_FOUND",
+      });
     }
 
     inventoryItems.splice(index, 1);
 
     inventoryVersion += 1;
 
-    return HttpResponse.json(buildInventoryResponse());
+    return respondWithSuccess(buildInventoryResponse());
   }),
 ];

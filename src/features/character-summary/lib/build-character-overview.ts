@@ -92,7 +92,9 @@ function resolveExpToLevel(state: DashboardState): number {
 }
 
 function extractEquippedItems(inventory: InventoryResponse): InventoryItem[] {
-  return (Object.values(inventory.equipped) as Array<InventoryItem | null>)
+  const equipped = inventory.equipped;
+
+  return [equipped.helmet, equipped.armor, equipped.weapon, equipped.ring]
     .filter(Boolean)
     .map((item) => ({ ...item!, isEquipped: true }));
 }
@@ -118,6 +120,13 @@ function calculateEquipmentBonus(
   return items.reduce<CharacterStatModifier>(
     (acc, item) => {
       item.modifiers.forEach((modifier) => {
+        if (modifier.kind !== "stat") {
+          return;
+        }
+        if (modifier.mode !== "flat") {
+          return;
+        }
+
         switch (modifier.stat) {
           case "hp":
             acc.hp += modifier.value;
@@ -131,9 +140,6 @@ function calculateEquipmentBonus(
             break;
           case "luck":
             acc.luck += modifier.value;
-            break;
-          case "ap":
-            acc.ap += modifier.value;
             break;
           default:
             break;

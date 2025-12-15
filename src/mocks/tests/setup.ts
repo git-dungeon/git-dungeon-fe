@@ -1,6 +1,7 @@
 import { afterAll, afterEach, beforeAll } from "vitest";
 import { server } from "./server";
 import { resetApiClientAuthentication } from "@/shared/api/http-client";
+import { resetInventoryMockState } from "@/mocks/handlers/inventory-handlers";
 
 beforeAll(() => {
   process.env.VITE_API_BASE_URL =
@@ -11,6 +12,7 @@ beforeAll(() => {
 afterEach(() => {
   server.resetHandlers();
   resetApiClientAuthentication();
+  resetInventoryMockState();
 });
 
 afterAll(() => {

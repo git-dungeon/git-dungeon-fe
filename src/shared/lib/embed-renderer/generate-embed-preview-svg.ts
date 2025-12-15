@@ -1,4 +1,4 @@
-import type { CharacterOverview } from "@/features/character-summary/lib/build-character-overview";
+import type { CharacterOverview as AppCharacterOverview } from "@/features/character-summary/lib/build-character-overview";
 import type {
   EmbedPreviewLanguage,
   EmbedPreviewSize,
@@ -6,6 +6,8 @@ import type {
 } from "@/entities/embed/model/types";
 import {
   renderEmbedSvg,
+  type CharacterOverview as RendererCharacterOverview,
+  type InventoryItem as RendererInventoryItem,
   type EmbedFontConfig,
 } from "@git-dungeon/embed-renderer";
 import {
@@ -13,12 +15,14 @@ import {
   type BrowserFontSource,
 } from "@git-dungeon/embed-renderer/browser";
 import NotoSansKrFontUrl from "@/shared/assets/fonts/NotoSansKR-Regular.otf?url";
+import { createSpriteFromLabel } from "@/shared/lib/sprite-utils";
+import { formatInventoryEffect } from "@/entities/inventory/lib/formatters";
 
 interface GenerateEmbedPreviewSvgParams {
   theme: EmbedPreviewTheme;
   size: EmbedPreviewSize;
   language: EmbedPreviewLanguage;
-  overview: CharacterOverview;
+  overview: AppCharacterOverview;
 }
 
 const browserFontSources: BrowserFontSource[] = [
@@ -32,6 +36,73 @@ const browserFontSources: BrowserFontSource[] = [
 
 let cachedFonts: EmbedFontConfig[] | null = null;
 let pendingFonts: Promise<EmbedFontConfig[]> | null = null;
+
+const RARITY_COLOR_MAP: Record<string, string> = {
+  common: "#6b7280",
+  uncommon: "#22c55e",
+  rare: "#3b82f6",
+  epic: "#a855f7",
+  legendary: "#facc15",
+};
+
+function resolveItemSprite(item: AppCharacterOverview["equipment"][number]) {
+  if (item.sprite) {
+    return item.sprite;
+  }
+
+  const displayName = item.name ?? item.code;
+  const label = displayName.trim().slice(0, 2).toUpperCase() || "??";
+  const color = RARITY_COLOR_MAP[item.rarity] ?? "#6b7280";
+
+  return createSpriteFromLabel(label, color);
+}
+
+function toRendererInventoryItem(
+  item: AppCharacterOverview["equipment"][number]
+): RendererInventoryItem {
+  if (item.slot === "consumable") {
+    throw new Error("임베드 렌더링은 consumable 슬롯을 지원하지 않습니다.");
+  }
+
+  const displayName = item.name ?? item.code;
+  const sprite = resolveItemSprite(item);
+
+  return {
+    id: item.id,
+    name: displayName,
+    slot: item.slot,
+    rarity: item.rarity,
+    modifiers: item.modifiers.flatMap((modifier) => {
+      if (modifier.kind !== "stat") {
+        return [];
+      }
+      if (modifier.mode !== "flat") {
+        return [];
+      }
+      return [{ stat: modifier.stat, value: modifier.value }];
+    }),
+    effect: item.effect
+      ? {
+          type: item.effect,
+          description: formatInventoryEffect(item.effect),
+        }
+      : undefined,
+    sprite,
+    createdAt: item.createdAt,
+    isEquipped: item.isEquipped,
+  };
+}
+
+function toRendererOverview(
+  overview: AppCharacterOverview
+): RendererCharacterOverview {
+  return {
+    ...overview,
+    equipment: overview.equipment
+      .filter((item) => item.slot !== "consumable")
+      .map(toRendererInventoryItem),
+  };
+}
 
 async function ensureFonts(): Promise<EmbedFontConfig[]> {
   if (cachedFonts) {
@@ -60,11 +131,12 @@ export async function generateEmbedPreviewSvg({
 }: GenerateEmbedPreviewSvgParams) {
   try {
     const fonts = await ensureFonts();
+    const rendererOverview = toRendererOverview(overview);
     return await renderEmbedSvg({
       theme,
       size,
       language,
-      overview,
+      overview: rendererOverview,
       fonts,
     });
   } catch (error) {

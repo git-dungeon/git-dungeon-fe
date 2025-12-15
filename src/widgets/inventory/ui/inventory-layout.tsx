@@ -2,8 +2,8 @@ import { useMemo, useState } from "react";
 import type {
   InventoryEquippedMap,
   InventoryItem,
+  InventoryItemSlot,
 } from "@/entities/inventory/model/types";
-import type { EquipmentSlot } from "@/entities/dashboard/model/types";
 import { InventorySlots } from "@/widgets/inventory/ui/inventory-slots";
 import { InventoryCharacterPanel } from "@/widgets/inventory/ui/inventory-character-panel";
 import { InventoryGrid } from "@/widgets/inventory/ui/inventory-grid";
@@ -33,7 +33,9 @@ export function InventoryLayout({
   onDiscard,
 }: InventoryLayoutProps) {
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
-  const [selectedSlot, setSelectedSlot] = useState<EquipmentSlot | null>(null);
+  const [selectedSlot, setSelectedSlot] = useState<InventoryItemSlot | null>(
+    null
+  );
 
   const selectedItem = useMemo(() => {
     if (!selectedItemId) {
@@ -43,7 +45,7 @@ export function InventoryLayout({
     return items.find((item) => item.id === selectedItemId) ?? null;
   }, [items, selectedItemId]);
 
-  const handleSelect = (item: InventoryItem, slot: EquipmentSlot) => {
+  const handleSelect = (item: InventoryItem, slot: InventoryItemSlot) => {
     setSelectedItemId(item.id);
     setSelectedSlot(slot);
   };

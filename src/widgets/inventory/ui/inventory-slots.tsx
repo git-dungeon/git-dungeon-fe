@@ -37,7 +37,7 @@ export function InventorySlots({ equipped, onSelect }: InventorySlotsProps) {
                   onSelect(item, slot);
                 }
               }}
-              title={item ? item.name : undefined}
+              title={item ? (item.name ?? item.code) : undefined}
               className={cn(
                 "group bg-background flex h-auto w-full flex-col items-center justify-center gap-2 p-3 text-center transition"
               )}

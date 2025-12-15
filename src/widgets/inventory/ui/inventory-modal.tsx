@@ -1,10 +1,10 @@
 import type { InventoryItem } from "@/entities/inventory/model/types";
-import type { EquipmentSlot } from "@/entities/dashboard/model/types";
+import type { InventoryItemSlot } from "@/entities/inventory/model/types";
 import { formatRarity } from "@/entities/dashboard/lib/formatters";
 import { formatInventoryEffect } from "@/entities/inventory/lib/formatters";
 import { formatDateTime } from "@/shared/lib/datetime/formatters";
 import { cn } from "@/shared/lib/utils";
-import { formatStatChange } from "@/shared/lib/stats/format";
+import { formatStatChange, resolveStatLabel } from "@/shared/lib/stats/format";
 import { BADGE_TONE_CLASSES } from "@/shared/ui/tone";
 import {
   Dialog,
@@ -20,7 +20,7 @@ import { Badge } from "@/shared/ui/badge";
 
 interface InventoryModalProps {
   item: InventoryItem | null;
-  slot: EquipmentSlot | null;
+  slot: InventoryItemSlot | null;
   isPending: boolean;
   error: Error | null;
   onClose: () => void;
@@ -29,11 +29,12 @@ interface InventoryModalProps {
   onDiscard: (itemId: string) => Promise<unknown>;
 }
 
-const SLOT_LABEL_MAP: Record<EquipmentSlot, string> = {
+const SLOT_LABEL_MAP: Record<InventoryItemSlot, string> = {
   helmet: "투구",
   armor: "방어구",
   weapon: "무기",
   ring: "반지",
+  consumable: "소모품",
 };
 
 export function InventoryModal({
@@ -50,6 +51,8 @@ export function InventoryModal({
     return null;
   }
 
+  const displayName = item.name ?? item.code;
+
   const handleOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) {
       onClose();
@@ -57,18 +60,30 @@ export function InventoryModal({
   };
 
   const handleEquip = async () => {
-    await onEquip(item.id);
-    onClose();
+    try {
+      await onEquip(item.id);
+      onClose();
+    } catch {
+      // 에러는 상위에서 전달된 상태로 표시한다.
+    }
   };
 
   const handleUnequip = async () => {
-    await onUnequip(item.id);
-    onClose();
+    try {
+      await onUnequip(item.id);
+      onClose();
+    } catch {
+      // 에러는 상위에서 전달된 상태로 표시한다.
+    }
   };
 
   const handleDiscard = async () => {
-    await onDiscard(item.id);
-    onClose();
+    try {
+      await onDiscard(item.id);
+      onClose();
+    } catch {
+      // 에러는 상위에서 전달된 상태로 표시한다.
+    }
   };
 
   return (
@@ -87,16 +102,22 @@ export function InventoryModal({
         <div className="flex flex-col gap-2">
           <DialogHeader className="flex-row items-start gap-2">
             <div className="flex size-12 shrink-0 items-center justify-center">
-              <img
-                src={item.sprite}
-                alt={item.name}
-                className="size-12 object-cover"
-                loading="lazy"
-              />
+              {item.sprite ? (
+                <img
+                  src={item.sprite}
+                  alt={displayName}
+                  className="size-12 object-cover"
+                  loading="lazy"
+                />
+              ) : (
+                <div className="border-border bg-muted text-muted-foreground flex size-12 items-center justify-center rounded-md border text-xs font-semibold">
+                  {displayName.slice(0, 2).toUpperCase()}
+                </div>
+              )}
             </div>
             <div className="w-full text-left">
               <DialogTitle className="text-lg font-semibold">
-                {item.name}
+                {displayName}
               </DialogTitle>
               <DialogDescription className="text-sm">
                 {SLOT_LABEL_MAP[slot]} · {formatRarity(item.rarity)}
@@ -107,26 +128,40 @@ export function InventoryModal({
           <section className="flex flex-col gap-2 text-sm">
             <h3 className="text-xs">추가 스탯</h3>
             <ul className="flex flex-wrap gap-2">
-              {item.modifiers.map((modifier, index) => {
-                const { text, tone } = formatStatChange(
-                  modifier.stat,
-                  modifier.value
-                );
-                return (
-                  <li
-                    key={`${item.id}-modifier-${index}`}
-                    className="font-medium"
-                  >
-                    <Badge
-                      variant="outline"
-                      className={cn("text-[10px]", BADGE_TONE_CLASSES[tone])}
+              {item.modifiers
+                .filter((modifier) => modifier.kind === "stat")
+                .map((modifier, index) => {
+                  const label = resolveStatLabel(modifier.stat);
+                  const { text, tone } =
+                    modifier.mode === "percent"
+                      ? {
+                          text: `${label} ${modifier.value > 0 ? "+" : ""}${modifier.value}%`,
+                          tone:
+                            modifier.value > 0
+                              ? ("gain" as const)
+                              : modifier.value < 0
+                                ? ("loss" as const)
+                                : ("neutral" as const),
+                        }
+                      : formatStatChange(modifier.stat, modifier.value);
+
+                  return (
+                    <li
+                      key={`${item.id}-modifier-${index}`}
+                      className="font-medium"
                     >
-                      {text}
-                    </Badge>
-                  </li>
-                );
-              })}
-              {item.modifiers.length === 0 ? <li>추가 스탯 없음</li> : null}
+                      <Badge
+                        variant="outline"
+                        className={cn("text-[10px]", BADGE_TONE_CLASSES[tone])}
+                      >
+                        {text}
+                      </Badge>
+                    </li>
+                  );
+                })}
+              {item.modifiers.filter((m) => m.kind === "stat").length === 0 ? (
+                <li>추가 스탯 없음</li>
+              ) : null}
             </ul>
           </section>
 
@@ -137,9 +172,6 @@ export function InventoryModal({
                 <Badge variant="outline">
                   {formatInventoryEffect(item.effect)}
                 </Badge>
-                <p className="text-muted-foreground text-sm">
-                  {item.effect.description}
-                </p>
               </div>
             </section>
           ) : null}
