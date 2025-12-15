@@ -141,12 +141,21 @@ async function fetchCatalogFromServer(
   etag: string | null
 ): Promise<{ data: CatalogData; etag: string | null; raw: unknown }> {
   const requestPath = CATALOG_ENDPOINTS.catalog.replace(/^\//, "");
-  const response = await apiClient(requestPath, {
-    method: "GET",
-    throwHttpErrors: false,
-    headers: etag ? { "If-None-Match": etag } : undefined,
-    searchParams: params.locale ? { locale: params.locale } : undefined,
-  });
+  let response: Response;
+
+  try {
+    response = await apiClient(requestPath, {
+      method: "GET",
+      throwHttpErrors: false,
+      headers: etag ? { "If-None-Match": etag } : undefined,
+      searchParams: params.locale ? { locale: params.locale } : undefined,
+    });
+  } catch (error) {
+    if (error instanceof TypeError) {
+      throw new NetworkError("Network request failed", error);
+    }
+    throw error;
+  }
 
   if (response.status === 304) {
     throw new ApiError("Not Modified", 304, null);

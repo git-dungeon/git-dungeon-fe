@@ -19,7 +19,11 @@ const NAVIGATION_LINKS = [
 ] as const;
 
 export const Route = createRootRouteWithContext<RouterContext>()({
-  beforeLoad: async ({ context }) => {
+  beforeLoad: async ({ context, location }) => {
+    if (location.pathname.startsWith("/login")) {
+      return;
+    }
+
     await ensureQueryDataSafe(
       context.queryClient,
       catalogQueryOptions(getLanguagePreference())

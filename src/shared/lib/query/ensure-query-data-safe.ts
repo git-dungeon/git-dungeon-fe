@@ -24,9 +24,14 @@ export async function ensureQueryDataSafe<
   try {
     await queryClient.ensureQueryData(options);
   } catch (error) {
+    const isFetchTypeError =
+      error instanceof TypeError &&
+      /Failed to fetch|fetch failed|NetworkError/i.test(error.message);
+
     if (
       error instanceof ApiError ||
       error instanceof NetworkError ||
+      isFetchTypeError ||
       (error instanceof Error && /Network request failed/.test(error.message))
     ) {
       if (import.meta.env.DEV) {
