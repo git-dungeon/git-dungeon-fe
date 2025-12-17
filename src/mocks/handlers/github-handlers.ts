@@ -4,6 +4,18 @@ import { respondWithError, respondWithSuccess } from "@/mocks/lib/api-response";
 import { mockProfileOverview } from "@/mocks/fixtures/profile-overview";
 
 const SYNC_COOLDOWN_MS = 6 * 60 * 60 * 1000;
+const INITIAL_GITHUB_CONNECTION = mockProfileOverview.connections.github
+  ? { ...mockProfileOverview.connections.github }
+  : undefined;
+
+export function resetGithubMockState() {
+  if (!INITIAL_GITHUB_CONNECTION) {
+    mockProfileOverview.connections.github = undefined;
+    return;
+  }
+
+  mockProfileOverview.connections.github = { ...INITIAL_GITHUB_CONNECTION };
+}
 
 function resolveLastSyncAt(): string | null {
   return mockProfileOverview.connections.github?.lastSyncAt ?? null;

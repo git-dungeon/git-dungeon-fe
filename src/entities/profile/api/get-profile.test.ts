@@ -6,8 +6,16 @@ import { SETTINGS_ENDPOINTS } from "@/shared/config/env";
 import { getProfile } from "@/entities/profile/api/get-profile";
 import * as httpClient from "@/shared/api/http-client";
 import { ApiError, NetworkError } from "@/shared/api/http-client";
+import { DEFAULT_USER_ID } from "@/mocks/fixtures/profile-overview";
 
 describe("getProfile", () => {
+  it("기본 MSW 핸들러 응답을 스키마로 파싱한다", async () => {
+    const data = await getProfile();
+
+    expect(data.profile.userId).toBe(DEFAULT_USER_ID);
+    expect(data.connections.github?.connected).toBe(true);
+  });
+
   it("프로필 오버뷰를 반환한다", async () => {
     const payload = {
       profile: {

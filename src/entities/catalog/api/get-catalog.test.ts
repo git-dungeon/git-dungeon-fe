@@ -52,6 +52,15 @@ describe("getCatalog", () => {
     expect(seenIfNoneMatch).toBe(etag);
   });
 
+  it("기본 MSW 핸들러 응답을 스키마로 파싱한다", async () => {
+    const data = await getCatalog({ locale: "en" });
+
+    expect(data.version).toBeTypeOf("number");
+    expect(Array.isArray(data.items)).toBe(true);
+    expect(Array.isArray(data.buffs)).toBe(true);
+    expect(Array.isArray(data.monsters)).toBe(true);
+  });
+
   it("304이지만 캐시 데이터가 없으면 If-None-Match 없이 재요청한다", async () => {
     const etag = '"catalog-en-v1"';
     const now = new Date().toISOString();
