@@ -3,28 +3,18 @@ import { SETTINGS_ENDPOINTS } from "@/shared/config/env";
 import { mockDashboardResponse } from "@/mocks/handlers/dashboard-handlers";
 import { mockTimestampMinutesAgo } from "@/mocks/handlers/shared/time";
 import {
+  DEFAULT_USER_ID,
+  mockProfileOverview,
+} from "@/mocks/fixtures/profile-overview";
+import {
   EMBED_PREVIEW_SIZE_VALUES,
   type EmbedPreviewSize,
 } from "@/entities/embed/model/types";
 import { respondWithSuccess } from "@/mocks/lib/api-response";
 
-const DEFAULT_USER_ID = "user-123";
-
-const mockProfileOverview = {
-  profile: {
-    userId: DEFAULT_USER_ID,
-    username: "mock-user",
-    displayName: "Mocked Adventurer",
-    email: "mocked.adventurer@example.com",
-    avatarUrl: "https://avatars.githubusercontent.com/u/1?v=4",
-    joinedAt: "2023-11-02T12:00:00.000Z",
-  },
-  connections: {
-    github: {
-      connected: true,
-      lastSyncAt: mockTimestampMinutesAgo(45),
-    },
-  },
+mockProfileOverview.connections.github = {
+  connected: true,
+  lastSyncAt: mockTimestampMinutesAgo(45),
 };
 
 const EMBEDDING_SIZE_FALLBACK: EmbedPreviewSize = "compact";
