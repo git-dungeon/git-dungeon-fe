@@ -10,6 +10,7 @@ import { cn } from "@/shared/lib/utils";
 import { ensureQueryDataSafe } from "@/shared/lib/query/ensure-query-data-safe";
 import { catalogQueryOptions } from "@/entities/catalog/model/catalog-query";
 import { getLanguagePreference } from "@/shared/lib/preferences/preferences";
+import { NotFoundPage } from "@/pages/not-found/ui/not-found-page";
 
 const NAVIGATION_LINKS = [
   { to: "/dashboard", label: "대시보드" },
@@ -29,6 +30,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       catalogQueryOptions(getLanguagePreference())
     );
   },
+  notFoundComponent: NotFoundPage,
   component: RootComponent,
 });
 
