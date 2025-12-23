@@ -44,7 +44,7 @@ const STATUS_ACTION_LABEL_MAP: Record<
     TREASURE: "보물을 조사하기 시작했습니다",
     TRAP: "함정을 살펴보기 시작했습니다",
     REST: "휴식을 준비합니다",
-    MOVE: "다음 행동을 준비합니다",
+    MOVE: "다음 층으로 이동합니다",
     DEATH: "사망 처리 중입니다",
     REVIVE: "부활 처리 중입니다",
     ACQUIRE_ITEM: "아이템을 획득합니다",

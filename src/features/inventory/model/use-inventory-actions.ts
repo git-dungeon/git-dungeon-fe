@@ -55,6 +55,7 @@ export function useInventoryActions() {
         return current;
       }
     );
+    queryClient.invalidateQueries({ queryKey: INVENTORY_QUERY_KEY });
     queryClient.invalidateQueries({ queryKey: DASHBOARD_STATE_QUERY_KEY });
   };
 
@@ -161,12 +162,14 @@ function buildInventoryMutationVariables(
 ): InventoryActionVariables {
   const current =
     queryClient.getQueryData<InventoryResponse>(INVENTORY_QUERY_KEY);
-  const version = current?.version ?? 0;
+  const inventoryVersion = current?.version ?? 0;
+  const itemVersion =
+    current?.items.find((item) => item.id === itemId)?.version ?? 0;
 
   return {
     itemId,
-    expectedVersion: version,
-    inventoryVersion: version,
+    expectedVersion: itemVersion,
+    inventoryVersion,
   };
 }
 

@@ -531,7 +531,7 @@ function syncDashboardEquippedItems() {
       sprite: item.sprite ?? null,
       createdAt: item.createdAt,
       isEquipped: true,
-      version: 1,
+      version: item.version,
     }));
 }
 
@@ -636,22 +636,26 @@ export const inventoryHandlers = [
       });
     }
 
-    if (
-      payload.expectedVersion !== inventoryVersion ||
-      payload.inventoryVersion !== inventoryVersion
-    ) {
-      return respondWithError("인벤토리 버전이 최신 상태가 아닙니다.", {
-        status: 412,
-        code: "INVENTORY_VERSION_MISMATCH",
-      });
-    }
-
     const target = inventoryItems.find((item) => item.id === payload.itemId);
 
     if (!target) {
       return respondWithError("존재하지 않는 아이템입니다.", {
         status: 404,
         code: "INVENTORY_ITEM_NOT_FOUND",
+      });
+    }
+
+    if (payload.inventoryVersion !== inventoryVersion) {
+      return respondWithError("인벤토리 버전이 최신 상태가 아닙니다.", {
+        status: 412,
+        code: "INVENTORY_VERSION_MISMATCH",
+      });
+    }
+
+    if (payload.expectedVersion !== target.version) {
+      return respondWithError("아이템 버전이 최신 상태가 아닙니다.", {
+        status: 412,
+        code: "INVENTORY_VERSION_MISMATCH",
       });
     }
 
@@ -669,6 +673,7 @@ export const inventoryHandlers = [
         const nextEquipped = item.id === target.id;
         if (item.isEquipped !== nextEquipped) {
           item.isEquipped = nextEquipped;
+          item.version += 1;
           changed = true;
         }
       }
@@ -704,22 +709,26 @@ export const inventoryHandlers = [
       });
     }
 
-    if (
-      payload.expectedVersion !== inventoryVersion ||
-      payload.inventoryVersion !== inventoryVersion
-    ) {
-      return respondWithError("인벤토리 버전이 최신 상태가 아닙니다.", {
-        status: 412,
-        code: "INVENTORY_VERSION_MISMATCH",
-      });
-    }
-
     const target = inventoryItems.find((item) => item.id === payload.itemId);
 
     if (!target) {
       return respondWithError("존재하지 않는 아이템입니다.", {
         status: 404,
         code: "INVENTORY_ITEM_NOT_FOUND",
+      });
+    }
+
+    if (payload.inventoryVersion !== inventoryVersion) {
+      return respondWithError("인벤토리 버전이 최신 상태가 아닙니다.", {
+        status: 412,
+        code: "INVENTORY_VERSION_MISMATCH",
+      });
+    }
+
+    if (payload.expectedVersion !== target.version) {
+      return respondWithError("아이템 버전이 최신 상태가 아닙니다.", {
+        status: 412,
+        code: "INVENTORY_VERSION_MISMATCH",
       });
     }
 
@@ -732,6 +741,7 @@ export const inventoryHandlers = [
 
     if (target.isEquipped) {
       target.isEquipped = false;
+      target.version += 1;
       inventoryVersion += 1;
     }
 
@@ -761,16 +771,6 @@ export const inventoryHandlers = [
       });
     }
 
-    if (
-      payload.expectedVersion !== inventoryVersion ||
-      payload.inventoryVersion !== inventoryVersion
-    ) {
-      return respondWithError("인벤토리 버전이 최신 상태가 아닙니다.", {
-        status: 412,
-        code: "INVENTORY_VERSION_MISMATCH",
-      });
-    }
-
     const index = inventoryItems.findIndex(
       (item) => item.id === payload.itemId
     );
@@ -779,6 +779,20 @@ export const inventoryHandlers = [
       return respondWithError("존재하지 않는 아이템입니다.", {
         status: 404,
         code: "INVENTORY_ITEM_NOT_FOUND",
+      });
+    }
+
+    if (payload.inventoryVersion !== inventoryVersion) {
+      return respondWithError("인벤토리 버전이 최신 상태가 아닙니다.", {
+        status: 412,
+        code: "INVENTORY_VERSION_MISMATCH",
+      });
+    }
+
+    if (payload.expectedVersion !== inventoryItems[index].version) {
+      return respondWithError("아이템 버전이 최신 상태가 아닙니다.", {
+        status: 412,
+        code: "INVENTORY_VERSION_MISMATCH",
       });
     }
 

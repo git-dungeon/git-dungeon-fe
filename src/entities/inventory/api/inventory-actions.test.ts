@@ -19,8 +19,8 @@ describe("inventory actions", () => {
     try {
       await postInventoryEquip({
         itemId: target!.id,
-        expectedVersion: inventory.version + 1,
-        inventoryVersion: inventory.version + 1,
+        expectedVersion: target!.version + 1,
+        inventoryVersion: inventory.version,
       });
       throw new Error("Expected postInventoryEquip to throw");
     } catch (error) {
@@ -42,7 +42,7 @@ describe("inventory actions", () => {
     try {
       await postInventoryEquip({
         itemId: target!.id,
-        expectedVersion: inventory.version,
+        expectedVersion: target!.version,
         inventoryVersion: inventory.version,
       });
       throw new Error("Expected postInventoryEquip to throw");
@@ -61,7 +61,7 @@ describe("inventory actions", () => {
     try {
       await postInventoryUnequip({
         itemId: target!.id,
-        expectedVersion: inventory.version,
+        expectedVersion: target!.version,
         inventoryVersion: inventory.version,
       });
       throw new Error("Expected postInventoryUnequip to throw");
@@ -87,7 +87,7 @@ describe("inventory actions", () => {
     try {
       await postInventoryEquip({
         itemId: target.id,
-        expectedVersion: inventory.version,
+        expectedVersion: target.version,
         inventoryVersion: inventory.version,
       });
       throw new Error("Expected postInventoryEquip to throw");
@@ -109,7 +109,7 @@ describe("inventory actions", () => {
 
     const next = await postInventoryDiscard({
       itemId: target!.id,
-      expectedVersion: inventory.version,
+      expectedVersion: target!.version,
       inventoryVersion: inventory.version,
     });
 
