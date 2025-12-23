@@ -8,6 +8,11 @@ import {
   resolveThumbnailBadgePresentation,
 } from "@/entities/dungeon-log/config/thumbnails";
 import { DeltaList } from "@/entities/dungeon-log/ui/delta-list";
+import { BattleMonsterSummary } from "@/entities/dungeon-log/ui/battle-monster-summary";
+import {
+  resolveBattleMonster,
+  resolveBattleResult,
+} from "@/entities/dungeon-log/lib/monster";
 import {
   Dialog,
   DialogClose,
@@ -30,6 +35,8 @@ export function DungeonLogDetailDialog({
   onOpenChange,
 }: DungeonLogDetailDialogProps) {
   const thumbnails = log ? buildLogThumbnails(log) : [];
+  const monster = log ? resolveBattleMonster(log) : undefined;
+  const result = log ? resolveBattleResult(log) : undefined;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -54,6 +61,17 @@ export function DungeonLogDetailDialog({
                 </Button>
               </DialogClose>
             </DialogHeader>
+
+            {monster ? (
+              <div className="space-y-2">
+                <p className="text-muted-foreground text-xs">상대 몬스터</p>
+                <BattleMonsterSummary
+                  monster={monster}
+                  result={result}
+                  size="detail"
+                />
+              </div>
+            ) : null}
 
             <div className="space-y-2">
               <p className="text-muted-foreground text-xs">관련 이미지</p>

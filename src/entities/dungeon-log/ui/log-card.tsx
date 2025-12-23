@@ -7,6 +7,11 @@ import {
   resolveLogCategoryLabel,
   resolveStatusLabel,
 } from "@/entities/dungeon-log/lib/formatters";
+import { BattleMonsterSummary } from "@/entities/dungeon-log/ui/battle-monster-summary";
+import {
+  resolveBattleMonster,
+  resolveBattleResult,
+} from "@/entities/dungeon-log/lib/monster";
 import { Badge } from "@/shared/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader } from "@/shared/ui/card";
 import { cn } from "@/shared/lib/utils";
@@ -28,6 +33,8 @@ export function LogCard({
 }: LogCardProps) {
   const deltaContent = renderDelta?.(log);
   const isInteractive = typeof onClick === "function";
+  const monster = resolveBattleMonster(log);
+  const result = resolveBattleResult(log);
 
   return (
     <Card
@@ -90,6 +97,9 @@ export function LogCard({
               log.action
             )}`}
           </p>
+          {monster ? (
+            <BattleMonsterSummary monster={monster} result={result} />
+          ) : null}
         </div>
         {renderThumbnail ? (
           <div className="flex justify-end">{renderThumbnail()}</div>

@@ -77,6 +77,15 @@ const mockDungeonLogs: DungeonLogEntry[] = [
       type: "BATTLE",
       detail: {
         stats: { ap: -1 },
+        rewards: {
+          gold: 12,
+          items: [
+            {
+              itemCode: "ring-copper-band",
+              quantity: 1,
+            },
+          ],
+        },
       },
     },
     extra: {

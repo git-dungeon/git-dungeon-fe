@@ -40,11 +40,10 @@ const SLOT_FALLBACK_IMAGE: Record<string, string> = {
 };
 
 const ITEM_IMAGE_MAP: Record<string, string> = {
-  "Leather Cap": leatherCapImage,
-  "Leather Armor": leatherArmorImage,
-  "Wooden Sword": woodenSwordImage,
-  "Copper Ring": copperBandImage,
-  "Copper Band": copperBandImage,
+  "helmet-leather-cap": leatherCapImage,
+  "armor-leather-armor": leatherArmorImage,
+  "weapon-wooden-sword": woodenSwordImage,
+  "ring-copper-band": copperBandImage,
 };
 
 const BADGE_PRESENTATIONS: Record<
@@ -70,16 +69,32 @@ const MONSTER_SPRITE_MAP: Record<string, string> = {
   monster_giant_rat: giantRatImage,
 };
 
-function resolveMonsterThumbnail(spriteId?: string) {
+export function resolveMonsterThumbnail(spriteId?: string) {
   if (!spriteId) {
     return undefined;
   }
-  return MONSTER_SPRITE_MAP[spriteId];
+  if (MONSTER_SPRITE_MAP[spriteId]) {
+    return MONSTER_SPRITE_MAP[spriteId];
+  }
+
+  const normalized = spriteId.split("/").pop()?.replace(/-/g, "_");
+  if (normalized && MONSTER_SPRITE_MAP[normalized]) {
+    return MONSTER_SPRITE_MAP[normalized];
+  }
+
+  return undefined;
 }
 
 function resolveItemThumbnail(itemKey?: string, slot?: string) {
   if (itemKey && ITEM_IMAGE_MAP[itemKey]) {
     return ITEM_IMAGE_MAP[itemKey];
+  }
+
+  if (!slot && itemKey) {
+    const inferredSlot = itemKey.split("-")[0]?.toLowerCase();
+    if (inferredSlot && SLOT_FALLBACK_IMAGE[inferredSlot]) {
+      return SLOT_FALLBACK_IMAGE[inferredSlot];
+    }
   }
 
   if (slot) {
@@ -131,6 +146,16 @@ export function buildLogThumbnails(
   entry: DungeonLogEntry
 ): LogThumbnailDescriptor[] {
   const thumbnails: LogThumbnailDescriptor[] = [];
+  const actionThumbnail = resolveActionThumbnail(entry.action);
+  const isBattleAction = entry.action === "BATTLE";
+
+  if (actionThumbnail && isBattleAction) {
+    thumbnails.push({
+      id: `${entry.id}-action`,
+      src: actionThumbnail,
+      alt: entry.action,
+    });
+  }
 
   if (entry.extra?.type === "BATTLE") {
     const monster = entry.extra.details?.monster;
@@ -145,6 +170,19 @@ export function buildLogThumbnails(
   }
 
   const delta = entry.delta;
+
+  if (delta?.type === "BATTLE") {
+    const rewardItem = delta.detail.rewards?.items?.at(0);
+    const itemThumbnail = resolveItemThumbnail(rewardItem?.itemCode, undefined);
+    if (itemThumbnail) {
+      thumbnails.push({
+        id: `${entry.id}-reward-item`,
+        src: itemThumbnail,
+        alt: rewardItem?.itemCode ?? "보상 아이템",
+        badge: "gain",
+      });
+    }
+  }
 
   if (
     delta?.type === "EQUIP_ITEM" ||
@@ -184,8 +222,7 @@ export function buildLogThumbnails(
     }
   }
 
-  const actionThumbnail = resolveActionThumbnail(entry.action);
-  if (actionThumbnail) {
+  if (actionThumbnail && !isBattleAction) {
     thumbnails.push({
       id: `${entry.id}-action`,
       src: actionThumbnail,

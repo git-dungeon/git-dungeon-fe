@@ -3,6 +3,7 @@ import type {
   DungeonLogCategory,
   DungeonLogDelta,
   DungeonLogEntry,
+  DungeonLogRewardItem,
   DungeonLogStatus,
   DungeonLogStatsDelta,
 } from "@/entities/dungeon-log/model/types";
@@ -15,6 +16,7 @@ import {
   formatStatChange,
   type StatTone,
 } from "@/shared/lib/stats/format";
+import { resolveBattleMonster } from "@/entities/dungeon-log/lib/monster";
 
 const ACTION_LABEL_MAP: Record<DungeonLogAction, string> = {
   BATTLE: "전투",
@@ -126,25 +128,14 @@ export function formatDelta(entry: DungeonLogEntry): FormattedDeltaEntry[] {
       entries.push(...formatStatsDelta(entry.id, delta.detail.stats));
       pushNumeric(entries, entry.id, "Gold", delta.detail.rewards?.gold);
       pushProgress(entries, entry.id, delta.detail.progress?.delta);
+      pushRewardItemsSummary(entries, entry.id, delta.detail.rewards?.items);
       break;
     }
     case "TREASURE": {
       entries.push(...formatStatsDelta(entry.id, delta.detail.stats));
       pushNumeric(entries, entry.id, "Gold", delta.detail.rewards?.gold);
       pushProgress(entries, entry.id, delta.detail.progress?.delta);
-
-      const rewardItems = delta.detail.rewards?.items ?? [];
-      if (rewardItems.length > 0) {
-        const count = rewardItems.reduce(
-          (acc, item) => acc + (item.quantity ?? 1),
-          0
-        );
-        entries.push({
-          id: `${entry.id}-reward-items`,
-          text: `아이템 ${count}개`,
-          tone: "gain",
-        });
-      }
+      pushRewardItemsSummary(entries, entry.id, delta.detail.rewards?.items);
       break;
     }
     case "MOVE": {
@@ -249,6 +240,23 @@ function pushProgress(
   });
 }
 
+function pushRewardItemsSummary(
+  acc: FormattedDeltaEntry[],
+  entryId: string,
+  items?: DungeonLogRewardItem[]
+) {
+  if (!items || items.length === 0) {
+    return;
+  }
+
+  const count = items.reduce((total, item) => total + (item.quantity ?? 1), 0);
+  acc.push({
+    id: `${entryId}-reward-items`,
+    text: `아이템 ${count}개`,
+    tone: "gain",
+  });
+}
+
 function formatStatsDelta(
   entryId: string,
   stats?: DungeonLogStatsDelta
@@ -334,11 +342,9 @@ export function buildLogDescription(entry: DungeonLogEntry): string {
 }
 
 function buildDetailsAttachment(entry: DungeonLogEntry): string | undefined {
-  const extra = entry.extra;
-
-  if (extra?.type === "BATTLE") {
-    const monster = extra.details?.monster;
-    return monster?.name ? `상대: ${monster.name}` : undefined;
+  const monster = resolveBattleMonster(entry);
+  if (monster?.name) {
+    return `상대: ${monster.name}`;
   }
 
   return undefined;
