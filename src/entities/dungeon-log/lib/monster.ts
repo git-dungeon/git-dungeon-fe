@@ -1,11 +1,13 @@
 import type {
   DungeonLogEntry,
+  DungeonLogBattlePlayerSnapshot,
   DungeonLogMonster,
 } from "@/entities/dungeon-log/model/types";
 
 type BattleExtra = Extract<DungeonLogEntry["extra"], { type: "BATTLE" }>;
 type BattleDetails = BattleExtra["details"];
 type BattleResult = BattleDetails["result"];
+type BattlePlayer = DungeonLogBattlePlayerSnapshot;
 
 function resolveBattleExtra(entry: DungeonLogEntry): BattleExtra | undefined {
   if (entry.extra?.type === "BATTLE") {
@@ -45,4 +47,21 @@ export function resolveBattleResult(
     (extra as { detail?: { result?: BattleResult } }).detail?.result;
 
   return result;
+}
+
+export function resolveBattlePlayer(
+  entry: DungeonLogEntry
+): BattlePlayer | undefined {
+  const extra = resolveBattleExtra(entry);
+  if (!extra) {
+    return undefined;
+  }
+
+  const details = extra.details as BattleDetails | undefined;
+  const player =
+    details?.player ??
+    (extra as { detail?: { player?: BattlePlayer } }).detail?.player ??
+    (extra as { player?: BattlePlayer }).player;
+
+  return player;
 }

@@ -191,6 +191,7 @@ function buildOptimisticInventory(
     items,
     equipped,
     summary: {
+      base: baseStats,
       total,
       equipmentBonus,
     },
@@ -290,6 +291,10 @@ function calculateEquipmentBonus(
 function calculateBaseStats(
   summary: InventoryResponse["summary"]
 ): InventoryStatValues {
+  if (summary.base) {
+    return summary.base;
+  }
+
   return {
     hp: summary.total.hp - summary.equipmentBonus.hp,
     atk: summary.total.atk - summary.equipmentBonus.atk,

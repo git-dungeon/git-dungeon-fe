@@ -1,5 +1,8 @@
 import battleImage from "@/assets/battle.png";
+import deadImage from "@/assets/dead.png";
+import levelUpImage from "@/assets/level-up.png";
 import restImage from "@/assets/rest.png";
+import resurrectedImage from "@/assets/resurrected.png";
 import trapImage from "@/assets/trap.png";
 import treasureImage from "@/assets/treasure.png";
 import moveImage from "@/assets/move.png";
@@ -25,6 +28,9 @@ export interface LogThumbnailDescriptor {
 
 const ACTION_IMAGE_MAP: Partial<Record<DungeonLogAction, string>> = {
   BATTLE: battleImage,
+  DEATH: deadImage,
+  LEVEL_UP: levelUpImage,
+  REVIVE: resurrectedImage,
   TREASURE: treasureImage,
   REST: restImage,
   TRAP: trapImage,

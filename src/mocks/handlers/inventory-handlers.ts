@@ -551,7 +551,8 @@ function buildEquippedMap(): InventoryEquippedMap {
 
 export function buildInventoryResponse(): InventoryResponse {
   const equipped = buildEquippedMap();
-  const { hp, atk, def, luck } = mockDashboardResponse.state;
+  const { maxHp, atk, def, luck } = mockDashboardResponse.state;
+  const hp = maxHp;
 
   const equipmentBonus: InventoryStatValues = {
     hp: 0,
@@ -597,6 +598,12 @@ export function buildInventoryResponse(): InventoryResponse {
     items: inventoryItems.map((item) => ({ ...item })),
     equipped,
     summary: {
+      base: {
+        hp: hp - equipmentBonus.hp,
+        atk: atk - equipmentBonus.atk,
+        def: def - equipmentBonus.def,
+        luck: luck - equipmentBonus.luck,
+      },
       total: {
         hp,
         atk,

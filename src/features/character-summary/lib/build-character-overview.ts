@@ -57,7 +57,7 @@ export function buildCharacterOverview(
   inventory: InventoryResponse
 ): CharacterOverview {
   const equippedItems = extractEquippedItems(inventory);
-  const equipmentBonus = calculateEquipmentBonus(equippedItems);
+  const equipmentBonus = resolveEquipmentBonus(state, inventory, equippedItems);
   const totalStats = extractTotalStats(state);
   const baseStats = calculateBaseStats(totalStats, equipmentBonus);
   const expToLevel = resolveExpToLevel(state);
@@ -149,6 +149,40 @@ function calculateEquipmentBonus(
     },
     { ...DEFAULT_MODIFIER }
   );
+}
+
+function resolveEquipmentBonus(
+  state: DashboardState,
+  inventory: InventoryResponse,
+  equippedItems: InventoryItem[]
+): CharacterStatModifier {
+  const breakdown = state.stats?.equipmentBonus;
+  if (breakdown) {
+    return buildModifierFromStatBlock(breakdown);
+  }
+
+  const summaryBonus = inventory.summary?.equipmentBonus;
+  if (summaryBonus) {
+    return buildModifierFromStatBlock(summaryBonus);
+  }
+
+  return calculateEquipmentBonus(equippedItems);
+}
+
+function buildModifierFromStatBlock(block: {
+  hp: number;
+  atk: number;
+  def: number;
+  luck: number;
+}): CharacterStatModifier {
+  return {
+    ...DEFAULT_MODIFIER,
+    hp: block.hp,
+    maxHp: block.hp,
+    atk: block.atk,
+    def: block.def,
+    luck: block.luck,
+  };
 }
 
 function calculateBaseStats(

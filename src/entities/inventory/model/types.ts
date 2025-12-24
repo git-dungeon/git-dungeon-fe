@@ -59,6 +59,7 @@ export type InventoryStatValues = z.infer<typeof inventoryStatValuesSchema>;
 
 export const inventorySummarySchema = z
   .object({
+    base: inventoryStatValuesSchema,
     total: inventoryStatValuesSchema,
     equipmentBonus: inventoryStatValuesSchema,
   })

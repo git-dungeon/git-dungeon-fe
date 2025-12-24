@@ -10,6 +10,7 @@ import {
 import { BattleMonsterSummary } from "@/entities/dungeon-log/ui/battle-monster-summary";
 import {
   resolveBattleMonster,
+  resolveBattlePlayer,
   resolveBattleResult,
 } from "@/entities/dungeon-log/lib/monster";
 import { Badge } from "@/shared/ui/badge";
@@ -34,6 +35,7 @@ export function LogCard({
   const deltaContent = renderDelta?.(log);
   const isInteractive = typeof onClick === "function";
   const monster = resolveBattleMonster(log);
+  const player = resolveBattlePlayer(log);
   const result = resolveBattleResult(log);
 
   return (
@@ -97,8 +99,12 @@ export function LogCard({
               log.action
             )}`}
           </p>
-          {monster ? (
-            <BattleMonsterSummary monster={monster} result={result} />
+          {monster || player ? (
+            <BattleMonsterSummary
+              monster={monster}
+              player={player}
+              result={result}
+            />
           ) : null}
         </div>
         {renderThumbnail ? (

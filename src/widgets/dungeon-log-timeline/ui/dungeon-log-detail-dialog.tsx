@@ -11,6 +11,7 @@ import { DeltaList } from "@/entities/dungeon-log/ui/delta-list";
 import { BattleMonsterSummary } from "@/entities/dungeon-log/ui/battle-monster-summary";
 import {
   resolveBattleMonster,
+  resolveBattlePlayer,
   resolveBattleResult,
 } from "@/entities/dungeon-log/lib/monster";
 import {
@@ -36,6 +37,7 @@ export function DungeonLogDetailDialog({
 }: DungeonLogDetailDialogProps) {
   const thumbnails = log ? buildLogThumbnails(log) : [];
   const monster = log ? resolveBattleMonster(log) : undefined;
+  const player = log ? resolveBattlePlayer(log) : undefined;
   const result = log ? resolveBattleResult(log) : undefined;
 
   return (
@@ -62,11 +64,12 @@ export function DungeonLogDetailDialog({
               </DialogClose>
             </DialogHeader>
 
-            {monster ? (
+            {monster || player ? (
               <div className="space-y-2">
-                <p className="text-muted-foreground text-xs">상대 몬스터</p>
+                <p className="text-muted-foreground text-xs">전투 참여 정보</p>
                 <BattleMonsterSummary
                   monster={monster}
+                  player={player}
                   result={result}
                   size="detail"
                 />

@@ -23,6 +23,23 @@ export type EquipmentRarity = z.infer<typeof equipmentRaritySchema>;
 const inventoryStatSchema = z.enum(["hp", "atk", "def", "luck"]);
 const inventoryModifierModeSchema = z.enum(["flat", "percent"]);
 
+const equipmentStatBlockSchema = z
+  .object({
+    hp: z.number(),
+    atk: z.number(),
+    def: z.number(),
+    luck: z.number(),
+  })
+  .strict();
+
+const equipmentStatSummarySchema = z
+  .object({
+    base: equipmentStatBlockSchema,
+    equipmentBonus: equipmentStatBlockSchema,
+    total: equipmentStatBlockSchema,
+  })
+  .strict();
+
 export const inventoryModifierStatSchema = z.object({
   kind: z.literal("stat"),
   stat: inventoryStatSchema,
@@ -89,6 +106,7 @@ export const dashboardStateSchema = z.object({
   createdAt: z.string(),
   updatedAt: z.string(),
   version: z.number(),
+  stats: equipmentStatSummarySchema,
   equippedItems: z.array(equipmentItemSchema),
   lastActionCompletedAt: z.string().optional(),
   nextActionStartAt: z.string().optional(),

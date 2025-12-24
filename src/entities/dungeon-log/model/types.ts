@@ -304,11 +304,47 @@ export const dungeonLogMonsterSchema = z.object({
 });
 export type DungeonLogMonster = z.infer<typeof dungeonLogMonsterSchema>;
 
+const dungeonLogStatBlockSchema = z
+  .object({
+    hp: z.number().int(),
+    atk: z.number().int(),
+    def: z.number().int(),
+    luck: z.number().int(),
+  })
+  .strict();
+
+const dungeonLogBattlePlayerStatsSchema = z
+  .object({
+    base: dungeonLogStatBlockSchema,
+    equipmentBonus: dungeonLogStatBlockSchema,
+    total: dungeonLogStatBlockSchema,
+  })
+  .strict();
+
+const dungeonLogBattlePlayerSnapshotSchema = z
+  .object({
+    hp: z.number().int(),
+    maxHp: z.number().int(),
+    atk: z.number().int(),
+    def: z.number().int(),
+    luck: z.number().int(),
+    stats: dungeonLogBattlePlayerStatsSchema,
+    level: z.number().int(),
+    exp: z.number().int(),
+    expToLevel: z.number().int().optional(),
+  })
+  .strict();
+
+export type DungeonLogBattlePlayerSnapshot = z.infer<
+  typeof dungeonLogBattlePlayerSnapshotSchema
+>;
+
 const dungeonLogBattleDetailsSchema = z.object({
   type: z.literal("BATTLE"),
   details: z
     .object({
       monster: dungeonLogMonsterSchema,
+      player: dungeonLogBattlePlayerSnapshotSchema,
       result: z.enum(["VICTORY", "DEFEAT"]).optional(),
       cause: z.string().optional(),
       expGained: z.number().int().optional(),

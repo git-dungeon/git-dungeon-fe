@@ -25,6 +25,26 @@ export const mockDashboardResponse: DashboardResponse = {
     createdAt: mockTimestampMinutesAgo(90),
     updatedAt: mockTimestampMinutesAgo(1),
     version: 3,
+    stats: {
+      base: {
+        hp: 36,
+        atk: 13,
+        def: 6,
+        luck: 3,
+      },
+      equipmentBonus: {
+        hp: 4,
+        atk: 5,
+        def: 8,
+        luck: 3,
+      },
+      total: {
+        hp: 40,
+        atk: 18,
+        def: 14,
+        luck: 6,
+      },
+    },
     equippedItems: [
       {
         id: "weapon-longsword",
