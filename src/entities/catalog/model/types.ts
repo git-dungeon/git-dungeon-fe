@@ -50,7 +50,7 @@ export const catalogBuffSchema = z.object({
 export type CatalogBuff = z.infer<typeof catalogBuffSchema>;
 
 export const catalogMonsterSchema = z.object({
-  id: z.string(),
+  code: z.string(),
   nameKey: z.string(),
   descriptionKey: z.string().nullable(),
   name: z.string(),

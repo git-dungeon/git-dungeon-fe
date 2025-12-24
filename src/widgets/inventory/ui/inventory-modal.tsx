@@ -6,6 +6,7 @@ import { formatDateTime } from "@/shared/lib/datetime/formatters";
 import { cn } from "@/shared/lib/utils";
 import { formatStatChange, resolveStatLabel } from "@/shared/lib/stats/format";
 import { BADGE_TONE_CLASSES } from "@/shared/ui/tone";
+import { resolveLocalItemSprite } from "@/entities/catalog/config/local-sprites";
 import {
   Dialog,
   DialogClose,
@@ -52,6 +53,7 @@ export function InventoryModal({
   }
 
   const displayName = item.name ?? item.code;
+  const sprite = resolveLocalItemSprite(item.code);
 
   const handleOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) {
@@ -102,9 +104,9 @@ export function InventoryModal({
         <div className="flex flex-col gap-2">
           <DialogHeader className="flex-row items-start gap-2">
             <div className="flex size-12 shrink-0 items-center justify-center">
-              {item.sprite ? (
+              {sprite ? (
                 <img
-                  src={item.sprite}
+                  src={sprite}
                   alt={displayName}
                   className="size-12 object-cover"
                   loading="lazy"

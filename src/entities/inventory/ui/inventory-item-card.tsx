@@ -2,6 +2,7 @@ import type { InventoryItem } from "@/entities/inventory/model/types";
 import { getInventorySlotLabel } from "@/entities/inventory/config/slot-labels";
 import { formatRarity } from "@/entities/dashboard/lib/formatters";
 import { formatInventoryEffect } from "@/entities/inventory/lib/formatters";
+import { resolveLocalItemSprite } from "@/entities/catalog/config/local-sprites";
 import { Badge } from "@/shared/ui/badge";
 import { cn } from "@/shared/lib/utils";
 import { formatStatChange, resolveStatLabel } from "@/shared/lib/stats/format";
@@ -19,6 +20,7 @@ export function InventoryItemCard({
   showSlotLabel = true,
 }: InventoryItemCardProps) {
   const displayName = item.name ?? item.code;
+  const sprite = resolveLocalItemSprite(item.code);
 
   return (
     <div
@@ -28,9 +30,9 @@ export function InventoryItemCard({
       )}
     >
       <div className="border-border bg-muted/40 relative flex size-14 items-center justify-center overflow-hidden rounded-md border">
-        {item.sprite ? (
+        {sprite ? (
           <img
-            src={item.sprite}
+            src={sprite}
             alt={displayName}
             loading="lazy"
             className="size-14 object-cover"

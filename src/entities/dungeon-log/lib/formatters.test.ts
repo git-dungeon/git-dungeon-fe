@@ -16,8 +16,8 @@ describe("formatDelta", () => {
         detail: {
           rewards: {
             items: [
-              { itemCode: "ring-copper-band", quantity: 2 },
-              { itemCode: "weapon-wooden-sword", quantity: 1 },
+              { code: "ring-copper-band", quantity: 2 },
+              { code: "weapon-wooden-sword", quantity: 1 },
             ],
           },
         },

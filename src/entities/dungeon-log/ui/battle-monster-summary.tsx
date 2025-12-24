@@ -24,7 +24,7 @@ export function BattleMonsterSummary({
     return null;
   }
 
-  const image = resolveMonsterThumbnail(monster.spriteId);
+  const image = resolveMonsterThumbnail(monster.spriteId, monster.code);
   const stats = [
     { label: "HP", value: monster.hp },
     { label: "ATK", value: monster.atk },

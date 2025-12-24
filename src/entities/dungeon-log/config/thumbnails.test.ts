@@ -16,7 +16,7 @@ describe("buildLogThumbnails", () => {
         detail: {
           rewards: {
             gold: 5,
-            items: [{ itemCode: "ring-copper-band", quantity: 1 }],
+            items: [{ code: "ring-copper-band", quantity: 1 }],
           },
         },
       },
@@ -24,7 +24,7 @@ describe("buildLogThumbnails", () => {
         type: "BATTLE",
         details: {
           monster: {
-            id: "monster-giant-rat",
+            code: "monster-giant-rat",
             name: "거대 쥐",
             hp: 24,
             atk: 3,

@@ -4,11 +4,10 @@ import trapImage from "@/assets/trap.png";
 import treasureImage from "@/assets/treasure.png";
 import moveImage from "@/assets/move.png";
 import goldImage from "@/assets/gold.png";
-import leatherCapImage from "@/assets/Leather Cap.png";
-import leatherArmorImage from "@/assets/Leather Armor.png";
-import woodenSwordImage from "@/assets/Wooden Sword.png";
-import copperBandImage from "@/assets/Copper Band.png";
-import giantRatImage from "@/assets/Giant Rat.png";
+import {
+  resolveLocalItemSprite,
+  resolveLocalMonsterSprite,
+} from "@/entities/catalog/config/local-sprites";
 
 import type {
   DungeonLogEntry,
@@ -32,20 +31,6 @@ const ACTION_IMAGE_MAP: Partial<Record<DungeonLogAction, string>> = {
   MOVE: moveImage,
 };
 
-const SLOT_FALLBACK_IMAGE: Record<string, string> = {
-  helmet: leatherCapImage,
-  armor: leatherArmorImage,
-  weapon: woodenSwordImage,
-  ring: copperBandImage,
-};
-
-const ITEM_IMAGE_MAP: Record<string, string> = {
-  "helmet-leather-cap": leatherCapImage,
-  "armor-leather-armor": leatherArmorImage,
-  "weapon-wooden-sword": woodenSwordImage,
-  "ring-copper-band": copperBandImage,
-};
-
 const BADGE_PRESENTATIONS: Record<
   LogThumbnailBadge,
   { label: string; className: string }
@@ -65,43 +50,12 @@ export function resolveActionThumbnail(action: DungeonLogAction) {
   return ACTION_IMAGE_MAP[action];
 }
 
-const MONSTER_SPRITE_MAP: Record<string, string> = {
-  monster_giant_rat: giantRatImage,
-};
-
-export function resolveMonsterThumbnail(spriteId?: string) {
-  if (!spriteId) {
-    return undefined;
-  }
-  if (MONSTER_SPRITE_MAP[spriteId]) {
-    return MONSTER_SPRITE_MAP[spriteId];
-  }
-
-  const normalized = spriteId.split("/").pop()?.replace(/-/g, "_");
-  if (normalized && MONSTER_SPRITE_MAP[normalized]) {
-    return MONSTER_SPRITE_MAP[normalized];
-  }
-
-  return undefined;
+export function resolveMonsterThumbnail(spriteId?: string, code?: string) {
+  return resolveLocalMonsterSprite(code, spriteId);
 }
 
-function resolveItemThumbnail(itemKey?: string, slot?: string) {
-  if (itemKey && ITEM_IMAGE_MAP[itemKey]) {
-    return ITEM_IMAGE_MAP[itemKey];
-  }
-
-  if (!slot && itemKey) {
-    const inferredSlot = itemKey.split("-")[0]?.toLowerCase();
-    if (inferredSlot && SLOT_FALLBACK_IMAGE[inferredSlot]) {
-      return SLOT_FALLBACK_IMAGE[inferredSlot];
-    }
-  }
-
-  if (slot) {
-    return SLOT_FALLBACK_IMAGE[slot];
-  }
-
-  return undefined;
+function resolveItemThumbnail(code?: string) {
+  return resolveLocalItemSprite(code);
 }
 
 function resolveGoldBadge(
@@ -159,7 +113,10 @@ export function buildLogThumbnails(
 
   if (entry.extra?.type === "BATTLE") {
     const monster = entry.extra.details?.monster;
-    const monsterThumbnail = resolveMonsterThumbnail(monster?.spriteId);
+    const monsterThumbnail = resolveMonsterThumbnail(
+      monster?.spriteId,
+      monster?.code
+    );
     if (monsterThumbnail) {
       thumbnails.push({
         id: `${entry.id}-monster`,
@@ -173,12 +130,12 @@ export function buildLogThumbnails(
 
   if (delta?.type === "BATTLE") {
     const rewardItem = delta.detail.rewards?.items?.at(0);
-    const itemThumbnail = resolveItemThumbnail(rewardItem?.itemCode, undefined);
+    const itemThumbnail = resolveItemThumbnail(rewardItem?.code);
     if (itemThumbnail) {
       thumbnails.push({
         id: `${entry.id}-reward-item`,
         src: itemThumbnail,
-        alt: rewardItem?.itemCode ?? "보상 아이템",
+        alt: rewardItem?.code ?? "보상 아이템",
         badge: "gain",
       });
     }
@@ -197,9 +154,8 @@ export function buildLogThumbnails(
       inventory.added?.at(0) ??
       inventory.removed?.at(0);
 
-    const slot = primaryItem?.slot;
     const itemKey = primaryItem?.code;
-    const itemThumbnail = resolveItemThumbnail(itemKey, slot);
+    const itemThumbnail = resolveItemThumbnail(itemKey);
     if (itemThumbnail) {
       thumbnails.push({
         id: `${entry.id}-item`,
@@ -211,12 +167,12 @@ export function buildLogThumbnails(
 
   if (delta?.type === "TREASURE") {
     const rewardItem = delta.detail.rewards?.items?.at(0);
-    const itemThumbnail = resolveItemThumbnail(rewardItem?.itemCode, undefined);
+    const itemThumbnail = resolveItemThumbnail(rewardItem?.code);
     if (itemThumbnail) {
       thumbnails.push({
         id: `${entry.id}-reward-item`,
         src: itemThumbnail,
-        alt: rewardItem?.itemCode ?? "보상 아이템",
+        alt: rewardItem?.code ?? "보상 아이템",
         badge: "gain",
       });
     }

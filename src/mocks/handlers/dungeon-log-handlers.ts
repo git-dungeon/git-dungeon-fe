@@ -81,7 +81,7 @@ const mockDungeonLogs: DungeonLogEntry[] = [
           gold: 12,
           items: [
             {
-              itemCode: "ring-copper-band",
+              code: "ring-copper-band",
               quantity: 1,
             },
           ],
@@ -92,12 +92,12 @@ const mockDungeonLogs: DungeonLogEntry[] = [
       type: "BATTLE",
       details: {
         monster: {
-          id: "monster-giant-rat",
+          code: "monster-giant-rat",
           name: "거대 쥐",
           hp: 24,
           atk: 3,
           def: 1,
-          spriteId: "monster_giant_rat",
+          spriteId: "sprite/monster-giant-rat",
         },
         result: "VICTORY",
       },
@@ -160,7 +160,7 @@ const mockDungeonLogs: DungeonLogEntry[] = [
           gold: 45,
           items: [
             {
-              itemCode: "ring-copper-band",
+              code: "ring-copper-band",
               quantity: 1,
             },
           ],
@@ -269,7 +269,7 @@ const mockDungeonLogs: DungeonLogEntry[] = [
           drop: {
             tableId: "drops-default",
             isElite: false,
-            items: [{ itemCode: "weapon-wooden-sword", quantity: 1 }],
+            items: [{ code: "weapon-wooden-sword", quantity: 1 }],
           },
         },
       },

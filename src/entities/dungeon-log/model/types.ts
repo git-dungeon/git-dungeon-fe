@@ -76,7 +76,7 @@ export type DungeonLogProgressDelta = z.infer<
 
 export const dungeonLogRewardItemSchema = z
   .object({
-    itemCode: z.string(),
+    code: z.string(),
     quantity: z.number().int().optional(),
   })
   .strict();
@@ -294,7 +294,7 @@ export const dungeonLogDeltaSchema = z.union([
 export type DungeonLogDelta = z.infer<typeof dungeonLogDeltaSchema>;
 
 export const dungeonLogMonsterSchema = z.object({
-  id: z.string(),
+  code: z.string(),
   name: z.string(),
   hp: z.number().int().optional(),
   atk: z.number().int().optional(),
@@ -335,7 +335,7 @@ const dungeonLogAcquireItemDetailsSchema = z.object({
           items: z
             .array(
               z.object({
-                itemCode: z.string(),
+                code: z.string(),
                 quantity: z.number().int(),
               })
             )
