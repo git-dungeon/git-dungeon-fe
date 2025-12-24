@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { inventoryModifierSchema } from "@/entities/dashboard/model/types";
 
 export const DUNGEON_LOGS_FILTER_TYPES = [
   "EXPLORATION",
@@ -346,23 +347,41 @@ const dungeonLogAcquireItemDetailsSchema = z.object({
   }),
 });
 
+const dungeonLogInventoryDetailItemSchema = z.object({
+  id: z.string(),
+  code: z.string(),
+  name: z.string().nullable().optional(),
+  rarity: z.string().optional(),
+  modifiers: z.array(inventoryModifierSchema).optional(),
+});
+
+const dungeonLogReplacedItemSchema = z.object({
+  id: z.string(),
+  code: z.string(),
+  name: z.string().optional(),
+  rarity: z.string().optional(),
+});
+
 const dungeonLogEquipItemDetailsSchema = z.object({
   type: z.literal("EQUIP_ITEM"),
   details: z.object({
-    item: z.object({
-      id: z.string(),
-      code: z.string(),
-      name: z.string().optional(),
-      rarity: z.string().optional(),
-      modifiers: z
-        .array(
-          z.object({
-            stat: z.string(),
-            value: z.number(),
-          })
-        )
-        .optional(),
-    }),
+    item: dungeonLogInventoryDetailItemSchema,
+  }),
+});
+
+const dungeonLogUnequipItemDetailsSchema = z.object({
+  type: z.literal("UNEQUIP_ITEM"),
+  details: z.object({
+    item: dungeonLogInventoryDetailItemSchema,
+    replacedItem: dungeonLogReplacedItemSchema.optional(),
+  }),
+});
+
+const dungeonLogDiscardItemDetailsSchema = z.object({
+  type: z.literal("DISCARD_ITEM"),
+  details: z.object({
+    item: dungeonLogInventoryDetailItemSchema,
+    replacedItem: dungeonLogReplacedItemSchema.optional(),
   }),
 });
 
@@ -438,6 +457,8 @@ export const dungeonLogDetailsSchema = z.union([
   dungeonLogDeathDetailsSchema,
   dungeonLogAcquireItemDetailsSchema,
   dungeonLogEquipItemDetailsSchema,
+  dungeonLogUnequipItemDetailsSchema,
+  dungeonLogDiscardItemDetailsSchema,
   dungeonLogLevelUpDetailsSchema,
   dungeonLogRestDetailsSchema,
   dungeonLogTrapDetailsSchema,
