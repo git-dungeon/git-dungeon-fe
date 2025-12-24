@@ -102,8 +102,9 @@ export function buildLogThumbnails(
   const thumbnails: LogThumbnailDescriptor[] = [];
   const actionThumbnail = resolveActionThumbnail(entry.action);
   const isBattleAction = entry.action === "BATTLE";
+  const isTreasureAction = entry.action === "TREASURE";
 
-  if (actionThumbnail && isBattleAction) {
+  if (actionThumbnail && (isBattleAction || isTreasureAction)) {
     thumbnails.push({
       id: `${entry.id}-action`,
       src: actionThumbnail,
@@ -178,7 +179,7 @@ export function buildLogThumbnails(
     }
   }
 
-  if (actionThumbnail && !isBattleAction) {
+  if (actionThumbnail && !isBattleAction && !isTreasureAction) {
     thumbnails.push({
       id: `${entry.id}-action`,
       src: actionThumbnail,

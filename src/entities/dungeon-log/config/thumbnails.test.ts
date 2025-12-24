@@ -44,4 +44,31 @@ describe("buildLogThumbnails", () => {
       "log-battle-order-gold",
     ]);
   });
+
+  it("TREASURE 썸네일을 보상보다 먼저 표시한다", () => {
+    const entry: DungeonLogEntry = {
+      id: "log-treasure-order",
+      category: "EXPLORATION",
+      floor: 1,
+      action: "TREASURE",
+      status: "COMPLETED",
+      createdAt: "2025-12-01T00:00:00Z",
+      delta: {
+        type: "TREASURE",
+        detail: {
+          rewards: {
+            gold: 10,
+            items: [{ code: "ring-copper-band", quantity: 1 }],
+          },
+        },
+      },
+    };
+
+    const thumbnails = buildLogThumbnails(entry);
+    expect(thumbnails.map((thumbnail) => thumbnail.id)).toEqual([
+      "log-treasure-order-action",
+      "log-treasure-order-reward-item",
+      "log-treasure-order-gold",
+    ]);
+  });
 });
