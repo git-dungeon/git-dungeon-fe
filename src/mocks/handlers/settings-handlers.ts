@@ -12,11 +12,6 @@ import {
 } from "@/entities/embed/model/types";
 import { respondWithSuccess } from "@/mocks/lib/api-response";
 
-mockProfileOverview.connections.github = {
-  connected: true,
-  lastSyncAt: mockTimestampMinutesAgo(45),
-};
-
 const EMBEDDING_SIZE_FALLBACK: EmbedPreviewSize = "compact";
 const EMBEDDING_SIZES = new Set<EmbedPreviewSize>(EMBED_PREVIEW_SIZE_VALUES);
 
@@ -30,6 +25,21 @@ function resolveEmbeddingSize(rawSize?: string | null): EmbedPreviewSize {
   }
 
   return EMBEDDING_SIZE_FALLBACK;
+}
+
+function buildMockProfileOverview() {
+  const profile = structuredClone(mockProfileOverview);
+
+  return {
+    ...profile,
+    connections: {
+      ...profile.connections,
+      github: {
+        connected: true,
+        lastSyncAt: mockTimestampMinutesAgo(45),
+      },
+    },
+  };
 }
 
 function createMockEquipmentPreview() {
@@ -110,7 +120,7 @@ function createMockEmbeddingPreview(size: EmbedPreviewSize) {
 
 export const settingsHandlers = [
   http.get(SETTINGS_ENDPOINTS.profile, () => {
-    return respondWithSuccess(mockProfileOverview);
+    return respondWithSuccess(buildMockProfileOverview());
   }),
   http.get(SETTINGS_ENDPOINTS.preview, ({ request }) => {
     const url = new URL(request.url);
