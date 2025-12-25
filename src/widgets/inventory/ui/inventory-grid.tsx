@@ -1,5 +1,7 @@
-import type { InventoryItem } from "@/entities/inventory/model/types";
-import type { EquipmentSlot } from "@/entities/dashboard/model/types";
+import type {
+  InventoryItem,
+  InventoryItemSlot,
+} from "@/entities/inventory/model/types";
 import { InventoryItemCard } from "@/entities/inventory/ui/inventory-item-card";
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
@@ -12,11 +14,12 @@ interface InventoryGridProps {
   onSelect: (item: InventoryItem) => void;
 }
 
-const SLOT_ORDER: Record<EquipmentSlot, number> = {
+const SLOT_ORDER: Record<InventoryItemSlot, number> = {
   helmet: 0,
   armor: 1,
   weapon: 2,
   ring: 3,
+  consumable: 4,
 };
 
 export function InventoryGrid({ items, onSelect }: InventoryGridProps) {
@@ -57,7 +60,7 @@ function InventoryGridCell({ item, onSelect }: InventoryGridCellProps) {
   return (
     <Button
       type="button"
-      title={item.name}
+      title={item.name ?? item.code}
       variant="outline"
       onClick={() => onSelect(item)}
       className={cn(

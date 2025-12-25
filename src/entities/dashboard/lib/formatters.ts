@@ -1,6 +1,6 @@
 import type {
-  EquipmentModifier,
   EquipmentRarity,
+  InventoryModifier,
 } from "@/entities/dashboard/model/types";
 import { formatStatChange } from "@/shared/lib/stats/format";
 
@@ -12,8 +12,10 @@ const RARITY_LABEL_MAP: Record<EquipmentRarity, string> = {
   legendary: "전설",
 };
 
-const MODIFIER_LABEL_MAP: Record<EquipmentModifier["stat"], string> = {
-  ap: "AP",
+const MODIFIER_LABEL_MAP: Record<
+  Extract<InventoryModifier, { kind: "stat" }>["stat"],
+  string
+> = {
   atk: "ATK",
   def: "DEF",
   hp: "HP",
@@ -28,7 +30,11 @@ export function formatRarity(rarity: EquipmentRarity): string {
   return RARITY_LABEL_MAP[rarity] ?? rarity;
 }
 
-export function formatModifier(modifier: EquipmentModifier): string {
+export function formatModifier(modifier: InventoryModifier): string {
+  if (modifier.kind === "effect") {
+    return `EFFECT ${modifier.effectCode}`;
+  }
+
   if (modifier.stat in MODIFIER_LABEL_MAP) {
     const { text } = formatStatChange(modifier.stat, modifier.value);
     return text;

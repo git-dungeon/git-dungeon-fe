@@ -1,21 +1,20 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { QueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { ApiError, httpRequest } from "@/shared/api/http-client";
-import { INVENTORY_ENDPOINTS } from "@/shared/config/env";
+import { ApiError } from "@/shared/api/http-client";
 import type {
   InventoryEquippedMap,
   InventoryItem,
+  InventoryItemMutationRequest,
+  InventoryItemSlot,
   InventoryResponse,
   InventoryStatValues,
 } from "@/entities/inventory/model/types";
 import { INVENTORY_QUERY_KEY } from "@/entities/inventory/model/inventory-query";
 import { DASHBOARD_STATE_QUERY_KEY } from "@/entities/dashboard/model/dashboard-state-query";
-import type { EquipmentSlot } from "@/entities/dashboard/model/types";
-
-interface InventoryActionPayload {
-  itemId: string;
-}
+import { postInventoryDiscard } from "@/entities/inventory/api/post-inventory-discard";
+import { postInventoryEquip } from "@/entities/inventory/api/post-inventory-equip";
+import { postInventoryUnequip } from "@/entities/inventory/api/post-inventory-unequip";
 
 type InventoryActionType = "equip" | "unequip" | "discard";
 
@@ -30,18 +29,7 @@ interface MutationContext {
   optimisticVersion?: number;
 }
 
-function createInventoryRequest(
-  endpoint: string,
-  payload: InventoryActionPayload
-) {
-  return httpRequest<InventoryResponse>(endpoint, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(payload),
-  });
-}
+type InventoryActionVariables = InventoryItemMutationRequest;
 
 export function useInventoryActions() {
   const queryClient = useQueryClient();
@@ -67,12 +55,14 @@ export function useInventoryActions() {
         return current;
       }
     );
+    queryClient.invalidateQueries({ queryKey: INVENTORY_QUERY_KEY });
     queryClient.invalidateQueries({ queryKey: DASHBOARD_STATE_QUERY_KEY });
+    queryClient.invalidateQueries({ queryKey: ["dungeon-logs"] });
   };
 
   const createOptimisticHandler = (type: InventoryActionType) => {
     return async (
-      payload: InventoryActionPayload
+      payload: InventoryActionVariables
     ): Promise<MutationContext> => {
       setLastError(null);
       await queryClient.cancelQueries({ queryKey: INVENTORY_QUERY_KEY });
@@ -97,35 +87,35 @@ export function useInventoryActions() {
   };
 
   const equipMutation = useMutation({
-    mutationFn: (payload: InventoryActionPayload) =>
-      createInventoryRequest(INVENTORY_ENDPOINTS.equip, payload),
+    mutationFn: postInventoryEquip,
     onMutate: createOptimisticHandler("equip"),
     onSuccess: handleSuccess,
     onError: (error, _variables, context) => {
       setLastError(buildActionFailure("equip", error));
       rollbackOnError(queryClient, context);
+      refetchOnVersionMismatch(queryClient, error);
     },
   });
 
   const unequipMutation = useMutation({
-    mutationFn: (payload: InventoryActionPayload) =>
-      createInventoryRequest(INVENTORY_ENDPOINTS.unequip, payload),
+    mutationFn: postInventoryUnequip,
     onMutate: createOptimisticHandler("unequip"),
     onSuccess: handleSuccess,
     onError: (error, _variables, context) => {
       setLastError(buildActionFailure("unequip", error));
       rollbackOnError(queryClient, context);
+      refetchOnVersionMismatch(queryClient, error);
     },
   });
 
   const discardMutation = useMutation({
-    mutationFn: (payload: InventoryActionPayload) =>
-      createInventoryRequest(INVENTORY_ENDPOINTS.discard, payload),
+    mutationFn: postInventoryDiscard,
     onMutate: createOptimisticHandler("discard"),
     onSuccess: handleSuccess,
     onError: (error, _variables, context) => {
       setLastError(buildActionFailure("discard", error));
       rollbackOnError(queryClient, context);
+      refetchOnVersionMismatch(queryClient, error);
     },
     retry: false,
   });
@@ -145,9 +135,18 @@ export function useInventoryActions() {
   const aggregatedError = lastError?.error ?? fallbackError ?? null;
 
   return {
-    equip: (itemId: string) => equipMutation.mutateAsync({ itemId }),
-    unequip: (itemId: string) => unequipMutation.mutateAsync({ itemId }),
-    discard: (itemId: string) => discardMutation.mutateAsync({ itemId }),
+    equip: (itemId: string) =>
+      equipMutation.mutateAsync(
+        buildInventoryMutationVariables(queryClient, itemId)
+      ),
+    unequip: (itemId: string) =>
+      unequipMutation.mutateAsync(
+        buildInventoryMutationVariables(queryClient, itemId)
+      ),
+    discard: (itemId: string) =>
+      discardMutation.mutateAsync(
+        buildInventoryMutationVariables(queryClient, itemId)
+      ),
     isPending:
       equipMutation.isPending ||
       unequipMutation.isPending ||
@@ -156,6 +155,23 @@ export function useInventoryActions() {
     lastError,
     errorMap,
   } as const;
+}
+
+function buildInventoryMutationVariables(
+  queryClient: QueryClient,
+  itemId: string
+): InventoryActionVariables {
+  const current =
+    queryClient.getQueryData<InventoryResponse>(INVENTORY_QUERY_KEY);
+  const inventoryVersion = current?.version ?? 0;
+  const itemVersion =
+    current?.items.find((item) => item.id === itemId)?.version ?? 0;
+
+  return {
+    itemId,
+    expectedVersion: itemVersion,
+    inventoryVersion,
+  };
 }
 
 function buildOptimisticInventory(
@@ -175,6 +191,7 @@ function buildOptimisticInventory(
     items,
     equipped,
     summary: {
+      base: baseStats,
       total,
       equipmentBonus,
     },
@@ -215,7 +232,7 @@ function applyOptimisticItems(
 function findSlotByItemId(
   items: InventoryItem[],
   itemId: string
-): EquipmentSlot | undefined {
+): InventoryItemSlot | undefined {
   return items.find((item) => item.id === itemId)?.slot;
 }
 
@@ -225,6 +242,7 @@ function buildEquippedMap(items: InventoryItem[]): InventoryEquippedMap {
     armor: null,
     weapon: null,
     ring: null,
+    consumable: null,
   };
 
   return items.reduce<InventoryEquippedMap>((acc, item) => {
@@ -250,7 +268,17 @@ function calculateEquipmentBonus(
       return;
     }
 
+    if (item.slot === "consumable") {
+      return;
+    }
+
     item.modifiers.forEach((modifier) => {
+      if (modifier.kind !== "stat") {
+        return;
+      }
+      if (modifier.mode !== "flat") {
+        return;
+      }
       if (modifier.stat in bonus) {
         bonus[modifier.stat as keyof InventoryStatValues] += modifier.value;
       }
@@ -263,6 +291,10 @@ function calculateEquipmentBonus(
 function calculateBaseStats(
   summary: InventoryResponse["summary"]
 ): InventoryStatValues {
+  if (summary.base) {
+    return summary.base;
+  }
+
   return {
     hp: summary.total.hp - summary.equipmentBonus.hp,
     atk: summary.total.atk - summary.equipmentBonus.atk,
@@ -275,9 +307,10 @@ function buildActionFailure(
   source: InventoryActionType,
   error: unknown
 ): InventoryActionFailure {
+  const message = resolveInventoryActionMessage(error);
   const normalizedError =
     error instanceof Error
-      ? error
+      ? new Error(message)
       : new Error(String(error ?? "Unknown error"));
 
   return {
@@ -289,6 +322,16 @@ function buildActionFailure(
 
 function resolveErrorCode(error: unknown): string | undefined {
   if (error instanceof ApiError) {
+    const payload = error.payload;
+    const apiCode =
+      payload && typeof payload === "object"
+        ? (payload as { error?: { code?: unknown } }).error?.code
+        : undefined;
+
+    if (typeof apiCode === "string" && apiCode.length > 0) {
+      return apiCode;
+    }
+
     return String(error.status);
   }
 
@@ -300,6 +343,36 @@ function resolveErrorCode(error: unknown): string | undefined {
   }
 
   return undefined;
+}
+
+function resolveInventoryActionMessage(error: unknown): string {
+  if (error instanceof ApiError) {
+    const payload = error.payload;
+    const errorObject =
+      payload && typeof payload === "object"
+        ? (payload as { error?: { message?: unknown; code?: unknown } }).error
+        : undefined;
+
+    const apiMessage =
+      typeof errorObject?.message === "string" ? errorObject.message : null;
+    const apiCode =
+      typeof errorObject?.code === "string" ? errorObject.code : null;
+
+    switch (apiCode) {
+      case "INVENTORY_VERSION_MISMATCH":
+        return "인벤토리 상태가 변경되었습니다. 새로고침 후 다시 시도해 주세요.";
+      case "INVENTORY_RATE_LIMITED":
+        return "요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.";
+      default:
+        return apiMessage ?? "인벤토리 요청이 실패했습니다.";
+    }
+  }
+
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return "인벤토리 요청이 실패했습니다.";
 }
 
 function buildActionErrorMap(
@@ -328,6 +401,19 @@ function rollbackOnError(queryClient: QueryClient, context?: MutationContext) {
   if (currentVersion <= optimisticVersion) {
     queryClient.setQueryData(INVENTORY_QUERY_KEY, context.previous);
   }
+}
+
+function refetchOnVersionMismatch(queryClient: QueryClient, error: unknown) {
+  if (!(error instanceof ApiError)) {
+    return;
+  }
+
+  if (error.status !== 412) {
+    return;
+  }
+
+  queryClient.invalidateQueries({ queryKey: INVENTORY_QUERY_KEY });
+  queryClient.invalidateQueries({ queryKey: DASHBOARD_STATE_QUERY_KEY });
 }
 
 function mergeBaseWithEquipment(

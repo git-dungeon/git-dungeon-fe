@@ -1,6 +1,7 @@
 import React, { StrictMode, act } from "react";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { createRoot } from "react-dom/client";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SettingsPage } from "./settings-page";
 
 const useProfileMock = vi.fn();
@@ -36,9 +37,14 @@ function render(ui: React.ReactElement) {
   const container = document.createElement("div");
   document.body.appendChild(container);
   const root = createRoot(container);
+  const queryClient = new QueryClient();
 
   act(() => {
-    root.render(<StrictMode>{ui}</StrictMode>);
+    root.render(
+      <StrictMode>
+        <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>
+      </StrictMode>
+    );
   });
 
   return {

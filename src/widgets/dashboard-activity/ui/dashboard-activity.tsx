@@ -10,6 +10,7 @@ export function DashboardActivity({
   latestLog,
   apRemaining,
   currentAction,
+  currentActionStartedAt,
   lastActionCompletedAt,
   nextActionStartAt,
 }: DashboardActivityProps) {
@@ -17,6 +18,7 @@ export function DashboardActivity({
     latestLog,
     apRemaining,
     currentAction,
+    currentActionStartedAt,
     lastActionCompletedAt,
     nextActionStartAt,
   });

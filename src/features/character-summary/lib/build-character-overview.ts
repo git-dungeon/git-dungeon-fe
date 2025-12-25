@@ -57,14 +57,15 @@ export function buildCharacterOverview(
   inventory: InventoryResponse
 ): CharacterOverview {
   const equippedItems = extractEquippedItems(inventory);
-  const equipmentBonus = calculateEquipmentBonus(equippedItems);
+  const equipmentBonus = resolveEquipmentBonus(state, inventory, equippedItems);
   const totalStats = extractTotalStats(state);
   const baseStats = calculateBaseStats(totalStats, equipmentBonus);
+  const expToLevel = resolveExpToLevel(state);
 
   return {
     level: state.level,
     exp: state.exp,
-    expToLevel: state.expToLevel,
+    expToLevel,
     gold: state.gold,
     ap: state.ap,
     floor: {
@@ -81,8 +82,19 @@ export function buildCharacterOverview(
   };
 }
 
+function resolveExpToLevel(state: DashboardState): number {
+  const expToLevel = state.expToLevel;
+  if (typeof expToLevel === "number" && Number.isFinite(expToLevel)) {
+    return Math.max(0, expToLevel);
+  }
+
+  return Math.max(0, state.level * 10);
+}
+
 function extractEquippedItems(inventory: InventoryResponse): InventoryItem[] {
-  return (Object.values(inventory.equipped) as Array<InventoryItem | null>)
+  const equipped = inventory.equipped;
+
+  return [equipped.helmet, equipped.armor, equipped.weapon, equipped.ring]
     .filter(Boolean)
     .map((item) => ({ ...item!, isEquipped: true }));
 }
@@ -108,6 +120,13 @@ function calculateEquipmentBonus(
   return items.reduce<CharacterStatModifier>(
     (acc, item) => {
       item.modifiers.forEach((modifier) => {
+        if (modifier.kind !== "stat") {
+          return;
+        }
+        if (modifier.mode !== "flat") {
+          return;
+        }
+
         switch (modifier.stat) {
           case "hp":
             acc.hp += modifier.value;
@@ -122,9 +141,6 @@ function calculateEquipmentBonus(
           case "luck":
             acc.luck += modifier.value;
             break;
-          case "ap":
-            acc.ap += modifier.value;
-            break;
           default:
             break;
         }
@@ -133,6 +149,40 @@ function calculateEquipmentBonus(
     },
     { ...DEFAULT_MODIFIER }
   );
+}
+
+function resolveEquipmentBonus(
+  state: DashboardState,
+  inventory: InventoryResponse,
+  equippedItems: InventoryItem[]
+): CharacterStatModifier {
+  const breakdown = state.stats?.equipmentBonus;
+  if (breakdown) {
+    return buildModifierFromStatBlock(breakdown);
+  }
+
+  const summaryBonus = inventory.summary?.equipmentBonus;
+  if (summaryBonus) {
+    return buildModifierFromStatBlock(summaryBonus);
+  }
+
+  return calculateEquipmentBonus(equippedItems);
+}
+
+function buildModifierFromStatBlock(block: {
+  hp: number;
+  atk: number;
+  def: number;
+  luck: number;
+}): CharacterStatModifier {
+  return {
+    ...DEFAULT_MODIFIER,
+    hp: block.hp,
+    maxHp: block.hp,
+    atk: block.atk,
+    def: block.def,
+    luck: block.luck,
+  };
 }
 
 function calculateBaseStats(

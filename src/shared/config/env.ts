@@ -122,6 +122,11 @@ export const INVENTORY_ENDPOINTS = {
   discard: "/api/inventory/discard",
 } as const;
 
+export const GITHUB_ENDPOINTS = {
+  sync: "/api/github/sync",
+  status: "/api/github/sync/status",
+} as const;
+
 export const SETTINGS_ENDPOINTS = {
   profile: "/api/settings/profile",
   preview: "/api/settings/preview",
@@ -129,6 +134,10 @@ export const SETTINGS_ENDPOINTS = {
 
 export const EMBEDDING_ENDPOINTS = {
   preview: "/api/embedding/preview",
+} as const;
+
+export const CATALOG_ENDPOINTS = {
+  catalog: "/api/catalog",
 } as const;
 
 export function resolveApiUrl(path: string): string {

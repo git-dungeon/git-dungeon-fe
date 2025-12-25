@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { isAfter, isValid, parseISO } from "date-fns";
 
-import type { CurrentAction } from "@/entities/dashboard/model/types";
+import type { DashboardCurrentAction } from "@/entities/dashboard/model/types";
 import type { DungeonLogEntry } from "@/entities/dungeon-log/model/types";
 import {
   buildLogDescription,
@@ -13,7 +13,8 @@ import { formatDateTime } from "@/shared/lib/datetime/formatters";
 export interface DashboardActivityViewParams {
   latestLog?: DungeonLogEntry;
   apRemaining: number;
-  currentAction?: CurrentAction;
+  currentAction?: DashboardCurrentAction;
+  currentActionStartedAt?: string | null;
   lastActionCompletedAt?: string;
   nextActionStartAt?: string;
 }
@@ -32,16 +33,18 @@ export function useDashboardActivityView(
     latestLog,
     apRemaining,
     currentAction,
+    currentActionStartedAt,
     lastActionCompletedAt,
     nextActionStartAt,
   } = params;
 
   return useMemo(() => {
-    const isCurrentActionActive = Boolean(currentAction);
+    const isCurrentActionActive =
+      Boolean(currentAction) && currentAction !== "IDLE";
     const latestStartedLog =
-      latestLog?.status === "started" ? latestLog : undefined;
+      latestLog?.status === "STARTED" ? latestLog : undefined;
     const latestCompletedLog =
-      latestLog?.status === "completed" ? latestLog : undefined;
+      latestLog?.status === "COMPLETED" ? latestLog : undefined;
     const parsedNextActionStart = parseIso(nextActionStartAt);
     const isNextActionDue = parsedNextActionStart
       ? !isAfter(parsedNextActionStart, new Date())
@@ -68,13 +71,28 @@ export function useDashboardActivityView(
       return {
         title: resolveActionLabel(latestStartedLog.action),
         message: buildLogDescription(latestStartedLog),
-        meta: `${latestStartedLog.floor}층 · ${resolveStatusLabel(
+        meta: `${typeof latestStartedLog.floor === "number" ? `${latestStartedLog.floor}층` : "—"} · ${resolveStatusLabel(
           latestStartedLog.status,
           latestStartedLog.action
         )}`,
         timestampLabel: formatDateTime(
-          currentAction?.startedAt ?? latestStartedLog.createdAt
+          currentActionStartedAt ?? latestStartedLog.createdAt
         ),
+      } satisfies DashboardActivityViewModel;
+    }
+
+    if (isCurrentActionActive && currentAction) {
+      const mapped = mapDashboardActionToDungeonAction(currentAction);
+      return {
+        title: mapped ? resolveActionLabel(mapped) : "탐험 중 …",
+        message: "현재 행동을 수행 중입니다. 잠시 후 결과를 확인하세요.",
+        meta:
+          currentActionStartedAt && isValid(parseISO(currentActionStartedAt))
+            ? `시작 ${formatDateTime(currentActionStartedAt)}`
+            : undefined,
+        timestampLabel: currentActionStartedAt
+          ? formatDateTime(currentActionStartedAt)
+          : "진행 중",
       } satisfies DashboardActivityViewModel;
     }
 
@@ -93,7 +111,7 @@ export function useDashboardActivityView(
       return {
         title: resolveActionLabel(latestLog.action),
         message: buildLogDescription(latestLog),
-        meta: `${latestLog.floor}층 · ${resolveStatusLabel(
+        meta: `${typeof latestLog.floor === "number" ? `${latestLog.floor}층` : "—"} · ${resolveStatusLabel(
           latestLog.status,
           latestLog.action
         )}`,
@@ -110,10 +128,31 @@ export function useDashboardActivityView(
   }, [
     apRemaining,
     currentAction,
+    currentActionStartedAt,
     lastActionCompletedAt,
     latestLog,
     nextActionStartAt,
   ]);
+}
+
+function mapDashboardActionToDungeonAction(
+  action: DashboardCurrentAction
+): DungeonLogEntry["action"] | null {
+  switch (action) {
+    case "BATTLE":
+      return "BATTLE";
+    case "REST":
+      return "REST";
+    case "TREASURE":
+      return "TREASURE";
+    case "TRAP":
+      return "TRAP";
+    case "EXPLORING":
+      return "MOVE";
+    case "IDLE":
+    default:
+      return null;
+  }
 }
 
 function parseIso(iso?: string): Date | undefined {

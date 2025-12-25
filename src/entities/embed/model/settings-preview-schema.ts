@@ -1,10 +1,9 @@
 import { z } from "zod";
 import {
-  equipmentModifierSchema,
   equipmentRaritySchema,
   equipmentSlotSchema,
+  inventoryModifierSchema,
 } from "@/entities/dashboard/model/types";
-import { inventoryItemEffectSchema } from "@/entities/inventory/model/types";
 import { EMBED_PREVIEW_SIZE_VALUES } from "@/entities/embed/model/types";
 
 const embedPreviewSizeSchema = z.enum(EMBED_PREVIEW_SIZE_VALUES);
@@ -32,12 +31,13 @@ export const settingsEmbedStatBlockSchema = z.object({
 
 export const settingsEmbedEquipmentSchema = z.object({
   id: z.string(),
-  name: z.string(),
+  code: z.string(),
+  name: z.string().nullable().optional(),
   slot: equipmentSlotSchema,
   rarity: equipmentRaritySchema,
-  modifiers: z.array(equipmentModifierSchema),
-  effect: inventoryItemEffectSchema.nullable().optional(),
-  sprite: z.string(),
+  modifiers: z.array(inventoryModifierSchema),
+  effect: z.string().nullable().optional(),
+  sprite: z.string().nullable().optional(),
 });
 
 export const settingsEmbedPreviewSchema = z.object({

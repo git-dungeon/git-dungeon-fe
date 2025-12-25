@@ -24,10 +24,29 @@ export function formatStatChange(stat: string, value: number) {
 }
 
 export function determineItemTone(action: string): StatTone {
-  if (action === "treasure" || action === "equip") {
+  const normalized = action.trim();
+  const upper = normalized.toUpperCase();
+
+  if (
+    normalized === "treasure" ||
+    normalized === "equip" ||
+    upper === "TREASURE" ||
+    upper === "ACQUIRE_ITEM" ||
+    upper === "EQUIP_ITEM" ||
+    upper === "BUFF_APPLIED" ||
+    upper === "LEVEL_UP" ||
+    upper === "REVIVE"
+  ) {
     return "gain";
   }
-  if (action === "discard" || action === "unequip") {
+  if (
+    normalized === "discard" ||
+    normalized === "unequip" ||
+    upper === "DISCARD_ITEM" ||
+    upper === "UNEQUIP_ITEM" ||
+    upper === "BUFF_EXPIRED" ||
+    upper === "DEATH"
+  ) {
     return "loss";
   }
   return "neutral";

@@ -16,10 +16,19 @@ pnpm dev
 
 ## 환경 변수
 
-| Key                 | 설명                                            |
-| ------------------- | ----------------------------------------------- |
-| `VITE_API_BASE_URL` | (선택) API 기본 URL. 미지정 시 동일 오리진 사용 |
-| `VITE_ENABLE_MSW`   | 개발 환경에서 MSW 활성화 여부                   |
+> 모든 Vite 환경 변수는 문자열로 주입됩니다. (예: `VITE_ENABLE_MSW=true`)
+
+| Key                 | 설명 |
+| ------------------- | ---- |
+| `VITE_API_BASE_URL` | API 기본 URL. DEV에서는 미지정 시 동일 오리진을 사용합니다. PROD에서는 필수이며, 미설정 시 앱이 시작 시점에 에러를 던집니다. |
+| `VITE_ENABLE_MSW`   | DEV에서 MSW 활성화 여부(`"true"`일 때만 활성화). Vitest(`pnpm test`)에서는 항상 MSW가 활성화됩니다. |
+
+### 권장 실행 모드
+
+- **MSW 모드(백엔드 없이 UI 개발/테스트)**: `VITE_ENABLE_MSW=true`
+- **실서버 모드(실백엔드 연동)**: `VITE_ENABLE_MSW=false` + `VITE_API_BASE_URL=http://localhost:3000`(예시)
+
+> 참고: DEV에서 MSW가 켜져 있고 `VITE_API_BASE_URL`이 현재 오리진과 다르면, 프런트는 MSW 동작을 위해 `window.location.origin`을 사용합니다(콘솔 경고 출력).
 
 `.env` 예시는 다음과 같습니다.
 
@@ -27,6 +36,8 @@ pnpm dev
 VITE_ENABLE_MSW=true
 VITE_API_BASE_URL=https://api.gitdungeon.com
 ```
+
+더 자세한 로컬 개발/트러블슈팅 가이드는 `RUNBOOK.md`를 참고하세요.
 
 ## GitHub OAuth 연동 개요
 
@@ -74,3 +85,13 @@ VITE_API_BASE_URL=https://api.gitdungeon.com
 - Vitest 환경을 도입했으며 `pnpm test`로 단위 테스트를 실행할 수 있습니다.
 - 테스트 실행 전 `src/mocks/tests/setup.ts`에서 MSW 핸들러가 초기화됩니다.
 - 로컬에서는 `pnpm test src/entities/auth/api/get-auth-session.test.ts`처럼 개별 파일 실행이 가능합니다.
+
+## 트러블슈팅
+
+### `ERR_CONNECTION_REFUSED` / 서버가 꺼져있을 때
+
+- `VITE_ENABLE_MSW=false`이고 백엔드가 꺼져 있으면 API 호출이 실패합니다.
+- 이때 `http://localhost:5173/login?...`으로 접근하면 로그인 UI는 렌더링되며 “서버에 문제가 있어 로그인할 수 없습니다.” 메시지가 표시되는 것이 기대 동작입니다.
+- 확인 포인트:
+  - 백엔드가 실제로 실행 중인지, 그리고 `VITE_API_BASE_URL`이 올바른지 확인
+  - MSW 모드로 개발하려면 `VITE_ENABLE_MSW=true`로 설정 후 dev 서버 재시작
