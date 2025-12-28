@@ -13,6 +13,7 @@ import { buildLogThumbnails } from "@/entities/dungeon-log/config/thumbnails";
 import { DungeonLogDetailDialog } from "@/widgets/dungeon-log-timeline/ui/dungeon-log-detail-dialog";
 import { ApiError } from "@/shared/api/http-client";
 import { useTranslation } from "react-i18next";
+import { useCatalogItemNameResolver } from "@/entities/catalog/model/use-catalog-item-name";
 
 interface DungeonLogTimelineProps {
   filterType?: DungeonLogsFilterType;
@@ -35,6 +36,7 @@ export function DungeonLogTimeline({
     sentinelRef,
   } = useDungeonLogTimeline({ filterType });
   const [selectedLog, setSelectedLog] = useState<DungeonLogEntry | null>(null);
+  const resolveItemName = useCatalogItemNameResolver();
 
   if (status === "pending") {
     return <LoadingState />;
@@ -66,7 +68,7 @@ export function DungeonLogTimeline({
     <div className="space-y-4">
       <ul className="space-y-3">
         {logs.map((log) => {
-          const thumbnails = buildLogThumbnails(log);
+          const thumbnails = buildLogThumbnails(log, resolveItemName);
           return (
             <li key={log.id}>
               <LogCard

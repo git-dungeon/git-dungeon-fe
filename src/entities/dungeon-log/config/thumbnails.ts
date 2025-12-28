@@ -111,10 +111,15 @@ function resolveGoldBadge(
   return gold > 0 ? "gain" : "loss";
 }
 
+type ItemNameResolver = (code: string, fallback?: string | null) => string;
+
 export function buildLogThumbnails(
-  entry: DungeonLogEntry
+  entry: DungeonLogEntry,
+  resolveItemName?: ItemNameResolver
 ): LogThumbnailDescriptor[] {
   const thumbnails: LogThumbnailDescriptor[] = [];
+  const resolveName = (code: string) =>
+    resolveItemName ? resolveItemName(code, code) : code;
   const actionThumbnail = resolveActionThumbnail(entry.action);
   const isBattleAction = entry.action === "BATTLE";
   const isTreasureAction = entry.action === "TREASURE";
@@ -148,10 +153,13 @@ export function buildLogThumbnails(
     const rewardItem = delta.detail.rewards?.items?.at(0);
     const itemThumbnail = resolveItemThumbnail(rewardItem?.code);
     if (itemThumbnail) {
+      const itemName = rewardItem?.code
+        ? resolveName(rewardItem.code)
+        : undefined;
       thumbnails.push({
         id: `${entry.id}-reward-item`,
         src: itemThumbnail,
-        alt: rewardItem?.code ?? t("logs.thumbnails.rewardItem"),
+        alt: itemName ?? t("logs.thumbnails.rewardItem"),
         badge: "gain",
       });
     }
@@ -173,10 +181,11 @@ export function buildLogThumbnails(
     const itemKey = primaryItem?.code;
     const itemThumbnail = resolveItemThumbnail(itemKey);
     if (itemThumbnail) {
+      const itemName = itemKey ? resolveName(itemKey) : undefined;
       thumbnails.push({
         id: `${entry.id}-item`,
         src: itemThumbnail,
-        alt: itemKey ?? t("logs.thumbnails.item"),
+        alt: itemName ?? t("logs.thumbnails.item"),
       });
     }
   }
@@ -185,10 +194,13 @@ export function buildLogThumbnails(
     const rewardItem = delta.detail.rewards?.items?.at(0);
     const itemThumbnail = resolveItemThumbnail(rewardItem?.code);
     if (itemThumbnail) {
+      const itemName = rewardItem?.code
+        ? resolveName(rewardItem.code)
+        : undefined;
       thumbnails.push({
         id: `${entry.id}-reward-item`,
         src: itemThumbnail,
-        alt: rewardItem?.code ?? t("logs.thumbnails.rewardItem"),
+        alt: itemName ?? t("logs.thumbnails.rewardItem"),
         badge: "gain",
       });
     }

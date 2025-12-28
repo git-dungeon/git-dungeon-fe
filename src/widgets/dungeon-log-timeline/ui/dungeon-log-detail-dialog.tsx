@@ -14,6 +14,7 @@ import {
   resolveBattlePlayer,
   resolveBattleResult,
 } from "@/entities/dungeon-log/lib/monster";
+import { useCatalogItemNameResolver } from "@/entities/catalog/model/use-catalog-item-name";
 import {
   Dialog,
   DialogClose,
@@ -37,7 +38,8 @@ export function DungeonLogDetailDialog({
   onOpenChange,
 }: DungeonLogDetailDialogProps) {
   const { t } = useTranslation();
-  const thumbnails = log ? buildLogThumbnails(log) : [];
+  const resolveItemName = useCatalogItemNameResolver();
+  const thumbnails = log ? buildLogThumbnails(log, resolveItemName) : [];
   const monster = log ? resolveBattleMonster(log) : undefined;
   const player = log ? resolveBattlePlayer(log) : undefined;
   const result = log ? resolveBattleResult(log) : undefined;
@@ -52,7 +54,7 @@ export function DungeonLogDetailDialog({
                 {resolveActionLabel(log.action)}
               </DialogTitle>
               <DialogDescription className="text-left">
-                {buildLogDescription(log)}
+                {buildLogDescription(log, resolveItemName)}
               </DialogDescription>
               <DialogClose asChild>
                 <Button
