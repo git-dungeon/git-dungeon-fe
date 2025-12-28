@@ -8,6 +8,7 @@ import { formatStatChange, resolveStatLabel } from "@/shared/lib/stats/format";
 import { BADGE_TONE_CLASSES } from "@/shared/ui/tone";
 import { resolveLocalItemSprite } from "@/entities/catalog/config/local-sprites";
 import { getInventorySlotLabel } from "@/entities/inventory/config/slot-labels";
+import { useCatalogItemNameResolver } from "@/entities/catalog/model/use-catalog-item-name";
 import {
   Dialog,
   DialogClose,
@@ -43,11 +44,12 @@ export function InventoryModal({
   onDiscard,
 }: InventoryModalProps) {
   const { t } = useTranslation();
+  const resolveItemName = useCatalogItemNameResolver();
   if (!item || !slot) {
     return null;
   }
 
-  const displayName = item.name ?? item.code;
+  const displayName = resolveItemName(item.code, item.name);
   const sprite = resolveLocalItemSprite(item.code);
 
   const handleOpenChange = (nextOpen: boolean) => {

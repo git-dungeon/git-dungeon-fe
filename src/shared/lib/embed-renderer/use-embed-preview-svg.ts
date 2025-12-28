@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { CharacterOverview } from "@/features/character-summary/lib/build-character-overview";
 import type {
   EmbedPreviewLanguage,
@@ -6,6 +6,11 @@ import type {
   EmbedPreviewTheme,
 } from "@/entities/embed/model/types";
 import { generateEmbedPreviewSvg } from "@/shared/lib/embed-renderer/generate-embed-preview-svg";
+import { useCatalog } from "@/entities/catalog/model/use-catalog";
+import {
+  buildCatalogItemNameMap,
+  resolveCatalogItemName,
+} from "@/entities/catalog/lib/item-name";
 
 interface UseEmbedPreviewSvgParams {
   theme: EmbedPreviewTheme;
@@ -27,13 +32,34 @@ export function useEmbedPreviewSvg({
   language,
   overview,
 }: UseEmbedPreviewSvgParams): UseEmbedPreviewSvgResult {
+  const catalogQuery = useCatalog(language);
+  const itemNameMap = useMemo(
+    () => buildCatalogItemNameMap(catalogQuery.data),
+    [catalogQuery.data]
+  );
+  const resolvedOverview = useMemo(() => {
+    if (!overview) {
+      return null;
+    }
+    if (!catalogQuery.data) {
+      return overview;
+    }
+
+    return {
+      ...overview,
+      equipment: overview.equipment.map((item) => ({
+        ...item,
+        name: resolveCatalogItemName(itemNameMap, item.code, item.name),
+      })),
+    };
+  }, [catalogQuery.data, itemNameMap, overview]);
   const [svgMarkup, setSvgMarkup] = useState<string | null>(null);
   const [svgDataUrl, setSvgDataUrl] = useState<string | null>(null);
   const [renderError, setRenderError] = useState<string | null>(null);
   const [isRendering, setIsRendering] = useState(false);
 
   useEffect(() => {
-    if (!overview) {
+    if (!resolvedOverview) {
       setSvgMarkup(null);
       setSvgDataUrl(null);
       setRenderError(null);
@@ -51,7 +77,7 @@ export function useEmbedPreviewSvg({
       theme,
       size,
       language,
-      overview,
+      overview: resolvedOverview,
     })
       .then((svg) => {
         if (!cancelled) {
@@ -79,7 +105,7 @@ export function useEmbedPreviewSvg({
     return () => {
       cancelled = true;
     };
-  }, [theme, size, language, overview]);
+  }, [theme, size, language, resolvedOverview]);
 
   return {
     svgMarkup,

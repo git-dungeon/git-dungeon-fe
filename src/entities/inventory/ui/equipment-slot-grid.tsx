@@ -10,6 +10,7 @@ import {
 import { InventoryItemCard } from "@/entities/inventory/ui/inventory-item-card";
 import { getInventorySlotLabel } from "@/entities/inventory/config/slot-labels";
 import { useTranslation } from "react-i18next";
+import { useCatalogItemNameResolver } from "@/entities/catalog/model/use-catalog-item-name";
 
 interface EquipmentSlotGridProps {
   equipped: InventoryEquippedMap | InventoryItem[];
@@ -26,6 +27,7 @@ export function EquipmentSlotGrid({
   className,
   renderSlot,
 }: EquipmentSlotGridProps) {
+  const resolveItemName = useCatalogItemNameResolver();
   const resolved = useMemo(() => {
     return Array.isArray(equipped) ? mapFromItems(equipped) : equipped;
   }, [equipped]);
@@ -42,6 +44,7 @@ export function EquipmentSlotGrid({
                   item={item}
                   className="items-center"
                   showSlotLabel
+                  displayName={resolveItemName(item.code, item.name)}
                 />
               ) : (
                 <InventoryEmptySlot slot={slot} />

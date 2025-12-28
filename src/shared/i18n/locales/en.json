@@ -3,6 +3,10 @@
     "appName": "Git Dungeon",
     "placeholder": "—"
   },
+  "datetime": {
+    "unknown": "Unknown",
+    "justNow": "Just now"
+  },
   "navigation": {
     "dashboard": "Dashboard",
     "inventory": "Inventory",
@@ -218,6 +222,13 @@
     "grid": {
       "title": "Inventory",
       "equipped": "Equipped"
+    },
+    "rarity": {
+      "common": "Common",
+      "uncommon": "Uncommon",
+      "rare": "Rare",
+      "epic": "Epic",
+      "legendary": "Legendary"
     },
     "slots": {
       "title": "Equipment slots",

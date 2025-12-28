@@ -9,6 +9,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { EquipmentRow } from "@/widgets/dashboard-equipment/ui/equipment-row";
 import { useTranslation } from "react-i18next";
+import { useCatalogItemNameResolver } from "@/entities/catalog/model/use-catalog-item-name";
 
 interface DashboardEquipmentProps {
   helmet?: EquipmentItem;
@@ -24,6 +25,7 @@ export function DashboardEquipment({
   ring,
 }: DashboardEquipmentProps) {
   const { t } = useTranslation();
+  const resolveItemName = useCatalogItemNameResolver();
   const equipmentRows: Array<{
     slot: EquipmentSlot;
     label: string;
@@ -73,7 +75,7 @@ export function DashboardEquipment({
               label={label}
               item={itemsBySlot[slot]}
               placeholder={placeholder}
-              formatItem={formatEquipment}
+              formatItem={(item) => formatEquipment(resolveItemName, item)}
               formatModifier={formatModifier}
             />
           ))}
@@ -83,7 +85,10 @@ export function DashboardEquipment({
   );
 }
 
-function formatEquipment(item: EquipmentItem): string {
-  const name = item.name ?? item.code;
+function formatEquipment(
+  resolveItemName: (code: string, fallback?: string | null) => string,
+  item: EquipmentItem
+): string {
+  const name = resolveItemName(item.code, item.name);
   return `${name} · ${formatRarity(item.rarity)}`;
 }

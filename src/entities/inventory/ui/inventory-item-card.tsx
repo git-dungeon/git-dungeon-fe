@@ -12,14 +12,16 @@ interface InventoryItemCardProps {
   item: InventoryItem;
   className?: string;
   showSlotLabel?: boolean;
+  displayName?: string;
 }
 
 export function InventoryItemCard({
   item,
   className,
   showSlotLabel = true,
+  displayName,
 }: InventoryItemCardProps) {
-  const displayName = item.name ?? item.code;
+  const resolvedName = displayName ?? item.name ?? item.code;
   const sprite = resolveLocalItemSprite(item.code);
 
   return (
@@ -33,13 +35,13 @@ export function InventoryItemCard({
         {sprite ? (
           <img
             src={sprite}
-            alt={displayName}
+            alt={resolvedName}
             loading="lazy"
             className="size-14 object-cover"
           />
         ) : (
           <div className="text-muted-foreground text-[11px] font-semibold tracking-wide">
-            {displayName.slice(0, 2).toUpperCase()}
+            {resolvedName.slice(0, 2).toUpperCase()}
           </div>
         )}
       </div>
@@ -49,7 +51,7 @@ export function InventoryItemCard({
             {getInventorySlotLabel(item.slot)}
           </span>
         ) : null}
-        <span className="text-xs font-medium">{displayName}</span>
+        <span className="text-xs font-medium">{resolvedName}</span>
       </div>
       <div className="flex flex-wrap justify-center gap-1">
         <Badge
