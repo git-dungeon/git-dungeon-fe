@@ -1,5 +1,6 @@
 import { Loader2, LogOut, RefreshCw } from "lucide-react";
 import type { JSX } from "react";
+import { useTranslation } from "react-i18next";
 import { useProfile } from "@/entities/profile/model/use-profile";
 import { SettingsProfileCard } from "@/widgets/settings-profile/ui/settings-profile-card";
 import { SettingsPreferencesCard } from "@/widgets/settings-preferences/ui/settings-preferences-card";
@@ -15,6 +16,7 @@ import {
 } from "@/shared/ui/card";
 
 export function SettingsPage() {
+  const { t } = useTranslation();
   const profileQuery = useProfile();
   const logoutMutation = useLogout();
 
@@ -25,9 +27,11 @@ export function SettingsPage() {
     <section className="space-y-6">
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div className="space-y-1">
-          <h1 className="text-foreground text-2xl font-semibold">설정</h1>
+          <h1 className="text-foreground text-2xl font-semibold">
+            {t("settings.title")}
+          </h1>
           <p className="text-muted-foreground text-sm">
-            계정 정보와 로컬 환경설정을 관리하고 임베딩 미리보기를 확인하세요.
+            {t("settings.subtitle")}
           </p>
         </div>
         <Button
@@ -42,12 +46,12 @@ export function SettingsPage() {
           ) : (
             <LogOut className="size-4" aria-hidden />
           )}
-          로그아웃
+          {t("settings.logout")}
         </Button>
       </header>
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-        {renderProfileSection(profileQuery, handleRetry)}
+        {renderProfileSection(t, profileQuery, handleRetry)}
         <SettingsPreferencesCard />
       </div>
 
@@ -57,6 +61,7 @@ export function SettingsPage() {
 }
 
 function renderProfileSection(
+  t: (key: string) => string,
   query: ReturnType<typeof useProfile>,
   onRetry: () => Promise<unknown>
 ): JSX.Element {
@@ -89,10 +94,8 @@ function renderProfileSection(
     return (
       <Card className="bg-destructive/5 text-destructive border-destructive/20">
         <CardHeader>
-          <CardTitle>계정 정보</CardTitle>
-          <CardDescription>
-            설정 정보를 불러오지 못했습니다. 다시 시도해 주세요.
-          </CardDescription>
+          <CardTitle>{t("settings.profile.title")}</CardTitle>
+          <CardDescription>{t("settings.profile.loadError")}</CardDescription>
         </CardHeader>
         <CardContent>
           <Button
@@ -103,7 +106,7 @@ function renderProfileSection(
             onClick={() => void onRetry()}
           >
             <RefreshCw className="size-4" aria-hidden />
-            다시 시도
+            {t("settings.profile.retry")}
           </Button>
         </CardContent>
       </Card>

@@ -7,5 +7,91 @@
     "inventory": "인벤토리",
     "logs": "로그",
     "settings": "설정"
+  },
+  "settings": {
+    "title": "설정",
+    "subtitle": "계정 정보와 로컬 환경설정을 관리하고 임베딩 미리보기를 확인하세요.",
+    "logout": "로그아웃",
+    "profile": {
+      "title": "계정 정보",
+      "description": "계정 세부 정보를 표시합니다.",
+      "loadError": "설정 정보를 불러오지 못했습니다. 다시 시도해 주세요.",
+      "retry": "다시 시도",
+      "fields": {
+        "email": "이메일",
+        "userId": "사용자 ID",
+        "joinedAt": "가입일",
+        "missing": "미기록"
+      },
+      "avatarAlt": "사용자 아바타"
+    },
+    "preferences": {
+      "title": "환경 설정",
+      "description": "테마와 언어를 관리합니다.",
+      "theme": {
+        "label": "테마",
+        "placeholder": "테마를 선택하세요",
+        "system": "시스템 기본값",
+        "light": "라이트",
+        "dark": "다크"
+      },
+      "language": {
+        "label": "언어",
+        "placeholder": "언어를 선택하세요",
+        "ko": "한국어",
+        "en": "English"
+      }
+    },
+    "embedding": {
+      "title": "캐릭터 대시보드",
+      "description": "대시보드와 인벤토리 데이터를 조합한 임베딩 미리보기입니다.",
+      "size": {
+        "compact": {
+          "label": "Compact",
+          "hint": "블로그 사이드바"
+        },
+        "square": {
+          "label": "Square",
+          "hint": "README 카드"
+        },
+        "wide": {
+          "label": "Wide",
+          "hint": "대시보드 배너"
+        }
+      },
+      "error": {
+        "title": "미리보기를 불러오지 못했습니다.",
+        "description": "네트워크 상태를 확인한 뒤 다시 시도하세요.",
+        "retry": "다시 시도"
+      },
+      "renderError": {
+        "title": "SVG 렌더링에 실패했습니다"
+      },
+      "previewAlt": "임베드 SVG 프리뷰",
+      "generatedAt": "생성 시각: {{time}}",
+      "urlExample": "URL 예시:"
+    },
+    "github": {
+      "title": "GitHub 연동",
+      "refresh": "새로고침",
+      "status": {
+        "lastSyncUnavailable": "최근 동기화 정보를 불러올 수 없습니다.",
+        "connectHint": "계정을 연동하면 커밋 통계가 표시됩니다.",
+        "checking": "동기화 가능 여부 확인 중...",
+        "disconnected": "미연결",
+        "lastSyncMissing": "마지막 동기화 정보 없음",
+        "lastSync": "마지막 동기화 {{relative}}",
+        "syncAllowed": "지금 새로고침 가능",
+        "syncNotAvailable": "아직 새로고침할 수 없습니다.",
+        "nextSync": "다음 새로고침 가능 {{relative}} ({{absolute}})"
+      },
+      "errors": {
+        "notConnected": "GitHub 계정이 연동되어 있지 않습니다.",
+        "sessionExpired": "세션이 만료되었습니다. 다시 로그인해 주세요.",
+        "rateLimited": "요청 한도에 도달했습니다. 잠시 후 다시 시도해 주세요.",
+        "conflict": "현재 동기화를 진행할 수 없습니다. 잠시 후 다시 시도해 주세요.",
+        "unknown": "GitHub 동기화에 실패했습니다."
+      }
+    }
   }
 }

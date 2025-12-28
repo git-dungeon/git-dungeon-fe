@@ -3,6 +3,7 @@ import { server } from "./server";
 import { resetApiClientAuthentication } from "@/shared/api/http-client";
 import { resetInventoryMockState } from "@/mocks/handlers/inventory-handlers";
 import { resetGithubMockState } from "@/mocks/handlers/github-handlers";
+import "@/shared/i18n/i18n";
 
 beforeAll(() => {
   process.env.VITE_API_BASE_URL =

@@ -7,5 +7,91 @@
     "inventory": "Inventory",
     "logs": "Logs",
     "settings": "Settings"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your account and local preferences, and review the embed preview.",
+    "logout": "Log out",
+    "profile": {
+      "title": "Account",
+      "description": "Displays account details.",
+      "loadError": "Failed to load settings. Please try again.",
+      "retry": "Retry",
+      "fields": {
+        "email": "Email",
+        "userId": "User ID",
+        "joinedAt": "Joined",
+        "missing": "Not available"
+      },
+      "avatarAlt": "User avatar"
+    },
+    "preferences": {
+      "title": "Preferences",
+      "description": "Manage theme and language.",
+      "theme": {
+        "label": "Theme",
+        "placeholder": "Select a theme",
+        "system": "System",
+        "light": "Light",
+        "dark": "Dark"
+      },
+      "language": {
+        "label": "Language",
+        "placeholder": "Select a language",
+        "ko": "Korean",
+        "en": "English"
+      }
+    },
+    "embedding": {
+      "title": "Character Dashboard",
+      "description": "Embed preview combining dashboard and inventory data.",
+      "size": {
+        "compact": {
+          "label": "Compact",
+          "hint": "Blog sidebar"
+        },
+        "square": {
+          "label": "Square",
+          "hint": "README card"
+        },
+        "wide": {
+          "label": "Wide",
+          "hint": "Dashboard banner"
+        }
+      },
+      "error": {
+        "title": "Couldn't load the preview.",
+        "description": "Check your network connection and try again.",
+        "retry": "Retry"
+      },
+      "renderError": {
+        "title": "Failed to render SVG"
+      },
+      "previewAlt": "Embed SVG preview",
+      "generatedAt": "Generated at: {{time}}",
+      "urlExample": "Example URL:"
+    },
+    "github": {
+      "title": "GitHub connection",
+      "refresh": "Refresh",
+      "status": {
+        "lastSyncUnavailable": "Unable to load latest sync info.",
+        "connectHint": "Connect your account to show commit stats.",
+        "checking": "Checking sync availability...",
+        "disconnected": "Disconnected",
+        "lastSyncMissing": "No last sync info",
+        "lastSync": "Last sync {{relative}}",
+        "syncAllowed": "Refresh available now",
+        "syncNotAvailable": "Refresh is not available yet.",
+        "nextSync": "Next refresh {{relative}} ({{absolute}})"
+      },
+      "errors": {
+        "notConnected": "GitHub account is not connected.",
+        "sessionExpired": "Your session has expired. Please log in again.",
+        "rateLimited": "Request limit reached. Please try again later.",
+        "conflict": "Sync is currently unavailable. Please try again later.",
+        "unknown": "GitHub sync failed."
+      }
+    }
   }
 }

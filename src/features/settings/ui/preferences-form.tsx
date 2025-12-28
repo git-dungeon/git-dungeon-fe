@@ -13,17 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/ui/select";
-
-const THEME_LABEL_MAP: Record<ThemePreference, string> = {
-  system: "시스템 기본값",
-  light: "라이트",
-  dark: "다크",
-};
-
-const LANGUAGE_LABEL_MAP: Record<LanguagePreference, string> = {
-  ko: "한국어",
-  en: "English",
-};
+import { useTranslation } from "react-i18next";
 
 interface PreferencesFormProps {
   theme: ThemePreference;
@@ -38,32 +28,47 @@ export function PreferencesForm({
   onThemeChange,
   onLanguageChange,
 }: PreferencesFormProps) {
+  const { t } = useTranslation();
+  const themeLabelMap: Record<ThemePreference, string> = {
+    system: t("settings.preferences.theme.system"),
+    light: t("settings.preferences.theme.light"),
+    dark: t("settings.preferences.theme.dark"),
+  };
+  const languageLabelMap: Record<LanguagePreference, string> = {
+    ko: t("settings.preferences.language.ko"),
+    en: t("settings.preferences.language.en"),
+  };
+
   return (
     <div className="space-y-6">
-      <Fieldset label="테마">
+      <Fieldset label={t("settings.preferences.theme.label")}>
         <Select value={theme} onValueChange={onThemeChange}>
           <SelectTrigger id="settings-theme">
-            <SelectValue placeholder="테마를 선택하세요" />
+            <SelectValue
+              placeholder={t("settings.preferences.theme.placeholder")}
+            />
           </SelectTrigger>
           <SelectContent>
             {THEME_PREFERENCE_VALUES.map((preference) => (
               <SelectItem key={preference} value={preference}>
-                {THEME_LABEL_MAP[preference]}
+                {themeLabelMap[preference]}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
       </Fieldset>
 
-      <Fieldset label="언어">
+      <Fieldset label={t("settings.preferences.language.label")}>
         <Select value={language} onValueChange={onLanguageChange}>
           <SelectTrigger id="settings-language">
-            <SelectValue placeholder="언어를 선택하세요" />
+            <SelectValue
+              placeholder={t("settings.preferences.language.placeholder")}
+            />
           </SelectTrigger>
           <SelectContent>
             {LANGUAGE_PREFERENCE_VALUES.map((preference) => (
               <SelectItem key={preference} value={preference}>
-                {LANGUAGE_LABEL_MAP[preference]}
+                {languageLabelMap[preference]}
               </SelectItem>
             ))}
           </SelectContent>

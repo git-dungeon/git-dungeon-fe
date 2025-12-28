@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import type { TFunction } from "i18next";
 import {
   Card,
   CardAction,
@@ -26,18 +27,32 @@ import {
   getEmbedPreviewContainerClass,
 } from "@/widgets/embed-view/ui/embed-container";
 import { EMBEDDING_ENDPOINTS, resolveApiUrl } from "@/shared/config/env";
+import { useTranslation } from "react-i18next";
 
 const EMBEDDING_SIZE_OPTIONS: Array<{
   value: EmbedPreviewSize;
-  label: string;
-  hint: string;
+  labelKey: string;
+  hintKey: string;
 }> = [
-  { value: "compact", label: "Compact", hint: "블로그 사이드바" },
-  { value: "square", label: "Square", hint: "README 카드" },
-  { value: "wide", label: "Wide", hint: "대시보드 배너" },
+  {
+    value: "compact",
+    labelKey: "settings.embedding.size.compact.label",
+    hintKey: "settings.embedding.size.compact.hint",
+  },
+  {
+    value: "square",
+    labelKey: "settings.embedding.size.square.label",
+    hintKey: "settings.embedding.size.square.hint",
+  },
+  {
+    value: "wide",
+    labelKey: "settings.embedding.size.wide.label",
+    hintKey: "settings.embedding.size.wide.hint",
+  },
 ];
 
 export function SettingsEmbeddingPreviewCard() {
+  const { t } = useTranslation();
   const [size, setSize] = useState<EmbedPreviewSize>("compact");
   const overview = useCharacterOverview();
   const { theme: themePreference, language: languagePreference } =
@@ -73,9 +88,9 @@ export function SettingsEmbeddingPreviewCard() {
     <Card>
       <CardHeader>
         <div>
-          <CardTitle>캐릭터 대시보드</CardTitle>
+          <CardTitle>{t("settings.embedding.title")}</CardTitle>
           <CardDescription>
-            대시보드와 인벤토리 데이터를 조합한 임베딩 미리보기입니다.
+            {t("settings.embedding.description")}
           </CardDescription>
         </div>
         <CardAction className="flex items-center gap-2">
@@ -93,9 +108,9 @@ export function SettingsEmbeddingPreviewCard() {
               onClick={() => setSize(option.value)}
               disabled={isBusy}
             >
-              <span>{option.label}</span>
+              <span>{t(option.labelKey)}</span>
               <span className="text-muted-foreground text-[10px]">
-                {option.hint}
+                {t(option.hintKey)}
               </span>
             </button>
           ))}
@@ -103,12 +118,13 @@ export function SettingsEmbeddingPreviewCard() {
       </CardHeader>
       <CardContent className="space-y-6">
         {overview.isError
-          ? renderOverviewError(overview.refetch)
+          ? renderOverviewError(t, overview.refetch)
           : embedRenderError
-            ? renderEmbedError(embedRenderError, embedSize, embedLanguage)
+            ? renderEmbedError(t, embedRenderError, embedSize, embedLanguage)
             : !svgDataUrl
               ? renderSkeleton(embedSize, embedLanguage)
               : renderPreviewContent({
+                  t,
                   svgDataUrl,
                   size: embedSize,
                   theme: embedTheme,
@@ -121,23 +137,24 @@ export function SettingsEmbeddingPreviewCard() {
   );
 }
 
-function renderOverviewError(onRetry: () => Promise<void>) {
+function renderOverviewError(t: TFunction, onRetry: () => Promise<void>) {
   return (
     <div className="bg-destructive/5 text-destructive border-destructive/20 flex flex-col items-start gap-3 rounded-lg border p-6">
       <div>
-        <p className="font-semibold">미리보기를 불러오지 못했습니다.</p>
+        <p className="font-semibold">{t("settings.embedding.error.title")}</p>
         <p className="text-destructive/80 text-sm">
-          네트워크 상태를 확인한 뒤 다시 시도하세요.
+          {t("settings.embedding.error.description")}
         </p>
       </div>
       <Button variant="destructive" size="sm" onClick={() => void onRetry()}>
-        다시 시도
+        {t("settings.embedding.error.retry")}
       </Button>
     </div>
   );
 }
 
 function renderEmbedError(
+  t: TFunction,
   message: string,
   size: EmbedPreviewSize,
   language: EmbedPreviewLanguage
@@ -145,7 +162,7 @@ function renderEmbedError(
   return (
     <div className="flex w-full justify-center">
       <EmbedErrorCard
-        title="SVG 렌더링에 실패했습니다"
+        title={t("settings.embedding.renderError.title")}
         message={message}
         size={size}
         language={language}
@@ -162,6 +179,7 @@ function renderSkeleton(
 }
 
 interface RenderPreviewContentParams {
+  t: TFunction;
   svgDataUrl: string;
   size: EmbedPreviewSize;
   theme: EmbedPreviewTheme;
@@ -171,6 +189,7 @@ interface RenderPreviewContentParams {
 }
 
 function renderPreviewContent({
+  t,
   svgDataUrl,
   size,
   theme,
@@ -199,15 +218,18 @@ function renderPreviewContent({
         >
           <img
             src={svgDataUrl}
-            alt="임베드 SVG 프리뷰"
+            alt={t("settings.embedding.previewAlt")}
             className="h-full w-full object-contain"
             loading="lazy"
           />
         </figure>
         <div className="text-muted-foreground flex flex-col gap-2 text-xs sm:flex-row sm:items-center sm:justify-between">
-          <span>생성 시각: {generatedAtLabel}</span>
+          <span>
+            {t("settings.embedding.generatedAt", { time: generatedAtLabel })}
+          </span>
           <span className="truncate">
-            URL 예시: <code className="font-mono text-xs">{exampleUrl}</code>
+            {t("settings.embedding.urlExample")}{" "}
+            <code className="font-mono text-xs">{exampleUrl}</code>
           </span>
         </div>
       </section>

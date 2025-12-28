@@ -17,6 +17,7 @@ import {
   formatDateTime,
   formatRelativeTime,
 } from "@/shared/lib/datetime/formatters";
+import { useTranslation } from "react-i18next";
 
 interface SettingsProfileCardProps {
   profile: Profile;
@@ -27,23 +28,32 @@ export function SettingsProfileCard({
   profile,
   connections,
 }: SettingsProfileCardProps) {
-  const joinedAtValue = formatDateWithFallback(profile.joinedAt);
+  const { t } = useTranslation();
+  const joinedAtValue = formatDateWithFallback(t, profile.joinedAt);
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>계정 정보</CardTitle>
-        <CardDescription>계정 세부 정보를 표시합니다.</CardDescription>
+        <CardTitle>{t("settings.profile.title")}</CardTitle>
+        <CardDescription>{t("settings.profile.description")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <ProfileIdentity profile={profile} />
         <ProfileFieldList
           fields={[
-            { id: "email", label: "이메일", value: profile.email ?? "-" },
-            { id: "user-id", label: "사용자 ID", value: profile.userId },
+            {
+              id: "email",
+              label: t("settings.profile.fields.email"),
+              value: profile.email ?? "-",
+            },
+            {
+              id: "user-id",
+              label: t("settings.profile.fields.userId"),
+              value: profile.userId,
+            },
             {
               id: "joined-at",
-              label: "가입일",
+              label: t("settings.profile.fields.joinedAt"),
               value: joinedAtValue.value,
               hint: joinedAtValue.hint,
               title: joinedAtValue.title,
@@ -58,9 +68,12 @@ export function SettingsProfileCard({
   );
 }
 
-function formatDateWithFallback(value?: string | null) {
+function formatDateWithFallback(
+  t: (key: string) => string,
+  value?: string | null
+) {
   if (!value) {
-    return { value: "미기록" } as const;
+    return { value: t("settings.profile.fields.missing") } as const;
   }
 
   const formatted = formatDateTime(value);
