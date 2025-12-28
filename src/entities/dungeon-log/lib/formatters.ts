@@ -1,7 +1,6 @@
 import type {
   DungeonLogAction,
   DungeonLogCategory,
-  DungeonLogDelta,
   DungeonLogEntry,
   DungeonLogRewardItem,
   DungeonLogStatus,
@@ -120,7 +119,6 @@ export function formatDelta(
       entries.push(
         ...formatInventoryDelta(
           entry.id,
-          delta.type,
           delta.detail.inventory,
           resolveItemName
         )
@@ -250,7 +248,6 @@ function formatStatsDelta(
 
 function formatInventoryDelta(
   entryId: string,
-  action: DungeonLogDelta["type"],
   inventory: {
     added?: Array<{ code: string; quantity?: number }>;
     removed?: Array<{ code: string; quantity?: number }>;
