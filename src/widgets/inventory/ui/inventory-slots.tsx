@@ -11,6 +11,7 @@ import {
 } from "@/entities/inventory/ui/equipment-slot-grid";
 import { InventoryItemCard } from "@/entities/inventory/ui/inventory-item-card";
 import { cn } from "@/shared/lib/utils";
+import { useTranslation } from "react-i18next";
 
 interface InventorySlotsProps {
   equipped: InventoryEquippedMap;
@@ -19,10 +20,13 @@ interface InventorySlotsProps {
 }
 
 export function InventorySlots({ equipped, onSelect }: InventorySlotsProps) {
+  const { t } = useTranslation();
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">장착 슬롯</CardTitle>
+        <CardTitle className="text-base">
+          {t("inventory.slots.title")}
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <EquipmentSlotGrid

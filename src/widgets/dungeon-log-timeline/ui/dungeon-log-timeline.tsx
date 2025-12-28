@@ -12,6 +12,7 @@ import { useDungeonLogTimeline } from "@/widgets/dungeon-log-timeline/model/use-
 import { buildLogThumbnails } from "@/entities/dungeon-log/config/thumbnails";
 import { DungeonLogDetailDialog } from "@/widgets/dungeon-log-timeline/ui/dungeon-log-detail-dialog";
 import { ApiError } from "@/shared/api/http-client";
+import { useTranslation } from "react-i18next";
 
 interface DungeonLogTimelineProps {
   filterType?: DungeonLogsFilterType;
@@ -22,6 +23,7 @@ export function DungeonLogTimeline({
   filterType,
   onResetFilter,
 }: DungeonLogTimelineProps) {
+  const { t } = useTranslation();
   const {
     logs,
     status,
@@ -47,6 +49,7 @@ export function DungeonLogTimeline({
 
     return (
       <ErrorState
+        t={t}
         onRetry={refetch}
         error={error}
         showInvalidQueryHint={apiErrorCode === "LOGS_INVALID_QUERY"}
@@ -56,7 +59,7 @@ export function DungeonLogTimeline({
   }
 
   if (logs.length === 0) {
-    return <EmptyState />;
+    return <EmptyState t={t} />;
   }
 
   return (
@@ -81,15 +84,15 @@ export function DungeonLogTimeline({
       <div ref={sentinelRef} className="flex justify-center py-6">
         {isFetchingNextPage ? (
           <span className="text-muted-foreground text-sm">
-            다음 로그를 불러오는 중...
+            {t("logs.timeline.loadingNext")}
           </span>
         ) : hasNextPage ? (
           <Button variant="outline" onClick={() => fetchNextPage()}>
-            더 불러오기
+            {t("logs.timeline.loadMore")}
           </Button>
         ) : (
           <span className="text-muted-foreground text-sm">
-            모든 로그를 확인했습니다.
+            {t("logs.timeline.allLoaded")}
           </span>
         )}
       </div>
@@ -127,6 +130,7 @@ function LoadingState() {
 }
 
 interface ErrorStateProps {
+  t: (key: string) => string;
   error: unknown;
   onRetry: () => void;
   showInvalidQueryHint?: boolean;
@@ -134,6 +138,7 @@ interface ErrorStateProps {
 }
 
 function ErrorState({
+  t,
   error,
   onRetry,
   showInvalidQueryHint,
@@ -144,13 +149,10 @@ function ErrorState({
   return (
     <Card className="border-destructive/50">
       <CardContent className="flex flex-col gap-3 p-6 text-sm">
-        <p className="text-destructive">
-          로그를 불러오는 중 문제가 발생했습니다.
-        </p>
+        <p className="text-destructive">{t("logs.timeline.error")}</p>
         {showInvalidQueryHint ? (
           <p className="text-muted-foreground text-xs">
-            선택한 필터가 유효하지 않습니다. 필터를 변경하거나 초기화한 뒤 다시
-            시도하세요.
+            {t("logs.timeline.invalidFilter")}
           </p>
         ) : null}
         {message ? (
@@ -159,11 +161,11 @@ function ErrorState({
         <div>
           {showInvalidQueryHint && onResetFilter ? (
             <Button variant="outline" onClick={onResetFilter} className="mr-2">
-              필터 초기화
+              {t("logs.timeline.resetFilter")}
             </Button>
           ) : null}
           <Button variant="outline" onClick={onRetry}>
-            다시 시도
+            {t("logs.timeline.retry")}
           </Button>
         </div>
       </CardContent>
@@ -171,11 +173,11 @@ function ErrorState({
   );
 }
 
-function EmptyState() {
+function EmptyState({ t }: { t: (key: string) => string }) {
   return (
     <Card className="border-dashed">
       <CardContent className="text-muted-foreground p-6 text-sm">
-        아직 표시할 로그가 없습니다. 던전을 더 탐험하거나 장비를 조작해보세요.
+        {t("logs.timeline.empty")}
       </CardContent>
     </Card>
   );

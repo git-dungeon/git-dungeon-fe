@@ -7,6 +7,7 @@ import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { cn } from "@/shared/lib/utils";
 import { Badge } from "@/shared/ui/badge";
+import { useTranslation } from "react-i18next";
 
 interface InventoryGridProps {
   items: InventoryItem[];
@@ -23,6 +24,7 @@ const SLOT_ORDER: Record<InventoryItemSlot, number> = {
 };
 
 export function InventoryGrid({ items, onSelect }: InventoryGridProps) {
+  const { t } = useTranslation();
   const sortedItems = [...items].sort((a, b) => {
     if (a.isEquipped !== b.isEquipped) {
       return a.isEquipped ? -1 : 1;
@@ -38,7 +40,7 @@ export function InventoryGrid({ items, onSelect }: InventoryGridProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>인벤토리</CardTitle>
+        <CardTitle>{t("inventory.grid.title")}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:grid-cols-5">
@@ -57,6 +59,7 @@ interface InventoryGridCellProps {
 }
 
 function InventoryGridCell({ item, onSelect }: InventoryGridCellProps) {
+  const { t } = useTranslation();
   return (
     <Button
       type="button"
@@ -69,7 +72,9 @@ function InventoryGridCell({ item, onSelect }: InventoryGridCellProps) {
     >
       <InventoryItemCard item={item} />
       {item.isEquipped ? (
-        <Badge className="absolute top-2 left-2">장착</Badge>
+        <Badge className="absolute top-2 left-2">
+          {t("inventory.grid.equipped")}
+        </Badge>
       ) : null}
     </Button>
   );

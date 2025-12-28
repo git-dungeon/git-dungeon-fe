@@ -1,7 +1,7 @@
-const EFFECT_LABEL_MAP: Record<string, string> = {
-  resurrection: "부활",
-};
+import { i18next } from "@/shared/i18n/i18n";
 
 export function formatInventoryEffect(effect: string): string {
-  return EFFECT_LABEL_MAP[effect] ?? effect;
+  const key = `inventory.effects.${effect}`;
+  const value = i18next.t(key);
+  return value === key ? effect : value;
 }

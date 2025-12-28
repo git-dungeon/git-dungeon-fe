@@ -7,6 +7,7 @@ import {
   getDisplayFloorProgress,
 } from "@/entities/dashboard/lib/progress";
 import type { DashboardState } from "@/entities/dashboard/model/types";
+import { i18next } from "@/shared/i18n/i18n";
 
 interface SummaryCardChart {
   current: number;
@@ -29,7 +30,9 @@ interface SummarySectionsViewModel {
 }
 
 function formatFloorLabel(floor: number): string {
-  return `지하 ${floor.toString().padStart(2, "0")}층`;
+  return i18next.t("dashboard.summary.floorLabel", {
+    floor: floor.toString().padStart(2, "0"),
+  });
 }
 
 export function buildSummaryCards(
@@ -49,14 +52,14 @@ export function buildSummaryCards(
 
   const combat: SummaryCardViewModel[] = [
     {
-      title: "현재 층 / 최고층",
+      title: i18next.t("dashboard.summary.combat.floor.title"),
       value: `${floorLabel} / ${maxFloorText}`,
-      caption: "탐험 중인 층과 도달한 최고층",
+      caption: i18next.t("dashboard.summary.combat.floor.caption"),
     },
     {
-      title: "HP",
+      title: i18next.t("dashboard.summary.combat.hp.title"),
       value: `${state.hp} / ${state.maxHp}`,
-      caption: "현재 / 최대 체력",
+      caption: i18next.t("dashboard.summary.combat.hp.caption"),
       chart: {
         current: state.hp,
         max: state.maxHp,
@@ -65,43 +68,45 @@ export function buildSummaryCards(
       },
     },
     {
-      title: "ATK",
+      title: i18next.t("dashboard.summary.combat.atk.title"),
       value: state.atk.toString(),
-      caption: "공격력",
+      caption: i18next.t("dashboard.summary.combat.atk.caption"),
     },
     {
-      title: "DEF",
+      title: i18next.t("dashboard.summary.combat.def.title"),
       value: state.def.toString(),
-      caption: "방어력",
+      caption: i18next.t("dashboard.summary.combat.def.caption"),
     },
     {
-      title: "LUCK",
+      title: i18next.t("dashboard.summary.combat.luck.title"),
       value: state.luck.toString(),
-      caption: "행운",
+      caption: i18next.t("dashboard.summary.combat.luck.caption"),
     },
   ];
 
   const resources: SummaryCardViewModel[] = [
     {
-      title: "층 진행도",
+      title: i18next.t("dashboard.summary.resources.floorProgress.title"),
       value: `${Math.round(displayProgress)}%`,
-      caption: "100%가 되면 자동으로 다음 층으로 이동",
+      caption: i18next.t("dashboard.summary.resources.floorProgress.caption"),
       chart: {
         current: chartProgress,
         max: MAX_FLOOR_PROGRESS_CHART,
         color: "var(--color-chart-2)",
-        secondaryLabel: "진행 중",
+        secondaryLabel: i18next.t(
+          "dashboard.summary.resources.floorProgress.secondaryLabel"
+        ),
       },
     },
     {
-      title: "Gold",
+      title: i18next.t("dashboard.summary.resources.gold.title"),
       value: formatNumber(state.gold),
-      caption: "보유 골드",
+      caption: i18next.t("dashboard.summary.resources.gold.caption"),
     },
     {
-      title: "경험치",
+      title: i18next.t("dashboard.summary.resources.exp.title"),
       value: `${state.exp} / ${expToLevel}`,
-      caption: "다음 레벨까지 필요 EXP",
+      caption: i18next.t("dashboard.summary.resources.exp.caption"),
       chart: {
         current: state.exp,
         max: expToLevel,
@@ -110,14 +115,14 @@ export function buildSummaryCards(
       },
     },
     {
-      title: "남은 AP",
+      title: i18next.t("dashboard.summary.resources.ap.title"),
       value: state.ap.toString(),
-      caption: "자동 탐험에 사용 가능한 AP",
+      caption: i18next.t("dashboard.summary.resources.ap.caption"),
     },
     {
-      title: "레벨",
+      title: i18next.t("dashboard.summary.resources.level.title"),
       value: state.level.toString(),
-      caption: "현재 캐릭터 레벨",
+      caption: i18next.t("dashboard.summary.resources.level.caption"),
     },
   ];
 

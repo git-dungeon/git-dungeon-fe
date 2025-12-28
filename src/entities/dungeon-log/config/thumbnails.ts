@@ -11,6 +11,7 @@ import {
   resolveLocalItemSprite,
   resolveLocalMonsterSprite,
 } from "@/entities/catalog/config/local-sprites";
+import { i18next } from "@/shared/i18n/i18n";
 
 import type {
   DungeonLogEntry,
@@ -24,6 +25,14 @@ export interface LogThumbnailDescriptor {
   src: string;
   alt: string;
   badge?: LogThumbnailBadge;
+}
+
+const t = (key: string, options?: Record<string, unknown>) =>
+  i18next.t(key, options);
+
+function translate(key: string, fallback: string) {
+  const value = t(key);
+  return value === key ? fallback : value;
 }
 
 const ACTION_IMAGE_MAP: Partial<Record<DungeonLogAction, string>> = {
@@ -114,7 +123,7 @@ export function buildLogThumbnails(
     thumbnails.push({
       id: `${entry.id}-action`,
       src: actionThumbnail,
-      alt: entry.action,
+      alt: translate(`logs.action.${entry.action}`, entry.action),
     });
   }
 
@@ -128,7 +137,7 @@ export function buildLogThumbnails(
       thumbnails.push({
         id: `${entry.id}-monster`,
         src: monsterThumbnail,
-        alt: monster?.name ?? "몬스터",
+        alt: monster?.name ?? t("logs.thumbnails.monster"),
       });
     }
   }
@@ -142,7 +151,7 @@ export function buildLogThumbnails(
       thumbnails.push({
         id: `${entry.id}-reward-item`,
         src: itemThumbnail,
-        alt: rewardItem?.code ?? "보상 아이템",
+        alt: rewardItem?.code ?? t("logs.thumbnails.rewardItem"),
         badge: "gain",
       });
     }
@@ -167,7 +176,7 @@ export function buildLogThumbnails(
       thumbnails.push({
         id: `${entry.id}-item`,
         src: itemThumbnail,
-        alt: itemKey ?? "아이템",
+        alt: itemKey ?? t("logs.thumbnails.item"),
       });
     }
   }
@@ -179,7 +188,7 @@ export function buildLogThumbnails(
       thumbnails.push({
         id: `${entry.id}-reward-item`,
         src: itemThumbnail,
-        alt: rewardItem?.code ?? "보상 아이템",
+        alt: rewardItem?.code ?? t("logs.thumbnails.rewardItem"),
         badge: "gain",
       });
     }
@@ -189,7 +198,7 @@ export function buildLogThumbnails(
     thumbnails.push({
       id: `${entry.id}-action`,
       src: actionThumbnail,
-      alt: entry.action,
+      alt: translate(`logs.action.${entry.action}`, entry.action),
     });
   }
 
@@ -198,7 +207,7 @@ export function buildLogThumbnails(
     thumbnails.push({
       id: `${entry.id}-gold`,
       src: goldImage,
-      alt: "골드 변화",
+      alt: t("logs.thumbnails.goldChange"),
       badge: goldBadge,
     });
   }

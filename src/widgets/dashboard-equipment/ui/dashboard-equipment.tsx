@@ -8,6 +8,7 @@ import {
 } from "@/entities/dashboard/lib/formatters";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { EquipmentRow } from "@/widgets/dashboard-equipment/ui/equipment-row";
+import { useTranslation } from "react-i18next";
 
 interface DashboardEquipmentProps {
   helmet?: EquipmentItem;
@@ -16,39 +17,39 @@ interface DashboardEquipmentProps {
   ring?: EquipmentItem;
 }
 
-const EQUIPMENT_ROWS: Array<{
-  slot: EquipmentSlot;
-  label: string;
-  placeholder: string;
-}> = [
-  {
-    slot: "helmet",
-    label: "투구",
-    placeholder: "장착된 투구가 없습니다.",
-  },
-  {
-    slot: "armor",
-    label: "방어구",
-    placeholder: "장착된 방어구가 없습니다.",
-  },
-  {
-    slot: "weapon",
-    label: "무기",
-    placeholder: "장착된 무기가 없습니다.",
-  },
-  {
-    slot: "ring",
-    label: "반지",
-    placeholder: "장착된 반지가 없습니다.",
-  },
-];
-
 export function DashboardEquipment({
   helmet,
   armor,
   weapon,
   ring,
 }: DashboardEquipmentProps) {
+  const { t } = useTranslation();
+  const equipmentRows: Array<{
+    slot: EquipmentSlot;
+    label: string;
+    placeholder: string;
+  }> = [
+    {
+      slot: "helmet",
+      label: t("dashboard.equipment.slots.helmet"),
+      placeholder: t("dashboard.equipment.placeholders.helmet"),
+    },
+    {
+      slot: "armor",
+      label: t("dashboard.equipment.slots.armor"),
+      placeholder: t("dashboard.equipment.placeholders.armor"),
+    },
+    {
+      slot: "weapon",
+      label: t("dashboard.equipment.slots.weapon"),
+      placeholder: t("dashboard.equipment.placeholders.weapon"),
+    },
+    {
+      slot: "ring",
+      label: t("dashboard.equipment.slots.ring"),
+      placeholder: t("dashboard.equipment.placeholders.ring"),
+    },
+  ];
   const itemsBySlot: Partial<Record<EquipmentSlot, EquipmentItem | undefined>> =
     {
       helmet,
@@ -60,11 +61,13 @@ export function DashboardEquipment({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">착용 중인 장비</CardTitle>
+        <CardTitle className="text-lg">
+          {t("dashboard.equipment.title")}
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <dl className="divide-border divide-y text-sm">
-          {EQUIPMENT_ROWS.map(({ slot, label, placeholder }) => (
+          {equipmentRows.map(({ slot, label, placeholder }) => (
             <EquipmentRow
               key={slot}
               label={label}

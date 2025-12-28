@@ -7,8 +7,10 @@ import { DASHBOARD_RECENT_LOG_LIMIT } from "@/pages/dashboard/config/constants";
 import { DashboardEmbeddingBanner } from "@/widgets/dashboard-embedding/ui/dashboard-embedding-banner";
 import { useCharacterOverview } from "@/features/character-summary/model/use-character-overview";
 import type { DungeonLogsFilterType } from "@/entities/dungeon-log/model/types";
+import { useTranslation } from "react-i18next";
 
 export function DashboardPage() {
+  const { t } = useTranslation();
   const overview = useCharacterOverview();
   const { data: logsData } = useDungeonLogs({
     limit: DASHBOARD_RECENT_LOG_LIMIT,
@@ -36,18 +38,18 @@ export function DashboardPage() {
   return (
     <section className="space-y-6">
       <header className="space-y-1">
-        <h1 className="text-foreground text-2xl font-semibold">대시보드</h1>
+        <h1 className="text-foreground text-2xl font-semibold">
+          {t("dashboard.title")}
+        </h1>
         <p className="text-muted-foreground text-sm">
-          캐릭터 진행 상황과 최근 탐험 로그를 한눈에 확인하세요.
+          {t("dashboard.subtitle")}
         </p>
       </header>
 
       {showError ? (
         <Card className="border-destructive/30">
           <CardContent className="flex flex-wrap items-center justify-between gap-3 p-4 text-sm">
-            <span className="text-destructive">
-              대시보드를 불러오는 중 문제가 발생했습니다.
-            </span>
+            <span className="text-destructive">{t("dashboard.loadError")}</span>
             <Button
               type="button"
               variant="outline"
@@ -57,7 +59,7 @@ export function DashboardPage() {
               }}
               className="text-xs"
             >
-              다시 시도
+              {t("dashboard.retry")}
             </Button>
           </CardContent>
         </Card>

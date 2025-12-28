@@ -2,6 +2,7 @@ import { SummaryTile } from "@/shared/ui/summary-tile";
 import { formatNumber } from "@/entities/dashboard/lib/formatters";
 import { Progress } from "@/shared/ui/progress";
 import { cn } from "@/shared/lib/utils";
+import { useTranslation } from "react-i18next";
 
 interface CharacterOverviewHeaderProps {
   level: number;
@@ -26,6 +27,7 @@ export function CharacterOverviewHeader({
   ap,
   layoutMode = "responsive",
 }: CharacterOverviewHeaderProps) {
+  const { t } = useTranslation();
   const expPercent = resolvePercent(exp, expToLevel);
   const floorPercent = resolvePercent(floor.progress, 100);
   const gridLayoutClass =
@@ -33,21 +35,50 @@ export function CharacterOverviewHeader({
 
   return (
     <div className={cn("grid gap-4", gridLayoutClass)}>
-      <SummaryTile title="레벨" value={`Lv. ${level}`}>
+      <SummaryTile
+        title={t("dashboard.summary.resources.level.title")}
+        value={`Lv. ${level}`}
+      >
         <p className="text-muted-foreground text-xs">
           {formatNumber(exp)} / {formatNumber(expToLevel)}
         </p>
-        <Progress value={expPercent} aria-label="경험치 진행률" />
+        <Progress
+          value={expPercent}
+          aria-label={t("dashboard.summary.expProgressLabel")}
+        />
       </SummaryTile>
-      <SummaryTile title="층 진행" value={`${floor.current}F / ${floor.best}F`}>
-        <p className="text-muted-foreground text-xs">진행도 {floorPercent}%</p>
-        <Progress value={floorPercent} aria-label="층 진행도" />
+      <SummaryTile
+        title={t("dashboard.summary.floorProgress.title")}
+        value={t("dashboard.summary.floorProgress.value", {
+          current: floor.current,
+          best: floor.best,
+        })}
+      >
+        <p className="text-muted-foreground text-xs">
+          {t("dashboard.summary.floorProgress.caption", {
+            percent: floorPercent,
+          })}
+        </p>
+        <Progress
+          value={floorPercent}
+          aria-label={t("dashboard.summary.floorProgress.aria")}
+        />
       </SummaryTile>
-      <SummaryTile title="골드" value={`${formatNumber(gold)} G`}>
-        <p className="text-muted-foreground text-xs">총 보유 골드</p>
+      <SummaryTile
+        title={t("dashboard.summary.gold.title")}
+        value={`${formatNumber(gold)} G`}
+      >
+        <p className="text-muted-foreground text-xs">
+          {t("dashboard.summary.gold.caption")}
+        </p>
       </SummaryTile>
-      <SummaryTile title="AP" value={`${formatNumber(ap)}`}>
-        <p className="text-muted-foreground text-xs">행동력</p>
+      <SummaryTile
+        title={t("dashboard.summary.ap.title")}
+        value={`${formatNumber(ap)}`}
+      >
+        <p className="text-muted-foreground text-xs">
+          {t("dashboard.summary.ap.caption")}
+        </p>
       </SummaryTile>
     </div>
   );

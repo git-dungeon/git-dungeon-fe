@@ -3,8 +3,10 @@ import { Button } from "@/shared/ui/button";
 import { InventoryLayout } from "@/widgets/inventory/ui/inventory-layout";
 import { useInventoryActions } from "@/features/inventory/model/use-inventory-actions";
 import { useCharacterOverview } from "@/features/character-summary/model/use-character-overview";
+import { useTranslation } from "react-i18next";
 
 export function InventoryPage() {
+  const { t } = useTranslation();
   const overview = useCharacterOverview();
   const actions = useInventoryActions();
 
@@ -15,18 +17,18 @@ export function InventoryPage() {
   return (
     <section className="space-y-6">
       <header className="space-y-1">
-        <h1 className="text-foreground text-2xl font-semibold">인벤토리</h1>
+        <h1 className="text-foreground text-2xl font-semibold">
+          {t("inventory.title")}
+        </h1>
         <p className="text-muted-foreground text-sm">
-          현재 유저가 가지고 있는 아이템 목록입니다.
+          {t("inventory.subtitle")}
         </p>
       </header>
 
       {overview.isError ? (
         <Card className="border-destructive/30">
           <CardContent className="flex flex-wrap items-center justify-between gap-3 p-4 text-sm">
-            <span className="text-destructive">
-              인벤토리를 불러오는 중 문제가 발생했습니다.
-            </span>
+            <span className="text-destructive">{t("inventory.loadError")}</span>
             <Button
               type="button"
               variant="outline"
@@ -36,7 +38,7 @@ export function InventoryPage() {
               }}
               className="text-xs"
             >
-              다시 시도
+              {t("inventory.retry")}
             </Button>
           </CardContent>
         </Card>
@@ -58,7 +60,7 @@ export function InventoryPage() {
       items.length === 0 ? (
         <Card>
           <CardContent className="text-muted-foreground p-6 text-sm">
-            아직 획득한 장비가 없습니다.
+            {t("inventory.empty")}
           </CardContent>
         </Card>
       ) : null}

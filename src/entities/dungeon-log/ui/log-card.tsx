@@ -16,6 +16,7 @@ import {
 import { Badge } from "@/shared/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader } from "@/shared/ui/card";
 import { cn } from "@/shared/lib/utils";
+import { useTranslation } from "react-i18next";
 
 interface LogCardProps {
   log: DungeonLogEntry;
@@ -32,6 +33,7 @@ export function LogCard({
   renderThumbnail,
   onClick,
 }: LogCardProps) {
+  const { t } = useTranslation();
   const deltaContent = renderDelta?.(log);
   const isInteractive = typeof onClick === "function";
   const monster = resolveBattleMonster(log);
@@ -94,7 +96,7 @@ export function LogCard({
             {buildLogDescription(log)}
           </p>
           <p className="text-muted-foreground text-xs">
-            {`${typeof log.floor === "number" ? `${log.floor}층` : "—"} · ${resolveStatusLabel(
+            {`${formatFloorLabel(t, log.floor)} · ${resolveStatusLabel(
               log.status,
               log.action
             )}`}
@@ -114,4 +116,13 @@ export function LogCard({
       {deltaContent ? <CardFooter>{deltaContent}</CardFooter> : null}
     </Card>
   );
+}
+
+function formatFloorLabel(
+  t: (key: string, options?: Record<string, unknown>) => string,
+  floor?: number | null
+) {
+  return typeof floor === "number"
+    ? t("logs.floor", { floor })
+    : t("common.placeholder");
 }

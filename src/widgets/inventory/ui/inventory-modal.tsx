@@ -7,6 +7,7 @@ import { cn } from "@/shared/lib/utils";
 import { formatStatChange, resolveStatLabel } from "@/shared/lib/stats/format";
 import { BADGE_TONE_CLASSES } from "@/shared/ui/tone";
 import { resolveLocalItemSprite } from "@/entities/catalog/config/local-sprites";
+import { getInventorySlotLabel } from "@/entities/inventory/config/slot-labels";
 import {
   Dialog,
   DialogClose,
@@ -18,6 +19,7 @@ import {
 } from "@/shared/ui/dialog";
 import { Button } from "@/shared/ui/button";
 import { Badge } from "@/shared/ui/badge";
+import { useTranslation } from "react-i18next";
 
 interface InventoryModalProps {
   item: InventoryItem | null;
@@ -30,14 +32,6 @@ interface InventoryModalProps {
   onDiscard: (itemId: string) => Promise<unknown>;
 }
 
-const SLOT_LABEL_MAP: Record<InventoryItemSlot, string> = {
-  helmet: "투구",
-  armor: "방어구",
-  weapon: "무기",
-  ring: "반지",
-  consumable: "소모품",
-};
-
 export function InventoryModal({
   item,
   slot,
@@ -48,6 +42,7 @@ export function InventoryModal({
   onUnequip,
   onDiscard,
 }: InventoryModalProps) {
+  const { t } = useTranslation();
   if (!item || !slot) {
     return null;
   }
@@ -95,7 +90,7 @@ export function InventoryModal({
           <Button
             variant="ghost"
             size="icon"
-            aria-label="닫기"
+            aria-label={t("inventory.modal.close")}
             className="absolute top-4 right-4"
           >
             ✕
@@ -122,13 +117,13 @@ export function InventoryModal({
                 {displayName}
               </DialogTitle>
               <DialogDescription className="text-sm">
-                {SLOT_LABEL_MAP[slot]} · {formatRarity(item.rarity)}
+                {getInventorySlotLabel(slot)} · {formatRarity(item.rarity)}
               </DialogDescription>
             </div>
           </DialogHeader>
 
           <section className="flex flex-col gap-2 text-sm">
-            <h3 className="text-xs">추가 스탯</h3>
+            <h3 className="text-xs">{t("inventory.modal.additionalStats")}</h3>
             <ul className="flex flex-wrap gap-2">
               {item.modifiers
                 .filter((modifier) => modifier.kind === "stat")
@@ -162,14 +157,14 @@ export function InventoryModal({
                   );
                 })}
               {item.modifiers.filter((m) => m.kind === "stat").length === 0 ? (
-                <li>추가 스탯 없음</li>
+                <li>{t("inventory.modal.noAdditionalStats")}</li>
               ) : null}
             </ul>
           </section>
 
           {item.effect ? (
             <section className="flex flex-col gap-2 text-sm">
-              <h3 className="text-xs">특수 효과</h3>
+              <h3 className="text-xs">{t("inventory.modal.specialEffect")}</h3>
               <div className="flex flex-wrap items-center gap-2">
                 <Badge variant="outline">
                   {formatInventoryEffect(item.effect)}
@@ -178,7 +173,11 @@ export function InventoryModal({
             </section>
           ) : null}
 
-          <p className="text-xs">획득일: {formatDateTime(item.createdAt)}</p>
+          <p className="text-xs">
+            {t("inventory.modal.acquiredAt", {
+              time: formatDateTime(item.createdAt),
+            })}
+          </p>
 
           {error ? (
             <p className="text-destructive text-xs">{error.message}</p>
@@ -191,7 +190,7 @@ export function InventoryModal({
               disabled={item.isEquipped || isPending}
               className="flex-1"
             >
-              장착
+              {t("inventory.modal.actions.equip")}
             </Button>
             <Button
               type="button"
@@ -200,7 +199,7 @@ export function InventoryModal({
               disabled={!item.isEquipped || isPending}
               className="flex-1"
             >
-              해제
+              {t("inventory.modal.actions.unequip")}
             </Button>
             <Button
               type="button"
@@ -209,7 +208,7 @@ export function InventoryModal({
               disabled={isPending}
               className="text-background flex-1"
             >
-              버리기
+              {t("inventory.modal.actions.discard")}
             </Button>
           </DialogFooter>
         </div>
