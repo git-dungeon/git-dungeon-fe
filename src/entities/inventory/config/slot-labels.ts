@@ -1,13 +1,8 @@
 import type { InventoryItemSlot } from "@/entities/inventory/model/types";
-
-export const INVENTORY_SLOT_LABELS: Record<InventoryItemSlot, string> = {
-  helmet: "투구",
-  armor: "방어구",
-  weapon: "무기",
-  ring: "반지",
-  consumable: "소모품",
-};
+import { i18next } from "@/shared/i18n/i18n";
 
 export function getInventorySlotLabel(slot: InventoryItemSlot): string {
-  return INVENTORY_SLOT_LABELS[slot];
+  const key = `inventory.slots.labels.${slot}`;
+  const value = i18next.t(key);
+  return value === key ? slot : value;
 }

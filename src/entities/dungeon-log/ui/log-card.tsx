@@ -7,6 +7,7 @@ import {
   resolveLogCategoryLabel,
   resolveStatusLabel,
 } from "@/entities/dungeon-log/lib/formatters";
+import { useCatalogItemNameResolver } from "@/entities/catalog/model/use-catalog-item-name";
 import { BattleMonsterSummary } from "@/entities/dungeon-log/ui/battle-monster-summary";
 import {
   resolveBattleMonster,
@@ -16,6 +17,7 @@ import {
 import { Badge } from "@/shared/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader } from "@/shared/ui/card";
 import { cn } from "@/shared/lib/utils";
+import { useTranslation } from "react-i18next";
 
 interface LogCardProps {
   log: DungeonLogEntry;
@@ -32,11 +34,13 @@ export function LogCard({
   renderThumbnail,
   onClick,
 }: LogCardProps) {
+  const { t } = useTranslation();
   const deltaContent = renderDelta?.(log);
   const isInteractive = typeof onClick === "function";
   const monster = resolveBattleMonster(log);
   const player = resolveBattlePlayer(log);
   const result = resolveBattleResult(log);
+  const resolveItemName = useCatalogItemNameResolver();
 
   return (
     <Card
@@ -91,10 +95,10 @@ export function LogCard({
       <CardContent className="flex min-h-16 justify-between gap-3">
         <div className="space-y-2">
           <p className="text-muted-foreground text-sm">
-            {buildLogDescription(log)}
+            {buildLogDescription(log, resolveItemName)}
           </p>
           <p className="text-muted-foreground text-xs">
-            {`${typeof log.floor === "number" ? `${log.floor}층` : "—"} · ${resolveStatusLabel(
+            {`${formatFloorLabel(t, log.floor)} · ${resolveStatusLabel(
               log.status,
               log.action
             )}`}
@@ -114,4 +118,13 @@ export function LogCard({
       {deltaContent ? <CardFooter>{deltaContent}</CardFooter> : null}
     </Card>
   );
+}
+
+function formatFloorLabel(
+  t: (key: string, options?: Record<string, unknown>) => string,
+  floor?: number | null
+) {
+  return typeof floor === "number"
+    ? t("logs.floor", { floor })
+    : t("common.placeholder");
 }

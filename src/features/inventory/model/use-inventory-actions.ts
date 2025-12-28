@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { QueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { ApiError } from "@/shared/api/http-client";
+import { i18next } from "@/shared/i18n/i18n";
 import type {
   InventoryEquippedMap,
   InventoryItem,
@@ -346,6 +347,8 @@ function resolveErrorCode(error: unknown): string | undefined {
 }
 
 function resolveInventoryActionMessage(error: unknown): string {
+  const t = (key: string) => i18next.t(key);
+
   if (error instanceof ApiError) {
     const payload = error.payload;
     const errorObject =
@@ -360,11 +363,11 @@ function resolveInventoryActionMessage(error: unknown): string {
 
     switch (apiCode) {
       case "INVENTORY_VERSION_MISMATCH":
-        return "인벤토리 상태가 변경되었습니다. 새로고침 후 다시 시도해 주세요.";
+        return t("inventory.errors.versionMismatch");
       case "INVENTORY_RATE_LIMITED":
-        return "요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.";
+        return t("inventory.errors.rateLimited");
       default:
-        return apiMessage ?? "인벤토리 요청이 실패했습니다.";
+        return apiMessage ?? t("inventory.errors.requestFailed");
     }
   }
 
@@ -372,7 +375,7 @@ function resolveInventoryActionMessage(error: unknown): string {
     return error.message;
   }
 
-  return "인벤토리 요청이 실패했습니다.";
+  return t("inventory.errors.requestFailed");
 }
 
 function buildActionErrorMap(

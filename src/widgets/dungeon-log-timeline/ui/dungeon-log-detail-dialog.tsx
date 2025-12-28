@@ -14,6 +14,7 @@ import {
   resolveBattlePlayer,
   resolveBattleResult,
 } from "@/entities/dungeon-log/lib/monster";
+import { useCatalogItemNameResolver } from "@/entities/catalog/model/use-catalog-item-name";
 import {
   Dialog,
   DialogClose,
@@ -23,6 +24,7 @@ import {
   DialogTitle,
 } from "@/shared/ui/dialog";
 import { Button } from "@/shared/ui/button";
+import { useTranslation } from "react-i18next";
 
 interface DungeonLogDetailDialogProps {
   log: DungeonLogEntry | null;
@@ -35,7 +37,9 @@ export function DungeonLogDetailDialog({
   open,
   onOpenChange,
 }: DungeonLogDetailDialogProps) {
-  const thumbnails = log ? buildLogThumbnails(log) : [];
+  const { t } = useTranslation();
+  const resolveItemName = useCatalogItemNameResolver();
+  const thumbnails = log ? buildLogThumbnails(log, resolveItemName) : [];
   const monster = log ? resolveBattleMonster(log) : undefined;
   const player = log ? resolveBattlePlayer(log) : undefined;
   const result = log ? resolveBattleResult(log) : undefined;
@@ -50,13 +54,13 @@ export function DungeonLogDetailDialog({
                 {resolveActionLabel(log.action)}
               </DialogTitle>
               <DialogDescription className="text-left">
-                {buildLogDescription(log)}
+                {buildLogDescription(log, resolveItemName)}
               </DialogDescription>
               <DialogClose asChild>
                 <Button
                   variant="ghost"
                   size="icon"
-                  aria-label="닫기"
+                  aria-label={t("logs.detail.close")}
                   className="absolute top-4 right-4"
                 >
                   ✕
@@ -66,7 +70,9 @@ export function DungeonLogDetailDialog({
 
             {monster || player ? (
               <div className="space-y-2">
-                <p className="text-muted-foreground text-xs">전투 참여 정보</p>
+                <p className="text-muted-foreground text-xs">
+                  {t("logs.detail.battleInfo")}
+                </p>
                 <BattleMonsterSummary
                   monster={monster}
                   player={player}
@@ -77,7 +83,9 @@ export function DungeonLogDetailDialog({
             ) : null}
 
             <div className="space-y-2">
-              <p className="text-muted-foreground text-xs">관련 이미지</p>
+              <p className="text-muted-foreground text-xs">
+                {t("logs.detail.images")}
+              </p>
               <div className="flex flex-wrap gap-3">
                 {thumbnails.length > 0 ? (
                   thumbnails.map((thumbnail) => {
@@ -106,14 +114,16 @@ export function DungeonLogDetailDialog({
                   })
                 ) : (
                   <p className="text-muted-foreground text-sm">
-                    표시할 이미지가 없습니다.
+                    {t("logs.detail.noImages")}
                   </p>
                 )}
               </div>
             </div>
 
             <div className="space-y-2">
-              <p className="text-muted-foreground text-xs">변동 내역</p>
+              <p className="text-muted-foreground text-xs">
+                {t("logs.detail.delta")}
+              </p>
               <DeltaList entry={log} />
             </div>
           </>

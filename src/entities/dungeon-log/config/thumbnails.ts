@@ -11,6 +11,7 @@ import {
   resolveLocalItemSprite,
   resolveLocalMonsterSprite,
 } from "@/entities/catalog/config/local-sprites";
+import { i18next } from "@/shared/i18n/i18n";
 
 import type {
   DungeonLogEntry,
@@ -24,6 +25,14 @@ export interface LogThumbnailDescriptor {
   src: string;
   alt: string;
   badge?: LogThumbnailBadge;
+}
+
+const t = (key: string, options?: Record<string, unknown>) =>
+  i18next.t(key, options);
+
+function translate(key: string, fallback: string) {
+  const value = t(key);
+  return value === key ? fallback : value;
 }
 
 const ACTION_IMAGE_MAP: Partial<Record<DungeonLogAction, string>> = {
@@ -102,10 +111,15 @@ function resolveGoldBadge(
   return gold > 0 ? "gain" : "loss";
 }
 
+type ItemNameResolver = (code: string, fallback?: string | null) => string;
+
 export function buildLogThumbnails(
-  entry: DungeonLogEntry
+  entry: DungeonLogEntry,
+  resolveItemName?: ItemNameResolver
 ): LogThumbnailDescriptor[] {
   const thumbnails: LogThumbnailDescriptor[] = [];
+  const resolveName = (code: string) =>
+    resolveItemName ? resolveItemName(code, code) : code;
   const actionThumbnail = resolveActionThumbnail(entry.action);
   const isBattleAction = entry.action === "BATTLE";
   const isTreasureAction = entry.action === "TREASURE";
@@ -114,7 +128,7 @@ export function buildLogThumbnails(
     thumbnails.push({
       id: `${entry.id}-action`,
       src: actionThumbnail,
-      alt: entry.action,
+      alt: translate(`logs.action.${entry.action}`, entry.action),
     });
   }
 
@@ -128,7 +142,7 @@ export function buildLogThumbnails(
       thumbnails.push({
         id: `${entry.id}-monster`,
         src: monsterThumbnail,
-        alt: monster?.name ?? "몬스터",
+        alt: monster?.name ?? t("logs.thumbnails.monster"),
       });
     }
   }
@@ -139,10 +153,13 @@ export function buildLogThumbnails(
     const rewardItem = delta.detail.rewards?.items?.at(0);
     const itemThumbnail = resolveItemThumbnail(rewardItem?.code);
     if (itemThumbnail) {
+      const itemName = rewardItem?.code
+        ? resolveName(rewardItem.code)
+        : undefined;
       thumbnails.push({
         id: `${entry.id}-reward-item`,
         src: itemThumbnail,
-        alt: rewardItem?.code ?? "보상 아이템",
+        alt: itemName ?? t("logs.thumbnails.rewardItem"),
         badge: "gain",
       });
     }
@@ -164,10 +181,11 @@ export function buildLogThumbnails(
     const itemKey = primaryItem?.code;
     const itemThumbnail = resolveItemThumbnail(itemKey);
     if (itemThumbnail) {
+      const itemName = itemKey ? resolveName(itemKey) : undefined;
       thumbnails.push({
         id: `${entry.id}-item`,
         src: itemThumbnail,
-        alt: itemKey ?? "아이템",
+        alt: itemName ?? t("logs.thumbnails.item"),
       });
     }
   }
@@ -176,10 +194,13 @@ export function buildLogThumbnails(
     const rewardItem = delta.detail.rewards?.items?.at(0);
     const itemThumbnail = resolveItemThumbnail(rewardItem?.code);
     if (itemThumbnail) {
+      const itemName = rewardItem?.code
+        ? resolveName(rewardItem.code)
+        : undefined;
       thumbnails.push({
         id: `${entry.id}-reward-item`,
         src: itemThumbnail,
-        alt: rewardItem?.code ?? "보상 아이템",
+        alt: itemName ?? t("logs.thumbnails.rewardItem"),
         badge: "gain",
       });
     }
@@ -189,7 +210,7 @@ export function buildLogThumbnails(
     thumbnails.push({
       id: `${entry.id}-action`,
       src: actionThumbnail,
-      alt: entry.action,
+      alt: translate(`logs.action.${entry.action}`, entry.action),
     });
   }
 
@@ -198,7 +219,7 @@ export function buildLogThumbnails(
     thumbnails.push({
       id: `${entry.id}-gold`,
       src: goldImage,
-      alt: "골드 변화",
+      alt: t("logs.thumbnails.goldChange"),
       badge: goldBadge,
     });
   }

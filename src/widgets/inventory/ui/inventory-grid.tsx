@@ -7,6 +7,8 @@ import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { cn } from "@/shared/lib/utils";
 import { Badge } from "@/shared/ui/badge";
+import { useTranslation } from "react-i18next";
+import { useCatalogItemNameResolver } from "@/entities/catalog/model/use-catalog-item-name";
 
 interface InventoryGridProps {
   items: InventoryItem[];
@@ -23,6 +25,8 @@ const SLOT_ORDER: Record<InventoryItemSlot, number> = {
 };
 
 export function InventoryGrid({ items, onSelect }: InventoryGridProps) {
+  const { t } = useTranslation();
+  const resolveItemName = useCatalogItemNameResolver();
   const sortedItems = [...items].sort((a, b) => {
     if (a.isEquipped !== b.isEquipped) {
       return a.isEquipped ? -1 : 1;
@@ -38,12 +42,17 @@ export function InventoryGrid({ items, onSelect }: InventoryGridProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>인벤토리</CardTitle>
+        <CardTitle>{t("inventory.grid.title")}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           {sortedItems.map((item) => (
-            <InventoryGridCell key={item.id} item={item} onSelect={onSelect} />
+            <InventoryGridCell
+              key={item.id}
+              item={item}
+              onSelect={onSelect}
+              resolveItemName={resolveItemName}
+            />
           ))}
         </div>
       </CardContent>
@@ -54,22 +63,31 @@ export function InventoryGrid({ items, onSelect }: InventoryGridProps) {
 interface InventoryGridCellProps {
   item: InventoryItem;
   onSelect: (item: InventoryItem) => void;
+  resolveItemName: (code: string, fallback?: string | null) => string;
 }
 
-function InventoryGridCell({ item, onSelect }: InventoryGridCellProps) {
+function InventoryGridCell({
+  item,
+  onSelect,
+  resolveItemName,
+}: InventoryGridCellProps) {
+  const { t } = useTranslation();
+  const displayName = resolveItemName(item.code, item.name);
   return (
     <Button
       type="button"
-      title={item.name ?? item.code}
+      title={displayName}
       variant="outline"
       onClick={() => onSelect(item)}
       className={cn(
         "group bg-background relative flex h-auto w-full flex-col items-center justify-center p-3"
       )}
     >
-      <InventoryItemCard item={item} />
+      <InventoryItemCard item={item} displayName={displayName} />
       {item.isEquipped ? (
-        <Badge className="absolute top-2 left-2">장착</Badge>
+        <Badge className="absolute top-2 left-2">
+          {t("inventory.grid.equipped")}
+        </Badge>
       ) : null}
     </Button>
   );

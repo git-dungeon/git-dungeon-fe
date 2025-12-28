@@ -1,0 +1,406 @@
+{
+  "common": {
+    "appName": "Git Dungeon",
+    "placeholder": "—"
+  },
+  "datetime": {
+    "unknown": "Unknown",
+    "justNow": "Just now"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "inventory": "Inventory",
+    "logs": "Logs",
+    "settings": "Settings"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your account and local preferences, and review the embed preview.",
+    "logout": "Log out",
+    "profile": {
+      "title": "Account",
+      "description": "Displays account details.",
+      "loadError": "Failed to load settings. Please try again.",
+      "retry": "Retry",
+      "fields": {
+        "email": "Email",
+        "userId": "User ID",
+        "joinedAt": "Joined",
+        "missing": "Not available"
+      },
+      "avatarAlt": "User avatar"
+    },
+    "preferences": {
+      "title": "Preferences",
+      "description": "Manage theme and language.",
+      "theme": {
+        "label": "Theme",
+        "placeholder": "Select a theme",
+        "system": "System",
+        "light": "Light",
+        "dark": "Dark"
+      },
+      "language": {
+        "label": "Language",
+        "placeholder": "Select a language",
+        "ko": "Korean",
+        "en": "English"
+      }
+    },
+    "embedding": {
+      "title": "Character Dashboard",
+      "description": "Embed preview combining dashboard and inventory data.",
+      "size": {
+        "compact": {
+          "label": "Compact",
+          "hint": "Blog sidebar"
+        },
+        "square": {
+          "label": "Square",
+          "hint": "README card"
+        },
+        "wide": {
+          "label": "Wide",
+          "hint": "Dashboard banner"
+        }
+      },
+      "error": {
+        "title": "Couldn't load the preview.",
+        "description": "Check your network connection and try again.",
+        "retry": "Retry"
+      },
+      "renderError": {
+        "title": "Failed to render SVG"
+      },
+      "previewAlt": "Embed SVG preview",
+      "generatedAt": "Generated at: {{time}}",
+      "urlExample": "Example URL:"
+    },
+    "github": {
+      "title": "GitHub connection",
+      "refresh": "Refresh",
+      "status": {
+        "lastSyncUnavailable": "Unable to load latest sync info.",
+        "connectHint": "Connect your account to show commit stats.",
+        "checking": "Checking sync availability...",
+        "disconnected": "Disconnected",
+        "lastSyncMissing": "No last sync info",
+        "lastSync": "Last sync {{relative}}",
+        "syncAllowed": "Refresh available now",
+        "syncNotAvailable": "Refresh is not available yet.",
+        "nextSync": "Next refresh {{relative}} ({{absolute}})"
+      },
+      "errors": {
+        "notConnected": "GitHub account is not connected.",
+        "sessionExpired": "Your session has expired. Please log in again.",
+        "rateLimited": "Request limit reached. Please try again later.",
+        "conflict": "Sync is currently unavailable. Please try again later.",
+        "unknown": "GitHub sync failed."
+      }
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Review character progress and recent exploration logs at a glance.",
+    "loadError": "Something went wrong while loading the dashboard.",
+    "retry": "Retry",
+    "logs": {
+      "title": "Recent exploration logs",
+      "subtitle": "Only the latest 10 exploration records are shown."
+    },
+    "activity": {
+      "paused": {
+        "title": "Exploration paused",
+        "message": "Exploration stopped due to no remaining AP.",
+        "meta": "Last action completed {{time}}",
+        "timestamp": "No AP"
+      },
+      "inProgress": {
+        "title": "Exploring...",
+        "message": "The current action is in progress. Check back soon for results.",
+        "meta": "Started {{time}}",
+        "timestamp": "In progress"
+      },
+      "idle": {
+        "title": "Exploring...",
+        "message": "Using remaining AP to trigger the next action soon.",
+        "metaNext": "Next action scheduled {{time}}",
+        "metaAp": "Remaining AP {{ap}}",
+        "timestamp": "Waiting"
+      },
+      "empty": {
+        "title": "Activity",
+        "message": "There are no recent exploration logs yet.",
+        "timestamp": "No logs"
+      }
+    },
+    "summary": {
+      "floorLabel": "Floor {{floor}}",
+      "expProgressLabel": "EXP progress",
+      "floorProgress": {
+        "title": "Floor progress",
+        "value": "{{current}}F / {{best}}F",
+        "caption": "Progress {{percent}}%",
+        "aria": "Floor progress"
+      },
+      "gold": {
+        "title": "Gold",
+        "caption": "Total gold"
+      },
+      "ap": {
+        "title": "AP",
+        "caption": "Action points"
+      },
+      "combat": {
+        "floor": {
+          "title": "Current / Best floor",
+          "caption": "Current floor and the highest reached"
+        },
+        "hp": {
+          "title": "HP",
+          "caption": "Current / Max HP"
+        },
+        "atk": {
+          "title": "ATK",
+          "caption": "Attack"
+        },
+        "def": {
+          "title": "DEF",
+          "caption": "Defense"
+        },
+        "luck": {
+          "title": "LUCK",
+          "caption": "Luck"
+        }
+      },
+      "resources": {
+        "floorProgress": {
+          "title": "Floor progress",
+          "caption": "Move to the next floor automatically at 100%",
+          "secondaryLabel": "In progress"
+        },
+        "gold": {
+          "title": "Gold",
+          "caption": "Gold on hand"
+        },
+        "exp": {
+          "title": "EXP",
+          "caption": "EXP needed for the next level"
+        },
+        "ap": {
+          "title": "AP remaining",
+          "caption": "AP available for auto exploration"
+        },
+        "level": {
+          "title": "Level",
+          "caption": "Current character level"
+        }
+      }
+    },
+    "equipment": {
+      "title": "Equipped gear",
+      "slots": {
+        "helmet": "Helmet",
+        "armor": "Armor",
+        "weapon": "Weapon",
+        "ring": "Ring"
+      },
+      "placeholders": {
+        "helmet": "No helmet equipped.",
+        "armor": "No armor equipped.",
+        "weapon": "No weapon equipped.",
+        "ring": "No ring equipped."
+      }
+    }
+  },
+  "inventory": {
+    "title": "Inventory",
+    "subtitle": "List of items currently owned by the player.",
+    "loadError": "Something went wrong while loading the inventory.",
+    "retry": "Retry",
+    "empty": "No equipment has been acquired yet.",
+    "grid": {
+      "title": "Inventory",
+      "equipped": "Equipped"
+    },
+    "rarity": {
+      "common": "Common",
+      "uncommon": "Uncommon",
+      "rare": "Rare",
+      "epic": "Epic",
+      "legendary": "Legendary"
+    },
+    "slots": {
+      "title": "Equipment slots",
+      "empty": "No gear",
+      "labels": {
+        "helmet": "Helmet",
+        "armor": "Armor",
+        "weapon": "Weapon",
+        "ring": "Ring",
+        "consumable": "Consumable"
+      }
+    },
+    "modal": {
+      "close": "Close",
+      "additionalStats": "Additional stats",
+      "noAdditionalStats": "No additional stats",
+      "specialEffect": "Special effect",
+      "acquiredAt": "Acquired at: {{time}}",
+      "actions": {
+        "equip": "Equip",
+        "unequip": "Unequip",
+        "discard": "Discard"
+      }
+    },
+    "hint": {
+      "title": "Tip",
+      "description": "Click a slot or inventory item to view details and change equipment."
+    },
+    "effects": {
+      "resurrection": "Resurrection"
+    },
+    "errors": {
+      "versionMismatch": "Inventory state has changed. Refresh and try again.",
+      "rateLimited": "Too many requests. Please try again later.",
+      "requestFailed": "Inventory request failed."
+    }
+  },
+  "logs": {
+    "page": {
+      "title": "Exploration Logs",
+      "subtitle": "Review the recorded activity."
+    },
+    "filters": {
+      "title": "Filter",
+      "placeholder": "Select a filter",
+      "groups": {
+        "category": "Category",
+        "action": "Action"
+      },
+      "labels": {
+        "ALL": "All",
+        "EXPLORATION": "Exploration (Category)",
+        "STATUS": "Status (Category)",
+        "BATTLE": "Battle",
+        "TREASURE": "Treasure",
+        "REST": "Rest",
+        "TRAP": "Trap",
+        "MOVE": "Move",
+        "DEATH": "Death",
+        "REVIVE": "Revive",
+        "ACQUIRE_ITEM": "Acquire Item",
+        "EQUIP_ITEM": "Equip",
+        "UNEQUIP_ITEM": "Unequip",
+        "DISCARD_ITEM": "Discard",
+        "BUFF_APPLIED": "Buff Applied",
+        "BUFF_EXPIRED": "Buff Expired",
+        "LEVEL_UP": "Level Up"
+      },
+      "descriptions": {
+        "ALL": "View all records.",
+        "EXPLORATION": "View only exploration-category logs.",
+        "STATUS": "View only status-category logs."
+      }
+    },
+    "timeline": {
+      "loadingNext": "Loading more logs...",
+      "loadMore": "Load more",
+      "allLoaded": "All logs are loaded.",
+      "error": "Something went wrong while loading logs.",
+      "invalidFilter": "The selected filter is invalid. Change or reset the filter and try again.",
+      "resetFilter": "Reset filter",
+      "retry": "Retry",
+      "empty": "No logs to display yet. Explore the dungeon or manage your equipment."
+    },
+    "detail": {
+      "close": "Close",
+      "battleInfo": "Battle participants",
+      "images": "Related images",
+      "noImages": "No images available.",
+      "delta": "Changes",
+      "opponent": "Opponent: {{name}}"
+    },
+    "action": {
+      "BATTLE": "Battle",
+      "TREASURE": "Treasure",
+      "REST": "Rest",
+      "TRAP": "Trap",
+      "MOVE": "Move",
+      "DEATH": "Death",
+      "REVIVE": "Revive",
+      "ACQUIRE_ITEM": "Acquire Item",
+      "EQUIP_ITEM": "Equip",
+      "UNEQUIP_ITEM": "Unequip",
+      "DISCARD_ITEM": "Discard",
+      "BUFF_APPLIED": "Buff Applied",
+      "BUFF_EXPIRED": "Buff Expired",
+      "LEVEL_UP": "Level Up"
+    },
+    "statusAction": {
+      "STARTED": {
+        "BATTLE": "Battle started",
+        "TREASURE": "Investigating treasure",
+        "TRAP": "Inspecting trap",
+        "REST": "Preparing to rest",
+        "MOVE": "Moving to next floor",
+        "DEATH": "Processing death",
+        "REVIVE": "Processing revival",
+        "ACQUIRE_ITEM": "Acquiring item",
+        "EQUIP_ITEM": "Equipping item",
+        "UNEQUIP_ITEM": "Unequipping item",
+        "DISCARD_ITEM": "Discarding item",
+        "BUFF_APPLIED": "Applying buff",
+        "BUFF_EXPIRED": "Buff ending",
+        "LEVEL_UP": "Preparing level up"
+      },
+      "COMPLETED": {
+        "BATTLE": "Battle completed",
+        "TREASURE": "Treasure acquired",
+        "TRAP": "Cleared the trap",
+        "REST": "Rest completed",
+        "MOVE": "Move completed",
+        "DEATH": "Died",
+        "REVIVE": "Revived",
+        "ACQUIRE_ITEM": "Item acquired",
+        "EQUIP_ITEM": "Item equipped",
+        "UNEQUIP_ITEM": "Item unequipped",
+        "DISCARD_ITEM": "Item discarded",
+        "BUFF_APPLIED": "Buff applied",
+        "BUFF_EXPIRED": "Buff expired",
+        "LEVEL_UP": "Level up completed"
+      }
+    },
+    "status": {
+      "fallback": {
+        "STARTED": "started",
+        "COMPLETED": "completed",
+        "default": "in progress"
+      },
+      "actionFallback": "{{action}} {{status}}"
+    },
+    "category": {
+      "EXPLORATION": "Exploration logs",
+      "STATUS": "Status logs"
+    },
+    "delta": {
+      "gold": "Gold",
+      "floorProgress": "Floor progress {{value}}",
+      "itemSummary": "Items {{count}}",
+      "skillPoints": "Skill points {{value}}",
+      "buffApplied": "Buff +{{count}}",
+      "buffExpired": "Buff -{{count}}",
+      "equipped": "Equipped {{item}}",
+      "unequipped": "Unequipped {{item}}",
+      "acquired": "Acquired {{item}} x{{count}}",
+      "removed": "Removed {{item}} x{{count}}"
+    },
+    "floor": "Floor {{floor}}",
+    "thumbnails": {
+      "monster": "Monster",
+      "rewardItem": "Reward item",
+      "item": "Item",
+      "goldChange": "Gold change"
+    }
+  }
+}

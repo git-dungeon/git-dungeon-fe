@@ -5,6 +5,7 @@ import {
   useRouterState,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
+import { useTranslation } from "react-i18next";
 import type { RouterContext } from "@/shared/lib/router/router-context";
 import { cn } from "@/shared/lib/utils";
 import { ensureQueryDataSafe } from "@/shared/lib/query/ensure-query-data-safe";
@@ -13,10 +14,10 @@ import { getLanguagePreference } from "@/shared/lib/preferences/preferences";
 import { NotFoundPage } from "@/pages/not-found/ui/not-found-page";
 
 const NAVIGATION_LINKS = [
-  { to: "/dashboard", label: "대시보드" },
-  { to: "/inventory", label: "인벤토리" },
-  { to: "/logs", label: "로그" },
-  { to: "/settings", label: "설정" },
+  { to: "/dashboard", labelKey: "navigation.dashboard" },
+  { to: "/inventory", labelKey: "navigation.inventory" },
+  { to: "/logs", labelKey: "navigation.logs" },
+  { to: "/settings", labelKey: "navigation.settings" },
 ] as const;
 
 export const Route = createRootRouteWithContext<RouterContext>()({
@@ -35,6 +36,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 });
 
 function RootComponent() {
+  const { t } = useTranslation();
   const routerState = useRouterState();
   const pathname = routerState.location.pathname;
   const isLoginScreen = pathname.startsWith("/login");
@@ -54,7 +56,7 @@ function RootComponent() {
               to="/dashboard"
               className="text-foreground text-lg font-semibold"
             >
-              Git Dungeon
+              {t("common.appName")}
             </Link>
             <div className="flex flex-1 items-center gap-4">
               {NAVIGATION_LINKS.map((link) => (
@@ -63,7 +65,7 @@ function RootComponent() {
                   to={link.to}
                   className="text-muted-foreground hover:text-primary [&.active]:text-primary text-sm font-medium transition"
                 >
-                  {link.label}
+                  {t(link.labelKey)}
                 </Link>
               ))}
             </div>

@@ -3,14 +3,8 @@ import type {
   InventoryModifier,
 } from "@/entities/dashboard/model/types";
 import { formatStatChange } from "@/shared/lib/stats/format";
-
-const RARITY_LABEL_MAP: Record<EquipmentRarity, string> = {
-  common: "일반",
-  uncommon: "고급",
-  rare: "희귀",
-  epic: "영웅",
-  legendary: "전설",
-};
+import { getLanguagePreference } from "@/shared/lib/preferences/preferences";
+import { i18next } from "@/shared/i18n/i18n";
 
 const MODIFIER_LABEL_MAP: Record<
   Extract<InventoryModifier, { kind: "stat" }>["stat"],
@@ -22,12 +16,31 @@ const MODIFIER_LABEL_MAP: Record<
   luck: "LUCK",
 };
 
+const NUMBER_FORMATTERS = new Map<string, Intl.NumberFormat>();
+const NUMBER_LOCALE_MAP: Record<string, string> = {
+  ko: "ko-KR",
+  en: "en-US",
+};
+
+function resolveNumberFormatter(locale: string) {
+  const cached = NUMBER_FORMATTERS.get(locale);
+  if (cached) {
+    return cached;
+  }
+  const formatter = new Intl.NumberFormat(locale);
+  NUMBER_FORMATTERS.set(locale, formatter);
+  return formatter;
+}
+
 export function formatNumber(value: number): string {
-  return new Intl.NumberFormat("ko-KR").format(value);
+  const language = getLanguagePreference();
+  const locale = NUMBER_LOCALE_MAP[language] ?? "ko-KR";
+  return resolveNumberFormatter(locale).format(value);
 }
 
 export function formatRarity(rarity: EquipmentRarity): string {
-  return RARITY_LABEL_MAP[rarity] ?? rarity;
+  const key = `inventory.rarity.${rarity}`;
+  return i18next.t(key, { defaultValue: rarity });
 }
 
 export function formatModifier(modifier: InventoryModifier): string {

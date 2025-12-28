@@ -1,0 +1,406 @@
+{
+  "common": {
+    "appName": "Git Dungeon",
+    "placeholder": "—"
+  },
+  "datetime": {
+    "unknown": "알 수 없음",
+    "justNow": "방금"
+  },
+  "navigation": {
+    "dashboard": "대시보드",
+    "inventory": "인벤토리",
+    "logs": "로그",
+    "settings": "설정"
+  },
+  "settings": {
+    "title": "설정",
+    "subtitle": "계정 정보와 로컬 환경설정을 관리하고 임베딩 미리보기를 확인하세요.",
+    "logout": "로그아웃",
+    "profile": {
+      "title": "계정 정보",
+      "description": "계정 세부 정보를 표시합니다.",
+      "loadError": "설정 정보를 불러오지 못했습니다. 다시 시도해 주세요.",
+      "retry": "다시 시도",
+      "fields": {
+        "email": "이메일",
+        "userId": "사용자 ID",
+        "joinedAt": "가입일",
+        "missing": "미기록"
+      },
+      "avatarAlt": "사용자 아바타"
+    },
+    "preferences": {
+      "title": "환경 설정",
+      "description": "테마와 언어를 관리합니다.",
+      "theme": {
+        "label": "테마",
+        "placeholder": "테마를 선택하세요",
+        "system": "시스템 기본값",
+        "light": "라이트",
+        "dark": "다크"
+      },
+      "language": {
+        "label": "언어",
+        "placeholder": "언어를 선택하세요",
+        "ko": "한국어",
+        "en": "English"
+      }
+    },
+    "embedding": {
+      "title": "캐릭터 대시보드",
+      "description": "대시보드와 인벤토리 데이터를 조합한 임베딩 미리보기입니다.",
+      "size": {
+        "compact": {
+          "label": "Compact",
+          "hint": "블로그 사이드바"
+        },
+        "square": {
+          "label": "Square",
+          "hint": "README 카드"
+        },
+        "wide": {
+          "label": "Wide",
+          "hint": "대시보드 배너"
+        }
+      },
+      "error": {
+        "title": "미리보기를 불러오지 못했습니다.",
+        "description": "네트워크 상태를 확인한 뒤 다시 시도하세요.",
+        "retry": "다시 시도"
+      },
+      "renderError": {
+        "title": "SVG 렌더링에 실패했습니다"
+      },
+      "previewAlt": "임베드 SVG 프리뷰",
+      "generatedAt": "생성 시각: {{time}}",
+      "urlExample": "URL 예시:"
+    },
+    "github": {
+      "title": "GitHub 연동",
+      "refresh": "새로고침",
+      "status": {
+        "lastSyncUnavailable": "최근 동기화 정보를 불러올 수 없습니다.",
+        "connectHint": "계정을 연동하면 커밋 통계가 표시됩니다.",
+        "checking": "동기화 가능 여부 확인 중...",
+        "disconnected": "미연결",
+        "lastSyncMissing": "마지막 동기화 정보 없음",
+        "lastSync": "마지막 동기화 {{relative}}",
+        "syncAllowed": "지금 새로고침 가능",
+        "syncNotAvailable": "아직 새로고침할 수 없습니다.",
+        "nextSync": "다음 새로고침 가능 {{relative}} ({{absolute}})"
+      },
+      "errors": {
+        "notConnected": "GitHub 계정이 연동되어 있지 않습니다.",
+        "sessionExpired": "세션이 만료되었습니다. 다시 로그인해 주세요.",
+        "rateLimited": "요청 한도에 도달했습니다. 잠시 후 다시 시도해 주세요.",
+        "conflict": "현재 동기화를 진행할 수 없습니다. 잠시 후 다시 시도해 주세요.",
+        "unknown": "GitHub 동기화에 실패했습니다."
+      }
+    }
+  },
+  "dashboard": {
+    "title": "대시보드",
+    "subtitle": "캐릭터 진행 상황과 최근 탐험 로그를 한눈에 확인하세요.",
+    "loadError": "대시보드를 불러오는 중 문제가 발생했습니다.",
+    "retry": "다시 시도",
+    "logs": {
+      "title": "최근 탐험 로그",
+      "subtitle": "최근 10개의 탐험 기록만 표시됩니다."
+    },
+    "activity": {
+      "paused": {
+        "title": "탐험 일시 중지",
+        "message": "남은 AP가 없어 탐험이 중단되었습니다.",
+        "meta": "마지막 행동 완료 {{time}}",
+        "timestamp": "AP 부족"
+      },
+      "inProgress": {
+        "title": "탐험 중 …",
+        "message": "현재 행동을 수행 중입니다. 잠시 후 결과를 확인하세요.",
+        "meta": "시작 {{time}}",
+        "timestamp": "진행 중"
+      },
+      "idle": {
+        "title": "탐험 중 …",
+        "message": "남은 AP를 사용해 곧 다음 행동을 실행합니다.",
+        "metaNext": "다음 행동 예정 {{time}}",
+        "metaAp": "남은 AP {{ap}}",
+        "timestamp": "대기 중"
+      },
+      "empty": {
+        "title": "활동 내역",
+        "message": "최근 탐험 로그가 아직 없습니다.",
+        "timestamp": "로그 없음"
+      }
+    },
+    "summary": {
+      "floorLabel": "지하 {{floor}}층",
+      "expProgressLabel": "경험치 진행률",
+      "floorProgress": {
+        "title": "층 진행",
+        "value": "{{current}}F / {{best}}F",
+        "caption": "진행도 {{percent}}%",
+        "aria": "층 진행도"
+      },
+      "gold": {
+        "title": "골드",
+        "caption": "총 보유 골드"
+      },
+      "ap": {
+        "title": "AP",
+        "caption": "행동력"
+      },
+      "combat": {
+        "floor": {
+          "title": "현재 층 / 최고층",
+          "caption": "탐험 중인 층과 도달한 최고층"
+        },
+        "hp": {
+          "title": "HP",
+          "caption": "현재 / 최대 체력"
+        },
+        "atk": {
+          "title": "ATK",
+          "caption": "공격력"
+        },
+        "def": {
+          "title": "DEF",
+          "caption": "방어력"
+        },
+        "luck": {
+          "title": "LUCK",
+          "caption": "행운"
+        }
+      },
+      "resources": {
+        "floorProgress": {
+          "title": "층 진행도",
+          "caption": "100%가 되면 자동으로 다음 층으로 이동",
+          "secondaryLabel": "진행 중"
+        },
+        "gold": {
+          "title": "Gold",
+          "caption": "보유 골드"
+        },
+        "exp": {
+          "title": "경험치",
+          "caption": "다음 레벨까지 필요 EXP"
+        },
+        "ap": {
+          "title": "남은 AP",
+          "caption": "자동 탐험에 사용 가능한 AP"
+        },
+        "level": {
+          "title": "레벨",
+          "caption": "현재 캐릭터 레벨"
+        }
+      }
+    },
+    "equipment": {
+      "title": "착용 중인 장비",
+      "slots": {
+        "helmet": "투구",
+        "armor": "방어구",
+        "weapon": "무기",
+        "ring": "반지"
+      },
+      "placeholders": {
+        "helmet": "장착된 투구가 없습니다.",
+        "armor": "장착된 방어구가 없습니다.",
+        "weapon": "장착된 무기가 없습니다.",
+        "ring": "장착된 반지가 없습니다."
+      }
+    }
+  },
+  "inventory": {
+    "title": "인벤토리",
+    "subtitle": "현재 유저가 가지고 있는 아이템 목록입니다.",
+    "loadError": "인벤토리를 불러오는 중 문제가 발생했습니다.",
+    "retry": "다시 시도",
+    "empty": "아직 획득한 장비가 없습니다.",
+    "grid": {
+      "title": "인벤토리",
+      "equipped": "장착"
+    },
+    "rarity": {
+      "common": "일반",
+      "uncommon": "고급",
+      "rare": "희귀",
+      "epic": "영웅",
+      "legendary": "전설"
+    },
+    "slots": {
+      "title": "장착 슬롯",
+      "empty": "장비 없음",
+      "labels": {
+        "helmet": "투구",
+        "armor": "방어구",
+        "weapon": "무기",
+        "ring": "반지",
+        "consumable": "소모품"
+      }
+    },
+    "modal": {
+      "close": "닫기",
+      "additionalStats": "추가 스탯",
+      "noAdditionalStats": "추가 스탯 없음",
+      "specialEffect": "특수 효과",
+      "acquiredAt": "획득일: {{time}}",
+      "actions": {
+        "equip": "장착",
+        "unequip": "해제",
+        "discard": "버리기"
+      }
+    },
+    "hint": {
+      "title": "팁",
+      "description": "슬롯 또는 인벤토리 아이템을 클릭해 상세 정보를 확인하고 장착을 변경해보세요."
+    },
+    "effects": {
+      "resurrection": "부활"
+    },
+    "errors": {
+      "versionMismatch": "인벤토리 상태가 변경되었습니다. 새로고침 후 다시 시도해 주세요.",
+      "rateLimited": "요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.",
+      "requestFailed": "인벤토리 요청이 실패했습니다."
+    }
+  },
+  "logs": {
+    "page": {
+      "title": "탐험 기록",
+      "subtitle": "진행된 기록을 확인합니다."
+    },
+    "filters": {
+      "title": "필터",
+      "placeholder": "필터를 선택하세요",
+      "groups": {
+        "category": "카테고리",
+        "action": "액션"
+      },
+      "labels": {
+        "ALL": "전체",
+        "EXPLORATION": "탐험(카테고리)",
+        "STATUS": "상태(카테고리)",
+        "BATTLE": "전투",
+        "TREASURE": "보물",
+        "REST": "휴식",
+        "TRAP": "함정",
+        "MOVE": "이동",
+        "DEATH": "사망",
+        "REVIVE": "부활",
+        "ACQUIRE_ITEM": "아이템 획득",
+        "EQUIP_ITEM": "장착",
+        "UNEQUIP_ITEM": "해제",
+        "DISCARD_ITEM": "버리기",
+        "BUFF_APPLIED": "버프 적용",
+        "BUFF_EXPIRED": "버프 종료",
+        "LEVEL_UP": "레벨 업"
+      },
+      "descriptions": {
+        "ALL": "모든 기록을 확인합니다.",
+        "EXPLORATION": "탐험 카테고리 로그만 확인합니다.",
+        "STATUS": "상태 변경 카테고리 로그만 확인합니다."
+      }
+    },
+    "timeline": {
+      "loadingNext": "다음 로그를 불러오는 중...",
+      "loadMore": "더 불러오기",
+      "allLoaded": "모든 로그를 확인했습니다.",
+      "error": "로그를 불러오는 중 문제가 발생했습니다.",
+      "invalidFilter": "선택한 필터가 유효하지 않습니다. 필터를 변경하거나 초기화한 뒤 다시 시도하세요.",
+      "resetFilter": "필터 초기화",
+      "retry": "다시 시도",
+      "empty": "아직 표시할 로그가 없습니다. 던전을 더 탐험하거나 장비를 조작해보세요."
+    },
+    "detail": {
+      "close": "닫기",
+      "battleInfo": "전투 참여 정보",
+      "images": "관련 이미지",
+      "noImages": "표시할 이미지가 없습니다.",
+      "delta": "변동 내역",
+      "opponent": "상대: {{name}}"
+    },
+    "action": {
+      "BATTLE": "전투",
+      "TREASURE": "보물",
+      "REST": "휴식",
+      "TRAP": "함정",
+      "MOVE": "이동",
+      "DEATH": "사망",
+      "REVIVE": "부활",
+      "ACQUIRE_ITEM": "아이템 획득",
+      "EQUIP_ITEM": "장착",
+      "UNEQUIP_ITEM": "해제",
+      "DISCARD_ITEM": "버리기",
+      "BUFF_APPLIED": "버프 적용",
+      "BUFF_EXPIRED": "버프 종료",
+      "LEVEL_UP": "레벨 업"
+    },
+    "statusAction": {
+      "STARTED": {
+        "BATTLE": "전투를 시작했습니다",
+        "TREASURE": "보물을 조사하기 시작했습니다",
+        "TRAP": "함정을 살펴보기 시작했습니다",
+        "REST": "휴식을 준비합니다",
+        "MOVE": "다음 층으로 이동합니다",
+        "DEATH": "사망 처리 중입니다",
+        "REVIVE": "부활 처리 중입니다",
+        "ACQUIRE_ITEM": "아이템을 획득합니다",
+        "EQUIP_ITEM": "아이템을 장착합니다",
+        "UNEQUIP_ITEM": "아이템을 해제합니다",
+        "DISCARD_ITEM": "아이템을 버립니다",
+        "BUFF_APPLIED": "버프가 적용됩니다",
+        "BUFF_EXPIRED": "버프가 종료됩니다",
+        "LEVEL_UP": "레벨 업을 준비합니다"
+      },
+      "COMPLETED": {
+        "BATTLE": "전투를 완료했습니다",
+        "TREASURE": "보물을 획득했습니다",
+        "TRAP": "함정을 무사히 넘겼습니다",
+        "REST": "휴식을 마쳤습니다",
+        "MOVE": "이동을 완료했습니다",
+        "DEATH": "사망했습니다",
+        "REVIVE": "부활했습니다",
+        "ACQUIRE_ITEM": "아이템을 획득했습니다",
+        "EQUIP_ITEM": "아이템을 장착했습니다",
+        "UNEQUIP_ITEM": "아이템을 해제했습니다",
+        "DISCARD_ITEM": "아이템을 버렸습니다",
+        "BUFF_APPLIED": "버프가 적용되었습니다",
+        "BUFF_EXPIRED": "버프가 종료되었습니다",
+        "LEVEL_UP": "레벨이 올랐습니다"
+      }
+    },
+    "status": {
+      "fallback": {
+        "STARTED": "행동을 시작했습니다",
+        "COMPLETED": "행동을 완료했습니다",
+        "default": "진행했습니다"
+      },
+      "actionFallback": "{{action}}을(를) {{status}}"
+    },
+    "category": {
+      "EXPLORATION": "탐험 로그",
+      "STATUS": "상태 로그"
+    },
+    "delta": {
+      "gold": "골드",
+      "floorProgress": "층 진행도 {{value}}",
+      "itemSummary": "아이템 {{count}}개",
+      "skillPoints": "스킬 포인트 {{value}}",
+      "buffApplied": "버프 +{{count}}",
+      "buffExpired": "버프 -{{count}}",
+      "equipped": "장착 {{item}}",
+      "unequipped": "해제 {{item}}",
+      "acquired": "획득 {{item}} x{{count}}",
+      "removed": "제거 {{item}} x{{count}}"
+    },
+    "floor": "{{floor}}층",
+    "thumbnails": {
+      "monster": "몬스터",
+      "rewardItem": "보상 아이템",
+      "item": "아이템",
+      "goldChange": "골드 변화"
+    }
+  }
+}

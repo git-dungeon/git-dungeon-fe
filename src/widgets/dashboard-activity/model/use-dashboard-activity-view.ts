@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { isAfter, isValid, parseISO } from "date-fns";
+import { useTranslation } from "react-i18next";
 
 import type { DashboardCurrentAction } from "@/entities/dashboard/model/types";
 import type { DungeonLogEntry } from "@/entities/dungeon-log/model/types";
@@ -29,6 +30,7 @@ export interface DashboardActivityViewModel {
 export function useDashboardActivityView(
   params: DashboardActivityViewParams
 ): DashboardActivityViewModel {
+  const { t } = useTranslation();
   const {
     latestLog,
     apRemaining,
@@ -57,13 +59,15 @@ export function useDashboardActivityView(
 
     if (apRemaining <= 0) {
       return {
-        title: "탐험 일시 중지",
-        message: "남은 AP가 없어 탐험이 중단되었습니다.",
+        title: t("dashboard.activity.paused.title"),
+        message: t("dashboard.activity.paused.message"),
         meta:
           hasCompletedHistory && lastActionCompletedAt
-            ? `마지막 행동 완료 ${formatDateTime(lastActionCompletedAt)}`
+            ? t("dashboard.activity.paused.meta", {
+                time: formatDateTime(lastActionCompletedAt),
+              })
             : undefined,
-        timestampLabel: "AP 부족",
+        timestampLabel: t("dashboard.activity.paused.timestamp"),
       } satisfies DashboardActivityViewModel;
     }
 
@@ -71,7 +75,7 @@ export function useDashboardActivityView(
       return {
         title: resolveActionLabel(latestStartedLog.action),
         message: buildLogDescription(latestStartedLog),
-        meta: `${typeof latestStartedLog.floor === "number" ? `${latestStartedLog.floor}층` : "—"} · ${resolveStatusLabel(
+        meta: `${formatFloorLabel(t, latestStartedLog.floor)} · ${resolveStatusLabel(
           latestStartedLog.status,
           latestStartedLog.action
         )}`,
@@ -84,26 +88,32 @@ export function useDashboardActivityView(
     if (isCurrentActionActive && currentAction) {
       const mapped = mapDashboardActionToDungeonAction(currentAction);
       return {
-        title: mapped ? resolveActionLabel(mapped) : "탐험 중 …",
-        message: "현재 행동을 수행 중입니다. 잠시 후 결과를 확인하세요.",
+        title: mapped
+          ? resolveActionLabel(mapped)
+          : t("dashboard.activity.inProgress.title"),
+        message: t("dashboard.activity.inProgress.message"),
         meta:
           currentActionStartedAt && isValid(parseISO(currentActionStartedAt))
-            ? `시작 ${formatDateTime(currentActionStartedAt)}`
+            ? t("dashboard.activity.inProgress.meta", {
+                time: formatDateTime(currentActionStartedAt),
+              })
             : undefined,
         timestampLabel: currentActionStartedAt
           ? formatDateTime(currentActionStartedAt)
-          : "진행 중",
+          : t("dashboard.activity.inProgress.timestamp"),
       } satisfies DashboardActivityViewModel;
     }
 
     if (isIdle) {
       return {
-        title: "탐험 중 …",
-        message: "남은 AP를 사용해 곧 다음 행동을 실행합니다.",
+        title: t("dashboard.activity.idle.title"),
+        message: t("dashboard.activity.idle.message"),
         meta: parsedNextActionStart
-          ? `다음 행동 예정 ${formatDateTime(nextActionStartAt!)}`
-          : `남은 AP ${apRemaining}`,
-        timestampLabel: "대기 중",
+          ? t("dashboard.activity.idle.metaNext", {
+              time: formatDateTime(nextActionStartAt!),
+            })
+          : t("dashboard.activity.idle.metaAp", { ap: apRemaining }),
+        timestampLabel: t("dashboard.activity.idle.timestamp"),
       } satisfies DashboardActivityViewModel;
     }
 
@@ -111,7 +121,7 @@ export function useDashboardActivityView(
       return {
         title: resolveActionLabel(latestLog.action),
         message: buildLogDescription(latestLog),
-        meta: `${typeof latestLog.floor === "number" ? `${latestLog.floor}층` : "—"} · ${resolveStatusLabel(
+        meta: `${formatFloorLabel(t, latestLog.floor)} · ${resolveStatusLabel(
           latestLog.status,
           latestLog.action
         )}`,
@@ -120,12 +130,13 @@ export function useDashboardActivityView(
     }
 
     return {
-      title: "활동 내역",
-      message: "최근 탐험 로그가 아직 없습니다.",
+      title: t("dashboard.activity.empty.title"),
+      message: t("dashboard.activity.empty.message"),
       meta: undefined,
-      timestampLabel: "로그 없음",
+      timestampLabel: t("dashboard.activity.empty.timestamp"),
     } satisfies DashboardActivityViewModel;
   }, [
+    t,
     apRemaining,
     currentAction,
     currentActionStartedAt,
@@ -133,6 +144,15 @@ export function useDashboardActivityView(
     latestLog,
     nextActionStartAt,
   ]);
+}
+
+function formatFloorLabel(
+  t: (key: string, options?: Record<string, unknown>) => string,
+  floor?: number | null
+) {
+  return typeof floor === "number"
+    ? t("logs.floor", { floor })
+    : t("common.placeholder");
 }
 
 function mapDashboardActionToDungeonAction(

@@ -1,15 +1,21 @@
 import type { Profile } from "@/entities/profile/model/types";
+import { useTranslation } from "react-i18next";
 
 interface ProfileIdentityProps {
   profile: Profile;
 }
 
 export function ProfileIdentity({ profile }: ProfileIdentityProps) {
+  const { t } = useTranslation();
   const initials = resolveInitials(profile);
 
   return (
     <div className="flex items-center gap-4">
-      <Avatar media={profile.avatarUrl} fallback={initials} />
+      <Avatar
+        media={profile.avatarUrl}
+        fallback={initials}
+        alt={t("settings.profile.avatarAlt")}
+      />
       <div className="space-y-1">
         <p className="text-foreground text-lg font-semibold">
           {profile.displayName ?? profile.username}
@@ -34,13 +40,21 @@ function resolveInitials(profile: Profile): string {
     .toUpperCase();
 }
 
-function Avatar({ media, fallback }: { media?: string; fallback: string }) {
+function Avatar({
+  media,
+  fallback,
+  alt,
+}: {
+  media?: string;
+  fallback: string;
+  alt: string;
+}) {
   return (
     <div className="bg-muted text-muted-foreground flex size-16 items-center justify-center overflow-hidden rounded-full border">
       {media ? (
         <img
           src={media}
-          alt="사용자 아바타"
+          alt={alt}
           className="size-full object-cover"
           loading="lazy"
         />

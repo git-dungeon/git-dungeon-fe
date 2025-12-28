@@ -11,6 +11,8 @@ import {
 } from "@/entities/inventory/ui/equipment-slot-grid";
 import { InventoryItemCard } from "@/entities/inventory/ui/inventory-item-card";
 import { cn } from "@/shared/lib/utils";
+import { useTranslation } from "react-i18next";
+import { useCatalogItemNameResolver } from "@/entities/catalog/model/use-catalog-item-name";
 
 interface InventorySlotsProps {
   equipped: InventoryEquippedMap;
@@ -19,10 +21,14 @@ interface InventorySlotsProps {
 }
 
 export function InventorySlots({ equipped, onSelect }: InventorySlotsProps) {
+  const { t } = useTranslation();
+  const resolveItemName = useCatalogItemNameResolver();
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">장착 슬롯</CardTitle>
+        <CardTitle className="text-base">
+          {t("inventory.slots.title")}
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <EquipmentSlotGrid
@@ -37,13 +43,16 @@ export function InventorySlots({ equipped, onSelect }: InventorySlotsProps) {
                   onSelect(item, slot);
                 }
               }}
-              title={item ? (item.name ?? item.code) : undefined}
+              title={item ? resolveItemName(item.code, item.name) : undefined}
               className={cn(
                 "group bg-background flex h-auto w-full flex-col items-center justify-center gap-2 p-3 text-center transition"
               )}
             >
               {item ? (
-                <InventoryItemCard item={item} />
+                <InventoryItemCard
+                  item={item}
+                  displayName={resolveItemName(item.code, item.name)}
+                />
               ) : (
                 <InventoryEmptySlot slot={slot} />
               )}

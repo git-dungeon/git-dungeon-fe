@@ -12,35 +12,10 @@ import {
   SelectValue,
 } from "@/shared/ui/select";
 import { DungeonLogTimeline } from "@/widgets/dungeon-log-timeline/ui/dungeon-log-timeline";
+import { useTranslation } from "react-i18next";
 
 const ALL_FILTER_VALUE = "ALL" as const;
 type LogsFilterSelection = typeof ALL_FILTER_VALUE | DungeonLogsFilterType;
-
-const FILTER_LABEL_MAP: Record<LogsFilterSelection, string> = {
-  ALL: "전체",
-  EXPLORATION: "탐험(카테고리)",
-  STATUS: "상태(카테고리)",
-  BATTLE: "전투",
-  TREASURE: "보물",
-  REST: "휴식",
-  TRAP: "함정",
-  MOVE: "이동",
-  DEATH: "사망",
-  REVIVE: "부활",
-  ACQUIRE_ITEM: "아이템 획득",
-  EQUIP_ITEM: "장착",
-  UNEQUIP_ITEM: "해제",
-  DISCARD_ITEM: "버리기",
-  BUFF_APPLIED: "버프 적용",
-  BUFF_EXPIRED: "버프 종료",
-  LEVEL_UP: "레벨 업",
-};
-
-const FILTER_DESCRIPTION_MAP: Partial<Record<LogsFilterSelection, string>> = {
-  ALL: "모든 기록을 확인합니다.",
-  EXPLORATION: "탐험 카테고리 로그만 확인합니다.",
-  STATUS: "상태 변경 카테고리 로그만 확인합니다.",
-};
 
 const CATEGORY_FILTERS: DungeonLogsFilterType[] = ["EXPLORATION", "STATUS"];
 const ACTION_FILTERS: DungeonLogsFilterType[] =
@@ -49,50 +24,79 @@ const ACTION_FILTERS: DungeonLogsFilterType[] =
   );
 
 export function LogsPage() {
+  const { t } = useTranslation();
   const [filter, setFilter] = useState<LogsFilterSelection>(ALL_FILTER_VALUE);
   const resolvedFilterType: DungeonLogsFilterType | undefined =
     filter === ALL_FILTER_VALUE ? undefined : filter;
-  const description = FILTER_DESCRIPTION_MAP[filter];
+  const filterLabelMap: Record<LogsFilterSelection, string> = {
+    ALL: t("logs.filters.labels.ALL"),
+    EXPLORATION: t("logs.filters.labels.EXPLORATION"),
+    STATUS: t("logs.filters.labels.STATUS"),
+    BATTLE: t("logs.filters.labels.BATTLE"),
+    TREASURE: t("logs.filters.labels.TREASURE"),
+    REST: t("logs.filters.labels.REST"),
+    TRAP: t("logs.filters.labels.TRAP"),
+    MOVE: t("logs.filters.labels.MOVE"),
+    DEATH: t("logs.filters.labels.DEATH"),
+    REVIVE: t("logs.filters.labels.REVIVE"),
+    ACQUIRE_ITEM: t("logs.filters.labels.ACQUIRE_ITEM"),
+    EQUIP_ITEM: t("logs.filters.labels.EQUIP_ITEM"),
+    UNEQUIP_ITEM: t("logs.filters.labels.UNEQUIP_ITEM"),
+    DISCARD_ITEM: t("logs.filters.labels.DISCARD_ITEM"),
+    BUFF_APPLIED: t("logs.filters.labels.BUFF_APPLIED"),
+    BUFF_EXPIRED: t("logs.filters.labels.BUFF_EXPIRED"),
+    LEVEL_UP: t("logs.filters.labels.LEVEL_UP"),
+  };
+  const filterDescriptionMap: Partial<Record<LogsFilterSelection, string>> = {
+    ALL: t("logs.filters.descriptions.ALL"),
+    EXPLORATION: t("logs.filters.descriptions.EXPLORATION"),
+    STATUS: t("logs.filters.descriptions.STATUS"),
+  };
+  const description = filterDescriptionMap[filter];
 
   return (
     <section className="space-y-6">
       <header className="space-y-2">
-        <h1 className="text-foreground text-2xl font-semibold">탐험 기록</h1>
+        <h1 className="text-foreground text-2xl font-semibold">
+          {t("logs.page.title")}
+        </h1>
         <p className="text-muted-foreground text-sm">
-          진행된 기록을 확인합니다.
+          {t("logs.page.subtitle")}
         </p>
       </header>
 
       <div className="space-y-3">
         <div className="flex flex-wrap items-end gap-3">
           <div className="space-y-1">
-            <p className="text-foreground text-sm font-medium">필터</p>
+            <p className="text-foreground text-sm font-medium">
+              {t("logs.filters.title")}
+            </p>
             <Select
               value={filter}
               onValueChange={(value) => setFilter(value as LogsFilterSelection)}
             >
               <SelectTrigger className="min-w-64">
-                <SelectValue placeholder="필터를 선택하세요" />
+                <SelectValue placeholder={t("logs.filters.placeholder")} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value={ALL_FILTER_VALUE}>
-                  {FILTER_LABEL_MAP[ALL_FILTER_VALUE]}
+                  {filterLabelMap[ALL_FILTER_VALUE]}
                 </SelectItem>
                 <SelectSeparator />
                 <SelectGroup>
-                  <SelectLabel>카테고리</SelectLabel>
+                  <SelectLabel>{t("logs.filters.groups.category")}</SelectLabel>
                   {CATEGORY_FILTERS.map((value) => (
                     <SelectItem key={value} value={value}>
-                      {FILTER_LABEL_MAP[value]}
+                      {filterLabelMap[value]}
                     </SelectItem>
                   ))}
                 </SelectGroup>
                 <SelectSeparator />
                 <SelectGroup>
-                  <SelectLabel>액션</SelectLabel>
+                  <SelectLabel>{t("logs.filters.groups.action")}</SelectLabel>
                   {ACTION_FILTERS.map((value) => (
                     <SelectItem key={value} value={value}>
-                      {FILTER_LABEL_MAP[value]}
+                      {filterLabelMap[value]}
                     </SelectItem>
                   ))}
                 </SelectGroup>
