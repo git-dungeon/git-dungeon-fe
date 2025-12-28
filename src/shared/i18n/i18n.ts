@@ -42,12 +42,18 @@ if (!i18next.isInitialized) {
   });
 }
 
-subscribeLanguagePreference(() => {
+const unsubscribeLanguagePreference = subscribeLanguagePreference(() => {
   const nextLanguage = getLanguagePreference();
   if (i18next.language !== nextLanguage) {
     void i18next.changeLanguage(nextLanguage);
     queryClient.invalidateQueries({ queryKey: CATALOG_QUERY_KEY });
   }
 });
+
+if (import.meta.hot) {
+  import.meta.hot.dispose(() => {
+    unsubscribeLanguagePreference();
+  });
+}
 
 export { i18next };

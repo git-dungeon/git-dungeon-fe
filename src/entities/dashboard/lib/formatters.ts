@@ -6,14 +6,6 @@ import { formatStatChange } from "@/shared/lib/stats/format";
 import { getLanguagePreference } from "@/shared/lib/preferences/preferences";
 import { i18next } from "@/shared/i18n/i18n";
 
-const RARITY_FALLBACK_MAP: Record<EquipmentRarity, string> = {
-  common: "일반",
-  uncommon: "고급",
-  rare: "희귀",
-  epic: "영웅",
-  legendary: "전설",
-};
-
 const MODIFIER_LABEL_MAP: Record<
   Extract<InventoryModifier, { kind: "stat" }>["stat"],
   string
@@ -48,8 +40,7 @@ export function formatNumber(value: number): string {
 
 export function formatRarity(rarity: EquipmentRarity): string {
   const key = `inventory.rarity.${rarity}`;
-  const value = i18next.t(key);
-  return value === key ? (RARITY_FALLBACK_MAP[rarity] ?? rarity) : value;
+  return i18next.t(key, { defaultValue: rarity });
 }
 
 export function formatModifier(modifier: InventoryModifier): string {

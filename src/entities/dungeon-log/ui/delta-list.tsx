@@ -1,5 +1,6 @@
 import type { DungeonLogEntry } from "@/entities/dungeon-log/model/types";
 import { formatDelta } from "@/entities/dungeon-log/lib/formatters";
+import { useCatalogItemNameResolver } from "@/entities/catalog/model/use-catalog-item-name";
 import { Badge } from "@/shared/ui/badge";
 import { cn } from "@/shared/lib/utils";
 import { BADGE_TONE_CLASSES } from "@/shared/ui/tone";
@@ -9,7 +10,8 @@ interface DeltaListProps {
 }
 
 export function DeltaList({ entry }: DeltaListProps) {
-  const entries = formatDelta(entry);
+  const resolveItemName = useCatalogItemNameResolver();
+  const entries = formatDelta(entry, resolveItemName);
 
   if (entries.length === 0) {
     return null;

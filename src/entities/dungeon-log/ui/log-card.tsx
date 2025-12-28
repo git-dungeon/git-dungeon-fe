@@ -7,6 +7,7 @@ import {
   resolveLogCategoryLabel,
   resolveStatusLabel,
 } from "@/entities/dungeon-log/lib/formatters";
+import { useCatalogItemNameResolver } from "@/entities/catalog/model/use-catalog-item-name";
 import { BattleMonsterSummary } from "@/entities/dungeon-log/ui/battle-monster-summary";
 import {
   resolveBattleMonster,
@@ -39,6 +40,7 @@ export function LogCard({
   const monster = resolveBattleMonster(log);
   const player = resolveBattlePlayer(log);
   const result = resolveBattleResult(log);
+  const resolveItemName = useCatalogItemNameResolver();
 
   return (
     <Card
@@ -93,7 +95,7 @@ export function LogCard({
       <CardContent className="flex min-h-16 justify-between gap-3">
         <div className="space-y-2">
           <p className="text-muted-foreground text-sm">
-            {buildLogDescription(log)}
+            {buildLogDescription(log, resolveItemName)}
           </p>
           <p className="text-muted-foreground text-xs">
             {`${formatFloorLabel(t, log.floor)} · ${resolveStatusLabel(

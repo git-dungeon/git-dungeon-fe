@@ -14,6 +14,27 @@ function pickColorFromSeed(seed: string): string {
   return BASE_COLORS[index];
 }
 
+const BASE64_CHARS =
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+function encodeBytesToBase64(bytes: Uint8Array): string {
+  let output = "";
+
+  for (let i = 0; i < bytes.length; i += 3) {
+    const a = bytes[i];
+    const b = bytes[i + 1];
+    const c = bytes[i + 2];
+    const triple = (a << 16) | ((b ?? 0) << 8) | (c ?? 0);
+
+    output += BASE64_CHARS[(triple >> 18) & 63];
+    output += BASE64_CHARS[(triple >> 12) & 63];
+    output += typeof b === "number" ? BASE64_CHARS[(triple >> 6) & 63] : "=";
+    output += typeof c === "number" ? BASE64_CHARS[triple & 63] : "=";
+  }
+
+  return output;
+}
+
 function encodeSvgToBase64(svg: string): string {
   const bufferCtor = (
     globalThis as {
@@ -30,19 +51,14 @@ function encodeSvgToBase64(svg: string): string {
     return bufferCtor.from(svg, "utf8").toString("base64");
   }
 
-  if (typeof btoa !== "undefined") {
+  if (typeof TextEncoder !== "undefined") {
     const encoder = new TextEncoder();
-    const bytes = encoder.encode(svg);
-    let binary = "";
-
-    bytes.forEach((byte) => {
-      binary += String.fromCharCode(byte);
-    });
-
-    return btoa(binary);
+    return encodeBytesToBase64(encoder.encode(svg));
   }
 
-  return "";
+  throw new Error(
+    "[sprite-utils] Base64 encoder is not available in this environment."
+  );
 }
 
 function createSpriteDataUri(label: string, color: string): string {

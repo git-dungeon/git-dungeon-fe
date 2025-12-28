@@ -53,8 +53,7 @@ function resolveLocaleString(map: Record<string, string>, fallback: string) {
 export function formatDateTime(value: string | number | Date): string {
   const date = value instanceof Date ? value : new Date(value);
   if (Number.isNaN(date.getTime())) {
-    const unknown = i18next.t("datetime.unknown");
-    return unknown === "datetime.unknown" ? "알 수 없음" : unknown;
+    return i18next.t("datetime.unknown", { defaultValue: "Unknown" });
   }
   const locale = resolveLocaleString(DATE_LOCALE_MAP, "ko-KR");
   return resolveDateFormatter(locale).format(date);
@@ -71,8 +70,7 @@ export function formatRelativeTime(value: string | number | Date): string {
   const now = Date.now();
 
   if (Number.isNaN(targetTime)) {
-    const justNow = i18next.t("datetime.justNow");
-    return justNow === "datetime.justNow" ? "방금" : justNow;
+    return i18next.t("datetime.justNow", { defaultValue: "Just now" });
   }
 
   const diff = now - targetTime;
@@ -80,8 +78,7 @@ export function formatRelativeTime(value: string | number | Date): string {
   const absDiff = Math.abs(diff);
 
   if (absDiff < MINUTE_IN_MS) {
-    const justNow = i18next.t("datetime.justNow");
-    return justNow === "datetime.justNow" ? "방금" : justNow;
+    return i18next.t("datetime.justNow", { defaultValue: "Just now" });
   }
 
   const relativeLocale = resolveLocaleString(RELATIVE_LOCALE_MAP, "ko");

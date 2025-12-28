@@ -24,11 +24,11 @@ const t = (key: string, options?: Record<string, unknown>) =>
 
 function translate(
   key: string,
-  fallback: string,
+  fallback?: string,
   options?: Record<string, unknown>
 ) {
   const value = t(key, options);
-  return value === key ? fallback : value;
+  return value === key ? (fallback ?? value) : value;
 }
 
 export function resolveActionLabel(action: DungeonLogAction): string {
@@ -48,7 +48,7 @@ export function resolveStatusLabel(
   const actionLabel = resolveActionLabel(action);
   const fallbackStatus = translate(
     `logs.status.fallback.${status}`,
-    translate("logs.status.fallback.default", "진행했습니다")
+    translate("logs.status.fallback.default")
   );
   return translate(
     "logs.status.actionFallback",
@@ -73,7 +73,12 @@ export interface FormattedDeltaEntry {
   tone: StatTone;
 }
 
-export function formatDelta(entry: DungeonLogEntry): FormattedDeltaEntry[] {
+type ItemNameResolver = (code: string, fallback?: string | null) => string;
+
+export function formatDelta(
+  entry: DungeonLogEntry,
+  resolveItemName?: ItemNameResolver
+): FormattedDeltaEntry[] {
   const { delta } = entry;
   const entries: FormattedDeltaEntry[] = [];
 
@@ -117,7 +122,12 @@ export function formatDelta(entry: DungeonLogEntry): FormattedDeltaEntry[] {
     case "DISCARD_ITEM": {
       entries.push(...formatStatsDelta(entry.id, delta.detail.stats));
       entries.push(
-        ...formatInventoryDelta(entry.id, delta.type, delta.detail.inventory)
+        ...formatInventoryDelta(
+          entry.id,
+          delta.type,
+          delta.detail.inventory,
+          resolveItemName
+        )
       );
       break;
     }
@@ -250,33 +260,39 @@ function formatInventoryDelta(
     removed?: Array<{ code: string; quantity?: number }>;
     equipped?: { code: string };
     unequipped?: { code: string };
-  }
+  },
+  resolveItemName?: ItemNameResolver
 ): FormattedDeltaEntry[] {
   const tone = determineItemTone(action);
   const entries: FormattedDeltaEntry[] = [];
+  const resolveName = (code: string) =>
+    resolveItemName ? resolveItemName(code, code) : code;
 
   if (inventory.equipped?.code) {
+    const itemName = resolveName(inventory.equipped.code);
     entries.push({
       id: `${entryId}-equipped`,
-      text: t("logs.delta.equipped", { item: inventory.equipped.code }),
+      text: t("logs.delta.equipped", { item: itemName }),
       tone,
     });
   }
 
   if (inventory.unequipped?.code) {
+    const itemName = resolveName(inventory.unequipped.code);
     entries.push({
       id: `${entryId}-unequipped`,
-      text: t("logs.delta.unequipped", { item: inventory.unequipped.code }),
+      text: t("logs.delta.unequipped", { item: itemName }),
       tone,
     });
   }
 
   for (const item of inventory.added ?? []) {
+    const itemName = resolveName(item.code);
     const quantity = item.quantity ?? 1;
     entries.push({
       id: `${entryId}-added-${item.code}`,
       text: t("logs.delta.acquired", {
-        item: item.code,
+        item: itemName,
         count: quantity,
       }),
       tone: "gain",
@@ -284,11 +300,12 @@ function formatInventoryDelta(
   }
 
   for (const item of inventory.removed ?? []) {
+    const itemName = resolveName(item.code);
     const quantity = item.quantity ?? 1;
     entries.push({
       id: `${entryId}-removed-${item.code}`,
       text: t("logs.delta.removed", {
-        item: item.code,
+        item: itemName,
         count: quantity,
       }),
       tone: "loss",
@@ -298,10 +315,15 @@ function formatInventoryDelta(
   return entries;
 }
 
-export function buildLogDescription(entry: DungeonLogEntry): string {
+export function buildLogDescription(
+  entry: DungeonLogEntry,
+  resolveItemName?: ItemNameResolver
+): string {
   const statusLabel = resolveStatusLabel(entry.status, entry.action);
   const detailsLabel = buildDetailsAttachment(entry);
-  const deltaEntries = formatDelta(entry).map((item) => item.text);
+  const deltaEntries = formatDelta(entry, resolveItemName).map(
+    (item) => item.text
+  );
 
   if (deltaEntries.length === 0) {
     return detailsLabel ? `${statusLabel} ${detailsLabel}` : statusLabel;
