@@ -246,6 +246,7 @@
       "additionalStats": "추가 스탯",
       "noAdditionalStats": "추가 스탯 없음",
       "specialEffect": "특수 효과",
+      "description": "설명",
       "acquiredAt": "획득일: {{time}}",
       "actions": {
         "equip": "장착",
@@ -396,6 +397,10 @@
       "removed": "제거 {{item}} x{{count}}"
     },
     "floor": "{{floor}}층",
+    "message": {
+      "equipped": "{{item}} 장착했습니다",
+      "unequipped": "{{item}} 해제했습니다"
+    },
     "thumbnails": {
       "monster": "몬스터",
       "rewardItem": "보상 아이템",

@@ -1,7 +1,6 @@
 import type {
   DungeonLogAction,
   DungeonLogCategory,
-  DungeonLogDelta,
   DungeonLogEntry,
   DungeonLogRewardItem,
   DungeonLogStatus,
@@ -11,11 +10,7 @@ import {
   formatDateTime,
   formatRelativeTime as formatRelativeTimeInternal,
 } from "@/shared/lib/datetime/formatters";
-import {
-  determineItemTone,
-  formatStatChange,
-  type StatTone,
-} from "@/shared/lib/stats/format";
+import { formatStatChange, type StatTone } from "@/shared/lib/stats/format";
 import { resolveBattleMonster } from "@/entities/dungeon-log/lib/monster";
 import { i18next } from "@/shared/i18n/i18n";
 
@@ -124,7 +119,6 @@ export function formatDelta(
       entries.push(
         ...formatInventoryDelta(
           entry.id,
-          delta.type,
           delta.detail.inventory,
           resolveItemName
         )
@@ -254,7 +248,6 @@ function formatStatsDelta(
 
 function formatInventoryDelta(
   entryId: string,
-  action: DungeonLogDelta["type"],
   inventory: {
     added?: Array<{ code: string; quantity?: number }>;
     removed?: Array<{ code: string; quantity?: number }>;
@@ -263,7 +256,6 @@ function formatInventoryDelta(
   },
   resolveItemName?: ItemNameResolver
 ): FormattedDeltaEntry[] {
-  const tone = determineItemTone(action);
   const entries: FormattedDeltaEntry[] = [];
   const resolveName = (code: string) =>
     resolveItemName ? resolveItemName(code, code) : code;
@@ -273,7 +265,7 @@ function formatInventoryDelta(
     entries.push({
       id: `${entryId}-equipped`,
       text: t("logs.delta.equipped", { item: itemName }),
-      tone,
+      tone: "gain",
     });
   }
 
@@ -282,7 +274,7 @@ function formatInventoryDelta(
     entries.push({
       id: `${entryId}-unequipped`,
       text: t("logs.delta.unequipped", { item: itemName }),
-      tone,
+      tone: "loss",
     });
   }
 

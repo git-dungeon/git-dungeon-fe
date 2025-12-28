@@ -47,30 +47,34 @@ export function BattleMonsterSummary({
 
   const playerStats = player
     ? [
-        { label: "LV", value: String(player.level) },
+        {
+          label: "LV",
+          base: String(player.level),
+          bonus: undefined as string | undefined,
+          bonusTone: undefined as "gain" | "loss" | undefined,
+        },
         {
           label: "HP",
-          value:
+          base:
             typeof player.hp === "number" && typeof player.maxHp === "number"
               ? `${player.hp}/${player.maxHp}`
               : undefined,
+          bonus: undefined as string | undefined,
+          bonusTone: undefined as "gain" | "loss" | undefined,
         },
         {
           label: "ATK",
-          value: formatStatValue(player.atk, player.stats?.equipmentBonus?.atk),
+          ...formatStatValue(player.atk, player.stats?.equipmentBonus?.atk),
         },
         {
           label: "DEF",
-          value: formatStatValue(player.def, player.stats?.equipmentBonus?.def),
+          ...formatStatValue(player.def, player.stats?.equipmentBonus?.def),
         },
         {
           label: "LUCK",
-          value: formatStatValue(
-            player.luck,
-            player.stats?.equipmentBonus?.luck
-          ),
+          ...formatStatValue(player.luck, player.stats?.equipmentBonus?.luck),
         },
-      ].filter((stat) => typeof stat.value === "string")
+      ].filter((stat) => typeof stat.base === "string")
     : [];
 
   return (
@@ -117,7 +121,20 @@ export function BattleMonsterSummary({
                     key={stat.label}
                     className="bg-muted text-muted-foreground rounded px-2 py-0.5 text-[11px] font-medium"
                   >
-                    {stat.label} {stat.value}
+                    {stat.label} {stat.base}
+                    {stat.bonus && (
+                      <span
+                        className={cn(
+                          "ml-0.5",
+                          stat.bonusTone === "gain" &&
+                            "text-emerald-600 dark:text-emerald-400",
+                          stat.bonusTone === "loss" &&
+                            "text-rose-600 dark:text-rose-400"
+                        )}
+                      >
+                        ({stat.bonus})
+                      </span>
+                    )}
                   </span>
                 ))}
               </div>
@@ -177,17 +194,24 @@ export function BattleMonsterSummary({
   );
 }
 
-function formatStatValue(value?: number, bonus?: number) {
+function formatStatValue(
+  value?: number,
+  bonus?: number
+): { base?: string; bonus?: string; bonusTone?: "gain" | "loss" } {
   if (typeof value !== "number") {
-    return undefined;
+    return { base: undefined, bonus: undefined, bonusTone: undefined };
   }
 
   if (typeof bonus === "number" && bonus !== 0) {
     const sign = bonus > 0 ? "+" : "";
-    return `${value} (${sign}${bonus})`;
+    return {
+      base: String(value),
+      bonus: `${sign}${bonus}`,
+      bonusTone: bonus > 0 ? "gain" : "loss",
+    };
   }
 
-  return String(value);
+  return { base: String(value), bonus: undefined, bonusTone: undefined };
 }
 
 function resolveInitials(name?: string) {

@@ -246,6 +246,7 @@
       "additionalStats": "Additional stats",
       "noAdditionalStats": "No additional stats",
       "specialEffect": "Special effect",
+      "description": "Description",
       "acquiredAt": "Acquired at: {{time}}",
       "actions": {
         "equip": "Equip",
@@ -396,6 +397,10 @@
       "removed": "Removed {{item}} x{{count}}"
     },
     "floor": "Floor {{floor}}",
+    "message": {
+      "equipped": "Equipped {{item}}",
+      "unequipped": "Unequipped {{item}}"
+    },
     "thumbnails": {
       "monster": "Monster",
       "rewardItem": "Reward item",
