@@ -10,6 +10,8 @@ import {
   getLanguagePreference,
   subscribeLanguagePreference,
 } from "@/shared/lib/preferences/preferences";
+import { queryClient } from "@/shared/lib/query/query-client";
+import { CATALOG_QUERY_KEY } from "@/entities/catalog/model/catalog-query";
 
 const resources = {
   ko: { translation: ko },
@@ -44,6 +46,7 @@ subscribeLanguagePreference(() => {
   const nextLanguage = getLanguagePreference();
   if (i18next.language !== nextLanguage) {
     void i18next.changeLanguage(nextLanguage);
+    queryClient.invalidateQueries({ queryKey: CATALOG_QUERY_KEY });
   }
 });
 
