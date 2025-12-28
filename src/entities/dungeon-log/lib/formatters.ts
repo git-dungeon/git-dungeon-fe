@@ -11,11 +11,7 @@ import {
   formatDateTime,
   formatRelativeTime as formatRelativeTimeInternal,
 } from "@/shared/lib/datetime/formatters";
-import {
-  determineItemTone,
-  formatStatChange,
-  type StatTone,
-} from "@/shared/lib/stats/format";
+import { formatStatChange, type StatTone } from "@/shared/lib/stats/format";
 import { resolveBattleMonster } from "@/entities/dungeon-log/lib/monster";
 import { i18next } from "@/shared/i18n/i18n";
 
@@ -263,7 +259,6 @@ function formatInventoryDelta(
   },
   resolveItemName?: ItemNameResolver
 ): FormattedDeltaEntry[] {
-  const tone = determineItemTone(action);
   const entries: FormattedDeltaEntry[] = [];
   const resolveName = (code: string) =>
     resolveItemName ? resolveItemName(code, code) : code;
@@ -273,7 +268,7 @@ function formatInventoryDelta(
     entries.push({
       id: `${entryId}-equipped`,
       text: t("logs.delta.equipped", { item: itemName }),
-      tone,
+      tone: "gain",
     });
   }
 
@@ -282,7 +277,7 @@ function formatInventoryDelta(
     entries.push({
       id: `${entryId}-unequipped`,
       text: t("logs.delta.unequipped", { item: itemName }),
-      tone,
+      tone: "loss",
     });
   }
 
