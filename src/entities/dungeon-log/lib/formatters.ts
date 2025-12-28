@@ -311,35 +311,6 @@ export function buildLogDescription(
   entry: DungeonLogEntry,
   resolveItemName?: ItemNameResolver
 ): string {
-  const { delta } = entry;
-  const resolveName = (code: string) =>
-    resolveItemName ? resolveItemName(code, code) : code;
-
-  // EQUIP_ITEM/UNEQUIP_ITEM일 때 별도 형식
-  if (delta?.type === "EQUIP_ITEM" || delta?.type === "UNEQUIP_ITEM") {
-    const messages: string[] = [];
-    const inventory = delta.detail.inventory;
-
-    if (inventory.unequipped?.code) {
-      const itemName = resolveName(inventory.unequipped.code);
-      messages.push(t("logs.message.unequipped", { item: itemName }));
-    }
-    if (inventory.equipped?.code) {
-      const itemName = resolveName(inventory.equipped.code);
-      messages.push(t("logs.message.equipped", { item: itemName }));
-    }
-
-    // 스탯 변화만 delta로 표시
-    const statsDelta = formatStatsDelta(entry.id, delta.detail.stats);
-    if (statsDelta.length > 0) {
-      const statsText = statsDelta.map((s) => s.text).join(", ");
-      return `${messages.join(", ")} (${statsText})`;
-    }
-
-    return messages.join(", ");
-  }
-
-  // 기존 로직
   const statusLabel = resolveStatusLabel(entry.status, entry.action);
   const detailsLabel = buildDetailsAttachment(entry);
   const deltaEntries = formatDelta(entry, resolveItemName).map(
