@@ -1,0 +1,50 @@
+import i18next from "i18next";
+import { initReactI18next } from "react-i18next";
+import ko from "./locales/ko.json";
+import en from "./locales/en.json";
+import {
+  DEFAULT_LANGUAGE_PREFERENCE,
+  LANGUAGE_PREFERENCE_VALUES,
+} from "@/shared/lib/preferences/types";
+import {
+  getLanguagePreference,
+  subscribeLanguagePreference,
+} from "@/shared/lib/preferences/preferences";
+
+const resources = {
+  ko: { translation: ko },
+  en: { translation: en },
+} as const;
+
+const isDev = import.meta.env.DEV;
+
+if (!i18next.isInitialized) {
+  void i18next.use(initReactI18next).init({
+    resources,
+    lng: getLanguagePreference(),
+    fallbackLng: DEFAULT_LANGUAGE_PREFERENCE,
+    supportedLngs: LANGUAGE_PREFERENCE_VALUES,
+    interpolation: {
+      escapeValue: false,
+    },
+    returnNull: false,
+    saveMissing: isDev,
+    missingKeyHandler: isDev
+      ? (lngs, namespace, key) => {
+          const languages = Array.isArray(lngs) ? lngs.join(", ") : lngs;
+          console.warn(
+            `[i18n] Missing translation key: ${namespace}:${key} (lng: ${languages})`
+          );
+        }
+      : undefined,
+  });
+}
+
+subscribeLanguagePreference(() => {
+  const nextLanguage = getLanguagePreference();
+  if (i18next.language !== nextLanguage) {
+    void i18next.changeLanguage(nextLanguage);
+  }
+});
+
+export { i18next };
