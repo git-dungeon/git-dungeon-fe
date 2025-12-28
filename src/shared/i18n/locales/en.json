@@ -397,6 +397,10 @@
       "removed": "Removed {{item}} x{{count}}"
     },
     "floor": "Floor {{floor}}",
+    "message": {
+      "equipped": "Equipped {{item}}",
+      "unequipped": "Unequipped {{item}}"
+    },
     "thumbnails": {
       "monster": "Monster",
       "rewardItem": "Reward item",

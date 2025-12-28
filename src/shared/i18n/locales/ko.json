@@ -397,6 +397,10 @@
       "removed": "제거 {{item}} x{{count}}"
     },
     "floor": "{{floor}}층",
+    "message": {
+      "equipped": "{{item}} 장착했습니다",
+      "unequipped": "{{item}} 해제했습니다"
+    },
     "thumbnails": {
       "monster": "몬스터",
       "rewardItem": "보상 아이템",
