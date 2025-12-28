@@ -246,6 +246,7 @@
       "additionalStats": "Additional stats",
       "noAdditionalStats": "No additional stats",
       "specialEffect": "Special effect",
+      "description": "Description",
       "acquiredAt": "Acquired at: {{time}}",
       "actions": {
         "equip": "Equip",

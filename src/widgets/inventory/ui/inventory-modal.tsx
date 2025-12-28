@@ -9,6 +9,7 @@ import { BADGE_TONE_CLASSES } from "@/shared/ui/tone";
 import { resolveLocalItemSprite } from "@/entities/catalog/config/local-sprites";
 import { getInventorySlotLabel } from "@/entities/inventory/config/slot-labels";
 import { useCatalogItemNameResolver } from "@/entities/catalog/model/use-catalog-item-name";
+import { useCatalogItemDescriptionResolver } from "@/entities/catalog/model/use-catalog-item-description";
 import {
   Dialog,
   DialogClose,
@@ -45,11 +46,13 @@ export function InventoryModal({
 }: InventoryModalProps) {
   const { t } = useTranslation();
   const resolveItemName = useCatalogItemNameResolver();
+  const resolveDescription = useCatalogItemDescriptionResolver();
   if (!item || !slot) {
     return null;
   }
 
   const displayName = resolveItemName(item.code, item.name);
+  const description = resolveDescription(item.code);
   const sprite = resolveLocalItemSprite(item.code);
 
   const handleOpenChange = (nextOpen: boolean) => {
@@ -172,6 +175,13 @@ export function InventoryModal({
                   {formatInventoryEffect(item.effect)}
                 </Badge>
               </div>
+            </section>
+          ) : null}
+
+          {description ? (
+            <section className="flex flex-col gap-2 text-sm">
+              <h3 className="text-xs">{t("inventory.modal.description")}</h3>
+              <p className="text-muted-foreground">{description}</p>
             </section>
           ) : null}
 
