@@ -63,6 +63,54 @@ VITE_API_BASE_URL=http://localhost:3000
 - 세션 확인이 실패하면 로그인 화면에서 “서버에 문제가 있어 로그인할 수 없습니다.” 메시지가 표시됩니다.
 - `/login`은 카탈로그 선행 로딩에서 제외되어, 카탈로그를 받지 못해도 로그인 UI 자체가 막히지 않습니다.
 
+## i18n 운영 가이드
+
+### 적용 범위
+
+- **UI 텍스트**: i18n 리소스(`src/shared/i18n/locales/{ko,en}.json`)에 작성
+- **게임 데이터**(아이템/버프/몬스터): 카탈로그 API 응답으로 표시
+- 게임 데이터를 i18n 리소스에 복제하지 않습니다.
+
+### 키 네이밍 규칙
+
+- 형태: `도메인.화면.섹션.항목`
+- lowerCamelCase 사용
+- 동일 의미는 같은 키 재사용
+
+예시:
+
+- `settings.title`
+- `settings.preferences.language.label`
+- `inventory.emptyState.title`
+
+### 리소스 추가
+
+1. ko/en JSON에 동일한 키 구조로 추가
+2. 새 키는 의미 단위로 정의하고, 기존 키 재사용 여부 먼저 확인
+3. 파라미터는 `{{변수}}` 형태로 사용
+
+```json
+{
+  "inventory": {
+    "summary": {
+      "count": "총 {{count}}개"
+    }
+  }
+}
+```
+
+### 포맷 규칙
+
+- 날짜/시간: `formatDateTime`, `formatRelativeTime`
+- 등급/효과:
+  - `inventory.rarity.{common|uncommon|rare|epic|legendary}`
+  - `inventory.effects.{effectCode}`
+
+### 검증 포인트
+
+- 언어 전환 후 UI 문구가 즉시 반영되는지 확인
+- 카탈로그 데이터가 locale 변경 시 재조회되는지 확인
+
 ## 트러블슈팅
 
 ### `ERR_CONNECTION_REFUSED`가 뜹니다
