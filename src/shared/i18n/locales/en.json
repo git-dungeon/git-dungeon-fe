@@ -1,5 +1,11 @@
 {
   "common": {
     "appName": "Git Dungeon"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "inventory": "Inventory",
+    "logs": "Logs",
+    "settings": "Settings"
   }
 }

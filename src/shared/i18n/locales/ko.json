@@ -1,5 +1,11 @@
 {
   "common": {
     "appName": "Git Dungeon"
+  },
+  "navigation": {
+    "dashboard": "대시보드",
+    "inventory": "인벤토리",
+    "logs": "로그",
+    "settings": "설정"
   }
 }
