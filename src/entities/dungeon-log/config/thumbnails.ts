@@ -6,7 +6,7 @@ import resurrectedImage from "@/assets/event/revive.png";
 import trapImage from "@/assets/event/trap.png";
 import treasureImage from "@/assets/event/treasure.png";
 import moveImage from "@/assets/event/move.png";
-import goldImage from "@/assets/gold.png";
+import goldImage from "@/assets/event/gold.png";
 import {
   resolveLocalItemSprite,
   resolveLocalMonsterSprite,

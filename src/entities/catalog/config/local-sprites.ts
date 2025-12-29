@@ -1,4 +1,4 @@
-import missingImage from "@/assets/missing.png";
+import missingImage from "@/assets/event/missing.png";
 
 import battleAxeImage from "@/assets/weapon/battle-axe.png";
 import excaliburImage from "@/assets/weapon/excalibur.png";
