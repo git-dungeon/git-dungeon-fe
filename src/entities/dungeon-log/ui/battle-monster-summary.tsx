@@ -13,6 +13,7 @@ interface BattleMonsterSummaryProps {
   player?: DungeonLogBattlePlayerSnapshot;
   result?: BattleResult;
   size?: "compact" | "detail";
+  resolveMonsterName?: (code: string, fallback?: string | null) => string;
 }
 
 const RESULT_LABEL_MAP: Record<BattleResult, string> = {
@@ -25,6 +26,7 @@ export function BattleMonsterSummary({
   player,
   result,
   size = "compact",
+  resolveMonsterName,
 }: BattleMonsterSummaryProps) {
   const profile = useProfile();
   const profileName =
@@ -39,6 +41,12 @@ export function BattleMonsterSummary({
   const image = monster
     ? resolveMonsterThumbnail(monster.spriteId, monster.code)
     : undefined;
+  const monsterName = monster
+    ? resolveMonsterName
+      ? resolveMonsterName(monster.code, monster.name)
+      : monster.name
+    : undefined;
+  const monsterLabel = monsterName ?? "몬스터";
   const monsterStats = [
     { label: "HP", value: monster?.hp },
     { label: "ATK", value: monster?.atk },
@@ -159,7 +167,7 @@ export function BattleMonsterSummary({
             >
               <img
                 src={image}
-                alt={monster.name ?? "몬스터"}
+                alt={monsterLabel}
                 className="h-full w-full object-cover"
               />
             </div>
@@ -167,7 +175,7 @@ export function BattleMonsterSummary({
           <div className="min-w-0 space-y-1">
             <div className="flex items-center gap-2">
               <p className="text-foreground text-sm font-semibold">
-                {monster.name ?? "몬스터"}
+                {monsterLabel}
               </p>
               {result ? (
                 <span className="text-muted-foreground text-xs">

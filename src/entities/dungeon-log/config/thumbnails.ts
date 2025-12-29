@@ -112,10 +112,16 @@ function resolveGoldBadge(
 }
 
 type ItemNameResolver = (code: string, fallback?: string | null) => string;
+type MonsterNameResolver = (code: string, fallback?: string | null) => string;
+
+export interface LogThumbnailResolvers {
+  resolveItemName?: ItemNameResolver;
+  resolveMonsterName?: MonsterNameResolver;
+}
 
 export function buildLogThumbnails(
   entry: DungeonLogEntry,
-  resolveItemName?: ItemNameResolver
+  { resolveItemName, resolveMonsterName }: LogThumbnailResolvers = {}
 ): LogThumbnailDescriptor[] {
   const thumbnails: LogThumbnailDescriptor[] = [];
   const resolveName = (code: string) =>
@@ -139,10 +145,15 @@ export function buildLogThumbnails(
       monster?.code
     );
     if (monsterThumbnail) {
+      const monsterName = monster
+        ? resolveMonsterName
+          ? resolveMonsterName(monster.code, monster.name)
+          : monster.name
+        : undefined;
       thumbnails.push({
         id: `${entry.id}-monster`,
         src: monsterThumbnail,
-        alt: monster?.name ?? t("logs.thumbnails.monster"),
+        alt: monsterName ?? t("logs.thumbnails.monster"),
       });
     }
   }

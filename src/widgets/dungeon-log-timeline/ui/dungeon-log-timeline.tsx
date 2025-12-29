@@ -14,6 +14,7 @@ import { DungeonLogDetailDialog } from "@/widgets/dungeon-log-timeline/ui/dungeo
 import { ApiError } from "@/shared/api/http-client";
 import { useTranslation } from "react-i18next";
 import { useCatalogItemNameResolver } from "@/entities/catalog/model/use-catalog-item-name";
+import { useCatalogMonsterNameResolver } from "@/entities/catalog/model/use-catalog-monster-name";
 
 interface DungeonLogTimelineProps {
   filterType?: DungeonLogsFilterType;
@@ -37,6 +38,7 @@ export function DungeonLogTimeline({
   } = useDungeonLogTimeline({ filterType });
   const [selectedLog, setSelectedLog] = useState<DungeonLogEntry | null>(null);
   const resolveItemName = useCatalogItemNameResolver();
+  const resolveMonsterName = useCatalogMonsterNameResolver();
 
   if (status === "pending") {
     return <LoadingState />;
@@ -68,7 +70,10 @@ export function DungeonLogTimeline({
     <div className="space-y-4">
       <ul className="space-y-3">
         {logs.map((log) => {
-          const thumbnails = buildLogThumbnails(log, resolveItemName);
+          const thumbnails = buildLogThumbnails(log, {
+            resolveItemName,
+            resolveMonsterName,
+          });
           return (
             <li key={log.id}>
               <LogCard
