@@ -92,11 +92,11 @@ const WEAPON_CODES = [
 
 const ARMOR_CODES = [
   "armor-leather-armor",
-  "armor-iron-shield",
+  "armor-studded-leather-armor",
   "armor-chainmail",
   "armor-steel-armor",
   "armor-knights-plate",
-  "armor-tower-shield",
+  "armor-bastion-armor",
   "armor-guardian-armor",
   "armor-dragon-scale",
   "armor-mythril-armor",
