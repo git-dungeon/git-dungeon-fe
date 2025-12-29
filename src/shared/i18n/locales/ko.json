@@ -385,6 +385,7 @@
       "STATUS": "상태 로그"
     },
     "delta": {
+      "floor": "층",
       "gold": "골드",
       "floorProgress": "층 진행도 {{value}}",
       "itemSummary": "아이템 {{count}}개",
