@@ -177,10 +177,12 @@ const WEAPON_SPRITES: Record<string, string> = {
 
 const ARMOR_SPRITES: Record<string, string> = {
   "leather-armor": leatherArmorImage,
+  "studded-leather-armor": studdedLeatherArmorImage,
   "iron-shield": studdedLeatherArmorImage,
   chainmail: chainmailImage,
   "steel-armor": steelArmorImage,
   "knights-plate": knightsPlateImage,
+  "bastion-armor": bastionArmorImage,
   "tower-shield": bastionArmorImage,
   "guardian-armor": guardianArmorImage,
   "dragon-scale": dragonScaleImage,

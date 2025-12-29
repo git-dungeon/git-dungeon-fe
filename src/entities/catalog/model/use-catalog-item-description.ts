@@ -8,7 +8,7 @@ import {
 } from "@/entities/catalog/lib/item-description";
 
 export function useCatalogItemDescriptionResolver() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { language } = useLanguagePreference();
   const catalogQuery = useCatalog(language);
   const descriptionMap = useMemo(
@@ -24,12 +24,8 @@ export function useCatalogItemDescriptionResolver() {
       }
 
       // descriptionKey 우선, 없으면 description fallback
-      if (desc.descriptionKey) {
-        const translated = t(desc.descriptionKey);
-        // 번역이 없으면 (키가 그대로 반환되면) description 사용
-        if (translated !== desc.descriptionKey) {
-          return translated;
-        }
+      if (desc.descriptionKey && i18n.exists(desc.descriptionKey)) {
+        return t(desc.descriptionKey);
       }
 
       return desc.description;
