@@ -385,6 +385,7 @@
       "STATUS": "Status logs"
     },
     "delta": {
+      "floor": "Floor",
       "gold": "Gold",
       "floorProgress": "Floor progress {{value}}",
       "itemSummary": "Items {{count}}",

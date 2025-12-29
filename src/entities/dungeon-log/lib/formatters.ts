@@ -97,6 +97,12 @@ export function formatDelta(
       break;
     }
     case "MOVE": {
+      const floorDelta =
+        typeof delta.detail.fromFloor === "number" &&
+        typeof delta.detail.toFloor === "number"
+          ? delta.detail.toFloor - delta.detail.fromFloor
+          : undefined;
+      pushNumeric(entries, entry.id, "floor", floorDelta);
       pushProgress(entries, entry.id, delta.detail.progress.delta);
       break;
     }
