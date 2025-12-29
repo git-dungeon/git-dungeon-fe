@@ -1,11 +1,11 @@
-import battleImage from "@/assets/battle.png";
-import deadImage from "@/assets/dead.png";
-import levelUpImage from "@/assets/level-up.png";
-import restImage from "@/assets/rest.png";
-import resurrectedImage from "@/assets/resurrected.png";
-import trapImage from "@/assets/trap.png";
-import treasureImage from "@/assets/treasure.png";
-import moveImage from "@/assets/move.png";
+import battleImage from "@/assets/event/combat.png";
+import deadImage from "@/assets/event/death.png";
+import levelUpImage from "@/assets/event/level-up.png";
+import restImage from "@/assets/event/rest.png";
+import resurrectedImage from "@/assets/event/revive.png";
+import trapImage from "@/assets/event/trap.png";
+import treasureImage from "@/assets/event/treasure.png";
+import moveImage from "@/assets/event/move.png";
 import goldImage from "@/assets/gold.png";
 import {
   resolveLocalItemSprite,
