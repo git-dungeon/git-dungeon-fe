@@ -146,9 +146,7 @@ export function buildLogThumbnails(
     );
     if (monsterThumbnail) {
       const monsterName = monster
-        ? resolveMonsterName
-          ? resolveMonsterName(monster.code, monster.name)
-          : monster.name
+        ? (resolveMonsterName?.(monster.code, monster.name) ?? monster.name)
         : undefined;
       thumbnails.push({
         id: `${entry.id}-monster`,
