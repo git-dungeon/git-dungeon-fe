@@ -11,7 +11,11 @@ import {
   formatRelativeTime as formatRelativeTimeInternal,
 } from "@/shared/lib/datetime/formatters";
 import { formatStatChange, type StatTone } from "@/shared/lib/stats/format";
-import { resolveBattleMonster } from "@/entities/dungeon-log/lib/monster";
+import {
+  resolveBattleMonster,
+  resolveBattleResult,
+} from "@/entities/dungeon-log/lib/monster";
+import { resolveStoryMessage } from "@/entities/dungeon-log/lib/story";
 import { i18next } from "@/shared/i18n/i18n";
 
 const t = (key: string, options?: Record<string, unknown>) =>
@@ -323,8 +327,22 @@ export function buildLogDescription(
   entry: DungeonLogEntry,
   { resolveItemName, resolveMonsterName }: LogDescriptionResolvers = {}
 ): string {
-  const statusLabel = resolveStatusLabel(entry.status, entry.action);
-  const detailsLabel = buildDetailsAttachment(entry, resolveMonsterName);
+  const monster = resolveBattleMonster(entry);
+  const monsterName = monster
+    ? resolveMonsterName
+      ? resolveMonsterName(monster.code, monster.name)
+      : monster.name
+    : undefined;
+  const storyMessage = resolveStoryMessage(entry, { monsterName });
+  const resultLabel = resolveBattleResultLabel(entry);
+  const statusLabel =
+    resultLabel ??
+    storyMessage?.text ??
+    resolveStatusLabel(entry.status, entry.action);
+  const detailsLabel = buildDetailsAttachment(entry, {
+    monsterName,
+    omitOpponent: Boolean(!resultLabel && storyMessage?.usesMonster),
+  });
   const deltaEntries = formatDelta(entry, resolveItemName).map(
     (item) => item.text
   );
@@ -339,19 +357,53 @@ export function buildLogDescription(
 
 function buildDetailsAttachment(
   entry: DungeonLogEntry,
-  resolveMonsterName?: MonsterNameResolver
+  options: { monsterName?: string | null; omitOpponent?: boolean } = {}
 ): string | undefined {
-  const monster = resolveBattleMonster(entry);
-  if (!monster) {
+  const attachments: string[] = [];
+
+  if (!options.omitOpponent) {
+    const monsterName = options.monsterName;
+    if (monsterName) {
+      attachments.push(t("logs.detail.opponent", { name: monsterName }));
+    }
+  }
+
+  const deathCause = resolveDeathCause(entry);
+  if (deathCause) {
+    attachments.push(t("logs.detail.deathCause", { cause: deathCause }));
+  }
+
+  return attachments.length > 0 ? attachments.join(" ") : undefined;
+}
+
+function resolveBattleResultLabel(entry: DungeonLogEntry): string | undefined {
+  if (entry.action !== "BATTLE" || entry.status !== "COMPLETED") {
     return undefined;
   }
 
-  const name = resolveMonsterName
-    ? resolveMonsterName(monster.code, monster.name)
-    : monster.name;
-  if (name) {
-    return t("logs.detail.opponent", { name });
+  const result = resolveBattleResult(entry);
+  if (!result) {
+    return undefined;
   }
 
-  return undefined;
+  const key = `logs.result.${result}`;
+  const label = translate(key);
+  return label === key ? undefined : label;
+}
+
+function resolveDeathCause(entry: DungeonLogEntry): string | undefined {
+  if (entry.extra?.type !== "DEATH") {
+    return undefined;
+  }
+
+  const extra = entry.extra as { details?: { cause?: string } };
+  if (extra.details?.cause) {
+    return extra.details.cause;
+  }
+
+  const legacy = entry.extra as
+    | { detail?: { cause?: string } }
+    | { cause?: string };
+
+  return legacy.detail?.cause ?? legacy.cause;
 }
