@@ -111,6 +111,52 @@ describe("formatDelta", () => {
     expect(message).toContain("사망 원인: 독");
   });
 
+  it("DEATH 원인 코드가 라벨로 변환된다", () => {
+    const entry = {
+      id: "log-death-player-defeated",
+      category: "STATUS",
+      action: "DEATH",
+      status: "COMPLETED",
+      createdAt: "2025-12-01T00:00:00Z",
+      extra: {
+        type: "DEATH",
+        details: {
+          cause: "PLAYER_DEFEATED",
+        },
+      },
+      delta: null,
+    } as DungeonLogEntry;
+
+    const message = buildLogDescription(entry);
+
+    expect(message).toContain("사망 원인: 전투에서 패배");
+  });
+
+  it("DEATH 로그에 사망 원인과 처리자를 함께 표시한다", () => {
+    const entry = {
+      id: "log-death-handled",
+      category: "STATUS",
+      action: "DEATH",
+      status: "COMPLETED",
+      createdAt: "2025-12-01T00:00:00Z",
+      extra: {
+        type: "DEATH",
+        details: {
+          cause: "PLAYER_DEFEATED",
+          handledBy: "monster-giant-rat",
+        },
+      },
+      delta: null,
+    } as DungeonLogEntry;
+
+    const message = buildLogDescription(entry, {
+      resolveMonsterName: (code, fallback) =>
+        code === "monster-giant-rat" ? "거대 쥐" : (fallback ?? code),
+    });
+
+    expect(message).toContain("사망 원인: 전투에서 패배 (거대 쥐)");
+  });
+
   it("스토리 템플릿은 로그 ID 기준으로 고정 선택된다", () => {
     const entry = {
       id: "log-rest-started",
