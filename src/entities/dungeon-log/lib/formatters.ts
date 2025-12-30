@@ -69,6 +69,12 @@ export interface FormattedDeltaEntry {
 }
 
 type ItemNameResolver = (code: string, fallback?: string | null) => string;
+type MonsterNameResolver = (code: string, fallback?: string | null) => string;
+
+export interface LogDescriptionResolvers {
+  resolveItemName?: ItemNameResolver;
+  resolveMonsterName?: MonsterNameResolver;
+}
 
 export function formatDelta(
   entry: DungeonLogEntry,
@@ -315,10 +321,10 @@ function formatInventoryDelta(
 
 export function buildLogDescription(
   entry: DungeonLogEntry,
-  resolveItemName?: ItemNameResolver
+  { resolveItemName, resolveMonsterName }: LogDescriptionResolvers = {}
 ): string {
   const statusLabel = resolveStatusLabel(entry.status, entry.action);
-  const detailsLabel = buildDetailsAttachment(entry);
+  const detailsLabel = buildDetailsAttachment(entry, resolveMonsterName);
   const deltaEntries = formatDelta(entry, resolveItemName).map(
     (item) => item.text
   );
@@ -331,10 +337,20 @@ export function buildLogDescription(
   return detailsLabel ? `${base} ${detailsLabel}` : base;
 }
 
-function buildDetailsAttachment(entry: DungeonLogEntry): string | undefined {
+function buildDetailsAttachment(
+  entry: DungeonLogEntry,
+  resolveMonsterName?: MonsterNameResolver
+): string | undefined {
   const monster = resolveBattleMonster(entry);
-  if (monster?.name) {
-    return t("logs.detail.opponent", { name: monster.name });
+  if (!monster) {
+    return undefined;
+  }
+
+  const name = resolveMonsterName
+    ? resolveMonsterName(monster.code, monster.name)
+    : monster.name;
+  if (name) {
+    return t("logs.detail.opponent", { name });
   }
 
   return undefined;

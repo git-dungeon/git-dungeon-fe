@@ -10,6 +10,7 @@ import {
   resolveStatusLabel,
 } from "@/entities/dungeon-log/lib/formatters";
 import { formatDateTime } from "@/shared/lib/datetime/formatters";
+import { useCatalogMonsterNameResolver } from "@/entities/catalog/model/use-catalog-monster-name";
 
 export interface DashboardActivityViewParams {
   latestLog?: DungeonLogEntry;
@@ -31,6 +32,7 @@ export function useDashboardActivityView(
   params: DashboardActivityViewParams
 ): DashboardActivityViewModel {
   const { t } = useTranslation();
+  const resolveMonsterName = useCatalogMonsterNameResolver();
   const {
     latestLog,
     apRemaining,
@@ -74,7 +76,9 @@ export function useDashboardActivityView(
     if (isCurrentActionActive && latestStartedLog) {
       return {
         title: resolveActionLabel(latestStartedLog.action),
-        message: buildLogDescription(latestStartedLog),
+        message: buildLogDescription(latestStartedLog, {
+          resolveMonsterName,
+        }),
         meta: `${formatFloorLabel(t, latestStartedLog.floor)} · ${resolveStatusLabel(
           latestStartedLog.status,
           latestStartedLog.action
@@ -120,7 +124,9 @@ export function useDashboardActivityView(
     if (hasLogs && latestLog) {
       return {
         title: resolveActionLabel(latestLog.action),
-        message: buildLogDescription(latestLog),
+        message: buildLogDescription(latestLog, {
+          resolveMonsterName,
+        }),
         meta: `${formatFloorLabel(t, latestLog.floor)} · ${resolveStatusLabel(
           latestLog.status,
           latestLog.action
@@ -143,6 +149,7 @@ export function useDashboardActivityView(
     lastActionCompletedAt,
     latestLog,
     nextActionStartAt,
+    resolveMonsterName,
   ]);
 }
 

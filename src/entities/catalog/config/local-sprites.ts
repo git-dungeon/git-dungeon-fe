@@ -1,9 +1,59 @@
-import missingImage from "@/assets/missing.png";
-import leatherCapImage from "@/assets/Leather Cap.png";
-import leatherArmorImage from "@/assets/Leather Armor.png";
-import woodenSwordImage from "@/assets/Wooden Sword.png";
-import copperBandImage from "@/assets/Copper Band.png";
-import giantRatImage from "@/assets/Giant Rat.png";
+import missingImage from "@/assets/event/missing.png";
+
+import battleAxeImage from "@/assets/weapon/battle-axe.png";
+import excaliburImage from "@/assets/weapon/excalibur.png";
+import greatswordImage from "@/assets/weapon/greatsword.png";
+import ironDaggerImage from "@/assets/weapon/iron-dagger.png";
+import longswordImage from "@/assets/weapon/longsword.png";
+import shortSwordImage from "@/assets/weapon/short-sword.png";
+import spearOfValorImage from "@/assets/weapon/spear-of-valor.png";
+import steelSwordImage from "@/assets/weapon/steel-sword.png";
+import warhammerImage from "@/assets/weapon/warhammer.png";
+import woodenSwordImage from "@/assets/weapon/wooden-sword.png";
+
+import bastionArmorImage from "@/assets/armor/bastion-armor.png";
+import chainmailImage from "@/assets/armor/chainmail.png";
+import divineCloakImage from "@/assets/armor/divine-cloak.png";
+import dragonScaleImage from "@/assets/armor/dragon-scale.png";
+import guardianArmorImage from "@/assets/armor/guardian-armor.png";
+import knightsPlateImage from "@/assets/armor/knights-plate.png";
+import leatherArmorImage from "@/assets/armor/leather-armor.png";
+import mythrilArmorImage from "@/assets/armor/mythril-armor.png";
+import steelArmorImage from "@/assets/armor/steel-armor.png";
+import studdedLeatherArmorImage from "@/assets/armor/studded-leather-armor.png";
+
+import bronzeHelmImage from "@/assets/helmet/bronze-helm.png";
+import crownOfValorImage from "@/assets/helmet/crown-of-valor.png";
+import dragonHelmImage from "@/assets/helmet/dragon-helm.png";
+import hornedHelmImage from "@/assets/helmet/horned-helm.png";
+import ironHelmImage from "@/assets/helmet/iron-helm.png";
+import knightsHelmImage from "@/assets/helmet/knights-helm.png";
+import leatherCapImage from "@/assets/helmet/leather-cap.png";
+import mythrilHelmImage from "@/assets/helmet/mythril-helm.png";
+import shadowHoodImage from "@/assets/helmet/shadow-hood.png";
+import steelHelmImage from "@/assets/helmet/steel-helm.png";
+
+import angelRingImage from "@/assets/ring/angel-ring.png";
+import copperBandImage from "@/assets/ring/copper-band.png";
+import emeraldRingImage from "@/assets/ring/emerald-ring.png";
+import garnetRingImage from "@/assets/ring/garnet-ring.png";
+import mythrilRingImage from "@/assets/ring/mythril-ring.png";
+import obsidianRingImage from "@/assets/ring/obsidian-ring.png";
+import rubySignetImage from "@/assets/ring/ruby-signet.png";
+import sapphireRingImage from "@/assets/ring/sapphire-ring.png";
+import silverBandImage from "@/assets/ring/silver-band.png";
+import topazRingImage from "@/assets/ring/topaz-ring.png";
+
+import ancientDragonImage from "@/assets/monster/ancient-dragon.png";
+import caveBatImage from "@/assets/monster/cave-bat.png";
+import caveBeetleImage from "@/assets/monster/cave-beetle.png";
+import caveSpiderImage from "@/assets/monster/cave-spider.png";
+import fireImpImage from "@/assets/monster/fire-imp.png";
+import giantRatImage from "@/assets/monster/giant-rat.png";
+import serpentImage from "@/assets/monster/serpent.png";
+import skeletonWarriorImage from "@/assets/monster/skeleton-warrior.png";
+import slimeImage from "@/assets/monster/slime.png";
+import zombieImage from "@/assets/monster/zombie.png";
 
 const MONSTER_NAME_CODES = [
   "giant-rat",
@@ -42,11 +92,11 @@ const WEAPON_CODES = [
 
 const ARMOR_CODES = [
   "armor-leather-armor",
-  "armor-iron-shield",
+  "armor-studded-leather-armor",
   "armor-chainmail",
   "armor-steel-armor",
   "armor-knights-plate",
-  "armor-tower-shield",
+  "armor-bastion-armor",
   "armor-guardian-armor",
   "armor-dragon-scale",
   "armor-mythril-armor",
@@ -103,20 +153,97 @@ function buildSpriteMap(codes: string[], overrides: Record<string, string>) {
   return { ...base, ...overrides };
 }
 
-const LOCAL_ITEM_SPRITES = buildSpriteMap(ITEM_CODES, {
-  "leather-cap": leatherCapImage,
-  "helmet-leather-cap": leatherCapImage,
-  "leather-armor": leatherArmorImage,
-  "armor-leather-armor": leatherArmorImage,
+function withPrefix(prefix: string, map: Record<string, string>) {
+  return Object.fromEntries(
+    Object.entries(map).flatMap(([key, value]) => [
+      [`${prefix}-${key}`, value],
+      [key, value],
+    ])
+  );
+}
+
+const WEAPON_SPRITES: Record<string, string> = {
   "wooden-sword": woodenSwordImage,
-  "weapon-wooden-sword": woodenSwordImage,
+  "iron-dagger": ironDaggerImage,
+  "short-sword": shortSwordImage,
+  "steel-sword": steelSwordImage,
+  longsword: longswordImage,
+  "battle-axe": battleAxeImage,
+  warhammer: warhammerImage,
+  greatsword: greatswordImage,
+  "spear-of-valor": spearOfValorImage,
+  excalibur: excaliburImage,
+};
+
+const ARMOR_SPRITES: Record<string, string> = {
+  "leather-armor": leatherArmorImage,
+  "studded-leather-armor": studdedLeatherArmorImage,
+  "iron-shield": studdedLeatherArmorImage,
+  chainmail: chainmailImage,
+  "steel-armor": steelArmorImage,
+  "knights-plate": knightsPlateImage,
+  "bastion-armor": bastionArmorImage,
+  "tower-shield": bastionArmorImage,
+  "guardian-armor": guardianArmorImage,
+  "dragon-scale": dragonScaleImage,
+  "mythril-armor": mythrilArmorImage,
+  "divine-cloak": divineCloakImage,
+};
+
+const HELMET_SPRITES: Record<string, string> = {
+  "leather-cap": leatherCapImage,
+  "iron-helm": ironHelmImage,
+  "bronze-helm": bronzeHelmImage,
+  "steel-helm": steelHelmImage,
+  "knights-helm": knightsHelmImage,
+  "horned-helm": hornedHelmImage,
+  "dragon-helm": dragonHelmImage,
+  "shadow-hood": shadowHoodImage,
+  "mythril-helm": mythrilHelmImage,
+  "crown-of-valor": crownOfValorImage,
+};
+
+const RING_SPRITES: Record<string, string> = {
   "copper-band": copperBandImage,
-  "ring-copper-band": copperBandImage,
+  "silver-band": silverBandImage,
+  garnet: garnetRingImage,
+  topaz: topazRingImage,
+  sapphire: sapphireRingImage,
+  emerald: emeraldRingImage,
+  "ruby-signet": rubySignetImage,
+  obsidian: obsidianRingImage,
+  mythril: mythrilRingImage,
+  "angel-ring": angelRingImage,
+};
+
+const LOCAL_ITEM_SPRITES = buildSpriteMap(ITEM_CODES, {
+  ...withPrefix("weapon", WEAPON_SPRITES),
+  ...withPrefix("armor", ARMOR_SPRITES),
+  ...withPrefix("helmet", HELMET_SPRITES),
+  ...withPrefix("ring", RING_SPRITES),
 });
 
 const LOCAL_MONSTER_SPRITES = buildSpriteMap(MONSTER_CODES, {
+  "ancient-dragon": ancientDragonImage,
+  "monster-ancient-dragon": ancientDragonImage,
+  "cave-bat": caveBatImage,
+  "monster-cave-bat": caveBatImage,
+  "cave-beetle": caveBeetleImage,
+  "monster-cave-beetle": caveBeetleImage,
+  "cave-spider": caveSpiderImage,
+  "monster-cave-spider": caveSpiderImage,
+  "fire-imp": fireImpImage,
+  "monster-fire-imp": fireImpImage,
   "giant-rat": giantRatImage,
   "monster-giant-rat": giantRatImage,
+  serpent: serpentImage,
+  "monster-serpent": serpentImage,
+  "skeleton-warrior": skeletonWarriorImage,
+  "monster-skeleton-warrior": skeletonWarriorImage,
+  slime: slimeImage,
+  "monster-slime": slimeImage,
+  zombie: zombieImage,
+  "monster-zombie": zombieImage,
 });
 
 function normalizeSpriteId(spriteId?: string) {

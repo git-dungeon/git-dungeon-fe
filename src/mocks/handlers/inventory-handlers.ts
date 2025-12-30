@@ -158,8 +158,8 @@ const RAW_INVENTORY_ITEMS: RawInventoryItem[] = [
     obtainedMinutesAgo: 510,
   },
   {
-    id: "armor-iron-shield",
-    name: "Copper Band",
+    id: "armor-studded-leather-armor",
+    name: "Studded Leather Armor",
     slot: "armor",
     rarity: "common",
     modifiers: [{ stat: "def", value: 2 }],
@@ -198,8 +198,8 @@ const RAW_INVENTORY_ITEMS: RawInventoryItem[] = [
     obtainedMinutesAgo: 690,
   },
   {
-    id: "armor-tower-shield",
-    name: "Tower Shield",
+    id: "armor-bastion-armor",
+    name: "Bastion Armor",
     slot: "armor",
     rarity: "rare",
     modifiers: [{ stat: "def", value: 6 }],

@@ -1,12 +1,12 @@
-import battleImage from "@/assets/battle.png";
-import deadImage from "@/assets/dead.png";
-import levelUpImage from "@/assets/level-up.png";
-import restImage from "@/assets/rest.png";
-import resurrectedImage from "@/assets/resurrected.png";
-import trapImage from "@/assets/trap.png";
-import treasureImage from "@/assets/treasure.png";
-import moveImage from "@/assets/move.png";
-import goldImage from "@/assets/gold.png";
+import battleImage from "@/assets/event/combat.png";
+import deadImage from "@/assets/event/death.png";
+import levelUpImage from "@/assets/event/level-up.png";
+import restImage from "@/assets/event/rest.png";
+import resurrectedImage from "@/assets/event/revive.png";
+import trapImage from "@/assets/event/trap.png";
+import treasureImage from "@/assets/event/treasure.png";
+import moveImage from "@/assets/event/move.png";
+import goldImage from "@/assets/event/gold.png";
 import {
   resolveLocalItemSprite,
   resolveLocalMonsterSprite,
@@ -112,10 +112,16 @@ function resolveGoldBadge(
 }
 
 type ItemNameResolver = (code: string, fallback?: string | null) => string;
+type MonsterNameResolver = (code: string, fallback?: string | null) => string;
+
+export interface LogThumbnailResolvers {
+  resolveItemName?: ItemNameResolver;
+  resolveMonsterName?: MonsterNameResolver;
+}
 
 export function buildLogThumbnails(
   entry: DungeonLogEntry,
-  resolveItemName?: ItemNameResolver
+  { resolveItemName, resolveMonsterName }: LogThumbnailResolvers = {}
 ): LogThumbnailDescriptor[] {
   const thumbnails: LogThumbnailDescriptor[] = [];
   const resolveName = (code: string) =>
@@ -139,10 +145,13 @@ export function buildLogThumbnails(
       monster?.code
     );
     if (monsterThumbnail) {
+      const monsterName = monster
+        ? (resolveMonsterName?.(monster.code, monster.name) ?? monster.name)
+        : undefined;
       thumbnails.push({
         id: `${entry.id}-monster`,
         src: monsterThumbnail,
-        alt: monster?.name ?? t("logs.thumbnails.monster"),
+        alt: monsterName ?? t("logs.thumbnails.monster"),
       });
     }
   }
