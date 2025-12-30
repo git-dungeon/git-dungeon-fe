@@ -321,11 +321,15 @@
       "noImages": "표시할 이미지가 없습니다.",
       "delta": "변동 내역",
       "opponent": "상대: {{name}}",
-      "deathCause": "사망 원인: {{cause}}"
+      "deathCause": "사망 원인: {{cause}}",
+      "deathCauseWithSource": "사망 원인: {{cause}} ({{source}})"
     },
     "result": {
       "VICTORY": "전투에서 승리했습니다",
       "DEFEAT": "전투에서 패배했습니다"
+    },
+    "deathCause": {
+      "PLAYER_DEFEATED": "전투에서 패배"
     },
     "story": {
       "fallback": {

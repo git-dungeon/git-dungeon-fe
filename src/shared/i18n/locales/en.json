@@ -321,11 +321,15 @@
       "noImages": "No images available.",
       "delta": "Changes",
       "opponent": "Opponent: {{name}}",
-      "deathCause": "Cause of death: {{cause}}"
+      "deathCause": "Cause of death: {{cause}}",
+      "deathCauseWithSource": "Cause of death: {{cause}} ({{source}})"
     },
     "result": {
       "VICTORY": "You won the battle",
       "DEFEAT": "You were defeated in battle"
+    },
+    "deathCause": {
+      "PLAYER_DEFEATED": "Defeated in battle"
     },
     "story": {
       "fallback": {

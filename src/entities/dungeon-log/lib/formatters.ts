@@ -342,6 +342,7 @@ export function buildLogDescription(
   const detailsLabel = buildDetailsAttachment(entry, {
     monsterName,
     omitOpponent: Boolean(!resultLabel && storyMessage?.usesMonster),
+    resolveMonsterName,
   });
   const deltaEntries = formatDelta(entry, resolveItemName).map(
     (item) => item.text
@@ -357,7 +358,11 @@ export function buildLogDescription(
 
 function buildDetailsAttachment(
   entry: DungeonLogEntry,
-  options: { monsterName?: string | null; omitOpponent?: boolean } = {}
+  options: {
+    monsterName?: string | null;
+    omitOpponent?: boolean;
+    resolveMonsterName?: MonsterNameResolver;
+  } = {}
 ): string | undefined {
   const attachments: string[] = [];
 
@@ -368,9 +373,22 @@ function buildDetailsAttachment(
     }
   }
 
-  const deathCause = resolveDeathCause(entry);
+  const deathCause = resolveDeathCauseLabel(entry);
+  const deathSource = resolveDeathHandledByLabel(
+    entry,
+    options.resolveMonsterName
+  );
   if (deathCause) {
-    attachments.push(t("logs.detail.deathCause", { cause: deathCause }));
+    if (deathSource) {
+      attachments.push(
+        t("logs.detail.deathCauseWithSource", {
+          cause: deathCause,
+          source: deathSource,
+        })
+      );
+    } else {
+      attachments.push(t("logs.detail.deathCause", { cause: deathCause }));
+    }
   }
 
   return attachments.length > 0 ? attachments.join(" ") : undefined;
@@ -391,11 +409,33 @@ function resolveBattleResultLabel(entry: DungeonLogEntry): string | undefined {
   return label === key ? undefined : label;
 }
 
-function resolveDeathCause(entry: DungeonLogEntry): string | undefined {
+function resolveDeathCauseLabel(entry: DungeonLogEntry): string | undefined {
   if (entry.extra?.type !== "DEATH") {
     return undefined;
   }
 
+  const cause = resolveDeathCause(entry);
+  if (!cause) {
+    return undefined;
+  }
+
+  const key = `logs.deathCause.${cause}`;
+  const label = translate(key, cause);
+  if (label !== cause) {
+    return label;
+  }
+
+  if (/^[A-Z0-9_]+$/.test(cause)) {
+    return cause
+      .toLowerCase()
+      .replace(/_/g, " ")
+      .replace(/\b\w/g, (char) => char.toUpperCase());
+  }
+
+  return cause;
+}
+
+function resolveDeathCause(entry: DungeonLogEntry): string | undefined {
   const extra = entry.extra as { details?: { cause?: string } };
   if (extra.details?.cause) {
     return extra.details.cause;
@@ -406,4 +446,37 @@ function resolveDeathCause(entry: DungeonLogEntry): string | undefined {
     | { cause?: string };
 
   return legacy.detail?.cause ?? legacy.cause;
+}
+
+function resolveDeathHandledByLabel(
+  entry: DungeonLogEntry,
+  resolveMonsterName?: MonsterNameResolver
+): string | undefined {
+  if (entry.extra?.type !== "DEATH") {
+    return undefined;
+  }
+
+  const handledBy = resolveDeathHandledBy(entry);
+  if (!handledBy) {
+    return undefined;
+  }
+
+  if (resolveMonsterName) {
+    return resolveMonsterName(handledBy, handledBy);
+  }
+
+  return handledBy;
+}
+
+function resolveDeathHandledBy(entry: DungeonLogEntry): string | undefined {
+  const extra = entry.extra as { details?: { handledBy?: string } };
+  if (extra.details?.handledBy) {
+    return extra.details.handledBy;
+  }
+
+  const legacy = entry.extra as
+    | { detail?: { handledBy?: string } }
+    | { handledBy?: string };
+
+  return legacy.detail?.handledBy ?? legacy.handledBy;
 }
