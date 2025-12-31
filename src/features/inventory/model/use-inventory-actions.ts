@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { QueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ApiError } from "@/shared/api/http-client";
 import { i18next } from "@/shared/i18n/i18n";
 import type {
@@ -37,7 +37,9 @@ export function useInventoryActions() {
   const [lastError, setLastError] = useState<InventoryActionFailure | null>(
     null
   );
-  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncCounter, setSyncCounter] = useState(0);
+  const isSyncing = syncCounter > 0;
+  const syncPromiseRef = useRef<Promise<void> | null>(null);
 
   const handleSuccess = (next: InventoryResponse) => {
     queryClient.setQueryData(
@@ -63,10 +65,18 @@ export function useInventoryActions() {
   };
 
   const syncInventory = async () => {
-    await Promise.all([
-      queryClient.refetchQueries({ queryKey: INVENTORY_QUERY_KEY }),
-      queryClient.refetchQueries({ queryKey: DASHBOARD_STATE_QUERY_KEY }),
-    ]);
+    if (!syncPromiseRef.current) {
+      syncPromiseRef.current = Promise.all([
+        queryClient.refetchQueries({ queryKey: INVENTORY_QUERY_KEY }),
+        queryClient.refetchQueries({ queryKey: DASHBOARD_STATE_QUERY_KEY }),
+      ])
+        .then(() => undefined)
+        .finally(() => {
+          syncPromiseRef.current = null;
+        });
+    }
+
+    await syncPromiseRef.current;
   };
 
   const createOptimisticHandler = (type: InventoryActionType) => {
@@ -147,7 +157,7 @@ export function useInventoryActions() {
         throw error;
       }
 
-      setIsSyncing(true);
+      setSyncCounter((current) => current + 1);
       setLastError(null);
 
       try {
@@ -159,7 +169,7 @@ export function useInventoryActions() {
         setLastError(buildActionFailure(type, retryError));
         throw retryError;
       } finally {
-        setIsSyncing(false);
+        setSyncCounter((current) => Math.max(0, current - 1));
       }
     }
   };
