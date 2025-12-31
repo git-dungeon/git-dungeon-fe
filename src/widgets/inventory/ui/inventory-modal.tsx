@@ -24,6 +24,7 @@ import { Badge } from "@/shared/ui/badge";
 import { useTranslation } from "react-i18next";
 import { Copy, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { copyText } from "@/shared/lib/clipboard";
 
 interface InventoryModalProps {
   item: InventoryItem | null;
@@ -69,16 +70,10 @@ export function InventoryModal({
   };
 
   const handleCopyId = async () => {
-    try {
-      if (
-        typeof navigator === "undefined" ||
-        typeof navigator.clipboard?.writeText !== "function"
-      ) {
-        throw new Error("Clipboard unavailable");
-      }
-      await navigator.clipboard.writeText(item.id);
+    const copied = await copyText(item.id);
+    if (copied) {
       toast.success(t("inventory.modal.copyIdSuccess"));
-    } catch {
+    } else {
       toast.error(t("inventory.modal.copyIdError"));
     }
   };
