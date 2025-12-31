@@ -37,6 +37,7 @@ export function useInventoryActions() {
   const [lastError, setLastError] = useState<InventoryActionFailure | null>(
     null
   );
+  const [isSyncing, setIsSyncing] = useState(false);
 
   const handleSuccess = (next: InventoryResponse) => {
     queryClient.setQueryData(
@@ -59,6 +60,15 @@ export function useInventoryActions() {
     queryClient.invalidateQueries({ queryKey: INVENTORY_QUERY_KEY });
     queryClient.invalidateQueries({ queryKey: DASHBOARD_STATE_QUERY_KEY });
     queryClient.invalidateQueries({ queryKey: ["dungeon-logs"] });
+  };
+
+  const syncInventory = async () => {
+    await queryClient.invalidateQueries({ queryKey: INVENTORY_QUERY_KEY });
+    await queryClient.invalidateQueries({
+      queryKey: DASHBOARD_STATE_QUERY_KEY,
+    });
+    await queryClient.refetchQueries({ queryKey: INVENTORY_QUERY_KEY });
+    await queryClient.refetchQueries({ queryKey: DASHBOARD_STATE_QUERY_KEY });
   };
 
   const createOptimisticHandler = (type: InventoryActionType) => {
@@ -92,9 +102,10 @@ export function useInventoryActions() {
     onMutate: createOptimisticHandler("equip"),
     onSuccess: handleSuccess,
     onError: (error, _variables, context) => {
-      setLastError(buildActionFailure("equip", error));
+      if (!isVersionMismatchError(error)) {
+        setLastError(buildActionFailure("equip", error));
+      }
       rollbackOnError(queryClient, context);
-      refetchOnVersionMismatch(queryClient, error);
     },
   });
 
@@ -103,9 +114,10 @@ export function useInventoryActions() {
     onMutate: createOptimisticHandler("unequip"),
     onSuccess: handleSuccess,
     onError: (error, _variables, context) => {
-      setLastError(buildActionFailure("unequip", error));
+      if (!isVersionMismatchError(error)) {
+        setLastError(buildActionFailure("unequip", error));
+      }
       rollbackOnError(queryClient, context);
-      refetchOnVersionMismatch(queryClient, error);
     },
   });
 
@@ -114,12 +126,45 @@ export function useInventoryActions() {
     onMutate: createOptimisticHandler("discard"),
     onSuccess: handleSuccess,
     onError: (error, _variables, context) => {
-      setLastError(buildActionFailure("discard", error));
+      if (!isVersionMismatchError(error)) {
+        setLastError(buildActionFailure("discard", error));
+      }
       rollbackOnError(queryClient, context);
-      refetchOnVersionMismatch(queryClient, error);
     },
     retry: false,
   });
+
+  const executeWithRetry = async (
+    type: InventoryActionType,
+    itemId: string,
+    mutation: typeof equipMutation
+  ) => {
+    const variables = buildInventoryMutationVariables(queryClient, itemId);
+
+    try {
+      await mutation.mutateAsync(variables);
+      return;
+    } catch (error) {
+      if (!isVersionMismatchError(error)) {
+        throw error;
+      }
+
+      setIsSyncing(true);
+      setLastError(null);
+
+      try {
+        await syncInventory();
+        await mutation.mutateAsync(
+          buildInventoryMutationVariables(queryClient, itemId)
+        );
+      } catch (retryError) {
+        setLastError(buildActionFailure(type, retryError));
+        throw retryError;
+      } finally {
+        setIsSyncing(false);
+      }
+    }
+  };
 
   const actionErrors = [
     { source: "equip" as const, error: equipMutation.error },
@@ -133,25 +178,25 @@ export function useInventoryActions() {
     (entry) => entry.error instanceof Error
   )?.error as Error | undefined;
 
-  const aggregatedError = lastError?.error ?? fallbackError ?? null;
+  const suppressedFallback =
+    isSyncing && fallbackError && isVersionMismatchError(fallbackError)
+      ? null
+      : fallbackError;
+  const aggregatedError = isSyncing
+    ? null
+    : (lastError?.error ?? suppressedFallback ?? null);
 
   return {
-    equip: (itemId: string) =>
-      equipMutation.mutateAsync(
-        buildInventoryMutationVariables(queryClient, itemId)
-      ),
+    equip: (itemId: string) => executeWithRetry("equip", itemId, equipMutation),
     unequip: (itemId: string) =>
-      unequipMutation.mutateAsync(
-        buildInventoryMutationVariables(queryClient, itemId)
-      ),
+      executeWithRetry("unequip", itemId, unequipMutation),
     discard: (itemId: string) =>
-      discardMutation.mutateAsync(
-        buildInventoryMutationVariables(queryClient, itemId)
-      ),
+      executeWithRetry("discard", itemId, discardMutation),
     isPending:
       equipMutation.isPending ||
       unequipMutation.isPending ||
       discardMutation.isPending,
+    isSyncing,
     error: aggregatedError,
     lastError,
     errorMap,
@@ -406,17 +451,12 @@ function rollbackOnError(queryClient: QueryClient, context?: MutationContext) {
   }
 }
 
-function refetchOnVersionMismatch(queryClient: QueryClient, error: unknown) {
-  if (!(error instanceof ApiError)) {
-    return;
+function isVersionMismatchError(error: unknown): boolean {
+  if (error instanceof ApiError && error.status === 412) {
+    return true;
   }
 
-  if (error.status !== 412) {
-    return;
-  }
-
-  queryClient.invalidateQueries({ queryKey: INVENTORY_QUERY_KEY });
-  queryClient.invalidateQueries({ queryKey: DASHBOARD_STATE_QUERY_KEY });
+  return resolveErrorCode(error) === "INVENTORY_VERSION_MISMATCH";
 }
 
 function mergeBaseWithEquipment(

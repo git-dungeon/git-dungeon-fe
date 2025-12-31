@@ -16,6 +16,7 @@ interface InventoryLayoutProps {
   equipped: InventoryEquippedMap;
   stats: CharacterStatSummary;
   isPending: boolean;
+  isSyncing: boolean;
   error: Error | null;
   onEquip: (itemId: string) => Promise<unknown>;
   onUnequip: (itemId: string) => Promise<unknown>;
@@ -27,6 +28,7 @@ export function InventoryLayout({
   equipped,
   stats,
   isPending,
+  isSyncing,
   error,
   onEquip,
   onUnequip,
@@ -79,6 +81,7 @@ export function InventoryLayout({
         item={selectedItem}
         slot={selectedSlot}
         isPending={isPending}
+        isSyncing={isSyncing}
         error={error}
         onClose={handleCloseModal}
         onEquip={onEquip}
