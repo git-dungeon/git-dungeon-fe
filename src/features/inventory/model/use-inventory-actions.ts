@@ -186,6 +186,13 @@ export function useInventoryActions() {
     ? null
     : (lastError?.error ?? suppressedFallback ?? null);
 
+  const clearError = () => {
+    setLastError(null);
+    equipMutation.reset();
+    unequipMutation.reset();
+    discardMutation.reset();
+  };
+
   return {
     equip: (itemId: string) => executeWithRetry("equip", itemId, equipMutation),
     unequip: (itemId: string) =>
@@ -200,6 +207,7 @@ export function useInventoryActions() {
     error: aggregatedError,
     lastError,
     errorMap,
+    clearError,
   } as const;
 }
 

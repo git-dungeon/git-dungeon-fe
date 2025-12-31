@@ -21,6 +21,7 @@ interface InventoryLayoutProps {
   onEquip: (itemId: string) => Promise<unknown>;
   onUnequip: (itemId: string) => Promise<unknown>;
   onDiscard: (itemId: string) => Promise<unknown>;
+  onClearError: () => void;
 }
 
 export function InventoryLayout({
@@ -33,6 +34,7 @@ export function InventoryLayout({
   onEquip,
   onUnequip,
   onDiscard,
+  onClearError,
 }: InventoryLayoutProps) {
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<InventoryItemSlot | null>(
@@ -48,11 +50,13 @@ export function InventoryLayout({
   }, [items, selectedItemId]);
 
   const handleSelect = (item: InventoryItem, slot: InventoryItemSlot) => {
+    onClearError();
     setSelectedItemId(item.id);
     setSelectedSlot(slot);
   };
 
   const handleCloseModal = () => {
+    onClearError();
     setSelectedItemId(null);
     setSelectedSlot(null);
   };

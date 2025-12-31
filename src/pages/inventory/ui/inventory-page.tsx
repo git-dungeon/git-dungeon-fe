@@ -76,6 +76,7 @@ export function InventoryPage() {
           onEquip={actions.equip}
           onUnequip={actions.unequip}
           onDiscard={actions.discard}
+          onClearError={actions.clearError}
         />
       ) : null}
     </section>
