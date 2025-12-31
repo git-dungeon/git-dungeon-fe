@@ -63,12 +63,10 @@ export function useInventoryActions() {
   };
 
   const syncInventory = async () => {
-    await queryClient.invalidateQueries({ queryKey: INVENTORY_QUERY_KEY });
-    await queryClient.invalidateQueries({
-      queryKey: DASHBOARD_STATE_QUERY_KEY,
-    });
-    await queryClient.refetchQueries({ queryKey: INVENTORY_QUERY_KEY });
-    await queryClient.refetchQueries({ queryKey: DASHBOARD_STATE_QUERY_KEY });
+    await Promise.all([
+      queryClient.refetchQueries({ queryKey: INVENTORY_QUERY_KEY }),
+      queryClient.refetchQueries({ queryKey: DASHBOARD_STATE_QUERY_KEY }),
+    ]);
   };
 
   const createOptimisticHandler = (type: InventoryActionType) => {
