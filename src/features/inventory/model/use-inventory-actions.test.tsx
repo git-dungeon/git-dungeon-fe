@@ -122,7 +122,7 @@ describe("useInventoryActions", () => {
 
     const refetchSpy = vi
       .spyOn(queryClient, "refetchQueries")
-      .mockResolvedValue([]);
+      .mockResolvedValue(undefined);
 
     let callCount = 0;
     const mismatchError = new ApiError("version mismatch", 412, {
