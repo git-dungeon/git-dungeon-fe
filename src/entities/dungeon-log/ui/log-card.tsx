@@ -13,7 +13,6 @@ import { BattleMonsterSummary } from "@/entities/dungeon-log/ui/battle-monster-s
 import {
   resolveBattleMonster,
   resolveBattlePlayer,
-  resolveBattleResult,
 } from "@/entities/dungeon-log/lib/monster";
 import { Badge } from "@/shared/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader } from "@/shared/ui/card";
@@ -40,7 +39,6 @@ export function LogCard({
   const isInteractive = typeof onClick === "function";
   const monster = resolveBattleMonster(log);
   const player = resolveBattlePlayer(log);
-  const result = resolveBattleResult(log);
   const resolveItemName = useCatalogItemNameResolver();
   const resolveMonsterName = useCatalogMonsterNameResolver();
 
@@ -109,7 +107,6 @@ export function LogCard({
             <BattleMonsterSummary
               monster={monster}
               player={player}
-              result={result}
               resolveMonsterName={resolveMonsterName}
             />
           ) : null}

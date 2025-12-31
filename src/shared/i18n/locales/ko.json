@@ -320,7 +320,55 @@
       "images": "관련 이미지",
       "noImages": "표시할 이미지가 없습니다.",
       "delta": "변동 내역",
-      "opponent": "상대: {{name}}"
+      "opponent": "상대: {{name}}",
+      "deathCause": "사망 원인: {{cause}}",
+      "deathCauseWithSource": "사망 원인: {{cause}} ({{source}})"
+    },
+    "result": {
+      "VICTORY": "전투에서 승리했습니다",
+      "DEFEAT": "전투에서 패배했습니다"
+    },
+    "deathCause": {
+      "PLAYER_DEFEATED": "전투에서 패배"
+    },
+    "story": {
+      "fallback": {
+        "monster": "적"
+      },
+      "BATTLE": {
+        "STARTED": [
+          "{{monster}}를 마주쳤습니다.",
+          "어둠 속에서 {{monster}}가 나타났습니다."
+        ],
+        "COMPLETED": ["전투를 마무리했습니다.", "격전이 끝났습니다."]
+      },
+      "REST": {
+        "STARTED": [
+          "잠시 숨을 고릅니다.",
+          "안전한 곳을 찾아 휴식을 준비합니다."
+        ],
+        "COMPLETED": [
+          "몸을 추스르며 휴식을 마쳤습니다.",
+          "짧은 휴식이 끝났습니다."
+        ]
+      },
+      "TRAP": {
+        "STARTED": [
+          "수상한 장치를 발견했습니다.",
+          "바닥에 미묘한 흔적이 보입니다."
+        ],
+        "COMPLETED": [
+          "함정을 무사히 넘겼습니다.",
+          "위험한 장치를 해제했습니다."
+        ]
+      },
+      "TREASURE": {
+        "STARTED": [
+          "희미한 빛이 새어 나옵니다.",
+          "보물의 흔적을 발견했습니다."
+        ],
+        "COMPLETED": ["보물을 손에 넣었습니다.", "숨겨진 보상을 챙겼습니다."]
+      }
     },
     "action": {
       "BATTLE": "전투",

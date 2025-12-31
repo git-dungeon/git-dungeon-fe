@@ -320,7 +320,58 @@
       "images": "Related images",
       "noImages": "No images available.",
       "delta": "Changes",
-      "opponent": "Opponent: {{name}}"
+      "opponent": "Opponent: {{name}}",
+      "deathCause": "Cause of death: {{cause}}",
+      "deathCauseWithSource": "Cause of death: {{cause}} ({{source}})"
+    },
+    "result": {
+      "VICTORY": "You won the battle",
+      "DEFEAT": "You were defeated in battle"
+    },
+    "deathCause": {
+      "PLAYER_DEFEATED": "Defeated in battle"
+    },
+    "story": {
+      "fallback": {
+        "monster": "enemy"
+      },
+      "BATTLE": {
+        "STARTED": [
+          "You encountered {{monster}}.",
+          "{{monster}} emerges from the darkness."
+        ],
+        "COMPLETED": ["The battle is over.", "The clash has ended."]
+      },
+      "REST": {
+        "STARTED": [
+          "You take a moment to catch your breath.",
+          "You look for a safe spot to rest."
+        ],
+        "COMPLETED": [
+          "You finish your rest.",
+          "The short rest comes to an end."
+        ]
+      },
+      "TRAP": {
+        "STARTED": [
+          "You spot a suspicious mechanism.",
+          "Subtle marks on the floor catch your eye."
+        ],
+        "COMPLETED": [
+          "You make it past the trap.",
+          "You disarm the dangerous device."
+        ]
+      },
+      "TREASURE": {
+        "STARTED": [
+          "A faint glow seeps out.",
+          "You discover traces of treasure."
+        ],
+        "COMPLETED": [
+          "You claim the treasure.",
+          "You secure the hidden reward."
+        ]
+      }
     },
     "action": {
       "BATTLE": "Battle",

@@ -6,25 +6,16 @@ import { useProfile } from "@/entities/profile/model/use-profile";
 import { resolveMonsterThumbnail } from "@/entities/dungeon-log/config/thumbnails";
 import { cn } from "@/shared/lib/utils";
 
-type BattleResult = "VICTORY" | "DEFEAT";
-
 interface BattleMonsterSummaryProps {
   monster?: DungeonLogMonster;
   player?: DungeonLogBattlePlayerSnapshot;
-  result?: BattleResult;
   size?: "compact" | "detail";
   resolveMonsterName?: (code: string, fallback?: string | null) => string;
 }
 
-const RESULT_LABEL_MAP: Record<BattleResult, string> = {
-  VICTORY: "승리",
-  DEFEAT: "패배",
-};
-
 export function BattleMonsterSummary({
   monster,
   player,
-  result,
   size = "compact",
   resolveMonsterName,
 }: BattleMonsterSummaryProps) {
@@ -177,11 +168,6 @@ export function BattleMonsterSummary({
               <p className="text-foreground text-sm font-semibold">
                 {monsterLabel}
               </p>
-              {result ? (
-                <span className="text-muted-foreground text-xs">
-                  {RESULT_LABEL_MAP[result] ?? result}
-                </span>
-              ) : null}
             </div>
             {monsterStats.length > 0 ? (
               <div className="flex flex-wrap gap-1">

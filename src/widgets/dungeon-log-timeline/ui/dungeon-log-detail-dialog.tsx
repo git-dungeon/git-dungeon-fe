@@ -12,7 +12,6 @@ import { BattleMonsterSummary } from "@/entities/dungeon-log/ui/battle-monster-s
 import {
   resolveBattleMonster,
   resolveBattlePlayer,
-  resolveBattleResult,
 } from "@/entities/dungeon-log/lib/monster";
 import { useCatalogItemNameResolver } from "@/entities/catalog/model/use-catalog-item-name";
 import { useCatalogMonsterNameResolver } from "@/entities/catalog/model/use-catalog-monster-name";
@@ -46,7 +45,6 @@ export function DungeonLogDetailDialog({
     : [];
   const monster = log ? resolveBattleMonster(log) : undefined;
   const player = log ? resolveBattlePlayer(log) : undefined;
-  const result = log ? resolveBattleResult(log) : undefined;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -83,7 +81,6 @@ export function DungeonLogDetailDialog({
                 <BattleMonsterSummary
                   monster={monster}
                   player={player}
-                  result={result}
                   size="detail"
                   resolveMonsterName={resolveMonsterName}
                 />
