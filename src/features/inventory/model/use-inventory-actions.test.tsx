@@ -120,6 +120,7 @@ describe("useInventoryActions", () => {
       version: 1,
     });
 
+    vi.spyOn(queryClient, "invalidateQueries").mockResolvedValue(undefined);
     const refetchSpy = vi
       .spyOn(queryClient, "refetchQueries")
       .mockResolvedValue(undefined);
