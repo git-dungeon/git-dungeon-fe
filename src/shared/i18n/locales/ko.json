@@ -248,6 +248,7 @@
       "specialEffect": "특수 효과",
       "description": "설명",
       "acquiredAt": "획득일: {{time}}",
+      "processing": "요청을 처리중입니다.",
       "actions": {
         "equip": "장착",
         "unequip": "해제",
