@@ -248,6 +248,7 @@
       "specialEffect": "Special effect",
       "description": "Description",
       "acquiredAt": "Acquired at: {{time}}",
+      "processing": "Processing your request...",
       "actions": {
         "equip": "Equip",
         "unequip": "Unequip",

@@ -22,11 +22,13 @@ import {
 import { Button } from "@/shared/ui/button";
 import { Badge } from "@/shared/ui/badge";
 import { useTranslation } from "react-i18next";
+import { Loader2 } from "lucide-react";
 
 interface InventoryModalProps {
   item: InventoryItem | null;
   slot: InventoryItemSlot | null;
   isPending: boolean;
+  isSyncing: boolean;
   error: Error | null;
   onClose: () => void;
   onEquip: (itemId: string) => Promise<unknown>;
@@ -38,6 +40,7 @@ export function InventoryModal({
   item,
   slot,
   isPending,
+  isSyncing,
   error,
   onClose,
   onEquip,
@@ -54,6 +57,7 @@ export function InventoryModal({
   const displayName = resolveItemName(item.code, item.name);
   const description = resolveDescription(item.code);
   const sprite = resolveLocalItemSprite(item.code);
+  const isBusy = isPending || isSyncing;
 
   const handleOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) {
@@ -191,7 +195,12 @@ export function InventoryModal({
             })}
           </p>
 
-          {error ? (
+          {isSyncing ? (
+            <p className="text-muted-foreground flex items-center gap-2 text-xs">
+              <Loader2 className="size-3 animate-spin" aria-hidden />
+              {t("inventory.modal.processing")}
+            </p>
+          ) : error ? (
             <p className="text-destructive text-xs">{error.message}</p>
           ) : null}
 
@@ -199,7 +208,7 @@ export function InventoryModal({
             <Button
               type="button"
               onClick={handleEquip}
-              disabled={item.isEquipped || isPending}
+              disabled={item.isEquipped || isBusy}
               className="flex-1"
             >
               {t("inventory.modal.actions.equip")}
@@ -208,7 +217,7 @@ export function InventoryModal({
               type="button"
               variant="outline"
               onClick={handleUnequip}
-              disabled={!item.isEquipped || isPending}
+              disabled={!item.isEquipped || isBusy}
               className="flex-1"
             >
               {t("inventory.modal.actions.unequip")}
@@ -217,7 +226,7 @@ export function InventoryModal({
               type="button"
               variant="destructive"
               onClick={handleDiscard}
-              disabled={isPending}
+              disabled={isBusy}
               className="text-background flex-1"
             >
               {t("inventory.modal.actions.discard")}

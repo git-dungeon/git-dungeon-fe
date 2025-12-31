@@ -16,10 +16,12 @@ interface InventoryLayoutProps {
   equipped: InventoryEquippedMap;
   stats: CharacterStatSummary;
   isPending: boolean;
+  isSyncing: boolean;
   error: Error | null;
   onEquip: (itemId: string) => Promise<unknown>;
   onUnequip: (itemId: string) => Promise<unknown>;
   onDiscard: (itemId: string) => Promise<unknown>;
+  onClearError: () => void;
 }
 
 export function InventoryLayout({
@@ -27,10 +29,12 @@ export function InventoryLayout({
   equipped,
   stats,
   isPending,
+  isSyncing,
   error,
   onEquip,
   onUnequip,
   onDiscard,
+  onClearError,
 }: InventoryLayoutProps) {
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<InventoryItemSlot | null>(
@@ -46,11 +50,13 @@ export function InventoryLayout({
   }, [items, selectedItemId]);
 
   const handleSelect = (item: InventoryItem, slot: InventoryItemSlot) => {
+    onClearError();
     setSelectedItemId(item.id);
     setSelectedSlot(slot);
   };
 
   const handleCloseModal = () => {
+    onClearError();
     setSelectedItemId(null);
     setSelectedSlot(null);
   };
@@ -79,6 +85,7 @@ export function InventoryLayout({
         item={selectedItem}
         slot={selectedSlot}
         isPending={isPending}
+        isSyncing={isSyncing}
         error={error}
         onClose={handleCloseModal}
         onEquip={onEquip}

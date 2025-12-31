@@ -71,10 +71,12 @@ export function InventoryPage() {
           equipped={inventoryData.equipped}
           stats={overview.data.stats}
           isPending={actions.isPending}
+          isSyncing={actions.isSyncing}
           error={actions.error}
           onEquip={actions.equip}
           onUnequip={actions.unequip}
           onDiscard={actions.discard}
+          onClearError={actions.clearError}
         />
       ) : null}
     </section>
