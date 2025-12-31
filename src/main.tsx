@@ -8,6 +8,7 @@ import type { RouterContext } from "@/shared/lib/router/router-context";
 import { createAuthService } from "@/entities/auth/lib/auth-service";
 import { IS_MSW_ENABLED } from "@/shared/config/env";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { Toaster } from "@/shared/ui/sonner";
 import "@/shared/i18n/i18n";
 import "./index.css";
 
@@ -31,6 +32,7 @@ export function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />
+      <Toaster />
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );

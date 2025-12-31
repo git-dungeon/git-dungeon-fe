@@ -22,7 +22,9 @@ import {
 import { Button } from "@/shared/ui/button";
 import { Badge } from "@/shared/ui/badge";
 import { useTranslation } from "react-i18next";
-import { Loader2 } from "lucide-react";
+import { Copy, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { copyText } from "@/shared/lib/clipboard";
 
 interface InventoryModalProps {
   item: InventoryItem | null;
@@ -58,10 +60,21 @@ export function InventoryModal({
   const description = resolveDescription(item.code);
   const sprite = resolveLocalItemSprite(item.code);
   const isBusy = isPending || isSyncing;
+  const shortId = item.id.slice(-8);
+  const displayId = `#${shortId}`;
 
   const handleOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) {
       onClose();
+    }
+  };
+
+  const handleCopyId = async () => {
+    const copied = await copyText(item.id);
+    if (copied) {
+      toast.success(t("inventory.modal.copyIdSuccess"));
+    } else {
+      toast.error(t("inventory.modal.copyIdError"));
     }
   };
 
@@ -189,11 +202,26 @@ export function InventoryModal({
             </section>
           ) : null}
 
-          <p className="text-xs">
-            {t("inventory.modal.acquiredAt", {
-              time: formatDateTime(item.createdAt),
-            })}
-          </p>
+          <div className="text-muted-foreground flex flex-col gap-1 text-xs">
+            <span>
+              {t("inventory.modal.acquiredAt", {
+                time: formatDateTime(item.createdAt),
+              })}
+            </span>
+            <div className="flex items-center justify-between gap-2">
+              <span>{t("inventory.modal.itemId", { id: displayId })}</span>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={handleCopyId}
+                className="h-7 gap-1 px-2 text-xs"
+              >
+                <Copy className="size-3" aria-hidden />
+                {t("inventory.modal.copyId")}
+              </Button>
+            </div>
+          </div>
 
           {isSyncing ? (
             <p className="text-muted-foreground flex items-center gap-2 text-xs">

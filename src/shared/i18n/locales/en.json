@@ -248,6 +248,10 @@
       "specialEffect": "Special effect",
       "description": "Description",
       "acquiredAt": "Acquired at: {{time}}",
+      "itemId": "ID: {{id}}",
+      "copyId": "Copy ID",
+      "copyIdSuccess": "ID copied.",
+      "copyIdError": "Failed to copy ID.",
       "processing": "Processing your request...",
       "actions": {
         "equip": "Equip",

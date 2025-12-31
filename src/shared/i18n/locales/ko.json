@@ -248,6 +248,10 @@
       "specialEffect": "특수 효과",
       "description": "설명",
       "acquiredAt": "획득일: {{time}}",
+      "itemId": "ID: {{id}}",
+      "copyId": "ID 복사",
+      "copyIdSuccess": "ID를 복사했습니다.",
+      "copyIdError": "ID 복사에 실패했습니다.",
       "processing": "요청을 처리중입니다.",
       "actions": {
         "equip": "장착",
