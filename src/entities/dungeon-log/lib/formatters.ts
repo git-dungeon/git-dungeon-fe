@@ -441,9 +441,10 @@ function resolveDeathCause(entry: DungeonLogEntry): string | undefined {
     return extra.details.cause;
   }
 
-  const legacy = entry.extra as
-    | { detail?: { cause?: string } }
-    | { cause?: string };
+  const legacy = entry.extra as {
+    detail?: { cause?: string };
+    cause?: string;
+  };
 
   return legacy.detail?.cause ?? legacy.cause;
 }
@@ -474,9 +475,10 @@ function resolveDeathHandledBy(entry: DungeonLogEntry): string | undefined {
     return extra.details.handledBy;
   }
 
-  const legacy = entry.extra as
-    | { detail?: { handledBy?: string } }
-    | { handledBy?: string };
+  const legacy = entry.extra as {
+    detail?: { handledBy?: string };
+    handledBy?: string;
+  };
 
   return legacy.detail?.handledBy ?? legacy.handledBy;
 }
