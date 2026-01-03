@@ -4,6 +4,7 @@ import type { InventoryItem } from "@/entities/inventory/model/types";
 import { formatNumber } from "@/entities/dashboard/lib/formatters";
 import { PixelPanel } from "@/shared/ui/pixel-panel";
 import { DashboardStatBar } from "@/widgets/dashboard-skin/ui/dashboard-stat-bar";
+import { DashboardStatRow } from "@/widgets/dashboard-skin/ui/dashboard-stat-row";
 import { useTranslation } from "react-i18next";
 
 const goldImage = "/coin.webp";
@@ -49,7 +50,7 @@ export function DashboardSummaryPanel({
           />
         </div>
         <div className="flex-1 space-y-3">
-          <StatRow
+          <DashboardStatRow
             label={t("dashboard.summaryRows.level")}
             value={t("dashboard.summaryRows.levelValue", { level })}
           />
@@ -67,11 +68,11 @@ export function DashboardSummaryPanel({
             tone="exp"
             valueInBar
           />
-          <StatRow
+          <DashboardStatRow
             label={t("dashboard.summaryRows.ap")}
             value={`${formatNumber(ap)}`}
           />
-          <StatRow
+          <DashboardStatRow
             label={t("dashboard.summaryRows.gold")}
             value={`${formatNumber(gold)}`}
             iconSrc={goldImage}
@@ -101,25 +102,4 @@ function resolveAvatarSprite(items: InventoryItem[]): string | null {
   }
 
   return resolveLocalItemSprite(candidate.code) ?? null;
-}
-
-interface StatRowProps {
-  label: string;
-  value: string;
-  iconSrc?: string;
-  iconAlt?: string;
-}
-
-function StatRow({ label, value, iconSrc, iconAlt }: StatRowProps) {
-  return (
-    <div className="flex items-center justify-between gap-3">
-      <div className="flex items-center gap-2">
-        {iconSrc ? (
-          <img src={iconSrc} alt={iconAlt ?? label} className="h-4 w-4" />
-        ) : null}
-        <span className="pixel-stat-label">{label}</span>
-      </div>
-      <span className="pixel-stat-value">{value}</span>
-    </div>
-  );
 }

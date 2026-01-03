@@ -1,6 +1,7 @@
 import skeletonImage from "@/assets/monster/skeleton-warrior.png";
 import { PixelPanel } from "@/shared/ui/pixel-panel";
 import { DashboardStatBar } from "@/widgets/dashboard-skin/ui/dashboard-stat-bar";
+import { DashboardStatRow } from "@/widgets/dashboard-skin/ui/dashboard-stat-row";
 import { useTranslation } from "react-i18next";
 
 interface DashboardProgressPanelProps {
@@ -19,17 +20,15 @@ export function DashboardProgressPanel({ floor }: DashboardProgressPanelProps) {
     <PixelPanel title={t("dashboard.panels.progress")}>
       <div className="flex flex-col gap-4 md:flex-row md:items-center">
         <div className="flex-1 space-y-3">
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="pixel-stat-label">
-              {t("dashboard.progress.currentFloor")}
-            </span>
-            <span className="pixel-stat-value">
-              {t("dashboard.progress.currentFloorValue", {
-                current: floor.current,
-                best: floor.best,
-              })}
-            </span>
-          </div>
+          <DashboardStatRow
+            label={t("dashboard.progress.currentFloor")}
+            value={t("dashboard.progress.currentFloorValue", {
+              current: floor.current,
+              best: floor.best,
+            })}
+            layout="inline"
+            wrap
+          />
           <DashboardStatBar
             label={t("dashboard.progress.completion")}
             value={`${progressValue}%`}

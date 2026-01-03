@@ -1,6 +1,7 @@
 import { formatNumber } from "@/entities/dashboard/lib/formatters";
 import type { CharacterStatSummary } from "@/features/character-summary/lib/build-character-overview";
 import { PixelPanel } from "@/shared/ui/pixel-panel";
+import { DashboardStatRow } from "@/widgets/dashboard-skin/ui/dashboard-stat-row";
 import { useTranslation } from "react-i18next";
 
 interface DashboardAttributesPanelProps {
@@ -44,17 +45,20 @@ export function DashboardAttributesPanel({
 
   return (
     <PixelPanel title={t("dashboard.panels.attributes")} className="h-full">
-      <div className="space-y-2">
+      <ul className="space-y-2">
         {rows.map((row) => (
-          <div
+          <li
             key={row.key}
-            className="flex items-center justify-between border-b border-white/5 pb-2 text-sm last:border-none last:pb-0"
+            className="border-b border-white/5 pb-2 last:border-none last:pb-0"
           >
-            <span className="pixel-stat-label">{row.label}</span>
-            <span className="pixel-stat-value">{row.value}</span>
-          </div>
+            <DashboardStatRow
+              label={row.label}
+              value={row.value}
+              className="text-sm"
+            />
+          </li>
         ))}
-      </div>
+      </ul>
     </PixelPanel>
   );
 }
