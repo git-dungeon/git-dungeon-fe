@@ -51,11 +51,7 @@ export function DashboardAttributesPanel({
             key={row.key}
             className="border-b border-white/5 pb-2 last:border-none last:pb-0"
           >
-            <DashboardStatRow
-              label={row.label}
-              value={row.value}
-              className="text-sm"
-            />
+            <DashboardStatRow label={row.label} value={row.value} />
           </li>
         ))}
       </ul>

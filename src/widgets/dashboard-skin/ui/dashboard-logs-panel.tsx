@@ -27,7 +27,7 @@ export function DashboardLogsPanel({ logs }: DashboardLogsPanelProps) {
     <PixelPanel
       title={t("dashboard.panels.logs")}
       headerRight={
-        <span className="text-muted-foreground text-xs">
+        <span className="pixel-text-muted pixel-text-xs">
           {t("dashboard.logs.subtitle")}
         </span>
       }
@@ -35,7 +35,7 @@ export function DashboardLogsPanel({ logs }: DashboardLogsPanelProps) {
       contentClassName="gap-0"
     >
       {logs.length === 0 ? (
-        <p className="text-muted-foreground text-sm">
+        <p className="pixel-text-muted pixel-text-sm">
           {t("dashboard.activity.empty.message")}
         </p>
       ) : (

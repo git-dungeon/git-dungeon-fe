@@ -39,20 +39,22 @@ export function DashboardPage() {
     <section className="space-y-6">
       <header className="space-y-1">
         <h1
-          className="font-pixel-title text-lg sm:text-2xl"
+          className="font-pixel-title pixel-page-title"
           data-text={t("dashboard.title")}
         >
           {t("dashboard.title")}
         </h1>
-        {/* <p className="text-muted-foreground text-sm">
+        {/* <p className="pixel-text-muted pixel-text-sm">
           {t("dashboard.subtitle")}
         </p> */}
       </header>
 
       {showError ? (
         <PixelPanel className="border-destructive/40">
-          <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
-            <span className="text-destructive">{t("dashboard.loadError")}</span>
+          <div className="pixel-text-sm flex flex-wrap items-center justify-between gap-3">
+            <span className="pixel-text-danger">
+              {t("dashboard.loadError")}
+            </span>
             <Button
               type="button"
               variant="outline"
@@ -60,7 +62,7 @@ export function DashboardPage() {
               onClick={() => {
                 void overview.refetch();
               }}
-              className="text-xs"
+              className="pixel-text-xs"
             >
               {t("dashboard.retry")}
             </Button>

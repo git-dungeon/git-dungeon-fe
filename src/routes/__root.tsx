@@ -47,16 +47,12 @@ function RootComponent() {
       {shouldRenderHeader ? (
         <header className="pixel-header">
           <nav className="pixel-header-inner mx-auto flex w-full items-center gap-6 px-6 py-4">
-            <Link to="/dashboard" className="pixel-brand text-base sm:text-lg">
+            <Link to="/dashboard" className="pixel-brand">
               {t("common.appName")}
             </Link>
             <div className="flex flex-1 items-center justify-center gap-6 sm:gap-10">
               {NAVIGATION_LINKS.map((link) => (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  className="pixel-nav-link text-xs sm:text-sm"
-                >
+                <Link key={link.to} to={link.to} className="pixel-nav-link">
                   {t(link.labelKey)}
                 </Link>
               ))}
