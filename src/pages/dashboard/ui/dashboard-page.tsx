@@ -1,13 +1,14 @@
-import { Card, CardContent } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
-import { DashboardActivity } from "@/widgets/dashboard-activity/ui/dashboard-activity";
-import { DashboardLogs } from "@/widgets/dashboard-logs/ui/dashboard-logs";
 import { useDungeonLogs } from "@/entities/dungeon-log/model/use-dungeon-logs";
 import { DASHBOARD_RECENT_LOG_LIMIT } from "@/pages/dashboard/config/constants";
-import { DashboardEmbeddingBanner } from "@/widgets/dashboard-embedding/ui/dashboard-embedding-banner";
 import { useCharacterOverview } from "@/features/character-summary/model/use-character-overview";
 import type { DungeonLogsFilterType } from "@/entities/dungeon-log/model/types";
 import { useTranslation } from "react-i18next";
+import { PixelPanel } from "@/shared/ui/pixel-panel";
+import { DashboardSummaryPanel } from "@/widgets/dashboard-skin/ui/dashboard-summary-panel";
+import { DashboardAttributesPanel } from "@/widgets/dashboard-skin/ui/dashboard-attributes-panel";
+import { DashboardLogsPanel } from "@/widgets/dashboard-skin/ui/dashboard-logs-panel";
+import { DashboardProgressPanel } from "@/widgets/dashboard-skin/ui/dashboard-progress-panel";
 
 export function DashboardPage() {
   const { t } = useTranslation();
@@ -23,32 +24,34 @@ export function DashboardPage() {
   const showError = overview.isError;
 
   const logs = logsData?.logs ?? [];
-  const latestLog = logs.at(0);
 
   const renderSkeleton = () => (
-    <Card className="border-dashed">
-      <CardContent className="animate-pulse space-y-3 p-6">
+    <PixelPanel className="border-dashed">
+      <div className="animate-pulse space-y-3">
         <div className="bg-muted h-5 w-1/3 rounded" />
         <div className="bg-muted h-3 w-2/3 rounded" />
         <div className="bg-muted h-24 rounded" />
-      </CardContent>
-    </Card>
+      </div>
+    </PixelPanel>
   );
 
   return (
     <section className="space-y-6">
       <header className="space-y-1">
-        <h1 className="text-foreground text-2xl font-semibold">
+        <h1
+          className="font-pixel-title text-lg sm:text-2xl"
+          data-text={t("dashboard.title")}
+        >
           {t("dashboard.title")}
         </h1>
-        <p className="text-muted-foreground text-sm">
+        {/* <p className="text-muted-foreground text-sm">
           {t("dashboard.subtitle")}
-        </p>
+        </p> */}
       </header>
 
       {showError ? (
-        <Card className="border-destructive/30">
-          <CardContent className="flex flex-wrap items-center justify-between gap-3 p-4 text-sm">
+        <PixelPanel className="border-destructive/40">
+          <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
             <span className="text-destructive">{t("dashboard.loadError")}</span>
             <Button
               type="button"
@@ -61,38 +64,35 @@ export function DashboardPage() {
             >
               {t("dashboard.retry")}
             </Button>
-          </CardContent>
-        </Card>
+          </div>
+        </PixelPanel>
       ) : null}
 
       {showLoading ? renderSkeleton() : null}
 
       {!showLoading && character && state ? (
-        <>
-          <DashboardEmbeddingBanner
-            level={character.level}
-            exp={character.exp}
-            expToLevel={character.expToLevel}
-            gold={character.gold}
-            ap={character.ap}
-            floor={character.floor}
-            stats={character.stats}
-            equipment={character.equipment}
-          />
-
-          <div>
-            <DashboardActivity
-              latestLog={latestLog}
-              apRemaining={character.stats.total.ap}
-              currentAction={state.currentAction}
-              currentActionStartedAt={state.currentActionStartedAt}
-              lastActionCompletedAt={state.lastActionCompletedAt}
-              nextActionStartAt={state.nextActionStartAt}
+        <div className="space-y-6">
+          <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1.2fr)]">
+            <DashboardSummaryPanel
+              level={character.level}
+              hp={character.stats.total.hp}
+              maxHp={character.stats.total.maxHp}
+              ap={character.ap}
+              exp={character.exp}
+              expToLevel={character.expToLevel}
+              gold={character.gold}
+              equipment={character.equipment}
             />
+            <DashboardAttributesPanel
+              stats={character.stats}
+              ap={character.ap}
+            />
+            <div className="lg:col-span-2 xl:col-span-1">
+              <DashboardLogsPanel logs={logs} />
+            </div>
           </div>
-
-          <DashboardLogs logs={logs} />
-        </>
+          <DashboardProgressPanel floor={character.floor} />
+        </div>
       ) : null}
     </section>
   );

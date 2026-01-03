@@ -108,6 +108,34 @@
       "title": "Recent exploration logs",
       "subtitle": "Only the latest 10 exploration records are shown."
     },
+    "panels": {
+      "summary": "Character Status",
+      "attributes": "Character Attributes",
+      "logs": "Exploration Logs",
+      "progress": "Dungeon Progress"
+    },
+    "summaryRows": {
+      "avatar": "Character",
+      "level": "Level",
+      "levelValue": "Lv. {{level}}",
+      "hp": "HP",
+      "exp": "EXP",
+      "ap": "AP",
+      "gold": "Gold"
+    },
+    "attributes": {
+      "hp": "HP",
+      "atk": "ATK",
+      "def": "DEF",
+      "luck": "LUCK",
+      "ap": "AP"
+    },
+    "progress": {
+      "currentFloor": "Current Floor",
+      "currentFloorValue": "{{current}}F (Best {{best}}F)",
+      "completion": "Floor Completion",
+      "monsterAlt": "Dungeon monster"
+    },
     "activity": {
       "paused": {
         "title": "Exploration paused",

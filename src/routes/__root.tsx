@@ -43,27 +43,19 @@ function RootComponent() {
   const shouldRenderHeader = !isLoginScreen;
 
   return (
-    <div
-      className={cn(
-        "text-foreground flex min-h-screen flex-col",
-        "bg-background"
-      )}
-    >
+    <div className={cn("pixel-app font-pixel-body flex min-h-screen flex-col")}>
       {shouldRenderHeader ? (
-        <header className="bg-card border-b">
-          <nav className="mx-auto flex w-full max-w-5xl items-center gap-6 px-6 py-4">
-            <Link
-              to="/dashboard"
-              className="text-foreground text-lg font-semibold"
-            >
+        <header className="pixel-header">
+          <nav className="pixel-header-inner mx-auto flex w-full items-center gap-6 px-6 py-4">
+            <Link to="/dashboard" className="pixel-brand text-base sm:text-lg">
               {t("common.appName")}
             </Link>
-            <div className="flex flex-1 items-center gap-4">
+            <div className="flex flex-1 items-center justify-center gap-6 sm:gap-10">
               {NAVIGATION_LINKS.map((link) => (
                 <Link
                   key={link.to}
                   to={link.to}
-                  className="text-muted-foreground hover:text-primary [&.active]:text-primary text-sm font-medium transition"
+                  className="pixel-nav-link text-xs sm:text-sm"
                 >
                   {t(link.labelKey)}
                 </Link>
@@ -75,10 +67,16 @@ function RootComponent() {
       <main
         className={cn(
           "flex w-full flex-1 flex-col",
-          "mx-auto max-w-5xl px-6 py-8"
+          isLoginScreen ? "px-6 py-10" : "pixel-main"
         )}
       >
-        <Outlet />
+        {isLoginScreen ? (
+          <Outlet />
+        ) : (
+          <div className="pixel-frame">
+            <Outlet />
+          </div>
+        )}
       </main>
       {import.meta.env.DEV ? <TanStackRouterDevtools /> : null}
     </div>

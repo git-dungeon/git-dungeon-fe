@@ -108,6 +108,34 @@
       "title": "최근 탐험 로그",
       "subtitle": "최근 10개의 탐험 기록만 표시됩니다."
     },
+    "panels": {
+      "summary": "캐릭터 상태",
+      "attributes": "캐릭터 능력치",
+      "logs": "탐험 로그",
+      "progress": "던전 진행"
+    },
+    "summaryRows": {
+      "avatar": "캐릭터",
+      "level": "레벨",
+      "levelValue": "Lv. {{level}}",
+      "hp": "HP",
+      "exp": "EXP",
+      "ap": "AP",
+      "gold": "골드"
+    },
+    "attributes": {
+      "hp": "HP",
+      "atk": "ATK",
+      "def": "DEF",
+      "luck": "LUCK",
+      "ap": "AP"
+    },
+    "progress": {
+      "currentFloor": "현재 층",
+      "currentFloorValue": "{{current}}F (최고 {{best}}F)",
+      "completion": "층 진행도",
+      "monsterAlt": "던전 몬스터"
+    },
     "activity": {
       "paused": {
         "title": "탐험 일시 중지",
