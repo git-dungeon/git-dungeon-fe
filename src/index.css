@@ -209,11 +209,15 @@
     --pixel-panel-shadow: #0b0f18;
     --pixel-header-shadow: #0a0d14;
     --pixel-stroke: #0b0b0b;
-    --pixel-bar-text: #f6f0e1;
-    --pixel-stat-label: #c0c4cf;
-    --pixel-stat-value: #f3ead5;
-    --pixel-log-text: #e7e0d1;
-    --pixel-log-meta: #b1b6c1;
+    --pixel-text-base: #f6f0e1;
+    --pixel-text-shadow:
+      1px 1px 0 #0b0b0b, -1px 1px 0 #0b0b0b, 1px -1px 0 #0b0b0b,
+      -1px -1px 0 #0b0b0b;
+    --pixel-bar-text: var(--pixel-text-base);
+    --pixel-stat-label: var(--pixel-text-base);
+    --pixel-stat-value: var(--pixel-text-base);
+    --pixel-log-text: var(--pixel-text-base);
+    --pixel-log-meta: var(--pixel-text-base);
     background-image:
       url("/background.webp"),
       radial-gradient(
@@ -388,11 +392,7 @@
     font-size: 0.65rem;
     color: var(--pixel-bar-text);
     letter-spacing: 0.08em;
-    text-shadow:
-      1px 1px 0 var(--pixel-stroke),
-      -1px 1px 0 var(--pixel-stroke),
-      1px -1px 0 var(--pixel-stroke),
-      -1px -1px 0 var(--pixel-stroke);
+    text-shadow: var(--pixel-text-shadow);
     pointer-events: none;
   }
 
@@ -413,6 +413,7 @@
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--pixel-stat-label);
+    text-shadow: var(--pixel-text-shadow);
   }
 
   .pixel-stat-bar {
@@ -429,6 +430,7 @@
   .pixel-stat-value {
     font-size: 0.8rem;
     color: var(--pixel-stat-value);
+    text-shadow: var(--pixel-text-shadow);
   }
 
   .pixel-log-row {
@@ -460,16 +462,19 @@
     color: var(--pixel-accent);
     font-size: 0.75rem;
     letter-spacing: 0.1em;
+    text-shadow: var(--pixel-text-shadow);
   }
 
   .pixel-log-text {
     font-size: 0.8rem;
     color: var(--pixel-log-text);
     line-height: 1.4;
+    text-shadow: var(--pixel-text-shadow);
   }
 
   .pixel-log-meta {
     font-size: 0.7rem;
     color: var(--pixel-log-meta);
+    text-shadow: var(--pixel-text-shadow);
   }
 }
