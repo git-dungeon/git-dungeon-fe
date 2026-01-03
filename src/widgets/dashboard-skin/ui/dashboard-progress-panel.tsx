@@ -1,4 +1,5 @@
 import skeletonImage from "@/assets/monster/skeleton-warrior.png";
+import { roundPercent } from "@/entities/dashboard/lib/progress";
 import { PixelPanel } from "@/shared/ui/pixel-panel";
 import { DashboardStatBar } from "@/widgets/dashboard-skin/ui/dashboard-stat-bar";
 import { DashboardStatRow } from "@/widgets/dashboard-skin/ui/dashboard-stat-row";
@@ -14,7 +15,7 @@ interface DashboardProgressPanelProps {
 
 export function DashboardProgressPanel({ floor }: DashboardProgressPanelProps) {
   const { t } = useTranslation();
-  const progressValue = Math.min(100, Math.max(0, Math.round(floor.progress)));
+  const progressValue = roundPercent(floor.progress);
 
   return (
     <PixelPanel title={t("dashboard.panels.progress")}>

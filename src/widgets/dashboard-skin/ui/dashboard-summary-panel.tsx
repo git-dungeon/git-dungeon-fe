@@ -2,6 +2,7 @@ import fallbackAvatar from "@/assets/helmet/knights-helm.png";
 import { resolveLocalItemSprite } from "@/entities/catalog/config/local-sprites";
 import type { InventoryItem } from "@/entities/inventory/model/types";
 import { formatNumber } from "@/entities/dashboard/lib/formatters";
+import { calcRoundedPercent } from "@/entities/dashboard/lib/progress";
 import { PixelPanel } from "@/shared/ui/pixel-panel";
 import { DashboardStatBar } from "@/widgets/dashboard-skin/ui/dashboard-stat-bar";
 import { DashboardStatRow } from "@/widgets/dashboard-skin/ui/dashboard-stat-row";
@@ -31,8 +32,8 @@ export function DashboardSummaryPanel({
   equipment,
 }: DashboardSummaryPanelProps) {
   const { t } = useTranslation();
-  const hpPercent = resolvePercent(hp, maxHp);
-  const expPercent = resolvePercent(exp, expToLevel);
+  const hpPercent = calcRoundedPercent(hp, maxHp);
+  const expPercent = calcRoundedPercent(exp, expToLevel);
   const avatarSrc = resolveAvatarSprite(equipment) ?? fallbackAvatar;
 
   return (
@@ -82,14 +83,6 @@ export function DashboardSummaryPanel({
       </div>
     </PixelPanel>
   );
-}
-
-function resolvePercent(value: number, max: number): number {
-  if (max <= 0) {
-    return 0;
-  }
-
-  return Math.min(100, Math.max(0, Math.round((value / max) * 100)));
 }
 
 function resolveAvatarSprite(items: InventoryItem[]): string | null {

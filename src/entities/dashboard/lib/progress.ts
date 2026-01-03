@@ -23,6 +23,14 @@ export function calcPercent(current: number, max: number): number {
   return clampPercent(percent);
 }
 
+export function roundPercent(value: number): number {
+  return Math.round(clampPercent(value));
+}
+
+export function calcRoundedPercent(current: number, max: number): number {
+  return roundPercent(calcPercent(current, max));
+}
+
 export function clampFloorProgress(progress: number): number {
   if (!Number.isFinite(progress)) {
     return MIN_FLOOR_PROGRESS;
