@@ -11,10 +11,12 @@ import { InventoryItemCard } from "@/entities/inventory/ui/inventory-item-card";
 import { getInventorySlotLabel } from "@/entities/inventory/config/slot-labels";
 import { useTranslation } from "react-i18next";
 import { useCatalogItemNameResolver } from "@/entities/catalog/model/use-catalog-item-name";
+import { cn } from "@/shared/lib/utils";
 
 interface EquipmentSlotGridProps {
   equipped: InventoryEquippedMap | InventoryItem[];
   className?: string;
+  columns?: 2 | 4;
   renderSlot?: (
     slot: EquipmentSlot,
     item: InventoryItem | null,
@@ -25,6 +27,7 @@ interface EquipmentSlotGridProps {
 export function EquipmentSlotGrid({
   equipped,
   className,
+  columns = 2,
   renderSlot,
 }: EquipmentSlotGridProps) {
   const resolveItemName = useCatalogItemNameResolver();
@@ -32,9 +35,14 @@ export function EquipmentSlotGrid({
     return Array.isArray(equipped) ? mapFromItems(equipped) : equipped;
   }, [equipped]);
 
+  const gridClassName = cn(
+    "grid gap-3",
+    columns === 4 ? "grid-cols-4" : "grid-cols-2"
+  );
+
   return (
     <div className={className}>
-      <div className="grid grid-cols-2 gap-3">
+      <div className={gridClassName}>
         {EQUIPMENT_SLOTS.map((slot) => {
           const item = resolved[slot] ?? null;
           const baseContent = (

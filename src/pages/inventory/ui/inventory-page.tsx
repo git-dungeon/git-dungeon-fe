@@ -3,16 +3,19 @@ import { Button } from "@/shared/ui/button";
 import { InventoryLayout } from "@/widgets/inventory/ui/inventory-layout";
 import { useInventoryActions } from "@/features/inventory/model/use-inventory-actions";
 import { useCharacterOverview } from "@/features/character-summary/model/use-character-overview";
+import { useProfile } from "@/entities/profile/model/use-profile";
 import { useTranslation } from "react-i18next";
 
 export function InventoryPage() {
   const { t } = useTranslation();
   const overview = useCharacterOverview();
   const actions = useInventoryActions();
+  const profileQuery = useProfile();
 
   const inventoryData = overview.inventory.data;
   const items = inventoryData?.items ?? [];
   const showLoading = overview.isLoading && !inventoryData;
+  const avatarUrl = profileQuery.data?.profile.avatarUrl ?? null;
 
   return (
     <section className="space-y-6">
@@ -75,6 +78,8 @@ export function InventoryPage() {
           items={inventoryData.items}
           equipped={inventoryData.equipped}
           stats={overview.data.stats}
+          level={overview.data.level}
+          avatarUrl={avatarUrl}
           isPending={actions.isPending}
           isSyncing={actions.isSyncing}
           error={actions.error}

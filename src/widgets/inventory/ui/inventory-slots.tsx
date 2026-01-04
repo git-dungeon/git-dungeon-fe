@@ -33,6 +33,7 @@ export function InventorySlots({ equipped, onSelect }: InventorySlotsProps) {
       <CardContent>
         <EquipmentSlotGrid
           equipped={equipped}
+          columns={4}
           renderSlot={(slot, item) => (
             <Button
               key={slot}
