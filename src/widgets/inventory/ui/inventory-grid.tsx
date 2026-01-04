@@ -4,11 +4,11 @@ import type {
 } from "@/entities/inventory/model/types";
 import { InventoryItemCard } from "@/entities/inventory/ui/inventory-item-card";
 import { Button } from "@/shared/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { cn } from "@/shared/lib/utils";
 import { Badge } from "@/shared/ui/badge";
 import { useTranslation } from "react-i18next";
 import { useCatalogItemNameResolver } from "@/entities/catalog/model/use-catalog-item-name";
+import { PixelPanel } from "@/shared/ui/pixel-panel";
 
 interface InventoryGridProps {
   items: InventoryItem[];
@@ -40,23 +40,18 @@ export function InventoryGrid({ items, onSelect }: InventoryGridProps) {
   });
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t("inventory.grid.title")}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-          {sortedItems.map((item) => (
-            <InventoryGridCell
-              key={item.id}
-              item={item}
-              onSelect={onSelect}
-              resolveItemName={resolveItemName}
-            />
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+    <PixelPanel title={t("inventory.grid.title")}>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+        {sortedItems.map((item) => (
+          <InventoryGridCell
+            key={item.id}
+            item={item}
+            onSelect={onSelect}
+            resolveItemName={resolveItemName}
+          />
+        ))}
+      </div>
+    </PixelPanel>
   );
 }
 

@@ -3,7 +3,7 @@ import type {
   InventoryItem,
 } from "@/entities/inventory/model/types";
 import type { EquipmentSlot } from "@/entities/dashboard/model/types";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
+import { PixelPanel } from "@/shared/ui/pixel-panel";
 import { Button } from "@/shared/ui/button";
 import {
   EquipmentSlotGrid,
@@ -24,43 +24,36 @@ export function InventorySlots({ equipped, onSelect }: InventorySlotsProps) {
   const { t } = useTranslation();
   const resolveItemName = useCatalogItemNameResolver();
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base">
-          {t("inventory.slots.title")}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <EquipmentSlotGrid
-          equipped={equipped}
-          columns={4}
-          renderSlot={(slot, item) => (
-            <Button
-              key={slot}
-              type="button"
-              variant="outline"
-              onClick={() => {
-                if (item) {
-                  onSelect(item, slot);
-                }
-              }}
-              title={item ? resolveItemName(item.code, item.name) : undefined}
-              className={cn(
-                "group bg-background flex h-auto w-full flex-col items-center justify-center gap-2 p-3 text-center transition"
-              )}
-            >
-              {item ? (
-                <InventoryItemCard
-                  item={item}
-                  displayName={resolveItemName(item.code, item.name)}
-                />
-              ) : (
-                <InventoryEmptySlot slot={slot} />
-              )}
-            </Button>
-          )}
-        />
-      </CardContent>
-    </Card>
+    <PixelPanel title={t("inventory.slots.title")} className="h-full">
+      <EquipmentSlotGrid
+        equipped={equipped}
+        columns={4}
+        renderSlot={(slot, item) => (
+          <Button
+            key={slot}
+            type="button"
+            variant="outline"
+            onClick={() => {
+              if (item) {
+                onSelect(item, slot);
+              }
+            }}
+            title={item ? resolveItemName(item.code, item.name) : undefined}
+            className={cn(
+              "group bg-background flex h-auto w-full flex-col items-center justify-center gap-2 p-3 text-center transition"
+            )}
+          >
+            {item ? (
+              <InventoryItemCard
+                item={item}
+                displayName={resolveItemName(item.code, item.name)}
+              />
+            ) : (
+              <InventoryEmptySlot slot={slot} />
+            )}
+          </Button>
+        )}
+      />
+    </PixelPanel>
   );
 }
