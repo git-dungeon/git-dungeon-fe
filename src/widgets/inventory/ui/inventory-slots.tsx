@@ -20,7 +20,11 @@ interface InventorySlotsProps {
   onSelect: (item: InventoryItem, slot: EquipmentSlot) => void;
 }
 
-export function InventorySlots({ equipped, onSelect }: InventorySlotsProps) {
+export function InventorySlots({
+  equipped,
+  selectedItemId,
+  onSelect,
+}: InventorySlotsProps) {
   const { t } = useTranslation();
   const resolveItemName = useCatalogItemNameResolver();
   return (
@@ -40,7 +44,8 @@ export function InventorySlots({ equipped, onSelect }: InventorySlotsProps) {
             }}
             title={item ? resolveItemName(item.code, item.name) : undefined}
             className={cn(
-              "group bg-background flex h-auto w-full flex-col items-center justify-center gap-2 p-3 text-center transition"
+              "pixel-slot group flex h-auto w-full flex-col items-center justify-center gap-2 p-3 text-center transition",
+              item && selectedItemId === item.id && "pixel-slot--selected"
             )}
           >
             {item ? (

@@ -517,6 +517,29 @@
     padding: 10px;
   }
 
+  .pixel-slot {
+    background: var(--pixel-surface-deep);
+    border: 2px solid var(--pixel-border-strong);
+    border-radius: 8px;
+    box-shadow:
+      inset 0 0 0 2px rgba(255, 255, 255, 0.06),
+      0 2px 0 rgba(0, 0, 0, 0.2);
+  }
+
+  .pixel-slot--selected {
+    border-color: var(--pixel-accent-strong);
+    box-shadow:
+      inset 0 0 0 2px rgba(255, 255, 255, 0.1),
+      0 0 0 2px rgba(255, 224, 170, 0.55),
+      0 2px 0 rgba(0, 0, 0, 0.2);
+  }
+
+  .pixel-slot__placeholder {
+    background: rgba(0, 0, 0, 0.12);
+    border: 2px solid var(--pixel-border-strong);
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.08);
+  }
+
   .pixel-bar {
     position: relative;
     height: 12px;
