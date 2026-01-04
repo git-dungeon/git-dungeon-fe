@@ -149,8 +149,8 @@
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    -webkit-font-smoothing: none;
-    font-smooth: never;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     text-rendering: geometricPrecision;
     filter: drop-shadow(2px 2px 0 #3b2510) drop-shadow(-2px 2px 0 #3b2510)
       drop-shadow(2px -2px 0 #3b2510) drop-shadow(-2px -2px 0 #3b2510)
