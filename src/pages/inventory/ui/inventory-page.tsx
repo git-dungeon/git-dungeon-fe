@@ -17,18 +17,23 @@ export function InventoryPage() {
   return (
     <section className="space-y-6">
       <header className="space-y-1">
-        <h1 className="text-foreground text-2xl font-semibold">
+        <h1
+          className="font-pixel-title pixel-page-title"
+          data-text={t("inventory.title")}
+        >
           {t("inventory.title")}
         </h1>
-        <p className="text-muted-foreground text-sm">
+        <p className="pixel-text-muted pixel-text-sm">
           {t("inventory.subtitle")}
         </p>
       </header>
 
       {overview.isError ? (
-        <Card className="border-destructive/30">
+        <Card className="border-destructive/30 pixel-panel">
           <CardContent className="flex flex-wrap items-center justify-between gap-3 p-4 text-sm">
-            <span className="text-destructive">{t("inventory.loadError")}</span>
+            <span className="pixel-text-danger">
+              {t("inventory.loadError")}
+            </span>
             <Button
               type="button"
               variant="outline"
@@ -36,7 +41,7 @@ export function InventoryPage() {
               onClick={() => {
                 void overview.refetch();
               }}
-              className="text-xs"
+              className="pixel-text-xs"
             >
               {t("inventory.retry")}
             </Button>
@@ -45,7 +50,7 @@ export function InventoryPage() {
       ) : null}
 
       {showLoading ? (
-        <Card className="border-dashed">
+        <Card className="pixel-panel border-dashed">
           <CardContent className="animate-pulse space-y-2 p-6 text-sm">
             <div className="bg-muted h-4 w-1/3 rounded" />
             <div className="bg-muted h-4 w-2/3 rounded" />
@@ -58,8 +63,8 @@ export function InventoryPage() {
       !overview.isFetching &&
       !overview.isError &&
       items.length === 0 ? (
-        <Card>
-          <CardContent className="text-muted-foreground p-6 text-sm">
+        <Card className="pixel-panel">
+          <CardContent className="pixel-text-muted p-6 text-sm">
             {t("inventory.empty")}
           </CardContent>
         </Card>
