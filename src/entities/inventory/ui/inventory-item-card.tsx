@@ -13,6 +13,7 @@ interface InventoryItemCardProps {
   className?: string;
   showSlotLabel?: boolean;
   displayName?: string;
+  compact?: boolean;
 }
 
 export function InventoryItemCard({
@@ -20,9 +21,33 @@ export function InventoryItemCard({
   className,
   showSlotLabel = true,
   displayName,
+  compact = false,
 }: InventoryItemCardProps) {
   const resolvedName = displayName ?? item.name ?? item.code;
   const sprite = resolveLocalItemSprite(item.code);
+
+  if (compact) {
+    return (
+      <div
+        className={cn("relative flex items-center justify-center", className)}
+      >
+        <div className="border-border bg-muted/40 flex size-14 items-center justify-center overflow-hidden rounded-md border">
+          {sprite ? (
+            <img
+              src={sprite}
+              alt={resolvedName}
+              loading="lazy"
+              className="size-12 object-contain"
+            />
+          ) : (
+            <div className="text-muted-foreground text-[11px] font-semibold tracking-wide">
+              {resolvedName.slice(0, 2).toUpperCase()}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div

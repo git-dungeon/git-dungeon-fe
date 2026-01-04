@@ -82,6 +82,7 @@ export function InventoryLayout({
 
       <InventoryGrid
         items={items}
+        selectedItemId={selectedItemId}
         onSelect={(item) => handleSelect(item, item.slot)}
       />
 

@@ -9,6 +9,7 @@ import { Badge } from "@/shared/ui/badge";
 import { useTranslation } from "react-i18next";
 import { useCatalogItemNameResolver } from "@/entities/catalog/model/use-catalog-item-name";
 import { PixelPanel } from "@/shared/ui/pixel-panel";
+import { Check } from "lucide-react";
 
 interface InventoryGridProps {
   items: InventoryItem[];
@@ -24,7 +25,11 @@ const SLOT_ORDER: Record<InventoryItemSlot, number> = {
   consumable: 4,
 };
 
-export function InventoryGrid({ items, onSelect }: InventoryGridProps) {
+export function InventoryGrid({
+  items,
+  selectedItemId,
+  onSelect,
+}: InventoryGridProps) {
   const { t } = useTranslation();
   const resolveItemName = useCatalogItemNameResolver();
   const sortedItems = [...items].sort((a, b) => {
@@ -41,11 +46,12 @@ export function InventoryGrid({ items, onSelect }: InventoryGridProps) {
 
   return (
     <PixelPanel title={t("inventory.grid.title")}>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10">
         {sortedItems.map((item) => (
           <InventoryGridCell
             key={item.id}
             item={item}
+            isSelected={item.id === selectedItemId}
             onSelect={onSelect}
             resolveItemName={resolveItemName}
           />
@@ -57,12 +63,14 @@ export function InventoryGrid({ items, onSelect }: InventoryGridProps) {
 
 interface InventoryGridCellProps {
   item: InventoryItem;
+  isSelected: boolean;
   onSelect: (item: InventoryItem) => void;
   resolveItemName: (code: string, fallback?: string | null) => string;
 }
 
 function InventoryGridCell({
   item,
+  isSelected,
   onSelect,
   resolveItemName,
 }: InventoryGridCellProps) {
@@ -75,13 +83,23 @@ function InventoryGridCell({
       variant="outline"
       onClick={() => onSelect(item)}
       className={cn(
-        "group bg-background relative flex h-auto w-full flex-col items-center justify-center p-3"
+        "pixel-slot group relative flex aspect-square h-auto w-full items-center justify-center p-2",
+        isSelected && "pixel-slot--selected"
       )}
     >
-      <InventoryItemCard item={item} displayName={displayName} />
+      <InventoryItemCard
+        item={item}
+        displayName={displayName}
+        compact
+        className="pointer-events-none"
+      />
       {item.isEquipped ? (
-        <Badge className="absolute top-2 left-2">
-          {t("inventory.grid.equipped")}
+        <Badge
+          className="absolute top-1 left-1 p-1"
+          aria-label={t("inventory.grid.equipped")}
+          title={t("inventory.grid.equipped")}
+        >
+          <Check className="h-3 w-3" aria-hidden="true" />
         </Badge>
       ) : null}
     </Button>
