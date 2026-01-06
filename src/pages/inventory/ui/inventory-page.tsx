@@ -19,16 +19,13 @@ export function InventoryPage() {
 
   return (
     <section className="space-y-6">
-      <header className="space-y-1">
+      <header>
         <h1
           className="font-pixel-title pixel-page-title"
           data-text={t("inventory.title")}
         >
           {t("inventory.title")}
         </h1>
-        <p className="pixel-text-muted pixel-text-sm">
-          {t("inventory.subtitle")}
-        </p>
       </header>
 
       {overview.isError ? (
