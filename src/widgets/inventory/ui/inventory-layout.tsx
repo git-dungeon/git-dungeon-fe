@@ -8,13 +8,15 @@ import { InventorySlots } from "@/widgets/inventory/ui/inventory-slots";
 import { InventoryCharacterPanel } from "@/widgets/inventory/ui/inventory-character-panel";
 import { InventoryGrid } from "@/widgets/inventory/ui/inventory-grid";
 import { InventoryModal } from "@/widgets/inventory/ui/inventory-modal";
-import { HintCard } from "@/entities/inventory/ui/hint-card";
+// import { HintCard } from "@/entities/inventory/ui/hint-card";
 import type { CharacterStatSummary } from "@/features/character-summary/lib/build-character-overview";
 
 interface InventoryLayoutProps {
   items: InventoryItem[];
   equipped: InventoryEquippedMap;
   stats: CharacterStatSummary;
+  level: number;
+  avatarUrl?: string | null;
   isPending: boolean;
   isSyncing: boolean;
   error: Error | null;
@@ -28,6 +30,8 @@ export function InventoryLayout({
   items,
   equipped,
   stats,
+  level,
+  avatarUrl,
   isPending,
   isSyncing,
   error,
@@ -63,23 +67,26 @@ export function InventoryLayout({
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-6 xl:grid-cols-[260px_minmax(0,1fr)]">
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
         <InventorySlots
           equipped={equipped}
           selectedItemId={selectedItemId}
           onSelect={handleSelect}
         />
-
-        <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_260px]">
-          <InventoryCharacterPanel stats={stats} />
-          <HintCard />
-        </div>
+        <InventoryCharacterPanel
+          stats={stats}
+          level={level}
+          avatarUrl={avatarUrl}
+        />
       </div>
 
       <InventoryGrid
         items={items}
+        selectedItemId={selectedItemId}
         onSelect={(item) => handleSelect(item, item.slot)}
       />
+
+      {/* <HintCard /> */}
 
       <InventoryModal
         item={selectedItem}

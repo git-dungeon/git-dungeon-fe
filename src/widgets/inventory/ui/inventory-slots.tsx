@@ -3,14 +3,13 @@ import type {
   InventoryItem,
 } from "@/entities/inventory/model/types";
 import type { EquipmentSlot } from "@/entities/dashboard/model/types";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
-import { Button } from "@/shared/ui/button";
+import { PixelPanel } from "@/shared/ui/pixel-panel";
+import { PixelSlotButton } from "@/shared/ui/pixel-slot-button";
 import {
   EquipmentSlotGrid,
   InventoryEmptySlot,
 } from "@/entities/inventory/ui/equipment-slot-grid";
 import { InventoryItemCard } from "@/entities/inventory/ui/inventory-item-card";
-import { cn } from "@/shared/lib/utils";
 import { useTranslation } from "react-i18next";
 import { useCatalogItemNameResolver } from "@/entities/catalog/model/use-catalog-item-name";
 
@@ -20,46 +19,42 @@ interface InventorySlotsProps {
   onSelect: (item: InventoryItem, slot: EquipmentSlot) => void;
 }
 
-export function InventorySlots({ equipped, onSelect }: InventorySlotsProps) {
+export function InventorySlots({
+  equipped,
+  selectedItemId,
+  onSelect,
+}: InventorySlotsProps) {
   const { t } = useTranslation();
   const resolveItemName = useCatalogItemNameResolver();
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base">
-          {t("inventory.slots.title")}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <EquipmentSlotGrid
-          equipped={equipped}
-          renderSlot={(slot, item) => (
-            <Button
-              key={slot}
-              type="button"
-              variant="outline"
-              onClick={() => {
-                if (item) {
-                  onSelect(item, slot);
-                }
-              }}
-              title={item ? resolveItemName(item.code, item.name) : undefined}
-              className={cn(
-                "group bg-background flex h-auto w-full flex-col items-center justify-center gap-2 p-3 text-center transition"
-              )}
-            >
-              {item ? (
-                <InventoryItemCard
-                  item={item}
-                  displayName={resolveItemName(item.code, item.name)}
-                />
-              ) : (
-                <InventoryEmptySlot slot={slot} />
-              )}
-            </Button>
-          )}
-        />
-      </CardContent>
-    </Card>
+    <PixelPanel title={t("inventory.slots.title")} className="h-full">
+      <EquipmentSlotGrid
+        equipped={equipped}
+        columns={4}
+        renderSlot={(slot, item) => (
+          <PixelSlotButton
+            key={slot}
+            type="button"
+            onClick={() => {
+              if (item) {
+                onSelect(item, slot);
+              }
+            }}
+            title={item ? resolveItemName(item.code, item.name) : undefined}
+            selected={Boolean(item && selectedItemId === item.id)}
+            className="group flex h-auto w-full flex-col items-center justify-center gap-2 p-3 text-center transition"
+          >
+            {item ? (
+              <InventoryItemCard
+                item={item}
+                displayName={resolveItemName(item.code, item.name)}
+              />
+            ) : (
+              <InventoryEmptySlot slot={slot} />
+            )}
+          </PixelSlotButton>
+        )}
+      />
+    </PixelPanel>
   );
 }

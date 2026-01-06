@@ -11,10 +11,12 @@ import { InventoryItemCard } from "@/entities/inventory/ui/inventory-item-card";
 import { getInventorySlotLabel } from "@/entities/inventory/config/slot-labels";
 import { useTranslation } from "react-i18next";
 import { useCatalogItemNameResolver } from "@/entities/catalog/model/use-catalog-item-name";
+import { cn } from "@/shared/lib/utils";
 
 interface EquipmentSlotGridProps {
   equipped: InventoryEquippedMap | InventoryItem[];
   className?: string;
+  columns?: 2 | 4;
   renderSlot?: (
     slot: EquipmentSlot,
     item: InventoryItem | null,
@@ -25,6 +27,7 @@ interface EquipmentSlotGridProps {
 export function EquipmentSlotGrid({
   equipped,
   className,
+  columns = 2,
   renderSlot,
 }: EquipmentSlotGridProps) {
   const resolveItemName = useCatalogItemNameResolver();
@@ -32,9 +35,14 @@ export function EquipmentSlotGrid({
     return Array.isArray(equipped) ? mapFromItems(equipped) : equipped;
   }, [equipped]);
 
+  const gridClassName = cn(
+    "grid gap-3",
+    columns === 4 ? "grid-cols-4" : "grid-cols-2"
+  );
+
   return (
     <div className={className}>
-      <div className="grid grid-cols-2 gap-3">
+      <div className={gridClassName}>
         {EQUIPMENT_SLOTS.map((slot) => {
           const item = resolved[slot] ?? null;
           const baseContent = (
@@ -71,7 +79,7 @@ export function InventoryEmptySlot({ slot }: { slot: EquipmentSlot }) {
   const { t } = useTranslation();
   return (
     <div className="flex w-full flex-col items-center gap-2 text-center">
-      <div className="border-border flex size-14 items-center justify-center rounded-md border border-dashed" />
+      <div className="pixel-slot__placeholder flex size-14 items-center justify-center rounded-md" />
       <div className="space-y-1">
         <p className="text-xs font-semibold tracking-wide">
           {getInventorySlotLabel(slot)}

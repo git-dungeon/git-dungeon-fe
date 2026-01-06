@@ -1,8 +1,9 @@
+import type { ReactNode } from "react";
 import { cn } from "@/shared/lib/utils";
 
 interface DashboardStatRowProps {
   label: string;
-  value: string;
+  value: ReactNode;
   iconSrc?: string;
   iconAlt?: string;
   layout?: "spread" | "inline";
