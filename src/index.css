@@ -857,6 +857,15 @@
       0 3px 0 var(--pixel-button-danger-shadow);
   }
 
+  .pixel-app .pixel-button.pixel-button--danger:focus-visible {
+    border-color: var(--pixel-focus-ring);
+    box-shadow:
+      inset -2px -2px 0 var(--pixel-button-inset-shadow),
+      inset 2px 2px 0 var(--pixel-button-highlight),
+      inset 0 0 0 2px var(--pixel-focus-ring),
+      0 3px 0 var(--pixel-button-danger-shadow);
+  }
+
   .pixel-app .pixel-button.pixel-button--compact {
     min-height: 1.75rem;
     height: 1.75rem;
