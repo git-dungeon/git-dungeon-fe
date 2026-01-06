@@ -76,27 +76,39 @@ export function LogsPage() {
             value={filter}
             onValueChange={(value) => setFilter(value as LogsFilterSelection)}
           >
-            <SelectTrigger className="min-w-64">
+            <SelectTrigger className="pixel-select-trigger min-w-64">
               <SelectValue placeholder={t("logs.filters.placeholder")} />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="pixel-select-content">
               <SelectItem value={ALL_FILTER_VALUE}>
                 {filterLabelMap[ALL_FILTER_VALUE]}
               </SelectItem>
               <SelectSeparator />
               <SelectGroup>
-                <SelectLabel>{t("logs.filters.groups.category")}</SelectLabel>
+                <SelectLabel className="pixel-select-label">
+                  {t("logs.filters.groups.category")}
+                </SelectLabel>
                 {CATEGORY_FILTERS.map((value) => (
-                  <SelectItem key={value} value={value}>
+                  <SelectItem
+                    key={value}
+                    value={value}
+                    className="pixel-select-item"
+                  >
                     {filterLabelMap[value]}
                   </SelectItem>
                 ))}
               </SelectGroup>
               <SelectSeparator />
               <SelectGroup>
-                <SelectLabel>{t("logs.filters.groups.action")}</SelectLabel>
+                <SelectLabel className="pixel-select-label">
+                  {t("logs.filters.groups.action")}
+                </SelectLabel>
                 {ACTION_FILTERS.map((value) => (
-                  <SelectItem key={value} value={value}>
+                  <SelectItem
+                    key={value}
+                    value={value}
+                    className="pixel-select-item"
+                  >
                     {filterLabelMap[value]}
                   </SelectItem>
                 ))}

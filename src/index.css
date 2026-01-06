@@ -938,6 +938,82 @@
     overflow: hidden;
   }
 
+  .pixel-select-trigger {
+    position: relative;
+    min-height: 2.25rem;
+    padding: 0.45rem 0.9rem;
+    font-family: "DungGeunMo Bold", "Noto Sans KR", system-ui, sans-serif;
+    font-size: var(--pixel-text-xs);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--pixel-button-text);
+    background: var(--pixel-button-bg);
+    border: 2px solid var(--pixel-button-border);
+    border-radius: 0;
+    box-shadow:
+      inset -2px -2px 0 var(--pixel-button-inset-shadow),
+      inset 2px 2px 0 var(--pixel-button-highlight),
+      0 3px 0 var(--pixel-button-shadow);
+    clip-path: polygon(
+      4px 0,
+      calc(100% - 4px) 0,
+      100% 4px,
+      100% calc(100% - 4px),
+      calc(100% - 4px) 100%,
+      4px 100%,
+      0 calc(100% - 4px),
+      0 4px
+    );
+    transition:
+      transform 0.15s ease,
+      filter 0.2s ease;
+  }
+
+  html[lang="ko"] .pixel-select-trigger {
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  .pixel-select-trigger:hover {
+    filter: brightness(1.05);
+  }
+
+  .pixel-select-trigger:focus-visible {
+    border-color: var(--pixel-focus-ring);
+    box-shadow:
+      inset -2px -2px 0 var(--pixel-button-inset-shadow),
+      inset 2px 2px 0 var(--pixel-button-highlight),
+      inset 0 0 0 2px var(--pixel-focus-ring),
+      0 3px 0 var(--pixel-button-shadow);
+  }
+
+  .pixel-select-content {
+    background: var(--pixel-panel-surface);
+    border: 2px solid var(--pixel-border-strong);
+    border-radius: 0;
+    box-shadow: 0 6px 0 var(--pixel-panel-shadow);
+    padding: 6px;
+  }
+
+  .pixel-select-label {
+    font-family: "DungGeunMo Bold", "Noto Sans KR", system-ui, sans-serif;
+    color: var(--pixel-accent);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .pixel-select-item {
+    border-radius: 0;
+    padding: 0.35rem 0.6rem;
+    color: var(--pixel-text-base);
+  }
+
+  .pixel-select-item:focus {
+    background: var(--pixel-surface-strong);
+    color: var(--pixel-text-base);
+  }
+
   .pixel-slot {
     background: var(--pixel-surface-deep);
     border: 2px solid var(--pixel-border-strong);
