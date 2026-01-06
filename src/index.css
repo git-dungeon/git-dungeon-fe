@@ -246,6 +246,7 @@
     --pixel-checkbox-highlight: rgba(255, 255, 255, 0.3);
     --pixel-checkbox-inset: rgba(0, 0, 0, 0.25);
     --pixel-checkbox-check: #3f2818;
+    --pixel-focus-ring: #2a1a0b;
     --pixel-stroke: #2a1a0b;
     --pixel-text-base: #f6f0e1;
     --pixel-text-shadow:
@@ -370,6 +371,7 @@
     --pixel-checkbox-highlight: rgba(255, 255, 255, 0.2);
     --pixel-checkbox-inset: rgba(0, 0, 0, 0.4);
     --pixel-checkbox-check: #f6f0e1;
+    --pixel-focus-ring: #f7d88e;
     --pixel-stroke: #0b0b0b;
     --pixel-text-base: #f6f0e1;
     --pixel-text-shadow:
@@ -807,6 +809,15 @@
     filter: brightness(1.05);
   }
 
+  .pixel-button:focus-visible {
+    border-color: var(--pixel-focus-ring) !important;
+    box-shadow:
+      inset -2px -2px 0 var(--pixel-button-inset-shadow),
+      inset 2px 2px 0 var(--pixel-button-highlight),
+      inset 0 0 0 2px var(--pixel-focus-ring),
+      0 3px 0 var(--pixel-button-shadow);
+  }
+
   .pixel-button:active:not(:disabled) {
     transform: translateY(2px);
   }
@@ -872,7 +883,7 @@
   }
 
   .pixel-checkbox:focus-within {
-    outline: 2px solid var(--pixel-accent-strong);
+    outline: 2px solid var(--pixel-focus-ring);
     outline-offset: 2px;
   }
 
@@ -932,8 +943,13 @@
   }
 
   .pixel-slot:focus-visible {
-    outline: 2px solid var(--pixel-accent-strong);
-    outline-offset: 2px;
+    outline: none;
+    border-color: var(--pixel-focus-ring);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.2),
+      inset 0 0 0 3px rgba(0, 0, 0, 0.08),
+      inset 0 0 0 5px var(--pixel-focus-ring),
+      0 3px 0 rgba(0, 0, 0, 0.25);
   }
 
   .pixel-slot--selected {
