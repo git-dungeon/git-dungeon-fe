@@ -114,7 +114,7 @@ export function InventoryModal({
             type="button"
             aria-label={t("inventory.modal.close")}
             pixelSize="compact"
-            className="absolute top-3 right-3"
+            className="pointer-events-auto absolute top-3 right-3 z-10"
           >
             <PixelIcon name="close" />
           </PixelButton>
