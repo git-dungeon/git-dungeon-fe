@@ -6,6 +6,7 @@ import {
   type EmbedPreviewSize,
   type EmbedPreviewTheme,
   type EquipmentSlot,
+  type EquipmentRarity,
   type InventoryItem,
 } from "../types";
 import {
@@ -26,6 +27,14 @@ const BADGE_TONE_COLORS: Record<"gain" | "loss" | "neutral", string> = {
   gain: "#10b981",
   loss: "#ef4444",
   neutral: "#6b7280",
+};
+
+const RARITY_COLORS: Record<EquipmentRarity, string> = {
+  common: "#6b7280",
+  uncommon: "#22c55e",
+  rare: "#3b82f6",
+  epic: "#a855f7",
+  legendary: "#facc15",
 };
 
 const STAT_KEYS = ["hp", "atk", "def", "luck"] as const;
@@ -769,7 +778,9 @@ function EquipmentCard({
           justifyContent: "center",
         }}
       >
-        <Badge palette={palette}>{rarityLabel}</Badge>
+        <Badge palette={palette} rarity={item.rarity}>
+          {rarityLabel}
+        </Badge>
         {item.modifiers.map((modifier, index) => {
           const { text, tone } = formatModifierSummary(modifier, language);
           return (
@@ -850,19 +861,33 @@ interface BadgeProps {
   children: ReactNode;
   palette: ReturnType<typeof resolveEmbedSatoriPalette>;
   tone?: "gain" | "loss" | "neutral";
+  rarity?: EquipmentRarity;
 }
 
-function Badge({ children, palette, tone = "neutral" }: BadgeProps) {
+function Badge({
+  children,
+  palette,
+  tone = "neutral",
+  rarity,
+}: BadgeProps) {
   const toneColor = BADGE_TONE_COLORS[tone];
   const isNeutral = tone === "neutral";
+  const rarityColor = rarity ? RARITY_COLORS[rarity] : null;
+  const borderColor = rarityColor ?? (isNeutral ? palette.border : toneColor);
+  const backgroundColor = rarityColor
+    ? `${rarityColor}1f`
+    : isNeutral
+      ? palette.secondary
+      : `${toneColor}1f`;
+  const textColor = rarityColor ?? (isNeutral ? palette.mutedForeground : toneColor);
 
   return (
     <span
       style={{
         borderRadius: 999,
-        border: `1px solid ${isNeutral ? palette.border : toneColor}`,
-        backgroundColor: isNeutral ? palette.secondary : `${toneColor}1f`,
-        color: isNeutral ? palette.mutedForeground : toneColor,
+        border: `1px solid ${borderColor}`,
+        backgroundColor,
+        color: textColor,
         padding: "4px 10px",
         fontSize: 11,
         fontWeight: 600,

@@ -4,13 +4,12 @@ import type {
 } from "@/entities/inventory/model/types";
 import type { EquipmentSlot } from "@/entities/dashboard/model/types";
 import { PixelPanel } from "@/shared/ui/pixel-panel";
-import { Button } from "@/shared/ui/button";
+import { PixelSlotButton } from "@/shared/ui/pixel-slot-button";
 import {
   EquipmentSlotGrid,
   InventoryEmptySlot,
 } from "@/entities/inventory/ui/equipment-slot-grid";
 import { InventoryItemCard } from "@/entities/inventory/ui/inventory-item-card";
-import { cn } from "@/shared/lib/utils";
 import { useTranslation } from "react-i18next";
 import { useCatalogItemNameResolver } from "@/entities/catalog/model/use-catalog-item-name";
 
@@ -33,20 +32,17 @@ export function InventorySlots({
         equipped={equipped}
         columns={4}
         renderSlot={(slot, item) => (
-          <Button
+          <PixelSlotButton
             key={slot}
             type="button"
-            variant="outline"
             onClick={() => {
               if (item) {
                 onSelect(item, slot);
               }
             }}
             title={item ? resolveItemName(item.code, item.name) : undefined}
-            className={cn(
-              "pixel-slot group flex h-auto w-full flex-col items-center justify-center gap-2 p-3 text-center transition",
-              item && selectedItemId === item.id && "pixel-slot--selected"
-            )}
+            selected={Boolean(item && selectedItemId === item.id)}
+            className="group flex h-auto w-full flex-col items-center justify-center gap-2 p-3 text-center transition"
           >
             {item ? (
               <InventoryItemCard
@@ -56,7 +52,7 @@ export function InventorySlots({
             ) : (
               <InventoryEmptySlot slot={slot} />
             )}
-          </Button>
+          </PixelSlotButton>
         )}
       />
     </PixelPanel>

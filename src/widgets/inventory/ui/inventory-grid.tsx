@@ -3,13 +3,11 @@ import type {
   InventoryItemSlot,
 } from "@/entities/inventory/model/types";
 import { InventoryItemCard } from "@/entities/inventory/ui/inventory-item-card";
-import { Button } from "@/shared/ui/button";
-import { cn } from "@/shared/lib/utils";
-import { Badge } from "@/shared/ui/badge";
+import { PixelSlotButton } from "@/shared/ui/pixel-slot-button";
+import { PixelCheckbox } from "@/shared/ui/pixel-checkbox";
 import { useTranslation } from "react-i18next";
 import { useCatalogItemNameResolver } from "@/entities/catalog/model/use-catalog-item-name";
 import { PixelPanel } from "@/shared/ui/pixel-panel";
-import { Check } from "lucide-react";
 
 interface InventoryGridProps {
   items: InventoryItem[];
@@ -46,7 +44,7 @@ export function InventoryGrid({
 
   return (
     <PixelPanel title={t("inventory.grid.title")}>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
         {sortedItems.map((item) => (
           <InventoryGridCell
             key={item.id}
@@ -77,31 +75,33 @@ function InventoryGridCell({
   const { t } = useTranslation();
   const displayName = resolveItemName(item.code, item.name);
   return (
-    <Button
+    <PixelSlotButton
       type="button"
       title={displayName}
-      variant="outline"
       onClick={() => onSelect(item)}
-      className={cn(
-        "pixel-slot group relative flex aspect-square h-auto w-full items-center justify-center p-2",
-        isSelected && "pixel-slot--selected"
-      )}
+      selected={isSelected}
+      className="group relative flex aspect-square h-auto w-full items-center justify-center p-2"
     >
       <InventoryItemCard
         item={item}
         displayName={displayName}
-        compact
+        showSlotLabel={false}
+        showRarity={false}
+        showModifiers={false}
+        showEffect={false}
+        truncateName={false}
+        nameClassName="text-[11px]"
         className="pointer-events-none"
       />
       {item.isEquipped ? (
-        <Badge
-          className="absolute top-1 left-1 p-1"
+        <PixelCheckbox
+          checked
+          className="absolute top-1 left-1"
           aria-label={t("inventory.grid.equipped")}
           title={t("inventory.grid.equipped")}
-        >
-          <Check className="h-3 w-3" aria-hidden="true" />
-        </Badge>
+          role="img"
+        />
       ) : null}
-    </Button>
+    </PixelSlotButton>
   );
 }

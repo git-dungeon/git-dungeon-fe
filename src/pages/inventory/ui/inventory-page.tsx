@@ -1,5 +1,5 @@
-import { Card, CardContent } from "@/shared/ui/card";
-import { Button } from "@/shared/ui/button";
+import { PixelPanel } from "@/shared/ui/pixel-panel";
+import { PixelButton } from "@/shared/ui/pixel-button";
 import { InventoryLayout } from "@/widgets/inventory/ui/inventory-layout";
 import { useInventoryActions } from "@/features/inventory/model/use-inventory-actions";
 import { useCharacterOverview } from "@/features/character-summary/model/use-character-overview";
@@ -32,45 +32,42 @@ export function InventoryPage() {
       </header>
 
       {overview.isError ? (
-        <Card className="border-destructive/30 pixel-panel">
-          <CardContent className="flex flex-wrap items-center justify-between gap-3 p-4 text-sm">
-            <span className="pixel-text-danger">
-              {t("inventory.loadError")}
-            </span>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                void overview.refetch();
-              }}
-              className="pixel-text-xs"
-            >
-              {t("inventory.retry")}
-            </Button>
-          </CardContent>
-        </Card>
+        <PixelPanel
+          className="p-4"
+          contentClassName="flex flex-wrap items-center justify-between gap-3 text-sm"
+        >
+          <span className="pixel-text-danger">{t("inventory.loadError")}</span>
+          <PixelButton
+            type="button"
+            onClick={() => {
+              void overview.refetch();
+            }}
+            pixelSize="compact"
+            className="pixel-text-xs"
+          >
+            {t("inventory.retry")}
+          </PixelButton>
+        </PixelPanel>
       ) : null}
 
       {showLoading ? (
-        <Card className="pixel-panel border-dashed">
-          <CardContent className="animate-pulse space-y-2 p-6 text-sm">
-            <div className="bg-muted h-4 w-1/3 rounded" />
-            <div className="bg-muted h-4 w-2/3 rounded" />
-            <div className="bg-muted h-20 rounded" />
-          </CardContent>
-        </Card>
+        <PixelPanel
+          className="p-4"
+          contentClassName="animate-pulse space-y-2 text-sm"
+        >
+          <div className="bg-muted h-4 w-1/3 rounded" />
+          <div className="bg-muted h-4 w-2/3 rounded" />
+          <div className="bg-muted h-20 rounded" />
+        </PixelPanel>
       ) : null}
 
       {!showLoading &&
       !overview.isFetching &&
       !overview.isError &&
       items.length === 0 ? (
-        <Card className="pixel-panel">
-          <CardContent className="pixel-text-muted p-6 text-sm">
-            {t("inventory.empty")}
-          </CardContent>
-        </Card>
+        <PixelPanel className="p-4" contentClassName="text-sm">
+          <span className="pixel-text-muted">{t("inventory.empty")}</span>
+        </PixelPanel>
       ) : null}
 
       {inventoryData && overview.data ? (

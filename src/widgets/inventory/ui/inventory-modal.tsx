@@ -5,7 +5,6 @@ import { formatInventoryEffect } from "@/entities/inventory/lib/formatters";
 import { formatDateTime } from "@/shared/lib/datetime/formatters";
 import { cn } from "@/shared/lib/utils";
 import { formatStatChange, resolveStatLabel } from "@/shared/lib/stats/format";
-import { BADGE_TONE_CLASSES } from "@/shared/ui/tone";
 import { resolveLocalItemSprite } from "@/entities/catalog/config/local-sprites";
 import { getInventorySlotLabel } from "@/entities/inventory/config/slot-labels";
 import { useCatalogItemNameResolver } from "@/entities/catalog/model/use-catalog-item-name";
@@ -19,10 +18,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/shared/ui/dialog";
-import { Button } from "@/shared/ui/button";
-import { Badge } from "@/shared/ui/badge";
+import { PixelButton } from "@/shared/ui/pixel-button";
+import { PixelPill } from "@/shared/ui/pixel-pill";
+import { PixelIcon } from "@/shared/ui/pixel-icon";
 import { useTranslation } from "react-i18next";
-import { Copy, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { copyText } from "@/shared/lib/clipboard";
 
@@ -62,6 +62,7 @@ export function InventoryModal({
   const isBusy = isPending || isSyncing;
   const shortId = item.id.slice(-8);
   const displayId = `#${shortId}`;
+  const rarityClass = `rarity-${item.rarity ?? "common"}`;
 
   const handleOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) {
@@ -107,45 +108,59 @@ export function InventoryModal({
 
   return (
     <Dialog open onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-md gap-0">
+      <DialogContent className="pixel-modal max-w-xl gap-4">
         <DialogClose asChild>
-          <Button
-            variant="ghost"
-            size="icon"
+          <PixelButton
+            type="button"
             aria-label={t("inventory.modal.close")}
-            className="absolute top-4 right-4"
+            pixelSize="compact"
+            className="absolute top-3 right-3"
           >
-            ✕
-          </Button>
+            <PixelIcon name="close" />
+          </PixelButton>
         </DialogClose>
-        <div className="flex flex-col gap-2">
-          <DialogHeader className="flex-row items-start gap-2">
-            <div className="flex size-12 shrink-0 items-center justify-center">
+        <div className="flex flex-col gap-4">
+          <DialogHeader className="flex-row items-start gap-3">
+            <div
+              className={cn(
+                "inventory-item__icon flex size-16 shrink-0 items-center justify-center",
+                rarityClass
+              )}
+            >
               {sprite ? (
                 <img
                   src={sprite}
                   alt={displayName}
-                  className="size-12 object-cover"
+                  className="size-10 object-contain"
                   loading="lazy"
                 />
               ) : (
-                <div className="border-border bg-muted text-muted-foreground flex size-12 items-center justify-center rounded-md border text-xs font-semibold">
+                <div className="text-muted-foreground flex size-10 items-center justify-center text-xs font-semibold">
                   {displayName.slice(0, 2).toUpperCase()}
                 </div>
               )}
             </div>
             <div className="w-full text-left">
-              <DialogTitle className="text-lg font-semibold">
+              <DialogTitle className="pixel-modal__title">
                 {displayName}
               </DialogTitle>
-              <DialogDescription className="text-sm">
-                {getInventorySlotLabel(slot)} · {formatRarity(item.rarity)}
+              <DialogDescription className="pixel-text-muted pixel-text-sm flex flex-wrap items-center gap-2">
+                <span>{getInventorySlotLabel(slot)}</span>
+                <PixelPill
+                  tone="rarity"
+                  rarity={item.rarity}
+                  className="text-[10px] font-semibold tracking-wide uppercase"
+                >
+                  {formatRarity(item.rarity)}
+                </PixelPill>
               </DialogDescription>
             </div>
           </DialogHeader>
 
           <section className="flex flex-col gap-2 text-sm">
-            <h3 className="text-xs">{t("inventory.modal.additionalStats")}</h3>
+            <h3 className="pixel-text-xs pixel-text-muted tracking-wide uppercase">
+              {t("inventory.modal.additionalStats")}
+            </h3>
             <ul className="flex flex-wrap gap-2">
               {item.modifiers
                 .filter((modifier) => modifier.kind === "stat")
@@ -164,45 +179,61 @@ export function InventoryModal({
                         }
                       : formatStatChange(modifier.stat, modifier.value);
 
+                  const iconTone =
+                    tone === "gain" ? "up" : tone === "loss" ? "down" : null;
+
                   return (
                     <li
                       key={`${item.id}-modifier-${index}`}
                       className="font-medium"
                     >
-                      <Badge
-                        variant="outline"
-                        className={cn("text-[10px]", BADGE_TONE_CLASSES[tone])}
+                      <PixelPill
+                        tone={
+                          tone === "gain"
+                            ? "gain"
+                            : tone === "loss"
+                              ? "loss"
+                              : "neutral"
+                        }
+                        icon={iconTone ?? undefined}
+                        className="text-[10px]"
                       >
                         {text}
-                      </Badge>
+                      </PixelPill>
                     </li>
                   );
                 })}
               {item.modifiers.filter((m) => m.kind === "stat").length === 0 ? (
-                <li>{t("inventory.modal.noAdditionalStats")}</li>
+                <li className="pixel-text-muted">
+                  {t("inventory.modal.noAdditionalStats")}
+                </li>
               ) : null}
             </ul>
           </section>
 
           {item.effect ? (
             <section className="flex flex-col gap-2 text-sm">
-              <h3 className="text-xs">{t("inventory.modal.specialEffect")}</h3>
+              <h3 className="pixel-text-xs pixel-text-muted tracking-wide uppercase">
+                {t("inventory.modal.specialEffect")}
+              </h3>
               <div className="flex flex-wrap items-center gap-2">
-                <Badge variant="outline">
+                <PixelPill tone="neutral" className="text-[10px]">
                   {formatInventoryEffect(item.effect)}
-                </Badge>
+                </PixelPill>
               </div>
             </section>
           ) : null}
 
           {description ? (
             <section className="flex flex-col gap-2 text-sm">
-              <h3 className="text-xs">{t("inventory.modal.description")}</h3>
-              <p className="text-muted-foreground">{description}</p>
+              <h3 className="pixel-text-xs pixel-text-muted tracking-wide uppercase">
+                {t("inventory.modal.description")}
+              </h3>
+              <p className="pixel-text-muted">{description}</p>
             </section>
           ) : null}
 
-          <div className="text-muted-foreground flex flex-col gap-1 text-xs">
+          <div className="pixel-text-muted flex flex-col gap-1 text-xs">
             <span>
               {t("inventory.modal.acquiredAt", {
                 time: formatDateTime(item.createdAt),
@@ -210,55 +241,53 @@ export function InventoryModal({
             </span>
             <div className="flex items-center justify-between gap-2">
               <span>{t("inventory.modal.itemId", { id: displayId })}</span>
-              <Button
+              <PixelButton
                 type="button"
-                variant="ghost"
-                size="sm"
                 onClick={handleCopyId}
-                className="h-7 gap-1 px-2 text-xs"
+                pixelSize="compact"
+                className="gap-2"
               >
-                <Copy className="size-3" aria-hidden />
+                <PixelIcon name="copy" />
                 {t("inventory.modal.copyId")}
-              </Button>
+              </PixelButton>
             </div>
           </div>
 
           {isSyncing ? (
-            <p className="text-muted-foreground flex items-center gap-2 text-xs">
+            <p className="pixel-text-muted flex items-center gap-2 text-xs">
               <Loader2 className="size-3 animate-spin" aria-hidden />
               {t("inventory.modal.processing")}
             </p>
           ) : error ? (
-            <p className="text-destructive text-xs">{error.message}</p>
+            <p className="pixel-text-danger text-xs">{error.message}</p>
           ) : null}
 
           <DialogFooter className="gap-2">
-            <Button
+            <PixelButton
               type="button"
               onClick={handleEquip}
               disabled={item.isEquipped || isBusy}
-              className="flex-1"
+              className="pixel-text-xs flex-1"
             >
               {t("inventory.modal.actions.equip")}
-            </Button>
-            <Button
+            </PixelButton>
+            <PixelButton
               type="button"
-              variant="outline"
               onClick={handleUnequip}
               disabled={!item.isEquipped || isBusy}
-              className="flex-1"
+              className="pixel-text-xs flex-1"
             >
               {t("inventory.modal.actions.unequip")}
-            </Button>
-            <Button
+            </PixelButton>
+            <PixelButton
               type="button"
-              variant="destructive"
               onClick={handleDiscard}
               disabled={isBusy}
-              className="text-background flex-1"
+              tone="danger"
+              className="pixel-text-xs flex-1"
             >
               {t("inventory.modal.actions.discard")}
-            </Button>
+            </PixelButton>
           </DialogFooter>
         </div>
       </DialogContent>
