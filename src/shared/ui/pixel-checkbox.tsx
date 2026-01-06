@@ -1,28 +1,44 @@
-import type { HTMLAttributes } from "react";
+import type { ComponentPropsWithoutRef } from "react";
 import { cn } from "@/shared/lib/utils";
 import { PixelIcon } from "@/shared/ui/pixel-icon";
 
-interface PixelCheckboxProps extends HTMLAttributes<HTMLSpanElement> {
-  checked?: boolean;
+interface PixelCheckboxProps
+  extends Omit<ComponentPropsWithoutRef<"input">, "type" | "className"> {
+  className?: string;
 }
 
 export function PixelCheckbox({
-  checked = false,
+  checked,
+  defaultChecked,
+  disabled,
   className,
   ...props
 }: PixelCheckboxProps) {
+  const isChecked = checked ?? defaultChecked ?? false;
+  const inputProps: ComponentPropsWithoutRef<"input"> = {
+    ...props,
+    type: "checkbox",
+    disabled,
+  };
+
+  if (checked !== undefined) {
+    inputProps.checked = checked;
+  } else if (defaultChecked !== undefined) {
+    inputProps.defaultChecked = defaultChecked;
+  }
+
   return (
-    <span
+    <label
       className={cn(
         "pixel-checkbox",
-        checked && "pixel-checkbox--checked",
+        isChecked && "pixel-checkbox--checked",
         className
       )}
-      {...props}
     >
-      {checked ? (
+      <input className="sr-only" {...inputProps} />
+      {isChecked ? (
         <PixelIcon name="check" className="pixel-checkbox__icon" />
       ) : null}
-    </span>
+    </label>
   );
 }

@@ -4,7 +4,7 @@ import type {
 } from "@/entities/inventory/model/types";
 import { InventoryItemCard } from "@/entities/inventory/ui/inventory-item-card";
 import { PixelSlotButton } from "@/shared/ui/pixel-slot-button";
-import { PixelCheckbox } from "@/shared/ui/pixel-checkbox";
+import { PixelCheckIcon } from "@/shared/ui/pixel-check-icon";
 import { useTranslation } from "react-i18next";
 import { useCatalogItemNameResolver } from "@/entities/catalog/model/use-catalog-item-name";
 import { PixelPanel } from "@/shared/ui/pixel-panel";
@@ -94,12 +94,9 @@ function InventoryGridCell({
         className="pointer-events-none"
       />
       {item.isEquipped ? (
-        <PixelCheckbox
-          checked
+        <PixelCheckIcon
           className="absolute top-1 left-1"
-          aria-label={t("inventory.grid.equipped")}
           title={t("inventory.grid.equipped")}
-          role="img"
         />
       ) : null}
     </PixelSlotButton>

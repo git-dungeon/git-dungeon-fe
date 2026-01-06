@@ -871,6 +871,11 @@
     );
   }
 
+  .pixel-checkbox:focus-within {
+    outline: 2px solid var(--pixel-accent-strong);
+    outline-offset: 2px;
+  }
+
   .pixel-checkbox--checked {
     background: var(--pixel-checkbox-bg);
   }
@@ -924,6 +929,11 @@
 
   .pixel-slot:hover {
     filter: brightness(1.05);
+  }
+
+  .pixel-slot:focus-visible {
+    outline: 2px solid var(--pixel-accent-strong);
+    outline-offset: 2px;
   }
 
   .pixel-slot--selected {

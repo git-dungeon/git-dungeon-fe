@@ -16,7 +16,7 @@ export function PixelSlotButton({
     <Button
       variant={variant ?? "ghost"}
       className={cn(
-        "pixel-slot hover:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0",
+        "pixel-slot hover:bg-transparent",
         selected && "pixel-slot--selected",
         className
       )}
