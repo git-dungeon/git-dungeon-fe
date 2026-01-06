@@ -56,13 +56,13 @@ export function LogsPage() {
 
   return (
     <section className="space-y-6">
-      <header className="space-y-2">
-        <h1 className="text-foreground text-2xl font-semibold">
+      <header>
+        <h1
+          className="font-pixel-title pixel-page-title"
+          data-text={t("logs.page.title")}
+        >
           {t("logs.page.title")}
         </h1>
-        <p className="text-muted-foreground text-sm">
-          {t("logs.page.subtitle")}
-        </p>
       </header>
 
       <div className="space-y-3">
