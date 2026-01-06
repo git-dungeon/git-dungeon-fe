@@ -190,13 +190,7 @@ export function InventoryModal({
                       className="font-medium"
                     >
                       <PixelPill
-                        tone={
-                          tone === "gain"
-                            ? "gain"
-                            : tone === "loss"
-                              ? "loss"
-                              : "neutral"
-                        }
+                        tone={tone}
                         icon={iconTone ?? undefined}
                         className="text-[10px]"
                       >
