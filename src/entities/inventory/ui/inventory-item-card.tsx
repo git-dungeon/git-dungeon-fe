@@ -101,7 +101,7 @@ export function InventoryItemCard({
         ) : null}
         <span
           className={cn(
-            "pixel-text-sm w-full text-center font-medium",
+            "pixel-text-muted pixel-text-sm w-full text-center font-medium",
             truncateName
               ? "truncate"
               : "leading-tight break-words whitespace-normal",

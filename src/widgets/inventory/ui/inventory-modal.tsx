@@ -145,7 +145,9 @@ export function InventoryModal({
                 {displayName}
               </DialogTitle>
               <DialogDescription className="pixel-text-muted pixel-text-sm flex flex-wrap items-center gap-2">
-                <span>{getInventorySlotLabel(slot)}</span>
+                <span className="pixel-modal__slot-label">
+                  {getInventorySlotLabel(slot)}
+                </span>
                 <PixelPill
                   tone="rarity"
                   rarity={item.rarity}
