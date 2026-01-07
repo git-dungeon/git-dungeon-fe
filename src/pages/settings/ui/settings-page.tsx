@@ -26,13 +26,13 @@ export function SettingsPage() {
   return (
     <section className="space-y-6">
       <header className="flex flex-wrap items-center justify-between gap-4">
-        <div className="space-y-1">
-          <h1 className="text-foreground text-2xl font-semibold">
+        <div>
+          <h1
+            className="font-pixel-title pixel-page-title"
+            data-text={t("settings.title")}
+          >
             {t("settings.title")}
           </h1>
-          <p className="text-muted-foreground text-sm">
-            {t("settings.subtitle")}
-          </p>
         </div>
         <Button
           type="button"
