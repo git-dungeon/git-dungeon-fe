@@ -7,13 +7,8 @@ import { SettingsPreferencesCard } from "@/widgets/settings-preferences/ui/setti
 import { SettingsEmbeddingPreviewCard } from "@/widgets/settings-embedding/ui/settings-embedding-preview-card";
 import { useLogout } from "@/features/auth/logout/model/use-logout";
 import { Button } from "@/shared/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/shared/ui/card";
+import { PixelPanel } from "@/shared/ui/pixel-panel";
+import { PixelSkeleton } from "@/shared/ui/pixel-skeleton";
 
 export function SettingsPage() {
   const { t } = useTranslation();
@@ -67,49 +62,38 @@ function renderProfileSection(
 ): JSX.Element {
   if (query.isLoading) {
     return (
-      <Card className="animate-pulse">
-        <CardHeader>
-          <CardTitle className="bg-muted h-5 w-36 rounded" />
-          <CardDescription className="bg-muted/80 h-4 w-64 rounded" />
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="flex items-center gap-4">
-            <div className="bg-muted size-16 rounded-full" />
-            <div className="space-y-2">
-              <div className="bg-muted h-4 w-32 rounded" />
-              <div className="bg-muted/80 h-3 w-24 rounded" />
-            </div>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            {Array.from({ length: 4 }).map((_, index) => (
-              <div key={index} className="bg-muted/70 h-12 rounded" />
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      <PixelPanel
+        title={t("settings.profile.title")}
+        className="p-4"
+        contentClassName="space-y-6"
+      >
+        <PixelSkeleton titleWidth="w-36" lineWidths={["w-56", "w-40"]} />
+        <PixelSkeleton titleWidth="w-28" lineWidths={["w-40", "w-32"]} />
+      </PixelPanel>
     );
   }
 
   if (query.isError || !query.data) {
     return (
-      <Card className="bg-destructive/5 text-destructive border-destructive/20">
-        <CardHeader>
-          <CardTitle>{t("settings.profile.title")}</CardTitle>
-          <CardDescription>{t("settings.profile.loadError")}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Button
-            type="button"
-            variant="destructive"
-            size="sm"
-            className="gap-2 text-white"
-            onClick={() => void onRetry()}
-          >
-            <RefreshCw className="size-4" aria-hidden />
-            {t("settings.profile.retry")}
-          </Button>
-        </CardContent>
-      </Card>
+      <PixelPanel
+        title={t("settings.profile.title")}
+        className="p-4"
+        contentClassName="space-y-4"
+      >
+        <p className="pixel-text-danger text-sm">
+          {t("settings.profile.loadError")}
+        </p>
+        <Button
+          type="button"
+          variant="destructive"
+          size="sm"
+          className="gap-2 text-white"
+          onClick={() => void onRetry()}
+        >
+          <RefreshCw className="size-4" aria-hidden />
+          {t("settings.profile.retry")}
+        </Button>
+      </PixelPanel>
     );
   }
 

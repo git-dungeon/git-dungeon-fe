@@ -2,14 +2,7 @@ import type {
   ProfileConnections,
   Profile,
 } from "@/entities/profile/model/types";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/shared/ui/card";
+import { PixelPanel } from "@/shared/ui/pixel-panel";
 import { ProfileIdentity } from "@/features/settings/ui/profile-identity";
 import { GithubConnection } from "@/features/settings/ui/github-connection";
 import { ProfileFieldList } from "@/features/settings/ui/profile-field-list";
@@ -32,39 +25,40 @@ export function SettingsProfileCard({
   const joinedAtValue = formatDateWithFallback(t, profile.joinedAt);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t("settings.profile.title")}</CardTitle>
-        <CardDescription>{t("settings.profile.description")}</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <ProfileIdentity profile={profile} />
-        <ProfileFieldList
-          fields={[
-            {
-              id: "email",
-              label: t("settings.profile.fields.email"),
-              value: profile.email ?? "-",
-            },
-            {
-              id: "user-id",
-              label: t("settings.profile.fields.userId"),
-              value: profile.userId,
-            },
-            {
-              id: "joined-at",
-              label: t("settings.profile.fields.joinedAt"),
-              value: joinedAtValue.value,
-              hint: joinedAtValue.hint,
-              title: joinedAtValue.title,
-            },
-          ]}
-        />
-      </CardContent>
-      <CardFooter className="border-t pt-6">
+    <PixelPanel
+      title={t("settings.profile.title")}
+      className="p-4"
+      contentClassName="space-y-6"
+    >
+      <p className="pixel-text-muted pixel-text-sm">
+        {t("settings.profile.description")}
+      </p>
+      <ProfileIdentity profile={profile} />
+      <ProfileFieldList
+        fields={[
+          {
+            id: "email",
+            label: t("settings.profile.fields.email"),
+            value: profile.email ?? "-",
+          },
+          {
+            id: "user-id",
+            label: t("settings.profile.fields.userId"),
+            value: profile.userId,
+          },
+          {
+            id: "joined-at",
+            label: t("settings.profile.fields.joinedAt"),
+            value: joinedAtValue.value,
+            hint: joinedAtValue.hint,
+            title: joinedAtValue.title,
+          },
+        ]}
+      />
+      <div className="border-t border-white/10 pt-4">
         <GithubConnection connections={connections} />
-      </CardFooter>
-    </Card>
+      </div>
+    </PixelPanel>
   );
 }
 

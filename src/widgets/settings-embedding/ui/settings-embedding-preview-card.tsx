@@ -1,13 +1,5 @@
 import { useMemo, useState } from "react";
 import type { TFunction } from "i18next";
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/shared/ui/card";
 import { Button, buttonVariants } from "@/shared/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { formatDateTime } from "@/shared/lib/datetime/formatters";
@@ -28,6 +20,7 @@ import {
 } from "@/widgets/embed-view/ui/embed-container";
 import { EMBEDDING_ENDPOINTS, resolveApiUrl } from "@/shared/config/env";
 import { useTranslation } from "react-i18next";
+import { PixelPanel } from "@/shared/ui/pixel-panel";
 
 const EMBEDDING_SIZE_OPTIONS: Array<{
   value: EmbedPreviewSize;
@@ -84,56 +77,57 @@ export function SettingsEmbeddingPreviewCard() {
     return formatDateTime(new Date());
   }, []);
 
+  const headerRight = (
+    <div className="flex items-center gap-2">
+      {EMBEDDING_SIZE_OPTIONS.map((option) => (
+        <button
+          key={option.value}
+          type="button"
+          className={cn(
+            buttonVariants({
+              variant: option.value === size ? "default" : "outline",
+              size: "sm",
+            }),
+            "flex flex-col gap-0 text-xs"
+          )}
+          onClick={() => setSize(option.value)}
+          disabled={isBusy}
+        >
+          <span>{t(option.labelKey)}</span>
+          <span className="text-muted-foreground text-[10px]">
+            {t(option.hintKey)}
+          </span>
+        </button>
+      ))}
+    </div>
+  );
+
   return (
-    <Card>
-      <CardHeader>
-        <div>
-          <CardTitle>{t("settings.embedding.title")}</CardTitle>
-          <CardDescription>
-            {t("settings.embedding.description")}
-          </CardDescription>
-        </div>
-        <CardAction className="flex items-center gap-2">
-          {EMBEDDING_SIZE_OPTIONS.map((option) => (
-            <button
-              key={option.value}
-              type="button"
-              className={cn(
-                buttonVariants({
-                  variant: option.value === size ? "default" : "outline",
-                  size: "sm",
-                }),
-                "flex flex-col gap-0 text-xs"
-              )}
-              onClick={() => setSize(option.value)}
-              disabled={isBusy}
-            >
-              <span>{t(option.labelKey)}</span>
-              <span className="text-muted-foreground text-[10px]">
-                {t(option.hintKey)}
-              </span>
-            </button>
-          ))}
-        </CardAction>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {overview.isError
-          ? renderOverviewError(t, overview.refetch)
-          : embedRenderError
-            ? renderEmbedError(t, embedRenderError, embedSize, embedLanguage)
-            : !svgDataUrl
-              ? renderSkeleton(embedSize, embedLanguage)
-              : renderPreviewContent({
-                  t,
-                  svgDataUrl,
-                  size: embedSize,
-                  theme: embedTheme,
-                  language: embedLanguage,
-                  generatedAtLabel,
-                  userId,
-                })}
-      </CardContent>
-    </Card>
+    <PixelPanel
+      title={t("settings.embedding.title")}
+      headerRight={headerRight}
+      className="p-4"
+      contentClassName="space-y-6"
+    >
+      <p className="pixel-text-muted pixel-text-sm">
+        {t("settings.embedding.description")}
+      </p>
+      {overview.isError
+        ? renderOverviewError(t, overview.refetch)
+        : embedRenderError
+          ? renderEmbedError(t, embedRenderError, embedSize, embedLanguage)
+          : !svgDataUrl
+            ? renderSkeleton(embedSize, embedLanguage)
+            : renderPreviewContent({
+                t,
+                svgDataUrl,
+                size: embedSize,
+                theme: embedTheme,
+                language: embedLanguage,
+                generatedAtLabel,
+                userId,
+              })}
+    </PixelPanel>
   );
 }
 
