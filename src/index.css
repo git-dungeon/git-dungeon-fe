@@ -1311,6 +1311,55 @@
     --pixel-checkbox-check: #ffffff;
   }
 
+  .pixel-app .pixel-skeleton,
+  .pixel-app .pixel-log-skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px 14px;
+    border: 2px solid var(--pixel-border-strong);
+    background: var(--pixel-surface-strong);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+      inset 0 0 0 3px rgba(0, 0, 0, 0.08),
+      0 3px 0 rgba(0, 0, 0, 0.35);
+    clip-path: polygon(
+      4px 0,
+      calc(100% - 4px) 0,
+      100% 4px,
+      100% calc(100% - 4px),
+      calc(100% - 4px) 100%,
+      4px 100%,
+      0 calc(100% - 4px),
+      0 4px
+    );
+  }
+
+  .pixel-app .pixel-skeleton__block,
+  .pixel-app .pixel-log-skeleton__block {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .pixel-app .pixel-skeleton__line,
+  .pixel-app .pixel-log-skeleton__line {
+    height: 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    animation: pixel-pulse 1.6s ease-in-out infinite;
+  }
+
+  @keyframes pixel-pulse {
+    0%,
+    100% {
+      opacity: 0.45;
+    }
+    50% {
+      opacity: 0.85;
+    }
+  }
+
   .pixel-app .pixel-log-card {
     position: relative;
     isolation: isolate;

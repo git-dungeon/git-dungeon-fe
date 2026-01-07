@@ -6,8 +6,12 @@ import type {
 import { DeltaList } from "@/entities/dungeon-log/ui/delta-list";
 import { LogCard } from "@/entities/dungeon-log/ui/log-card";
 import { LogThumbnailStack } from "@/entities/dungeon-log/ui/log-thumbnail-stack";
-import { Button } from "@/shared/ui/button";
-import { Card, CardContent } from "@/shared/ui/card";
+import { PixelButton } from "@/shared/ui/pixel-button";
+import {
+  PixelEmptyState,
+  PixelErrorState,
+  PixelSkeletonState,
+} from "@/shared/ui/pixel-state";
 import { useDungeonLogTimeline } from "@/widgets/dungeon-log-timeline/model/use-dungeon-log-timeline";
 import { buildLogThumbnails } from "@/entities/dungeon-log/config/thumbnails";
 import { DungeonLogDetailDialog } from "@/widgets/dungeon-log-timeline/ui/dungeon-log-detail-dialog";
@@ -93,15 +97,15 @@ export function DungeonLogTimeline({
       </ul>
       <div ref={sentinelRef} className="flex justify-center py-6">
         {isFetchingNextPage ? (
-          <span className="text-muted-foreground text-sm">
+          <span className="pixel-text-muted text-sm">
             {t("logs.timeline.loadingNext")}
           </span>
         ) : hasNextPage ? (
-          <Button variant="outline" onClick={() => fetchNextPage()}>
+          <PixelButton onClick={() => fetchNextPage()}>
             {t("logs.timeline.loadMore")}
-          </Button>
+          </PixelButton>
         ) : (
-          <span className="text-muted-foreground text-sm">
+          <span className="pixel-text-muted text-sm">
             {t("logs.timeline.allLoaded")}
           </span>
         )}
@@ -120,23 +124,7 @@ export function DungeonLogTimeline({
 }
 
 function LoadingState() {
-  return (
-    <div className="space-y-3">
-      {Array.from({ length: 3 }).map((_, index) => (
-        <div
-          key={index}
-          className="border-border bg-card animate-pulse rounded-lg border p-6"
-        >
-          <div className="bg-muted h-4 w-24 rounded" />
-          <div className="mt-4 space-y-2">
-            <div className="bg-muted h-3 w-32 rounded" />
-            <div className="bg-muted h-3 w-40 rounded" />
-            <div className="bg-muted h-3 w-28 rounded" />
-          </div>
-        </div>
-      ))}
-    </div>
-  );
+  return <PixelSkeletonState />;
 }
 
 interface ErrorStateProps {
@@ -157,38 +145,31 @@ function ErrorState({
   const message = error instanceof Error ? error.message : undefined;
 
   return (
-    <Card className="border-destructive/50">
-      <CardContent className="flex flex-col gap-3 p-6 text-sm">
-        <p className="text-destructive">{t("logs.timeline.error")}</p>
-        {showInvalidQueryHint ? (
-          <p className="text-muted-foreground text-xs">
-            {t("logs.timeline.invalidFilter")}
-          </p>
-        ) : null}
-        {message ? (
-          <p className="text-muted-foreground text-xs">{message}</p>
-        ) : null}
-        <div>
+    <PixelErrorState
+      message={t("logs.timeline.error")}
+      actions={
+        <>
           {showInvalidQueryHint && onResetFilter ? (
-            <Button variant="outline" onClick={onResetFilter} className="mr-2">
+            <PixelButton onClick={onResetFilter} className="mr-2">
               {t("logs.timeline.resetFilter")}
-            </Button>
+            </PixelButton>
           ) : null}
-          <Button variant="outline" onClick={onRetry}>
+          <PixelButton onClick={onRetry}>
             {t("logs.timeline.retry")}
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+          </PixelButton>
+        </>
+      }
+    >
+      {showInvalidQueryHint ? (
+        <p className="pixel-text-muted text-xs">
+          {t("logs.timeline.invalidFilter")}
+        </p>
+      ) : null}
+      {message ? <p className="pixel-text-muted text-xs">{message}</p> : null}
+    </PixelErrorState>
   );
 }
 
 function EmptyState({ t }: { t: (key: string) => string }) {
-  return (
-    <Card className="border-dashed">
-      <CardContent className="text-muted-foreground p-6 text-sm">
-        {t("logs.timeline.empty")}
-      </CardContent>
-    </Card>
-  );
+  return <PixelEmptyState message={t("logs.timeline.empty")} />;
 }
