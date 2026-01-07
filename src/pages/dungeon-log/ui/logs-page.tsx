@@ -13,6 +13,7 @@ import {
 } from "@/shared/ui/select";
 import { DungeonLogTimeline } from "@/widgets/dungeon-log-timeline/ui/dungeon-log-timeline";
 import { useTranslation } from "react-i18next";
+import { PixelPanel } from "@/shared/ui/pixel-panel";
 
 const ALL_FILTER_VALUE = "ALL" as const;
 type LogsFilterSelection = typeof ALL_FILTER_VALUE | DungeonLogsFilterType;
@@ -56,63 +57,78 @@ export function LogsPage() {
 
   return (
     <section className="space-y-6">
-      <header className="space-y-2">
-        <h1 className="text-foreground text-2xl font-semibold">
+      <header>
+        <h1
+          className="font-pixel-title pixel-page-title"
+          data-text={t("logs.page.title")}
+        >
           {t("logs.page.title")}
         </h1>
-        <p className="text-muted-foreground text-sm">
-          {t("logs.page.subtitle")}
-        </p>
       </header>
 
-      <div className="space-y-3">
-        <div className="flex flex-wrap items-end gap-3">
-          <div className="space-y-1">
-            <p className="text-foreground text-sm font-medium">
-              {t("logs.filters.title")}
-            </p>
-            <Select
-              value={filter}
-              onValueChange={(value) => setFilter(value as LogsFilterSelection)}
-            >
-              <SelectTrigger className="min-w-64">
-                <SelectValue placeholder={t("logs.filters.placeholder")} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={ALL_FILTER_VALUE}>
-                  {filterLabelMap[ALL_FILTER_VALUE]}
-                </SelectItem>
-                <SelectSeparator />
-                <SelectGroup>
-                  <SelectLabel>{t("logs.filters.groups.category")}</SelectLabel>
-                  {CATEGORY_FILTERS.map((value) => (
-                    <SelectItem key={value} value={value}>
-                      {filterLabelMap[value]}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-                <SelectSeparator />
-                <SelectGroup>
-                  <SelectLabel>{t("logs.filters.groups.action")}</SelectLabel>
-                  {ACTION_FILTERS.map((value) => (
-                    <SelectItem key={value} value={value}>
-                      {filterLabelMap[value]}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
+      <div className="space-y-4">
+        <PixelPanel
+          title={t("logs.filters.title")}
+          className="p-4"
+          contentClassName="space-y-3"
+        >
+          <Select
+            value={filter}
+            onValueChange={(value) => setFilter(value as LogsFilterSelection)}
+          >
+            <SelectTrigger className="pixel-select-trigger min-w-64">
+              <SelectValue placeholder={t("logs.filters.placeholder")} />
+            </SelectTrigger>
+            <SelectContent className="pixel-select-content">
+              <SelectItem value={ALL_FILTER_VALUE}>
+                {filterLabelMap[ALL_FILTER_VALUE]}
+              </SelectItem>
+              <SelectSeparator />
+              <SelectGroup>
+                <SelectLabel className="pixel-select-label">
+                  {t("logs.filters.groups.category")}
+                </SelectLabel>
+                {CATEGORY_FILTERS.map((value) => (
+                  <SelectItem
+                    key={value}
+                    value={value}
+                    className="pixel-select-item"
+                  >
+                    {filterLabelMap[value]}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+              <SelectSeparator />
+              <SelectGroup>
+                <SelectLabel className="pixel-select-label">
+                  {t("logs.filters.groups.action")}
+                </SelectLabel>
+                {ACTION_FILTERS.map((value) => (
+                  <SelectItem
+                    key={value}
+                    value={value}
+                    className="pixel-select-item"
+                  >
+                    {filterLabelMap[value]}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          {description ? (
+            <p className="pixel-text-muted text-sm">{description}</p>
+          ) : null}
+        </PixelPanel>
 
-        {description ? (
-          <p className="text-muted-foreground text-sm">{description}</p>
-        ) : null}
-
-        <DungeonLogTimeline
-          filterType={resolvedFilterType}
-          onResetFilter={() => setFilter(ALL_FILTER_VALUE)}
-        />
+        <PixelPanel
+          className="pixel-log-panel p-4"
+          contentClassName="space-y-4"
+        >
+          <DungeonLogTimeline
+            filterType={resolvedFilterType}
+            onResetFilter={() => setFilter(ALL_FILTER_VALUE)}
+          />
+        </PixelPanel>
       </div>
     </section>
   );

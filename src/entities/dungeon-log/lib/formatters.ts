@@ -2,6 +2,7 @@ import type {
   DungeonLogAction,
   DungeonLogCategory,
   DungeonLogEntry,
+  DungeonLogInventoryDelta,
   DungeonLogRewardItem,
   DungeonLogStatus,
   DungeonLogStatsDelta,
@@ -70,6 +71,7 @@ export interface FormattedDeltaEntry {
   id: string;
   text: string;
   tone: StatTone;
+  icon?: "count" | "plus" | "minus";
 }
 
 type ItemNameResolver = (code: string, fallback?: string | null) => string;
@@ -82,10 +84,11 @@ export interface LogDescriptionResolvers {
 
 export function formatDelta(
   entry: DungeonLogEntry,
-  resolveItemName?: ItemNameResolver
+  options: { resolveItemName?: ItemNameResolver } = {}
 ): FormattedDeltaEntry[] {
   const { delta } = entry;
   const entries: FormattedDeltaEntry[] = [];
+  const { resolveItemName } = options;
 
   if (!delta) {
     return entries;
@@ -238,6 +241,7 @@ function pushRewardItemsSummary(
     id: `${entryId}-reward-items`,
     text: t("logs.delta.itemSummary", { count }),
     tone: "gain",
+    icon: "count",
   });
 }
 
@@ -264,12 +268,7 @@ function formatStatsDelta(
 
 function formatInventoryDelta(
   entryId: string,
-  inventory: {
-    added?: Array<{ code: string; quantity?: number }>;
-    removed?: Array<{ code: string; quantity?: number }>;
-    equipped?: { code: string };
-    unequipped?: { code: string };
-  },
+  inventory: DungeonLogInventoryDelta,
   resolveItemName?: ItemNameResolver
 ): FormattedDeltaEntry[] {
   const entries: FormattedDeltaEntry[] = [];
@@ -282,6 +281,7 @@ function formatInventoryDelta(
       id: `${entryId}-equipped`,
       text: t("logs.delta.equipped", { item: itemName }),
       tone: "gain",
+      icon: "plus",
     });
   }
 
@@ -291,6 +291,7 @@ function formatInventoryDelta(
       id: `${entryId}-unequipped`,
       text: t("logs.delta.unequipped", { item: itemName }),
       tone: "loss",
+      icon: "minus",
     });
   }
 
@@ -304,6 +305,7 @@ function formatInventoryDelta(
         count: quantity,
       }),
       tone: "gain",
+      icon: "plus",
     });
   }
 
@@ -317,6 +319,7 @@ function formatInventoryDelta(
         count: quantity,
       }),
       tone: "loss",
+      icon: "minus",
     });
   }
 
@@ -344,7 +347,7 @@ export function buildLogDescription(
     omitOpponent: Boolean(!resultLabel && storyMessage?.usesMonster),
     resolveMonsterName,
   });
-  const deltaEntries = formatDelta(entry, resolveItemName).map(
+  const deltaEntries = formatDelta(entry, { resolveItemName }).map(
     (item) => item.text
   );
 

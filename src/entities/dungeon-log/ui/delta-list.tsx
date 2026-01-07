@@ -1,9 +1,7 @@
 import type { DungeonLogEntry } from "@/entities/dungeon-log/model/types";
 import { formatDelta } from "@/entities/dungeon-log/lib/formatters";
 import { useCatalogItemNameResolver } from "@/entities/catalog/model/use-catalog-item-name";
-import { Badge } from "@/shared/ui/badge";
-import { cn } from "@/shared/lib/utils";
-import { BADGE_TONE_CLASSES } from "@/shared/ui/tone";
+import { PixelPill } from "@/shared/ui/pixel-pill";
 
 interface DeltaListProps {
   entry: DungeonLogEntry;
@@ -11,7 +9,7 @@ interface DeltaListProps {
 
 export function DeltaList({ entry }: DeltaListProps) {
   const resolveItemName = useCatalogItemNameResolver();
-  const entries = formatDelta(entry, resolveItemName);
+  const entries = formatDelta(entry, { resolveItemName });
 
   if (entries.length === 0) {
     return null;
@@ -19,16 +17,23 @@ export function DeltaList({ entry }: DeltaListProps) {
 
   return (
     <ul className="mt-3 flex flex-wrap gap-2">
-      {entries.map((item) => (
-        <li key={item.id}>
-          <Badge
-            variant="outline"
-            className={cn("border", BADGE_TONE_CLASSES[item.tone])}
-          >
-            {item.text}
-          </Badge>
-        </li>
-      ))}
+      {entries.map((item) => {
+        const iconTone =
+          item.icon ??
+          (item.tone === "gain"
+            ? "up"
+            : item.tone === "loss"
+              ? "down"
+              : undefined);
+
+        return (
+          <li key={item.id}>
+            <PixelPill tone={item.tone} icon={iconTone} className="text-[10px]">
+              {item.text}
+            </PixelPill>
+          </li>
+        );
+      })}
     </ul>
   );
 }

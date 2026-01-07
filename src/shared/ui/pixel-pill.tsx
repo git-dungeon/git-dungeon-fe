@@ -4,7 +4,7 @@ import type { EquipmentRarity } from "@/entities/inventory/model/types";
 import { PixelIcon } from "@/shared/ui/pixel-icon";
 
 type PixelPillTone = "neutral" | "gain" | "loss" | "rarity";
-type PixelPillIcon = "up" | "down";
+type PixelPillIcon = "up" | "down" | "count" | "plus" | "minus";
 
 interface PixelPillProps extends HTMLAttributes<HTMLSpanElement> {
   tone?: PixelPillTone;
@@ -39,7 +39,17 @@ export function PixelPill({
     >
       {icon ? (
         <PixelIcon
-          name={icon === "up" ? "arrow-up" : "arrow-down"}
+          name={
+            icon === "up"
+              ? "arrow-up"
+              : icon === "down"
+                ? "arrow-down"
+                : icon === "plus"
+                  ? "plus"
+                  : icon === "minus"
+                    ? "minus"
+                    : "item-count"
+          }
           size={10}
           className="pixel-pill__icon"
         />

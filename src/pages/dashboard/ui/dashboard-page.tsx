@@ -4,7 +4,7 @@ import { DASHBOARD_RECENT_LOG_LIMIT } from "@/pages/dashboard/config/constants";
 import { useCharacterOverview } from "@/features/character-summary/model/use-character-overview";
 import type { DungeonLogsFilterType } from "@/entities/dungeon-log/model/types";
 import { useTranslation } from "react-i18next";
-import { PixelPanel } from "@/shared/ui/pixel-panel";
+import { PixelErrorState, PixelSkeletonState } from "@/shared/ui/pixel-state";
 import { DashboardSummaryPanel } from "@/widgets/dashboard-skin/ui/dashboard-summary-panel";
 import { DashboardAttributesPanel } from "@/widgets/dashboard-skin/ui/dashboard-attributes-panel";
 import { DashboardLogsPanel } from "@/widgets/dashboard-skin/ui/dashboard-logs-panel";
@@ -26,13 +26,12 @@ export function DashboardPage() {
   const logs = logsData?.logs ?? [];
 
   const renderSkeleton = () => (
-    <PixelPanel className="border-dashed">
-      <div className="animate-pulse space-y-3">
-        <div className="bg-muted h-5 w-1/3 rounded" />
-        <div className="bg-muted h-3 w-2/3 rounded" />
-        <div className="bg-muted h-24 rounded" />
-      </div>
-    </PixelPanel>
+    <PixelSkeletonState
+      className="border-dashed"
+      titleWidth="w-1/3"
+      lineWidths={["w-2/3", "w-full"]}
+      count={1}
+    />
   );
 
   return (
@@ -50,11 +49,10 @@ export function DashboardPage() {
       </header>
 
       {showError ? (
-        <PixelPanel className="border-destructive/40">
-          <div className="pixel-text-sm flex flex-wrap items-center justify-between gap-3">
-            <span className="pixel-text-danger">
-              {t("dashboard.loadError")}
-            </span>
+        <PixelErrorState
+          className="border-destructive/40"
+          message={t("dashboard.loadError")}
+          actions={
             <Button
               type="button"
               variant="outline"
@@ -66,8 +64,8 @@ export function DashboardPage() {
             >
               {t("dashboard.retry")}
             </Button>
-          </div>
-        </PixelPanel>
+          }
+        />
       ) : null}
 
       {showLoading ? renderSkeleton() : null}

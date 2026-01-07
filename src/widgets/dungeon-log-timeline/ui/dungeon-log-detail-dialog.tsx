@@ -15,6 +15,7 @@ import {
 } from "@/entities/dungeon-log/lib/monster";
 import { useCatalogItemNameResolver } from "@/entities/catalog/model/use-catalog-item-name";
 import { useCatalogMonsterNameResolver } from "@/entities/catalog/model/use-catalog-monster-name";
+import { useCatalogItemRarityResolver } from "@/entities/catalog/model/use-catalog-item-rarity";
 import {
   Dialog,
   DialogClose,
@@ -23,8 +24,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/shared/ui/dialog";
-import { Button } from "@/shared/ui/button";
+import { PixelButton } from "@/shared/ui/pixel-button";
+import { PixelIcon } from "@/shared/ui/pixel-icon";
 import { useTranslation } from "react-i18next";
+import { cn } from "@/shared/lib/utils";
 
 interface DungeonLogDetailDialogProps {
   log: DungeonLogEntry | null;
@@ -40,42 +43,47 @@ export function DungeonLogDetailDialog({
   const { t } = useTranslation();
   const resolveItemName = useCatalogItemNameResolver();
   const resolveMonsterName = useCatalogMonsterNameResolver();
+  const resolveItemRarity = useCatalogItemRarityResolver();
   const thumbnails = log
-    ? buildLogThumbnails(log, { resolveItemName, resolveMonsterName })
+    ? buildLogThumbnails(log, {
+        resolveItemName,
+        resolveMonsterName,
+        resolveItemRarity,
+      })
     : [];
   const monster = log ? resolveBattleMonster(log) : undefined;
   const player = log ? resolveBattlePlayer(log) : undefined;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="space-y-6 sm:max-w-lg">
+      <DialogContent className="pixel-modal max-w-lg gap-4">
         {log ? (
           <>
-            <DialogHeader>
-              <DialogTitle className="text-left">
+            <DialogClose asChild>
+              <PixelButton
+                type="button"
+                aria-label={t("logs.detail.close")}
+                pixelSize="compact"
+                className="pointer-events-auto absolute top-3 right-3 z-10"
+              >
+                <PixelIcon name="close" />
+              </PixelButton>
+            </DialogClose>
+            <DialogHeader className="pixel-modal__header items-start">
+              <DialogTitle className="pixel-modal__title text-left">
                 {resolveActionLabel(log.action)}
               </DialogTitle>
-              <DialogDescription className="text-left">
+              <DialogDescription className="pixel-text-muted pixel-text-sm text-left">
                 {buildLogDescription(log, {
                   resolveItemName,
                   resolveMonsterName,
                 })}
               </DialogDescription>
-              <DialogClose asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  aria-label={t("logs.detail.close")}
-                  className="absolute top-4 right-4"
-                >
-                  ✕
-                </Button>
-              </DialogClose>
             </DialogHeader>
 
             {monster || player ? (
-              <div className="space-y-2">
-                <p className="text-muted-foreground text-xs">
+              <section className="pixel-modal__section">
+                <p className="pixel-text-xs pixel-text-muted tracking-wide uppercase">
                   {t("logs.detail.battleInfo")}
                 </p>
                 <BattleMonsterSummary
@@ -84,11 +92,11 @@ export function DungeonLogDetailDialog({
                   size="detail"
                   resolveMonsterName={resolveMonsterName}
                 />
-              </div>
+              </section>
             ) : null}
 
-            <div className="space-y-2">
-              <p className="text-muted-foreground text-xs">
+            <section className="pixel-modal__section">
+              <p className="pixel-text-xs pixel-text-muted tracking-wide uppercase">
                 {t("logs.detail.images")}
               </p>
               <div className="flex flex-wrap gap-3">
@@ -97,10 +105,16 @@ export function DungeonLogDetailDialog({
                     const badgeStyles = resolveThumbnailBadgePresentation(
                       thumbnail.badge
                     );
+                    const rarityClass = thumbnail.rarity
+                      ? `rarity-${thumbnail.rarity}`
+                      : null;
                     return (
                       <div
                         key={thumbnail.id}
-                        className="border-border bg-muted relative h-16 w-16 overflow-hidden rounded-md border"
+                        className={cn(
+                          "pixel-log-thumb relative h-16 w-16 overflow-hidden",
+                          rarityClass
+                        )}
                       >
                         <img
                           src={thumbnail.src}
@@ -109,28 +123,35 @@ export function DungeonLogDetailDialog({
                         />
                         {badgeStyles ? (
                           <span
-                            className={`absolute top-1 left-1 flex h-5 w-5 items-center justify-center rounded-full text-xs font-semibold text-white ${badgeStyles.className}`}
+                            className={cn(
+                              "pixel-checkbox pixel-log-thumb__badge absolute top-1 left-1",
+                              badgeStyles.className
+                            )}
                           >
-                            {badgeStyles.label}
+                            <PixelIcon
+                              name={badgeStyles.icon}
+                              size={12}
+                              className="pixel-checkbox__icon"
+                            />
                           </span>
                         ) : null}
                       </div>
                     );
                   })
                 ) : (
-                  <p className="text-muted-foreground text-sm">
+                  <p className="pixel-text-muted text-sm">
                     {t("logs.detail.noImages")}
                   </p>
                 )}
               </div>
-            </div>
+            </section>
 
-            <div className="space-y-2">
-              <p className="text-muted-foreground text-xs">
+            <section className="pixel-modal__section">
+              <p className="pixel-text-xs pixel-text-muted tracking-wide uppercase">
                 {t("logs.detail.delta")}
               </p>
               <DeltaList entry={log} />
-            </div>
+            </section>
           </>
         ) : null}
       </DialogContent>

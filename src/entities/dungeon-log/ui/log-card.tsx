@@ -3,7 +3,6 @@ import type { DungeonLogEntry } from "@/entities/dungeon-log/model/types";
 import {
   buildLogDescription,
   formatLogTimestamp,
-  resolveActionLabel,
   resolveLogCategoryLabel,
   resolveStatusLabel,
 } from "@/entities/dungeon-log/lib/formatters";
@@ -15,7 +14,6 @@ import {
   resolveBattlePlayer,
 } from "@/entities/dungeon-log/lib/monster";
 import { Badge } from "@/shared/ui/badge";
-import { Card, CardContent, CardFooter, CardHeader } from "@/shared/ui/card";
 import { cn } from "@/shared/lib/utils";
 import { useTranslation } from "react-i18next";
 
@@ -42,8 +40,18 @@ export function LogCard({
   const resolveItemName = useCatalogItemNameResolver();
   const resolveMonsterName = useCatalogMonsterNameResolver();
 
+  const description = buildLogDescription(log, {
+    resolveItemName,
+    resolveMonsterName,
+  });
+  const meta = `${formatFloorLabel(t, log.floor)} · ${resolveStatusLabel(
+    log.status,
+    log.action
+  )}`;
+  const timestamp = formatLogTimestamp(log.createdAt);
+
   return (
-    <Card
+    <div
       role={isInteractive ? "button" : undefined}
       tabIndex={isInteractive ? 0 : undefined}
       onClick={onClick}
@@ -70,53 +78,42 @@ export function LogCard({
         }
       }}
       className={cn(
-        isInteractive
-          ? "hover:border-primary cursor-pointer transition"
-          : undefined
+        "pixel-log-card",
+        isInteractive && "pixel-log-card--interactive"
       )}
     >
-      <CardHeader className="flex flex-row items-start justify-between space-y-0">
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
+      <div className="pixel-log-card__content">
+        <div className="pixel-log-card__details">
+          <div className="pixel-log-card__header">
             {showCategoryBadge ? (
-              <Badge variant="secondary" className="text-xs font-medium">
-                {resolveLogCategoryLabel(log.category)}
+              <Badge variant="outline" className="pixel-log-badge">
+                [{resolveLogCategoryLabel(log.category)}]
               </Badge>
             ) : null}
-            <p className="text-foreground text-sm font-semibold">
-              {resolveActionLabel(log.action)}
+            <p className="pixel-log-text">
+              <span className="pixel-log-time">[{timestamp}]</span>{" "}
+              {description}
             </p>
           </div>
-        </div>
-        <span className="text-muted-foreground text-xs whitespace-nowrap">
-          {formatLogTimestamp(log.createdAt)}
-        </span>
-      </CardHeader>
-      <CardContent className="flex min-h-16 justify-between gap-3">
-        <div className="space-y-2">
-          <p className="text-muted-foreground text-sm">
-            {buildLogDescription(log, { resolveItemName, resolveMonsterName })}
-          </p>
-          <p className="text-muted-foreground text-xs">
-            {`${formatFloorLabel(t, log.floor)} · ${resolveStatusLabel(
-              log.status,
-              log.action
-            )}`}
-          </p>
+          <p className="pixel-log-meta">{meta}</p>
           {monster || player ? (
-            <BattleMonsterSummary
-              monster={monster}
-              player={player}
-              resolveMonsterName={resolveMonsterName}
-            />
+            <div className="pixel-log-card__summary">
+              <BattleMonsterSummary
+                monster={monster}
+                player={player}
+                resolveMonsterName={resolveMonsterName}
+              />
+            </div>
           ) : null}
         </div>
         {renderThumbnail ? (
-          <div className="flex justify-end">{renderThumbnail()}</div>
+          <div className="pixel-log-card__thumb">{renderThumbnail()}</div>
         ) : null}
-      </CardContent>
-      {deltaContent ? <CardFooter>{deltaContent}</CardFooter> : null}
-    </Card>
+      </div>
+      {deltaContent ? (
+        <div className="pixel-log-card__delta">{deltaContent}</div>
+      ) : null}
+    </div>
   );
 }
 

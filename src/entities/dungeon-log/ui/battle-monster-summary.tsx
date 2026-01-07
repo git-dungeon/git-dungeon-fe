@@ -5,6 +5,7 @@ import type {
 import { useProfile } from "@/entities/profile/model/use-profile";
 import { resolveMonsterThumbnail } from "@/entities/dungeon-log/config/thumbnails";
 import { cn } from "@/shared/lib/utils";
+import { PixelPill } from "@/shared/ui/pixel-pill";
 
 interface BattleMonsterSummaryProps {
   monster?: DungeonLogMonster;
@@ -79,20 +80,20 @@ export function BattleMonsterSummary({
   return (
     <div
       className={cn(
-        "grid gap-3",
+        "pixel-log-summary grid gap-3",
         size === "detail" ? "sm:grid-cols-2" : "grid-cols-1"
       )}
     >
       {player ? (
         <div
           className={cn(
-            "border-border bg-muted/40 flex items-start gap-3 rounded-md border p-3",
+            "pixel-log-summary__card flex gap-3",
             size === "detail" ? "items-start" : "items-center"
           )}
         >
           <div
             className={cn(
-              "border-border bg-muted text-muted-foreground flex shrink-0 items-center justify-center overflow-hidden rounded-md border",
+              "pixel-log-summary__avatar flex shrink-0 items-center justify-center overflow-hidden",
               size === "detail" ? "h-16 w-16" : "h-10 w-10"
             )}
           >
@@ -109,16 +110,17 @@ export function BattleMonsterSummary({
           </div>
           <div className="min-w-0 space-y-2">
             <div className="flex items-center gap-2">
-              <p className="text-foreground text-sm font-semibold">
+              <p className="pixel-log-summary__title text-sm font-semibold">
                 {profileName ?? "유저"}
               </p>
             </div>
             {playerStats.length > 0 ? (
-              <div className="flex flex-wrap gap-1">
+              <div className="pixel-log-summary__stats flex flex-wrap gap-1">
                 {playerStats.map((stat) => (
-                  <span
+                  <PixelPill
                     key={stat.label}
-                    className="bg-muted text-muted-foreground rounded px-2 py-0.5 text-[11px] font-medium"
+                    tone="neutral"
+                    className="pixel-log-summary__stat text-[10px]"
                   >
                     {stat.label} {stat.base}
                     {stat.bonus && (
@@ -134,7 +136,7 @@ export function BattleMonsterSummary({
                         ({stat.bonus})
                       </span>
                     )}
-                  </span>
+                  </PixelPill>
                 ))}
               </div>
             ) : null}
@@ -145,14 +147,14 @@ export function BattleMonsterSummary({
       {monster ? (
         <div
           className={cn(
-            "border-border bg-muted/40 flex items-start gap-3 rounded-md border p-3",
+            "pixel-log-summary__card flex gap-3",
             size === "detail" ? "items-start" : "items-center"
           )}
         >
           {image ? (
             <div
               className={cn(
-                "border-border bg-muted shrink-0 overflow-hidden rounded-md border",
+                "pixel-log-summary__avatar shrink-0 overflow-hidden",
                 size === "detail" ? "h-16 w-16" : "h-10 w-10"
               )}
             >
@@ -165,19 +167,20 @@ export function BattleMonsterSummary({
           ) : null}
           <div className="min-w-0 space-y-1">
             <div className="flex items-center gap-2">
-              <p className="text-foreground text-sm font-semibold">
+              <p className="pixel-log-summary__title text-sm font-semibold">
                 {monsterLabel}
               </p>
             </div>
             {monsterStats.length > 0 ? (
-              <div className="flex flex-wrap gap-1">
+              <div className="pixel-log-summary__stats flex flex-wrap gap-1">
                 {monsterStats.map((stat) => (
-                  <span
+                  <PixelPill
                     key={stat.label}
-                    className="bg-muted text-muted-foreground rounded px-2 py-0.5 text-[11px] font-medium"
+                    tone="neutral"
+                    className="pixel-log-summary__stat text-[10px]"
                   >
                     {stat.label} {stat.value}
-                  </span>
+                  </PixelPill>
                 ))}
               </div>
             ) : null}
