@@ -120,7 +120,10 @@ export function LogsPage() {
           ) : null}
         </PixelPanel>
 
-        <PixelPanel className="p-4" contentClassName="space-y-4">
+        <PixelPanel
+          className="pixel-log-panel p-4"
+          contentClassName="space-y-4"
+        >
           <DungeonLogTimeline
             filterType={resolvedFilterType}
             onResetFilter={() => setFilter(ALL_FILTER_VALUE)}

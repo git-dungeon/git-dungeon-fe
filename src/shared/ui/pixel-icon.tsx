@@ -1,7 +1,15 @@
 import type { SVGProps } from "react";
 import { cn } from "@/shared/lib/utils";
 
-type PixelIconName = "copy" | "close" | "arrow-up" | "arrow-down" | "check";
+type PixelIconName =
+  | "copy"
+  | "close"
+  | "arrow-up"
+  | "arrow-down"
+  | "check"
+  | "item-count"
+  | "plus"
+  | "minus";
 
 interface PixelIconProps extends SVGProps<SVGSVGElement> {
   name: PixelIconName;
@@ -26,6 +34,13 @@ const ICON_PATHS: Record<PixelIconName, string[]> = {
   check: [
     "M23 5v1h-1v1h-1v1h-1v1h-1v1h-1v1h-1v1h-1v1h-1v1h-1v1h-1v1h-1v1h-1v1h-1v1H8v-1H7v-1H6v-1H5v-1H4v-1H3v-1H2v-1H1v-1h1v-1h1V9h1v1h1v1h1v1h1v1h1v1h2v-1h1v-1h1v-1h1v-1h1V9h1V8h1V7h1V6h1V5h1V4h1V3h1v1h1v1z",
   ],
+  "item-count": [
+    "M23 11v2h-1v1h-8v8h-1v1h-2v-1h-1v-8H2v-1H1v-2h1v-1h8V2h1V1h2v1h1v8h8v1z",
+  ],
+  plus: [
+    "M23 11v2h-1v1h-8v8h-1v1h-2v-1h-1v-8H2v-1H1v-2h1v-1h8V2h1V1h2v1h1v8h8v1z",
+  ],
+  minus: ["M23 11v2h-1v1H2v-1H1v-2h1v-1h20v1z"],
 };
 
 export function PixelIcon({

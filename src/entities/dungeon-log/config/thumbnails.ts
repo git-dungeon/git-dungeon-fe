@@ -12,6 +12,7 @@ import {
   resolveLocalMonsterSprite,
 } from "@/entities/catalog/config/local-sprites";
 import { i18next } from "@/shared/i18n/i18n";
+import type { EquipmentRarity } from "@/entities/inventory/model/types";
 
 import type {
   DungeonLogEntry,
@@ -25,6 +26,7 @@ export interface LogThumbnailDescriptor {
   src: string;
   alt: string;
   badge?: LogThumbnailBadge;
+  rarity?: EquipmentRarity;
 }
 
 const t = (key: string, options?: Record<string, unknown>) =>
@@ -114,18 +116,37 @@ function resolveGoldBadge(
 type ItemNameResolver = (code: string, fallback?: string | null) => string;
 type MonsterNameResolver = (code: string, fallback?: string | null) => string;
 
+type ItemRarityResolver = (code: string) => EquipmentRarity | null | undefined;
+
 export interface LogThumbnailResolvers {
   resolveItemName?: ItemNameResolver;
   resolveMonsterName?: MonsterNameResolver;
+  resolveItemRarity?: ItemRarityResolver;
+}
+
+function normalizeRarity(value?: string) {
+  return value === "common" ||
+    value === "uncommon" ||
+    value === "rare" ||
+    value === "epic" ||
+    value === "legendary"
+    ? (value as EquipmentRarity)
+    : undefined;
 }
 
 export function buildLogThumbnails(
   entry: DungeonLogEntry,
-  { resolveItemName, resolveMonsterName }: LogThumbnailResolvers = {}
+  {
+    resolveItemName,
+    resolveMonsterName,
+    resolveItemRarity,
+  }: LogThumbnailResolvers = {}
 ): LogThumbnailDescriptor[] {
   const thumbnails: LogThumbnailDescriptor[] = [];
   const resolveName = (code: string) =>
     resolveItemName ? resolveItemName(code, code) : code;
+  const resolveRarity = (code: string, rarity?: string) =>
+    normalizeRarity(rarity) ?? resolveItemRarity?.(code) ?? undefined;
   const actionThumbnail = resolveActionThumbnail(entry.action);
   const isBattleAction = entry.action === "BATTLE";
   const isTreasureAction = entry.action === "TREASURE";
@@ -165,11 +186,15 @@ export function buildLogThumbnails(
       const itemName = rewardItem?.code
         ? resolveName(rewardItem.code)
         : undefined;
+      const rarity = rewardItem?.code
+        ? resolveRarity(rewardItem.code)
+        : undefined;
       thumbnails.push({
         id: `${entry.id}-reward-item`,
         src: itemThumbnail,
         alt: itemName ?? t("logs.thumbnails.rewardItem"),
         badge: "gain",
+        rarity,
       });
     }
   }
@@ -191,10 +216,15 @@ export function buildLogThumbnails(
     const itemThumbnail = resolveItemThumbnail(itemKey);
     if (itemThumbnail) {
       const itemName = itemKey ? resolveName(itemKey) : undefined;
+      const rarity =
+        itemKey && primaryItem
+          ? resolveRarity(itemKey, primaryItem.rarity)
+          : undefined;
       thumbnails.push({
         id: `${entry.id}-item`,
         src: itemThumbnail,
         alt: itemName ?? t("logs.thumbnails.item"),
+        rarity,
       });
     }
   }
@@ -206,11 +236,15 @@ export function buildLogThumbnails(
       const itemName = rewardItem?.code
         ? resolveName(rewardItem.code)
         : undefined;
+      const rarity = rewardItem?.code
+        ? resolveRarity(rewardItem.code)
+        : undefined;
       thumbnails.push({
         id: `${entry.id}-reward-item`,
         src: itemThumbnail,
         alt: itemName ?? t("logs.thumbnails.rewardItem"),
         badge: "gain",
+        rarity,
       });
     }
   }

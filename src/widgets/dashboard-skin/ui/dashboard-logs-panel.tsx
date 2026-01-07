@@ -11,6 +11,7 @@ import {
 } from "@/entities/dungeon-log/config/thumbnails";
 import { useCatalogItemNameResolver } from "@/entities/catalog/model/use-catalog-item-name";
 import { useCatalogMonsterNameResolver } from "@/entities/catalog/model/use-catalog-monster-name";
+import { useCatalogItemRarityResolver } from "@/entities/catalog/model/use-catalog-item-rarity";
 import { PixelPanel } from "@/shared/ui/pixel-panel";
 import { useTranslation } from "react-i18next";
 
@@ -22,6 +23,7 @@ export function DashboardLogsPanel({ logs }: DashboardLogsPanelProps) {
   const { t } = useTranslation();
   const resolveItemName = useCatalogItemNameResolver();
   const resolveMonsterName = useCatalogMonsterNameResolver();
+  const resolveItemRarity = useCatalogItemRarityResolver();
 
   return (
     <PixelPanel
@@ -44,6 +46,7 @@ export function DashboardLogsPanel({ logs }: DashboardLogsPanelProps) {
             const thumbnails = buildLogThumbnails(log, {
               resolveItemName,
               resolveMonsterName,
+              resolveItemRarity,
             });
             const icon =
               thumbnails.at(0)?.src ??

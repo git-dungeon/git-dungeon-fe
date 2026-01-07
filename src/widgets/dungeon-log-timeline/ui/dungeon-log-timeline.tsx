@@ -15,6 +15,7 @@ import { ApiError } from "@/shared/api/http-client";
 import { useTranslation } from "react-i18next";
 import { useCatalogItemNameResolver } from "@/entities/catalog/model/use-catalog-item-name";
 import { useCatalogMonsterNameResolver } from "@/entities/catalog/model/use-catalog-monster-name";
+import { useCatalogItemRarityResolver } from "@/entities/catalog/model/use-catalog-item-rarity";
 
 interface DungeonLogTimelineProps {
   filterType?: DungeonLogsFilterType;
@@ -39,6 +40,7 @@ export function DungeonLogTimeline({
   const [selectedLog, setSelectedLog] = useState<DungeonLogEntry | null>(null);
   const resolveItemName = useCatalogItemNameResolver();
   const resolveMonsterName = useCatalogMonsterNameResolver();
+  const resolveItemRarity = useCatalogItemRarityResolver();
 
   if (status === "pending") {
     return <LoadingState />;
@@ -68,11 +70,12 @@ export function DungeonLogTimeline({
 
   return (
     <div className="space-y-4">
-      <ul className="space-y-3">
+      <ul className="pixel-log-list">
         {logs.map((log) => {
           const thumbnails = buildLogThumbnails(log, {
             resolveItemName,
             resolveMonsterName,
+            resolveItemRarity,
           });
           return (
             <li key={log.id}>

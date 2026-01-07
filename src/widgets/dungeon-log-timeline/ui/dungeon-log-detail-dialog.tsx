@@ -15,6 +15,7 @@ import {
 } from "@/entities/dungeon-log/lib/monster";
 import { useCatalogItemNameResolver } from "@/entities/catalog/model/use-catalog-item-name";
 import { useCatalogMonsterNameResolver } from "@/entities/catalog/model/use-catalog-monster-name";
+import { useCatalogItemRarityResolver } from "@/entities/catalog/model/use-catalog-item-rarity";
 import {
   Dialog,
   DialogClose,
@@ -25,6 +26,7 @@ import {
 } from "@/shared/ui/dialog";
 import { Button } from "@/shared/ui/button";
 import { useTranslation } from "react-i18next";
+import { cn } from "@/shared/lib/utils";
 
 interface DungeonLogDetailDialogProps {
   log: DungeonLogEntry | null;
@@ -40,8 +42,13 @@ export function DungeonLogDetailDialog({
   const { t } = useTranslation();
   const resolveItemName = useCatalogItemNameResolver();
   const resolveMonsterName = useCatalogMonsterNameResolver();
+  const resolveItemRarity = useCatalogItemRarityResolver();
   const thumbnails = log
-    ? buildLogThumbnails(log, { resolveItemName, resolveMonsterName })
+    ? buildLogThumbnails(log, {
+        resolveItemName,
+        resolveMonsterName,
+        resolveItemRarity,
+      })
     : [];
   const monster = log ? resolveBattleMonster(log) : undefined;
   const player = log ? resolveBattlePlayer(log) : undefined;
@@ -97,10 +104,16 @@ export function DungeonLogDetailDialog({
                     const badgeStyles = resolveThumbnailBadgePresentation(
                       thumbnail.badge
                     );
+                    const rarityClass = thumbnail.rarity
+                      ? `rarity-${thumbnail.rarity}`
+                      : null;
                     return (
                       <div
                         key={thumbnail.id}
-                        className="border-border bg-muted relative h-16 w-16 overflow-hidden rounded-md border"
+                        className={cn(
+                          "pixel-log-thumb relative h-16 w-16 overflow-hidden",
+                          rarityClass
+                        )}
                       >
                         <img
                           src={thumbnail.src}

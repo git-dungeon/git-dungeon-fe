@@ -25,11 +25,15 @@ export function LogThumbnailStack({ thumbnails }: LogThumbnailStackProps) {
       {thumbnails.map((thumbnail, index) => {
         const offset = Math.min(index * ITEM_OFFSET, 40);
         const badgeStyles = resolveThumbnailBadgePresentation(thumbnail.badge);
+        const rarityClass = thumbnail.rarity
+          ? `rarity-${thumbnail.rarity}`
+          : null;
         return (
           <div
             key={thumbnail.id}
             className={cn(
-              "border-border bg-muted absolute top-0 h-16 w-16 overflow-hidden rounded-md border shadow-sm"
+              "pixel-log-thumb absolute top-0 h-16 w-16 overflow-hidden",
+              rarityClass
             )}
             style={{ left: `${offset}px`, zIndex: thumbnails.length - index }}
           >
