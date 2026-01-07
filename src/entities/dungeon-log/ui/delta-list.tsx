@@ -20,23 +20,15 @@ export function DeltaList({ entry }: DeltaListProps) {
       {entries.map((item) => {
         const iconTone =
           item.icon ??
-          (item.rarity == null
-            ? item.tone === "gain"
-              ? "up"
-              : item.tone === "loss"
-                ? "down"
-                : undefined
-            : undefined);
-        const pillTone = item.rarity ? "rarity" : item.tone;
+          (item.tone === "gain"
+            ? "up"
+            : item.tone === "loss"
+              ? "down"
+              : undefined);
 
         return (
           <li key={item.id}>
-            <PixelPill
-              tone={pillTone}
-              rarity={item.rarity}
-              icon={iconTone}
-              className="text-[10px]"
-            >
+            <PixelPill tone={item.tone} icon={iconTone} className="text-[10px]">
               {item.text}
             </PixelPill>
           </li>
