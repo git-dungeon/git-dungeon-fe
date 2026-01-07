@@ -1,6 +1,7 @@
 import type { LogThumbnailDescriptor } from "@/entities/dungeon-log/config/thumbnails";
 import { resolveThumbnailBadgePresentation } from "@/entities/dungeon-log/config/thumbnails";
 import { cn } from "@/shared/lib/utils";
+import { PixelIcon } from "@/shared/ui/pixel-icon";
 
 interface LogThumbnailStackProps {
   thumbnails: LogThumbnailDescriptor[];
@@ -45,11 +46,15 @@ export function LogThumbnailStack({ thumbnails }: LogThumbnailStackProps) {
             {badgeStyles ? (
               <span
                 className={cn(
-                  "absolute top-1 left-1 flex h-5 w-5 items-center justify-center rounded-full text-xs font-semibold text-white",
+                  "pixel-checkbox pixel-log-thumb__badge absolute top-1 left-1",
                   badgeStyles.className
                 )}
               >
-                {badgeStyles.label}
+                <PixelIcon
+                  name={badgeStyles.icon}
+                  size={12}
+                  className="pixel-checkbox__icon"
+                />
               </span>
             ) : null}
           </div>

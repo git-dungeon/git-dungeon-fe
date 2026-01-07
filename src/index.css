@@ -645,6 +645,17 @@
     opacity: 0.75;
   }
 
+  .pixel-modal__section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .pixel-modal__section + .pixel-modal__section {
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
   .pixel-panel__header {
     display: flex;
     align-items: center;
@@ -1275,6 +1286,29 @@
       0 calc(100% - 3px),
       0 3px
     );
+  }
+
+  .pixel-app .pixel-log-thumb__badge {
+    width: 18px;
+    height: 18px;
+  }
+
+  .pixel-app .pixel-log-thumb__badge--gain {
+    --pixel-checkbox-bg: #22c55e;
+    --pixel-checkbox-border: #15803d;
+    --pixel-checkbox-shadow: rgba(0, 0, 0, 0.35);
+    --pixel-checkbox-inset: rgba(0, 0, 0, 0.3);
+    --pixel-checkbox-highlight: rgba(255, 255, 255, 0.35);
+    --pixel-checkbox-check: #ffffff;
+  }
+
+  .pixel-app .pixel-log-thumb__badge--loss {
+    --pixel-checkbox-bg: #ef4444;
+    --pixel-checkbox-border: #b91c1c;
+    --pixel-checkbox-shadow: rgba(0, 0, 0, 0.35);
+    --pixel-checkbox-inset: rgba(0, 0, 0, 0.3);
+    --pixel-checkbox-highlight: rgba(255, 255, 255, 0.35);
+    --pixel-checkbox-check: #ffffff;
   }
 
   .pixel-app .pixel-log-card {

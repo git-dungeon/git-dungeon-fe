@@ -281,6 +281,7 @@ function formatInventoryDelta(
       id: `${entryId}-equipped`,
       text: t("logs.delta.equipped", { item: itemName }),
       tone: "gain",
+      icon: "plus",
     });
   }
 
@@ -290,6 +291,7 @@ function formatInventoryDelta(
       id: `${entryId}-unequipped`,
       text: t("logs.delta.unequipped", { item: itemName }),
       tone: "loss",
+      icon: "minus",
     });
   }
 

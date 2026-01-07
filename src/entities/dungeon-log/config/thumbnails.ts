@@ -50,10 +50,10 @@ const ACTION_IMAGE_MAP: Partial<Record<DungeonLogAction, string>> = {
 
 const BADGE_PRESENTATIONS: Record<
   LogThumbnailBadge,
-  { label: string; className: string }
+  { icon: "plus" | "minus"; className: string }
 > = {
-  gain: { label: "+", className: "bg-emerald-500" },
-  loss: { label: "-", className: "bg-rose-500" },
+  gain: { icon: "plus", className: "pixel-log-thumb__badge--gain" },
+  loss: { icon: "minus", className: "pixel-log-thumb__badge--loss" },
 };
 
 export function resolveThumbnailBadgePresentation(badge?: LogThumbnailBadge) {
@@ -220,10 +220,15 @@ export function buildLogThumbnails(
         itemKey && primaryItem
           ? resolveRarity(itemKey, primaryItem.rarity)
           : undefined;
+      const badge: LogThumbnailBadge | undefined =
+        delta.type === "UNEQUIP_ITEM" || delta.type === "DISCARD_ITEM"
+          ? "loss"
+          : "gain";
       thumbnails.push({
         id: `${entry.id}-item`,
         src: itemThumbnail,
         alt: itemName ?? t("logs.thumbnails.item"),
+        badge,
         rarity,
       });
     }
