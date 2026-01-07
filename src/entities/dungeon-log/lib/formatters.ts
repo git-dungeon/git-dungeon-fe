@@ -139,8 +139,7 @@ export function formatDelta(
         ...formatInventoryDelta(
           entry.id,
           delta.detail.inventory,
-          resolveItemName,
-          resolveItemRarity
+          resolveItemName
         )
       );
       break;
