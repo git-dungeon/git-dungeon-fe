@@ -6,9 +6,9 @@ import { SettingsProfileCard } from "@/widgets/settings-profile/ui/settings-prof
 import { SettingsPreferencesCard } from "@/widgets/settings-preferences/ui/settings-preferences-card";
 import { SettingsEmbeddingPreviewCard } from "@/widgets/settings-embedding/ui/settings-embedding-preview-card";
 import { useLogout } from "@/features/auth/logout/model/use-logout";
-import { Button } from "@/shared/ui/button";
 import { PixelPanel } from "@/shared/ui/pixel-panel";
 import { PixelSkeleton } from "@/shared/ui/pixel-skeleton";
+import { PixelButton } from "@/shared/ui/pixel-button";
 
 export function SettingsPage() {
   const { t } = useTranslation();
@@ -29,9 +29,8 @@ export function SettingsPage() {
             {t("settings.title")}
           </h1>
         </div>
-        <Button
+        <PixelButton
           type="button"
-          variant="outline"
           className="gap-2"
           onClick={() => void handleLogout()}
           disabled={logoutMutation.isPending}
@@ -42,7 +41,7 @@ export function SettingsPage() {
             <LogOut className="size-4" aria-hidden />
           )}
           {t("settings.logout")}
-        </Button>
+        </PixelButton>
       </header>
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
@@ -83,16 +82,16 @@ function renderProfileSection(
         <p className="pixel-text-danger text-sm">
           {t("settings.profile.loadError")}
         </p>
-        <Button
+        <PixelButton
           type="button"
-          variant="destructive"
-          size="sm"
           className="gap-2 text-white"
+          tone="danger"
+          pixelSize="compact"
           onClick={() => void onRetry()}
         >
           <RefreshCw className="size-4" aria-hidden />
           {t("settings.profile.retry")}
-        </Button>
+        </PixelButton>
       </PixelPanel>
     );
   }

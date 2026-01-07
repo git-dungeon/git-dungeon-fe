@@ -43,14 +43,18 @@ export function PreferencesForm({
     <div className="space-y-6">
       <Fieldset label={t("settings.preferences.theme.label")}>
         <Select value={theme} onValueChange={onThemeChange}>
-          <SelectTrigger id="settings-theme">
+          <SelectTrigger id="settings-theme" className="pixel-select-trigger">
             <SelectValue
               placeholder={t("settings.preferences.theme.placeholder")}
             />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="pixel-select-content">
             {THEME_PREFERENCE_VALUES.map((preference) => (
-              <SelectItem key={preference} value={preference}>
+              <SelectItem
+                key={preference}
+                value={preference}
+                className="pixel-select-item"
+              >
                 {themeLabelMap[preference]}
               </SelectItem>
             ))}
@@ -60,14 +64,21 @@ export function PreferencesForm({
 
       <Fieldset label={t("settings.preferences.language.label")}>
         <Select value={language} onValueChange={onLanguageChange}>
-          <SelectTrigger id="settings-language">
+          <SelectTrigger
+            id="settings-language"
+            className="pixel-select-trigger"
+          >
             <SelectValue
               placeholder={t("settings.preferences.language.placeholder")}
             />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="pixel-select-content">
             {LANGUAGE_PREFERENCE_VALUES.map((preference) => (
-              <SelectItem key={preference} value={preference}>
+              <SelectItem
+                key={preference}
+                value={preference}
+                className="pixel-select-item"
+              >
                 {languageLabelMap[preference]}
               </SelectItem>
             ))}

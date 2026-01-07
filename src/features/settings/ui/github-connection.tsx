@@ -3,7 +3,7 @@ import {
   formatDateTime,
   formatRelativeTime,
 } from "@/shared/lib/datetime/formatters";
-import { Button } from "@/shared/ui/button";
+import { PixelButton } from "@/shared/ui/pixel-button";
 import { ApiError } from "@/shared/api/http-client";
 import type { ProfileConnections } from "@/entities/profile/model/types";
 import { useGithubSyncStatus } from "@/entities/github/model/use-github-sync-status";
@@ -68,11 +68,10 @@ export function GithubConnection({ connections }: GithubConnectionProps) {
           ) : null}
         </div>
         {resolvedConnected ? (
-          <Button
+          <PixelButton
             type="button"
-            size="sm"
-            variant="outline"
             className="gap-2"
+            pixelSize="compact"
             disabled={isSyncDisabled}
             onClick={() => {
               void githubSync.mutateAsync().catch(() => {
@@ -86,7 +85,7 @@ export function GithubConnection({ connections }: GithubConnectionProps) {
               <RefreshCw className="size-4" aria-hidden />
             )}
             {t("settings.github.refresh")}
-          </Button>
+          </PixelButton>
         ) : (
           <span className="border-border text-muted-foreground rounded-md border px-2 py-1 text-xs">
             {t("settings.github.status.disconnected")}

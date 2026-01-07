@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
 import type { TFunction } from "i18next";
-import { Button, buttonVariants } from "@/shared/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { formatDateTime } from "@/shared/lib/datetime/formatters";
 import { useCharacterOverview } from "@/features/character-summary/model/use-character-overview";
@@ -21,6 +20,7 @@ import {
 import { EMBEDDING_ENDPOINTS, resolveApiUrl } from "@/shared/config/env";
 import { useTranslation } from "react-i18next";
 import { PixelPanel } from "@/shared/ui/pixel-panel";
+import { PixelButton } from "@/shared/ui/pixel-button";
 
 const EMBEDDING_SIZE_OPTIONS: Array<{
   value: EmbedPreviewSize;
@@ -80,16 +80,14 @@ export function SettingsEmbeddingPreviewCard() {
   const headerRight = (
     <div className="flex items-center gap-2">
       {EMBEDDING_SIZE_OPTIONS.map((option) => (
-        <button
+        <PixelButton
           key={option.value}
           type="button"
           className={cn(
-            buttonVariants({
-              variant: option.value === size ? "default" : "outline",
-              size: "sm",
-            }),
-            "flex flex-col gap-0 text-xs"
+            "flex flex-col gap-0 text-xs",
+            option.value === size && "pixel-button--active"
           )}
+          pixelSize="compact"
           onClick={() => setSize(option.value)}
           disabled={isBusy}
         >
@@ -97,7 +95,7 @@ export function SettingsEmbeddingPreviewCard() {
           <span className="text-muted-foreground text-[10px]">
             {t(option.hintKey)}
           </span>
-        </button>
+        </PixelButton>
       ))}
     </div>
   );
@@ -140,9 +138,13 @@ function renderOverviewError(t: TFunction, onRetry: () => Promise<void>) {
           {t("settings.embedding.error.description")}
         </p>
       </div>
-      <Button variant="destructive" size="sm" onClick={() => void onRetry()}>
+      <PixelButton
+        tone="danger"
+        pixelSize="compact"
+        onClick={() => void onRetry()}
+      >
         {t("settings.embedding.error.retry")}
-      </Button>
+      </PixelButton>
     </div>
   );
 }
