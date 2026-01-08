@@ -10,8 +10,8 @@ const containerSizeClassMap: Record<EmbedPreviewSize, string> = {
 };
 
 const containerAspectClassMap: Record<EmbedPreviewSize, string> = {
-  compact: "aspect-[12/25]",
-  wide: "aspect-[24/25]",
+  compact: "aspect-[8/3]",
+  wide: "aspect-[4/1]",
 };
 
 export function getEmbedPreviewContainerClass(size: EmbedPreviewSize) {
