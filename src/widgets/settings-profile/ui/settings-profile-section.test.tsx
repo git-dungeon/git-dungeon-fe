@@ -20,7 +20,17 @@ function render(ui: React.ReactElement) {
   const container = document.createElement("div");
   document.body.appendChild(container);
   const root = createRoot(container);
-  const queryClient = new QueryClient();
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: { retry: false },
+      mutations: { retry: false },
+    },
+    logger: {
+      log: () => {},
+      warn: () => {},
+      error: () => {},
+    },
+  });
 
   act(() => {
     root.render(
@@ -65,6 +75,7 @@ beforeAll(() => {
 describe("SettingsProfileSection", () => {
   beforeEach(() => {
     useProfileMock.mockReset();
+    document.body.innerHTML = "";
   });
 
   it("프로필 쿼리가 로딩 중이면 스켈레톤 카드를 렌더링한다", () => {

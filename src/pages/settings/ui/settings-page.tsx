@@ -16,10 +16,7 @@ export function SettingsPage() {
     <section className="space-y-6">
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1
-            className="font-pixel-title pixel-page-title"
-            data-text={t("settings.title")}
-          >
+          <h1 className="font-pixel-title pixel-page-title">
             {t("settings.title")}
           </h1>
         </div>

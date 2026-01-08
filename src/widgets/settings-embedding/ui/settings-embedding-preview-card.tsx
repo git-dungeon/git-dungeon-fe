@@ -225,9 +225,7 @@ function renderPreviewContent({
           </span>
           <span className="pixel-text-muted pixel-text-xs truncate">
             {t("settings.embedding.urlExample")}{" "}
-            <code className="pixel-text-base pixel-text-xs font-mono">
-              {exampleUrl}
-            </code>
+            <code className="pixel-text-xs font-mono">{exampleUrl}</code>
           </span>
         </div>
       </section>
