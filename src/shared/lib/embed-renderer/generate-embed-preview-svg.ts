@@ -23,9 +23,27 @@ interface GenerateEmbedPreviewSvgParams {
   size: EmbedPreviewSize;
   language: EmbedPreviewLanguage;
   overview: AppCharacterOverview;
+  displayName?: string | null;
+  avatarUrl?: string | null;
+  maxAp?: number | null;
 }
 
+const DUNG_GEUN_MO_THIN_URL = "/ThinDungGeunMo.ttf";
+const DUNG_GEUN_MO_BOLD_URL = "/BoldDunggeunmo.ttf";
+
 const browserFontSources: BrowserFontSource[] = [
+  {
+    name: "DungGeunMo Thin",
+    url: DUNG_GEUN_MO_THIN_URL,
+    weight: 400,
+    style: "normal",
+  },
+  {
+    name: "DungGeunMo Bold",
+    url: DUNG_GEUN_MO_BOLD_URL,
+    weight: 700,
+    style: "normal",
+  },
   {
     name: "Noto Sans KR",
     url: NotoSansKrFontUrl,
@@ -94,10 +112,16 @@ function toRendererInventoryItem(
 }
 
 function toRendererOverview(
-  overview: AppCharacterOverview
+  overview: AppCharacterOverview,
+  displayName?: string | null,
+  avatarUrl?: string | null,
+  maxAp?: number | null
 ): RendererCharacterOverview {
   return {
     ...overview,
+    displayName: displayName ?? undefined,
+    avatarUrl: avatarUrl ?? undefined,
+    maxAp: maxAp ?? undefined,
     equipment: overview.equipment
       .filter((item) => item.slot !== "consumable")
       .map(toRendererInventoryItem),
@@ -128,10 +152,18 @@ export async function generateEmbedPreviewSvg({
   size,
   language,
   overview,
+  displayName,
+  avatarUrl,
+  maxAp,
 }: GenerateEmbedPreviewSvgParams) {
   try {
     const fonts = await ensureFonts();
-    const rendererOverview = toRendererOverview(overview);
+    const rendererOverview = toRendererOverview(
+      overview,
+      displayName,
+      avatarUrl,
+      maxAp
+    );
     return await renderEmbedSvg({
       theme,
       size,

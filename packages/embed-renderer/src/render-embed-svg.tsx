@@ -80,11 +80,14 @@ export async function renderEmbedSvg({
   const loadedSatori = satori ?? (await loadSatoriInstance());
 
   const layout = resolveDashboardEmbeddingBannerLayout({
+    displayName: overview.displayName,
+    avatarUrl: overview.avatarUrl,
     level: overview.level,
     exp: overview.exp,
     expToLevel: overview.expToLevel,
     gold: overview.gold,
     ap: overview.ap,
+    maxAp: overview.maxAp,
     floor: overview.floor,
     stats: overview.stats,
     equipment: overview.equipment,
@@ -95,11 +98,14 @@ export async function renderEmbedSvg({
 
   const svg = await loadedSatori(
     <DashboardEmbeddingBannerSatori
+      displayName={overview.displayName}
+      avatarUrl={overview.avatarUrl}
       level={overview.level}
       exp={overview.exp}
       expToLevel={overview.expToLevel}
       gold={overview.gold}
       ap={overview.ap}
+      maxAp={overview.maxAp}
       floor={overview.floor}
       stats={overview.stats}
       equipment={overview.equipment}

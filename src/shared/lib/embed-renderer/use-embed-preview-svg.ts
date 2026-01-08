@@ -17,6 +17,9 @@ interface UseEmbedPreviewSvgParams {
   size: EmbedPreviewSize;
   language: EmbedPreviewLanguage;
   overview: CharacterOverview | null;
+  displayName?: string | null;
+  avatarUrl?: string | null;
+  maxAp?: number | null;
 }
 
 interface UseEmbedPreviewSvgResult {
@@ -31,6 +34,9 @@ export function useEmbedPreviewSvg({
   size,
   language,
   overview,
+  displayName,
+  avatarUrl,
+  maxAp,
 }: UseEmbedPreviewSvgParams): UseEmbedPreviewSvgResult {
   const catalogQuery = useCatalog(language);
   const itemNameMap = useMemo(
@@ -78,6 +84,9 @@ export function useEmbedPreviewSvg({
       size,
       language,
       overview: resolvedOverview,
+      displayName,
+      avatarUrl,
+      maxAp,
     })
       .then((svg) => {
         if (!cancelled) {
@@ -105,7 +114,7 @@ export function useEmbedPreviewSvg({
     return () => {
       cancelled = true;
     };
-  }, [theme, size, language, resolvedOverview]);
+  }, [theme, size, language, resolvedOverview, displayName, avatarUrl, maxAp]);
 
   return {
     svgMarkup,

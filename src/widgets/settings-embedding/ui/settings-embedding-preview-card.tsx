@@ -6,6 +6,7 @@ import { useCharacterOverview } from "@/features/character-summary/model/use-cha
 import { useEmbedPreviewSvg } from "@/shared/lib/embed-renderer/use-embed-preview-svg";
 import { useSettingsPreferences } from "@/features/settings/model/use-settings-preferences";
 import { resolveThemePreference } from "@/shared/lib/preferences/preferences";
+import { useProfile } from "@/entities/profile/model/use-profile";
 import type {
   EmbedPreviewLanguage,
   EmbedPreviewSize,
@@ -43,6 +44,7 @@ export function SettingsEmbeddingPreviewCard() {
   const { t } = useTranslation();
   const [size, setSize] = useState<EmbedPreviewSize>("compact");
   const overview = useCharacterOverview();
+  const profileQuery = useProfile();
   const { theme: themePreference, language: languagePreference } =
     useSettingsPreferences();
 
@@ -53,6 +55,9 @@ export function SettingsEmbeddingPreviewCard() {
   const embedSize = size as EmbedPreviewSize;
 
   const character = overview.data;
+  const profile = profileQuery.data?.profile;
+  const displayName = profile?.displayName ?? profile?.username ?? undefined;
+  const avatarUrl = profile?.avatarUrl ?? undefined;
   const {
     svgDataUrl,
     renderError: embedRenderError,
@@ -62,6 +67,8 @@ export function SettingsEmbeddingPreviewCard() {
     size: embedSize,
     language: embedLanguage,
     overview: character,
+    displayName,
+    avatarUrl,
   });
 
   const isFetchingOverview = overview.isLoading || overview.isFetching;
