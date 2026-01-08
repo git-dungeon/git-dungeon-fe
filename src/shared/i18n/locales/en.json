@@ -53,15 +53,11 @@
       "size": {
         "compact": {
           "label": "Compact",
-          "hint": "Blog sidebar"
-        },
-        "square": {
-          "label": "Square",
           "hint": "README card"
         },
         "wide": {
           "label": "Wide",
-          "hint": "Dashboard banner"
+          "hint": "Wide banner"
         }
       },
       "error": {

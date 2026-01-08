@@ -53,15 +53,11 @@
       "size": {
         "compact": {
           "label": "Compact",
-          "hint": "블로그 사이드바"
-        },
-        "square": {
-          "label": "Square",
           "hint": "README 카드"
         },
         "wide": {
           "label": "Wide",
-          "hint": "대시보드 배너"
+          "hint": "Wide 배너"
         }
       },
       "error": {
