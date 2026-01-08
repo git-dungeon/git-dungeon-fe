@@ -102,6 +102,7 @@ export function DashboardEmbeddingBannerSatori({
   const expMax = expToLevel || exp;
   const apMax = maxAp ?? ap;
 
+  const isGradientBackground = palette.panelBackground.includes("gradient(");
   const rootStyle: CSSProperties = {
     width: preset.width,
     height: preset.height,
@@ -110,13 +111,17 @@ export function DashboardEmbeddingBannerSatori({
     display: "flex",
     flexDirection: "row",
     gap: 16,
-    backgroundImage: palette.panelBackground,
     border: `4px solid ${palette.panelBorder}`,
     boxShadow: `0 6px 0 ${palette.panelShadow}`,
     color: palette.textPrimary,
     fontFamily: palette.fonts.body,
     overflow: "hidden",
   };
+  if (isGradientBackground) {
+    rootStyle.backgroundImage = palette.panelBackground;
+  } else {
+    rootStyle.backgroundColor = palette.panelBackground;
+  }
 
   const leftSectionStyle: CSSProperties = {
     display: "flex",
@@ -342,6 +347,7 @@ function StatBar({
       </div>
       <div
         style={{
+          display: "flex",
           position: "relative",
           height: 10,
           borderRadius: 6,
@@ -461,6 +467,8 @@ function EquipmentSection({ equipment, language, palette }: EquipmentSectionProp
                 flexBasis: "50%",
                 padding: 6,
                 boxSizing: "border-box",
+                display: "flex",
+                flexDirection: "column",
               }}
             >
               <SlotCard

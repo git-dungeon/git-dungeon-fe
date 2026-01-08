@@ -68,7 +68,8 @@ function resolveItemSprite(item: AppCharacterOverview["equipment"][number]) {
     return item.sprite;
   }
 
-  const displayName = item.name ?? item.code;
+  const rawDisplayName = item.name ?? item.code;
+  const displayName = typeof rawDisplayName === "string" ? rawDisplayName : "";
   const label = displayName.trim().slice(0, 2).toUpperCase() || "??";
   const color = RARITY_COLOR_MAP[item.rarity] ?? "#6b7280";
 
@@ -82,7 +83,11 @@ function toRendererInventoryItem(
     throw new Error("임베드 렌더링은 consumable 슬롯을 지원하지 않습니다.");
   }
 
-  const displayName = item.name ?? item.code;
+  const rawDisplayName = item.name ?? item.code;
+  const displayName =
+    typeof rawDisplayName === "string" && rawDisplayName.trim()
+      ? rawDisplayName
+      : "Unknown";
   const sprite = resolveItemSprite(item);
 
   return {
