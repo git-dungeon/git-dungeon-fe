@@ -11,7 +11,6 @@ import {
 import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SettingsProfileSection } from "./settings-profile-section";
-import type { MockInstance } from "@vitest/spy";
 
 const useProfileMock = vi.fn();
 
@@ -77,15 +76,14 @@ beforeAll(() => {
 });
 
 describe("SettingsProfileSection", () => {
-  let consoleErrorSpy: MockInstance<
-    [message?: unknown, ...optionalParams: unknown[]],
-    void
-  > | null = null;
+  let consoleErrorSpy: ReturnType<typeof vi.spyOn> | null = null;
 
   beforeEach(() => {
     useProfileMock.mockReset();
     document.body.innerHTML = "";
-    consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    consoleErrorSpy = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => {}) as unknown as ReturnType<typeof vi.spyOn>;
   });
 
   afterEach(() => {
