@@ -76,9 +76,9 @@ describe("SettingsProfileSection", () => {
 
     const { container, unmount } = render(<SettingsProfileSection />);
 
-    const skeletonCard = container.querySelector(".animate-pulse");
+    const skeletonCard = container.querySelector(".pixel-skeleton");
     expect(skeletonCard).not.toBeNull();
-    expect(container.textContent).toContain("설정");
+    expect(container.textContent).toContain("계정 정보");
 
     unmount();
   });
