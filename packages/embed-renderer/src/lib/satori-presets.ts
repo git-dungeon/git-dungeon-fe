@@ -19,28 +19,19 @@ export const EMBED_SATORI_SIZE_PRESETS: Record<
   EmbedSatoriSizePreset
 > = {
   compact: {
-    width: 480,
+    width: 640,
     paddingX: 24,
     paddingY: 24,
-    height: 1000,
+    height: 240,
     headerColumns: 1,
     statsColumns: 1,
     equipmentColumns: 1,
   },
-  square: {
-    width: 720,
-    paddingX: 28,
-    paddingY: 32,
-    height: 1000,
-    headerColumns: 2,
-    statsColumns: 2,
-    equipmentColumns: 2,
-  },
   wide: {
     width: 960,
     paddingX: 40,
-    paddingY: 40,
-    height: 1000,
+    paddingY: 24,
+    height: 240,
     headerColumns: 4,
     statsColumns: 2,
     equipmentColumns: 2,

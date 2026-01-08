@@ -6,13 +6,11 @@ const containerBaseClass =
 
 const containerSizeClassMap: Record<EmbedPreviewSize, string> = {
   compact: "px-6 py-8",
-  square: "px-8 py-9",
   wide: "px-10 py-10",
 };
 
 const containerAspectClassMap: Record<EmbedPreviewSize, string> = {
   compact: "aspect-[12/25]",
-  square: "aspect-[18/25]",
   wide: "aspect-[24/25]",
 };
 

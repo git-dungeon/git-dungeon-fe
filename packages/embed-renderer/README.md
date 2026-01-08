@@ -41,7 +41,7 @@ const fonts: EmbedFontConfig[] = await loadFontsFromUrls([
 
 const svg = await renderEmbedSvg({
   theme: "light",
-  size: "square",
+  size: "compact",
   language: "ko",
   overview: characterOverview,
   fonts,

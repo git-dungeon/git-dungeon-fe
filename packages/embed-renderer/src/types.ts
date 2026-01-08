@@ -1,5 +1,5 @@
 export const EMBED_THEME_VALUES = ["light", "dark"] as const;
-export const EMBED_PREVIEW_SIZE_VALUES = ["compact", "square", "wide"] as const;
+export const EMBED_PREVIEW_SIZE_VALUES = ["compact", "wide"] as const;
 export const EMBED_LANGUAGE_VALUES = ["ko", "en"] as const;
 
 export type EmbedPreviewTheme = (typeof EMBED_THEME_VALUES)[number];

@@ -33,11 +33,6 @@ const EMBEDDING_SIZE_OPTIONS: Array<{
     hintKey: "settings.embedding.size.compact.hint",
   },
   {
-    value: "square",
-    labelKey: "settings.embedding.size.square.label",
-    hintKey: "settings.embedding.size.square.hint",
-  },
-  {
     value: "wide",
     labelKey: "settings.embedding.size.wide.label",
     hintKey: "settings.embedding.size.wide.hint",

@@ -54,7 +54,7 @@ function example() {
                     fonts = _a.sent();
                     return [4 /*yield*/, (0, embed_renderer_1.renderEmbedSvg)({
                             theme: "light",
-                            size: "square",
+                            size: "compact",
                             language: "ko",
                             overview: {
                                 level: 12,
