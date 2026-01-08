@@ -71,11 +71,14 @@ export interface CharacterFloorStatus {
 }
 
 export interface CharacterOverview {
+  displayName?: string;
+  avatarUrl?: string;
   level: number;
   exp: number;
   expToLevel: number;
   gold: number;
   ap: number;
+  maxAp?: number;
   floor: CharacterFloorStatus;
   stats: CharacterStatSummary;
   equipment: InventoryItem[];
