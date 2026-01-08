@@ -1,14 +1,5 @@
 import { useMemo, useState } from "react";
 import type { TFunction } from "i18next";
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/shared/ui/card";
-import { Button, buttonVariants } from "@/shared/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { formatDateTime } from "@/shared/lib/datetime/formatters";
 import { useCharacterOverview } from "@/features/character-summary/model/use-character-overview";
@@ -28,6 +19,8 @@ import {
 } from "@/widgets/embed-view/ui/embed-container";
 import { EMBEDDING_ENDPOINTS, resolveApiUrl } from "@/shared/config/env";
 import { useTranslation } from "react-i18next";
+import { PixelPanel } from "@/shared/ui/pixel-panel";
+import { PixelButton } from "@/shared/ui/pixel-button";
 
 const EMBEDDING_SIZE_OPTIONS: Array<{
   value: EmbedPreviewSize;
@@ -84,71 +77,74 @@ export function SettingsEmbeddingPreviewCard() {
     return formatDateTime(new Date());
   }, []);
 
+  const headerRight = (
+    <div className="flex items-center gap-2">
+      {EMBEDDING_SIZE_OPTIONS.map((option) => (
+        <PixelButton
+          key={option.value}
+          type="button"
+          className={cn(
+            "flex flex-col gap-0 text-xs",
+            option.value === size && "pixel-button--active"
+          )}
+          pixelSize="compact"
+          onClick={() => setSize(option.value)}
+          disabled={isBusy}
+        >
+          <span>{t(option.labelKey)}</span>
+          <span className="text-[10px] opacity-80">{t(option.hintKey)}</span>
+        </PixelButton>
+      ))}
+    </div>
+  );
+
   return (
-    <Card>
-      <CardHeader>
-        <div>
-          <CardTitle>{t("settings.embedding.title")}</CardTitle>
-          <CardDescription>
-            {t("settings.embedding.description")}
-          </CardDescription>
-        </div>
-        <CardAction className="flex items-center gap-2">
-          {EMBEDDING_SIZE_OPTIONS.map((option) => (
-            <button
-              key={option.value}
-              type="button"
-              className={cn(
-                buttonVariants({
-                  variant: option.value === size ? "default" : "outline",
-                  size: "sm",
-                }),
-                "flex flex-col gap-0 text-xs"
-              )}
-              onClick={() => setSize(option.value)}
-              disabled={isBusy}
-            >
-              <span>{t(option.labelKey)}</span>
-              <span className="text-muted-foreground text-[10px]">
-                {t(option.hintKey)}
-              </span>
-            </button>
-          ))}
-        </CardAction>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {overview.isError
-          ? renderOverviewError(t, overview.refetch)
-          : embedRenderError
-            ? renderEmbedError(t, embedRenderError, embedSize, embedLanguage)
-            : !svgDataUrl
-              ? renderSkeleton(embedSize, embedLanguage)
-              : renderPreviewContent({
-                  t,
-                  svgDataUrl,
-                  size: embedSize,
-                  theme: embedTheme,
-                  language: embedLanguage,
-                  generatedAtLabel,
-                  userId,
-                })}
-      </CardContent>
-    </Card>
+    <PixelPanel
+      title={t("settings.embedding.title")}
+      headerRight={headerRight}
+      className="p-4"
+      contentClassName="space-y-6"
+    >
+      <p className="pixel-text-muted pixel-text-sm">
+        {t("settings.embedding.description")}
+      </p>
+      {overview.isError
+        ? renderOverviewError(t, overview.refetch)
+        : embedRenderError
+          ? renderEmbedError(t, embedRenderError, embedSize, embedLanguage)
+          : !svgDataUrl
+            ? renderSkeleton(embedSize, embedLanguage)
+            : renderPreviewContent({
+                t,
+                svgDataUrl,
+                size: embedSize,
+                theme: embedTheme,
+                language: embedLanguage,
+                generatedAtLabel,
+                userId,
+              })}
+    </PixelPanel>
   );
 }
 
 function renderOverviewError(t: TFunction, onRetry: () => Promise<void>) {
   return (
-    <div className="bg-destructive/5 text-destructive border-destructive/20 flex flex-col items-start gap-3 rounded-lg border p-6">
+    <div className="bg-destructive/5 border-destructive/20 flex flex-col items-start gap-3 rounded-lg border p-6">
       <div>
-        <p className="font-semibold">{t("settings.embedding.error.title")}</p>
-        <p className="text-destructive/80 text-sm">
+        <p className="pixel-text-danger font-semibold">
+          {t("settings.embedding.error.title")}
+        </p>
+        <p className="pixel-text-danger pixel-text-sm opacity-80">
           {t("settings.embedding.error.description")}
         </p>
       </div>
-      <Button variant="destructive" size="sm" onClick={() => void onRetry()}>
+      <PixelButton
+        tone="danger"
+        pixelSize="compact"
+        onClick={() => void onRetry()}
+      >
         {t("settings.embedding.error.retry")}
-      </Button>
+      </PixelButton>
     </div>
   );
 }
@@ -223,13 +219,13 @@ function renderPreviewContent({
             loading="lazy"
           />
         </figure>
-        <div className="text-muted-foreground flex flex-col gap-2 text-xs sm:flex-row sm:items-center sm:justify-between">
-          <span>
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <span className="pixel-text-muted pixel-text-xs">
             {t("settings.embedding.generatedAt", { time: generatedAtLabel })}
           </span>
-          <span className="truncate">
+          <span className="pixel-text-muted pixel-text-xs truncate">
             {t("settings.embedding.urlExample")}{" "}
-            <code className="font-mono text-xs">{exampleUrl}</code>
+            <code className="pixel-text-xs font-mono">{exampleUrl}</code>
           </span>
         </div>
       </section>

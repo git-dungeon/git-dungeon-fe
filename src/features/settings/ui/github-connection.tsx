@@ -3,7 +3,7 @@ import {
   formatDateTime,
   formatRelativeTime,
 } from "@/shared/lib/datetime/formatters";
-import { Button } from "@/shared/ui/button";
+import { PixelButton } from "@/shared/ui/pixel-button";
 import { ApiError } from "@/shared/api/http-client";
 import type { ProfileConnections } from "@/entities/profile/model/types";
 import { useGithubSyncStatus } from "@/entities/github/model/use-github-sync-status";
@@ -39,11 +39,11 @@ export function GithubConnection({ connections }: GithubConnectionProps) {
     <div className="flex w-full flex-col items-start gap-3">
       <div className="flex w-full items-center justify-between gap-4">
         <div className="space-y-1">
-          <p className="text-foreground text-sm font-semibold">
+          <p className="pixel-text-base pixel-text-sm font-semibold">
             {t("settings.github.title")}
           </p>
           <p
-            className="text-muted-foreground text-xs"
+            className="pixel-text-muted pixel-text-xs"
             title={lastSyncLabel?.title}
           >
             {lastSyncLabel?.text ??
@@ -52,27 +52,26 @@ export function GithubConnection({ connections }: GithubConnectionProps) {
                 : t("settings.github.status.connectHint"))}
           </p>
           {nextSyncLabel ? (
-            <p className="text-muted-foreground text-xs">
+            <p className="pixel-text-muted pixel-text-xs">
               <span title={nextSyncLabel.title}>{nextSyncLabel.text}</span>
             </p>
           ) : null}
           {isStatusLoading ? (
-            <p className="text-muted-foreground text-xs">
+            <p className="pixel-text-muted pixel-text-xs">
               {t("settings.github.status.checking")}
             </p>
           ) : null}
           {syncErrorMessage ? (
-            <p role="alert" className="text-destructive text-xs">
+            <p role="alert" className="pixel-text-danger pixel-text-xs">
               {syncErrorMessage}
             </p>
           ) : null}
         </div>
         {resolvedConnected ? (
-          <Button
+          <PixelButton
             type="button"
-            size="sm"
-            variant="outline"
             className="gap-2"
+            pixelSize="compact"
             disabled={isSyncDisabled}
             onClick={() => {
               void githubSync.mutateAsync().catch(() => {
@@ -86,9 +85,9 @@ export function GithubConnection({ connections }: GithubConnectionProps) {
               <RefreshCw className="size-4" aria-hidden />
             )}
             {t("settings.github.refresh")}
-          </Button>
+          </PixelButton>
         ) : (
-          <span className="border-border text-muted-foreground rounded-md border px-2 py-1 text-xs">
+          <span className="border-border pixel-text-muted pixel-text-xs rounded-md border px-2 py-1">
             {t("settings.github.status.disconnected")}
           </span>
         )}

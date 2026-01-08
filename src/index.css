@@ -858,6 +858,15 @@
     filter: grayscale(0.2) brightness(0.95);
   }
 
+  .pixel-app .pixel-button.pixel-button--active {
+    border-color: var(--pixel-accent);
+    box-shadow:
+      inset -2px -2px 0 var(--pixel-button-inset-shadow),
+      inset 2px 2px 0 var(--pixel-button-highlight),
+      inset 0 0 0 2px var(--pixel-accent),
+      0 3px 0 var(--pixel-button-shadow);
+  }
+
   .pixel-app .pixel-button.pixel-button--danger {
     background: var(--pixel-button-danger-bg);
     border-color: var(--pixel-button-danger-border);
@@ -1154,6 +1163,11 @@
 
   .pixel-text-muted {
     color: var(--muted-foreground);
+    text-shadow: var(--pixel-text-shadow);
+  }
+
+  .pixel-text-base {
+    color: var(--pixel-text-base);
     text-shadow: var(--pixel-text-shadow);
   }
 

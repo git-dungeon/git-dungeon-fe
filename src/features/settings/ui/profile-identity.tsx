@@ -17,12 +17,12 @@ export function ProfileIdentity({ profile }: ProfileIdentityProps) {
         alt={t("settings.profile.avatarAlt")}
       />
       <div className="space-y-1">
-        <p className="text-foreground text-lg font-semibold">
+        <p className="pixel-text-base text-lg font-semibold">
           {profile.displayName ?? profile.username}
         </p>
-        <p className="text-muted-foreground text-sm">@{profile.username}</p>
+        <p className="pixel-text-muted pixel-text-sm">@{profile.username}</p>
         {profile.email ? (
-          <p className="text-muted-foreground text-xs">{profile.email}</p>
+          <p className="pixel-text-muted pixel-text-xs">{profile.email}</p>
         ) : null}
       </div>
     </div>
@@ -50,7 +50,7 @@ function Avatar({
   alt: string;
 }) {
   return (
-    <div className="bg-muted text-muted-foreground flex size-16 items-center justify-center overflow-hidden rounded-full border">
+    <div className="bg-muted pixel-text-base flex size-16 items-center justify-center overflow-hidden rounded-full border">
       {media ? (
         <img
           src={media}
