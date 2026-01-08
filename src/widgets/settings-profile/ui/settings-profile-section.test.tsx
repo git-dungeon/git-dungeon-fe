@@ -1,5 +1,13 @@
 import React, { StrictMode, act } from "react";
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SettingsProfileSection } from "./settings-profile-section";
@@ -24,11 +32,6 @@ function render(ui: React.ReactElement) {
     defaultOptions: {
       queries: { retry: false },
       mutations: { retry: false },
-    },
-    logger: {
-      log: () => {},
-      warn: () => {},
-      error: () => {},
     },
   });
 
@@ -73,9 +76,17 @@ beforeAll(() => {
 });
 
 describe("SettingsProfileSection", () => {
+  let consoleErrorSpy: ReturnType<typeof vi.spyOn> | null = null;
+
   beforeEach(() => {
     useProfileMock.mockReset();
     document.body.innerHTML = "";
+    consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    consoleErrorSpy?.mockRestore();
+    consoleErrorSpy = null;
   });
 
   it("프로필 쿼리가 로딩 중이면 스켈레톤 카드를 렌더링한다", () => {
