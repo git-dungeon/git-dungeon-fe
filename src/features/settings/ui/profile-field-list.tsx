@@ -19,7 +19,7 @@ export function ProfileFieldList({ fields }: ProfileFieldListProps) {
             {field.label}
           </dt>
           <dd
-            className="pixel-text-md text-foreground font-semibold break-words"
+            className="pixel-text-md pixel-text-base font-semibold break-words"
             title={field.title ?? undefined}
           >
             {field.value}

@@ -1166,6 +1166,11 @@
     text-shadow: var(--pixel-text-shadow);
   }
 
+  .pixel-text-base {
+    color: var(--pixel-text-base);
+    text-shadow: var(--pixel-text-shadow);
+  }
+
   .pixel-text-danger {
     color: var(--destructive);
     text-shadow: var(--pixel-text-shadow);

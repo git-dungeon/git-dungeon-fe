@@ -92,9 +92,7 @@ export function SettingsEmbeddingPreviewCard() {
           disabled={isBusy}
         >
           <span>{t(option.labelKey)}</span>
-          <span className="text-muted-foreground text-[10px]">
-            {t(option.hintKey)}
-          </span>
+          <span className="text-[10px] opacity-80">{t(option.hintKey)}</span>
         </PixelButton>
       ))}
     </div>
@@ -131,10 +129,12 @@ export function SettingsEmbeddingPreviewCard() {
 
 function renderOverviewError(t: TFunction, onRetry: () => Promise<void>) {
   return (
-    <div className="bg-destructive/5 text-destructive border-destructive/20 flex flex-col items-start gap-3 rounded-lg border p-6">
+    <div className="bg-destructive/5 border-destructive/20 flex flex-col items-start gap-3 rounded-lg border p-6">
       <div>
-        <p className="font-semibold">{t("settings.embedding.error.title")}</p>
-        <p className="text-destructive/80 text-sm">
+        <p className="pixel-text-danger font-semibold">
+          {t("settings.embedding.error.title")}
+        </p>
+        <p className="pixel-text-danger pixel-text-sm opacity-80">
           {t("settings.embedding.error.description")}
         </p>
       </div>
@@ -219,13 +219,15 @@ function renderPreviewContent({
             loading="lazy"
           />
         </figure>
-        <div className="text-muted-foreground flex flex-col gap-2 text-xs sm:flex-row sm:items-center sm:justify-between">
-          <span>
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <span className="pixel-text-muted pixel-text-xs">
             {t("settings.embedding.generatedAt", { time: generatedAtLabel })}
           </span>
-          <span className="truncate">
+          <span className="pixel-text-muted pixel-text-xs truncate">
             {t("settings.embedding.urlExample")}{" "}
-            <code className="font-mono text-xs">{exampleUrl}</code>
+            <code className="pixel-text-base pixel-text-xs font-mono">
+              {exampleUrl}
+            </code>
           </span>
         </div>
       </section>

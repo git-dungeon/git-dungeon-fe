@@ -97,7 +97,9 @@ interface FieldsetProps {
 function Fieldset({ label, children }: FieldsetProps) {
   return (
     <fieldset className="flex flex-col gap-2">
-      <legend className="text-foreground text-sm font-medium">{label}</legend>
+      <legend className="pixel-text-base pixel-text-sm font-medium">
+        {label}
+      </legend>
       {children}
     </fieldset>
   );
