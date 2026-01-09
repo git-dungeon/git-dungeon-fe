@@ -64,7 +64,7 @@ const RARITY_COLOR_MAP: Record<string, string> = {
 };
 
 function resolveItemSprite(item: AppCharacterOverview["equipment"][number]) {
-  if (item.sprite) {
+  if (isValidSpriteUrl(item.sprite)) {
     return item.sprite;
   }
 
@@ -74,6 +74,18 @@ function resolveItemSprite(item: AppCharacterOverview["equipment"][number]) {
   const color = RARITY_COLOR_MAP[item.rarity] ?? "#6b7280";
 
   return createSpriteFromLabel(label, color);
+}
+
+function isValidSpriteUrl(sprite?: string | null) {
+  if (!sprite) {
+    return false;
+  }
+  return (
+    sprite.startsWith("data:") ||
+    sprite.startsWith("http://") ||
+    sprite.startsWith("https://") ||
+    sprite.startsWith("/")
+  );
 }
 
 function toRendererInventoryItem(

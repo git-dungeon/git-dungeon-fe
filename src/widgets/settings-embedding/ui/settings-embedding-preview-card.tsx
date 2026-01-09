@@ -43,6 +43,7 @@ const EMBEDDING_SIZE_OPTIONS: Array<{
 export function SettingsEmbeddingPreviewCard() {
   const { t } = useTranslation();
   const [size, setSize] = useState<EmbedPreviewSize>("compact");
+  const [isCopied, setIsCopied] = useState(false);
   const overview = useCharacterOverview();
   const profileQuery = useProfile();
   const { theme: themePreference, language: languagePreference } =
@@ -58,6 +59,14 @@ export function SettingsEmbeddingPreviewCard() {
   const profile = profileQuery.data?.profile;
   const displayName = profile?.displayName ?? profile?.username ?? undefined;
   const avatarUrl = profile?.avatarUrl ?? undefined;
+  const userId = overview.dashboard.data?.userId ?? "me";
+  const exampleUrl = useMemo(() => {
+    return resolveApiUrl(
+      `${EMBEDDING_ENDPOINTS.preview}?userId=${encodeURIComponent(
+        userId
+      )}&size=${embedSize}&theme=${embedTheme}&language=${embedLanguage}`
+    );
+  }, [embedLanguage, embedSize, embedTheme, userId]);
   const {
     svgDataUrl,
     renderError: embedRenderError,
@@ -73,7 +82,6 @@ export function SettingsEmbeddingPreviewCard() {
 
   const isFetchingOverview = overview.isLoading || overview.isFetching;
   const isBusy = isFetchingOverview || isRendering || !character;
-  const userId = overview.dashboard.data?.userId ?? "me";
 
   const generatedAtLabel = useMemo(() => {
     return formatDateTime(new Date());
@@ -123,7 +131,19 @@ export function SettingsEmbeddingPreviewCard() {
                 theme: embedTheme,
                 language: embedLanguage,
                 generatedAtLabel,
-                userId,
+                exampleUrl,
+                isCopied,
+                onCopy: async () => {
+                  try {
+                    await navigator.clipboard.writeText(exampleUrl);
+                    setIsCopied(true);
+                    window.setTimeout(() => setIsCopied(false), 1500);
+                  } catch (error) {
+                    if (import.meta.env?.DEV) {
+                      console.error("[embed-preview] copy failed", error);
+                    }
+                  }
+                },
               })}
     </PixelPanel>
   );
@@ -183,7 +203,9 @@ interface RenderPreviewContentParams {
   theme: EmbedPreviewTheme;
   language: EmbedPreviewLanguage;
   generatedAtLabel: string;
-  userId: string;
+  exampleUrl: string;
+  isCopied: boolean;
+  onCopy: () => void;
 }
 
 function renderPreviewContent({
@@ -193,15 +215,15 @@ function renderPreviewContent({
   theme,
   language,
   generatedAtLabel,
-  userId,
+  exampleUrl,
+  isCopied,
+  onCopy,
 }: RenderPreviewContentParams) {
-  const containerClassName = getEmbedPreviewContainerClass(size);
-  const aspectClassName = getEmbedPreviewAspectClass(size);
-  const exampleUrl = resolveApiUrl(
-    `${EMBEDDING_ENDPOINTS.preview}?userId=${encodeURIComponent(
-      userId
-    )}&size=${size}&theme=${theme}&language=${language}`
+  const containerClassName = cn(
+    getEmbedPreviewContainerClass(size),
+    size === "compact" && "mx-auto"
   );
+  const aspectClassName = getEmbedPreviewAspectClass(size);
 
   return (
     <div className="space-y-4">
@@ -221,14 +243,30 @@ function renderPreviewContent({
             loading="lazy"
           />
         </figure>
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <span className="pixel-text-muted pixel-text-xs">
             {t("settings.embedding.generatedAt", { time: generatedAtLabel })}
           </span>
-          <span className="pixel-text-muted pixel-text-xs truncate">
-            {t("settings.embedding.urlExample")}{" "}
-            <code className="pixel-text-xs font-mono">{exampleUrl}</code>
-          </span>
+          <div className="flex flex-col gap-2 sm:max-w-[70%]">
+            <span className="pixel-text-muted pixel-text-xs">
+              {t("settings.embedding.urlExample")}
+            </span>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+              <code className="pixel-text-xs font-mono break-all">
+                {exampleUrl}
+              </code>
+              <PixelButton
+                type="button"
+                pixelSize="compact"
+                onClick={onCopy}
+                className="shrink-0"
+              >
+                {isCopied
+                  ? t("settings.embedding.copied")
+                  : t("settings.embedding.copy")}
+              </PixelButton>
+            </div>
+          </div>
         </div>
       </section>
     </div>

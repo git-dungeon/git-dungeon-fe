@@ -9,18 +9,9 @@ import type {
 import type { EquipmentSlot } from "@/entities/dashboard/model/types";
 import { mockDashboardResponse } from "@/mocks/handlers/dashboard-handlers";
 import { mockTimestampMinutesAgo } from "@/mocks/handlers/shared/time";
-import { createSpriteFromLabel } from "@/shared/lib/sprite-utils";
 import { respondWithError, respondWithSuccess } from "@/mocks/lib/api-response";
 
 let inventoryVersion = 1;
-
-const RARITY_COLOR_MAP: Record<InventoryItem["rarity"], string> = {
-  common: "#6b7280",
-  uncommon: "#22c55e",
-  rare: "#3b82f6",
-  epic: "#a855f7",
-  legendary: "#facc15",
-};
 
 interface RawInventoryItem {
   id: string;
@@ -485,10 +476,7 @@ function buildInventoryItems(): InventoryItem[] {
         value: modifier.value,
       })),
     effect: item.effect?.type ?? null,
-    sprite: createSpriteFromLabel(
-      item.spriteLabel,
-      RARITY_COLOR_MAP[item.rarity]
-    ),
+    sprite: `sprite/${item.id}`,
     createdAt: mockTimestampMinutesAgo(item.obtainedMinutesAgo),
     isEquipped: Boolean(item.isEquipped),
     version: 1,

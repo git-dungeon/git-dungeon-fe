@@ -9,13 +9,22 @@ const containerSizeClassMap: Record<EmbedPreviewSize, string> = {
   wide: "px-10 py-10",
 };
 
+const containerWidthClassMap: Record<EmbedPreviewSize, string> = {
+  compact: "w-[640px]",
+  wide: "w-[960px]",
+};
+
 const containerAspectClassMap: Record<EmbedPreviewSize, string> = {
   compact: "aspect-[8/3]",
   wide: "aspect-[4/1]",
 };
 
 export function getEmbedPreviewContainerClass(size: EmbedPreviewSize) {
-  return cn(containerBaseClass, containerSizeClassMap[size]);
+  return cn(
+    containerBaseClass,
+    containerSizeClassMap[size],
+    containerWidthClassMap[size]
+  );
 }
 
 export function getEmbedPreviewAspectClass(size: EmbedPreviewSize) {

@@ -92,7 +92,7 @@ interface EmbedSatoriLocaleStrings {
 
 const KO_STRINGS: EmbedSatoriLocaleStrings = {
   level: "레벨",
-  exp: "경험치",
+  exp: "XP",
   floorProgress: "층 진행",
   gold: "골드",
   ap: "AP",
@@ -103,7 +103,7 @@ const KO_STRINGS: EmbedSatoriLocaleStrings = {
 
 const EN_STRINGS: EmbedSatoriLocaleStrings = {
   level: "Level",
-  exp: "Experience",
+  exp: "XP",
   floorProgress: "Floor Progress",
   gold: "Gold",
   ap: "AP",

@@ -9,6 +9,10 @@ export interface PixelTheme {
   panelBackground: string;
   panelBorder: string;
   panelShadow: string;
+  frameBorder: string;
+  frameShadow: string;
+  frameInsetShadow: string;
+  frameHighlight: string;
   surfaceStrong: string;
   surfaceDeep: string;
   barSurface: string;
@@ -33,6 +37,10 @@ const LIGHT_THEME: PixelTheme = {
   panelBackground: "linear-gradient(180deg, #dac4a2 0%, #d2b890 100%)",
   panelBorder: "#b08c63",
   panelShadow: "#c2a17a",
+  frameBorder: "#4a3524",
+  frameShadow: "#8a6a4d",
+  frameInsetShadow: "rgba(0, 0, 0, 0.35)",
+  frameHighlight: "rgba(255, 255, 255, 0.25)",
   surfaceStrong: "#d4b896",
   surfaceDeep: "#c8a880",
   barSurface: "#e4d5be",
@@ -53,6 +61,10 @@ const DARK_THEME: PixelTheme = {
   panelBackground: "#1a1f2c",
   panelBorder: "#3a4153",
   panelShadow: "#0b0f18",
+  frameBorder: "#1f2228",
+  frameShadow: "#0f1115",
+  frameInsetShadow: "rgba(0, 0, 0, 0.4)",
+  frameHighlight: "rgba(255, 255, 255, 0.2)",
   surfaceStrong: "#141a26",
   surfaceDeep: "#111623",
   barSurface: "#0f1420",
