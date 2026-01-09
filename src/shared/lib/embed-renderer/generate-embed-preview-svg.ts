@@ -101,10 +101,12 @@ function toRendererInventoryItem(
       ? rawDisplayName
       : "Unknown";
   const sprite = resolveItemSprite(item);
+  const code =
+    typeof item.code === "string" && item.code.trim() ? item.code : null;
 
   return {
     id: item.id,
-    code: item.code,
+    ...(code ? { code } : {}),
     name: displayName,
     slot: item.slot,
     rarity: item.rarity,
