@@ -76,7 +76,7 @@ function resolveItemSprite(item: AppCharacterOverview["equipment"][number]) {
   return createSpriteFromLabel(label, color);
 }
 
-function isValidSpriteUrl(sprite?: string | null) {
+function isValidSpriteUrl(sprite?: string | null): sprite is string {
   if (!sprite) {
     return false;
   }
