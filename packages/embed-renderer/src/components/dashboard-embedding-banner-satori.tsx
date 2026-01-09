@@ -17,6 +17,7 @@ import { formatLocaleNumber } from "../lib/item-format";
 import { getSlotLabel } from "../lib/slot-labels";
 import { resolvePixelTheme } from "../lib/pixel-theme";
 import { COIN_ICON_DATA_URL } from "../assets/coin";
+import { resolveSpriteDataUrl } from "../assets/sprites";
 
 const RARITY_STYLES: Record<
   EquipmentRarity,
@@ -48,6 +49,18 @@ const RARITY_STYLES: Record<
     text: "#f6f0e1",
   },
 };
+
+function isValidSpriteUrl(sprite?: string | null) {
+  if (!sprite) {
+    return false;
+  }
+  return (
+    sprite.startsWith("data:") ||
+    sprite.startsWith("http://") ||
+    sprite.startsWith("https://") ||
+    sprite.startsWith("/")
+  );
+}
 
 export interface DashboardEmbeddingBannerSatoriProps {
   level: number;
@@ -623,6 +636,11 @@ function SlotCard({ slot, item, language, palette }: SlotCardProps) {
   const slotBorderColor = palette.panelBorder;
   const iconBorderColor = rarityStyle?.border ?? palette.panelBorder;
   const iconBackgroundColor = rarityStyle?.background ?? palette.slotPlaceholder;
+  const resolvedSprite =
+    (item?.sprite ? resolveSpriteDataUrl(item.sprite) : null) ??
+    (item?.code ? resolveSpriteDataUrl(item.code) : null);
+  const spriteSrc =
+    resolvedSprite ?? (isValidSpriteUrl(item?.sprite) ? item?.sprite : null);
 
   return (
     <div
@@ -650,10 +668,10 @@ function SlotCard({ slot, item, language, palette }: SlotCardProps) {
           overflow: "hidden",
         }}
       >
-        {item?.sprite ? (
+        {spriteSrc ? (
           <img
-            src={item.sprite}
-            alt={item.name}
+            src={spriteSrc}
+            alt={item?.name ?? ""}
             width={40}
             height={40}
             style={{

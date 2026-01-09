@@ -104,6 +104,7 @@ function toRendererInventoryItem(
 
   return {
     id: item.id,
+    code: item.code,
     name: displayName,
     slot: item.slot,
     rarity: item.rarity,

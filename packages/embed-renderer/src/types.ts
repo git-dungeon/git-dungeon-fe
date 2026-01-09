@@ -30,6 +30,7 @@ export interface InventoryItemEffect {
 
 export interface InventoryItem {
   id: string;
+  code?: string;
   name: string;
   slot: EquipmentSlot;
   rarity: EquipmentRarity;
