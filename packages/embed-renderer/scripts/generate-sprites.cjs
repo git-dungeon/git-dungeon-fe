@@ -2,16 +2,74 @@ const fs = require("fs");
 const path = require("path");
 
 const embedRendererRoot = path.resolve(__dirname, "..");
-const repoRoot = path.resolve(embedRendererRoot, "../../..");
-const catalogPath = path.join(
-  repoRoot,
-  "git-dungeon-be",
-  "config",
-  "catalog",
-  "items.json"
+const defaultRepoRoot = path.resolve(embedRendererRoot, "../../..");
+
+const PATH_ENV = {
+  repoRoot: ["EMBED_RENDERER_REPO_ROOT", "REPO_ROOT"],
+  catalogPath: ["EMBED_RENDERER_CATALOG_PATH", "CATALOG_PATH"],
+  assetsRoot: ["EMBED_RENDERER_ASSETS_ROOT", "ASSETS_ROOT"],
+  outputPath: ["EMBED_RENDERER_OUTPUT_PATH", "OUTPUT_PATH"],
+};
+
+function resolveEnvPath(envValue, fallback) {
+  if (!envValue) {
+    return fallback;
+  }
+  return path.isAbsolute(envValue)
+    ? envValue
+    : path.resolve(process.cwd(), envValue);
+}
+
+function getEnvValue(keys) {
+  return keys.map((key) => process.env[key]).find(Boolean) ?? null;
+}
+
+function formatEnvKeys(keys) {
+  return keys.join(" or ");
+}
+
+function assertFileExists(filePath, label, envKeys) {
+  if (!fs.existsSync(filePath)) {
+    throw new Error(
+      `[embed-renderer] ${label} not found: ${filePath}\n` +
+        `Set ${formatEnvKeys(envKeys)} to the correct path (absolute or relative to CWD).`
+    );
+  }
+  const stat = fs.statSync(filePath);
+  if (!stat.isFile()) {
+    throw new Error(`[embed-renderer] ${label} is not a file: ${filePath}`);
+  }
+}
+
+function assertDirExists(dirPath, label, envKeys) {
+  if (!fs.existsSync(dirPath)) {
+    throw new Error(
+      `[embed-renderer] ${label} not found: ${dirPath}\n` +
+        `Set ${formatEnvKeys(envKeys)} to the correct directory (absolute or relative to CWD).`
+    );
+  }
+  const stat = fs.statSync(dirPath);
+  if (!stat.isDirectory()) {
+    throw new Error(`[embed-renderer] ${label} is not a directory: ${dirPath}`);
+  }
+}
+
+const repoRoot = resolveEnvPath(
+  getEnvValue(PATH_ENV.repoRoot),
+  defaultRepoRoot
 );
-const assetsRoot = path.join(repoRoot, "git-dungeon-fe", "src", "assets");
-const outputPath = path.join(embedRendererRoot, "src", "assets", "sprites.ts");
+const catalogPath = resolveEnvPath(
+  getEnvValue(PATH_ENV.catalogPath),
+  path.join(repoRoot, "git-dungeon-be", "config", "catalog", "items.json")
+);
+const assetsRoot = resolveEnvPath(
+  getEnvValue(PATH_ENV.assetsRoot),
+  path.join(repoRoot, "git-dungeon-fe", "src", "assets")
+);
+const outputPath = resolveEnvPath(
+  getEnvValue(PATH_ENV.outputPath),
+  path.join(embedRendererRoot, "src", "assets", "sprites.ts")
+);
 
 function toDataUrl(filePath) {
   const buffer = fs.readFileSync(filePath);
@@ -59,8 +117,20 @@ function resolveSpriteAssetPath(item) {
 }
 
 function main() {
-  const raw = fs.readFileSync(catalogPath, "utf8");
-  const catalog = JSON.parse(raw);
+  assertFileExists(catalogPath, "catalog items.json", PATH_ENV.catalogPath);
+  assertDirExists(assetsRoot, "assets root", PATH_ENV.assetsRoot);
+  assertDirExists(path.dirname(outputPath), "output directory", PATH_ENV.outputPath);
+
+  let catalog;
+  try {
+    const raw = fs.readFileSync(catalogPath, "utf8");
+    catalog = JSON.parse(raw);
+  } catch (error) {
+    throw new Error(
+      `[embed-renderer] failed to read catalog JSON: ${catalogPath}\n` +
+        `Ensure the file exists and is valid JSON. Original error: ${error instanceof Error ? error.message : String(error)}`
+    );
+  }
   const items = Array.isArray(catalog.items) ? catalog.items : [];
 
   const spriteMap = {};

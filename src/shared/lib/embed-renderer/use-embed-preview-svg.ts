@@ -58,7 +58,13 @@ export function useEmbedPreviewSvg({
       equipment: overview.equipment.map((item) => ({
         ...item,
         name: resolveCatalogItemName(itemNameMap, item.code, item.name),
-        sprite: resolveEmbedItemSprite(item, resolvedSpriteMap),
+        sprite: (() => {
+          const resolvedSprite = resolveEmbedItemSprite(
+            item,
+            resolvedSpriteMap
+          );
+          return isValidSpriteUrl(resolvedSprite) ? resolvedSprite : null;
+        })(),
       })),
     };
   }, [catalogQuery.data, itemNameMap, overview, resolvedSpriteMap]);
@@ -143,7 +149,9 @@ function buildCatalogSpriteMap(
     spriteUrlMap: catalog.spriteMap ?? {},
     assetsBaseUrl: catalog.assetsBaseUrl ?? null,
     spriteIdByCode: Object.fromEntries(
-      catalog.items.map((item) => [item.code, item.spriteId])
+      catalog.items
+        .filter((item) => item.spriteId != null)
+        .map((item) => [item.code, String(item.spriteId)])
     ),
   };
 }
@@ -158,11 +166,12 @@ function resolveEmbedItemSprite(
 
   const spriteKey = item.sprite ?? catalog.spriteIdByCode[item.code] ?? null;
   const resolvedFromCatalog = resolveCatalogSpriteUrl(spriteKey, catalog);
-  if (resolvedFromCatalog) {
+  if (isValidSpriteUrl(resolvedFromCatalog)) {
     return resolvedFromCatalog;
   }
 
-  return resolveLocalItemSprite(item.code, spriteKey) ?? item.sprite ?? null;
+  const localSprite = resolveLocalItemSprite(item.code, spriteKey);
+  return isValidSpriteUrl(localSprite) ? localSprite : null;
 }
 
 function resolveCatalogSpriteUrl(
@@ -188,7 +197,7 @@ function resolveCatalogSpriteUrl(
   return `${base}${spriteKey}`;
 }
 
-function isValidSpriteUrl(sprite?: string | null) {
+function isValidSpriteUrl(sprite?: string | null): sprite is string {
   if (!sprite) {
     return false;
   }

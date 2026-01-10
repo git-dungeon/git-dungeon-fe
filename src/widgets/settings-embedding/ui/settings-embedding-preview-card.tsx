@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { TFunction } from "i18next";
 import { cn } from "@/shared/lib/utils";
 import { formatDateTime } from "@/shared/lib/datetime/formatters";
@@ -44,6 +44,7 @@ export function SettingsEmbeddingPreviewCard() {
   const { t } = useTranslation();
   const [size, setSize] = useState<EmbedPreviewSize>("compact");
   const [isCopied, setIsCopied] = useState(false);
+  const copyTimeoutRef = useRef<number | null>(null);
   const overview = useCharacterOverview();
   const profileQuery = useProfile();
   const { theme: themePreference, language: languagePreference } =
@@ -81,11 +82,29 @@ export function SettingsEmbeddingPreviewCard() {
   });
 
   const isFetchingOverview = overview.isLoading || overview.isFetching;
-  const isBusy = isFetchingOverview || isRendering || !character;
+  const isFetchingProfile = profileQuery.isLoading || profileQuery.isFetching;
+  const isBusy =
+    isFetchingOverview || isFetchingProfile || isRendering || !character;
+  const hasOverviewError = overview.isError;
+  const hasProfileError = profileQuery.isError;
+  const hasError = hasOverviewError || hasProfileError;
 
   const generatedAtLabel = useMemo(() => {
     return formatDateTime(new Date());
   }, []);
+
+  useEffect(() => {
+    return () => {
+      if (copyTimeoutRef.current !== null) {
+        window.clearTimeout(copyTimeoutRef.current);
+        copyTimeoutRef.current = null;
+      }
+    };
+  }, []);
+
+  const handleRetry = async () => {
+    await Promise.allSettled([overview.refetch(), profileQuery.refetch()]);
+  };
 
   const headerRight = (
     <div className="flex items-center gap-2">
@@ -118,8 +137,8 @@ export function SettingsEmbeddingPreviewCard() {
       <p className="pixel-text-muted pixel-text-sm">
         {t("settings.embedding.description")}
       </p>
-      {overview.isError
-        ? renderOverviewError(t, overview.refetch)
+      {hasError
+        ? renderOverviewError(t, handleRetry)
         : embedRenderError
           ? renderEmbedError(t, embedRenderError, embedSize, embedLanguage)
           : !svgDataUrl
@@ -137,7 +156,13 @@ export function SettingsEmbeddingPreviewCard() {
                   try {
                     await navigator.clipboard.writeText(exampleUrl);
                     setIsCopied(true);
-                    window.setTimeout(() => setIsCopied(false), 1500);
+                    if (copyTimeoutRef.current !== null) {
+                      window.clearTimeout(copyTimeoutRef.current);
+                    }
+                    copyTimeoutRef.current = window.setTimeout(() => {
+                      setIsCopied(false);
+                      copyTimeoutRef.current = null;
+                    }, 1500);
                   } catch (error) {
                     if (import.meta.env?.DEV) {
                       console.error("[embed-preview] copy failed", error);

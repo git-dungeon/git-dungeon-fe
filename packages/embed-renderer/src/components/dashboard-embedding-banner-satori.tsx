@@ -137,9 +137,9 @@ export function DashboardEmbeddingBannerSatori({
   const isWide = size === "wide";
 
   const hpCurrent = stats.total.hp;
-  const hpMax = stats.total.maxHp || stats.total.hp;
+  const hpMax = stats.total.maxHp ?? stats.total.hp;
   const expCurrent = exp;
-  const expMax = expToLevel || exp;
+  const expMax = expToLevel ?? exp;
   const bonusPositiveColor = "#22c55e";
   const bonusNegativeColor = "#ef4444";
   const statLabelWidth = 60;
