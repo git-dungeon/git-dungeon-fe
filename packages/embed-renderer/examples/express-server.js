@@ -114,7 +114,7 @@ app.get("/embed.svg", async (req, res) => {
     const size =
       req.query.size === "compact" || req.query.size === "wide"
         ? req.query.size
-        : "square";
+        : "compact";
     const language = req.query.lang === "en" ? "en" : "ko";
     const enableAnimation =
       req.query.animate === "false" || req.query.animate === "0" ? false : true;

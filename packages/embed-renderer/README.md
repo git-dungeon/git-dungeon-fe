@@ -11,6 +11,7 @@ Satori 기반으로 Git Dungeon 대시보드 임베딩 배너를 SVG로 렌더�
 - 기존 대시보드 컴포넌트와 동일한 레이아웃/프리셋/다국어 구성을 그대로 유지
 - 보너스 스탯 샤이닝 애니메이션을 위한 SMIL 기반 후처리(`enableAnimation`, `injectBonusAnimation`) 제공
 - React/Satori를 peer dependency로 두어 앱과 버전을 공유
+- 빌드 시 아이템 스프라이트를 data URL로 변환하여 서버/외부 임베드에서도 동일 렌더링
 
 ## 설치
 
@@ -41,7 +42,7 @@ const fonts: EmbedFontConfig[] = await loadFontsFromUrls([
 
 const svg = await renderEmbedSvg({
   theme: "light",
-  size: "square",
+  size: "compact",
   language: "ko",
   overview: characterOverview,
   fonts,
@@ -93,6 +94,35 @@ response.setHeader("Content-Type", "image/svg+xml; charset=utf-8").send(svg);
 
 - Chrome / Firefox / Edge 등 SMIL을 지원하는 브라우저에서는 `<img src="data:image/svg+xml">` 형태로도 애니메이션이 재생됩니다.
 - OG 이미지 생성기 등 SVG를 즉시 래스터라이즈하는 환경에서는 정적 SVG로 폴백됩니다.
+
+### 스프라이트 data URL 매핑
+
+GitHub README 등 외부 환경에서는 SVG 내부의 외부 이미지 요청이 차단될 수 있습니다.  
+이를 위해 `embed-renderer`는 빌드 시점에 **아이템 스프라이트 PNG를 data URL로 변환**해 내부 맵으로 보관합니다.
+
+- 빌드 훅: `prebuild`에서 `scripts/generate-sprites.cjs` 실행
+- 결과물: `src/assets/sprites.ts` (자동 생성)
+- 사용 방식: `item.code`(권장) 또는 `item.sprite`에 코드 값을 전달하면
+  렌더러가 자동으로 data URL로 치환합니다. (`sprite/weapon-longsword`처럼 `sprite/` 접두사가 있어도 동작)
+
+서버에서 임베드 SVG를 생성할 때는 **외부 URL 대신 아이템 코드**를 전달하는 것을 권장합니다.
+
+```ts
+const svg = await renderEmbedSvg({
+  theme: "dark",
+  size: "wide",
+  language: "en",
+  overview: {
+    ...characterOverview,
+    equipment: characterOverview.equipment.map((item) => ({
+      ...item,
+      // 코드/스프라이트 ID를 넘기면 내부에서 data URL로 변환됩니다.
+      code: item.code,
+    })),
+  },
+  fonts,
+});
+```
 
 ## 개발 스크립트
 

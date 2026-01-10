@@ -1,5 +1,5 @@
 export const EMBED_THEME_VALUES = ["light", "dark"] as const;
-export const EMBED_PREVIEW_SIZE_VALUES = ["compact", "square", "wide"] as const;
+export const EMBED_PREVIEW_SIZE_VALUES = ["compact", "wide"] as const;
 export const EMBED_LANGUAGE_VALUES = ["ko", "en"] as const;
 
 export type EmbedPreviewTheme = (typeof EMBED_THEME_VALUES)[number];
@@ -30,6 +30,7 @@ export interface InventoryItemEffect {
 
 export interface InventoryItem {
   id: string;
+  code?: string;
   name: string;
   slot: EquipmentSlot;
   rarity: EquipmentRarity;
@@ -71,11 +72,14 @@ export interface CharacterFloorStatus {
 }
 
 export interface CharacterOverview {
+  displayName?: string;
+  avatarUrl?: string;
   level: number;
   exp: number;
   expToLevel: number;
   gold: number;
   ap: number;
+  maxAp?: number;
   floor: CharacterFloorStatus;
   stats: CharacterStatSummary;
   equipment: InventoryItem[];

@@ -7,16 +7,21 @@ import type {
 } from "@/entities/embed/model/types";
 import { generateEmbedPreviewSvg } from "@/shared/lib/embed-renderer/generate-embed-preview-svg";
 import { useCatalog } from "@/entities/catalog/model/use-catalog";
+import type { CatalogData } from "@/entities/catalog/model/types";
 import {
   buildCatalogItemNameMap,
   resolveCatalogItemName,
 } from "@/entities/catalog/lib/item-name";
+import { resolveLocalItemSprite } from "@/entities/catalog/config/local-sprites";
 
 interface UseEmbedPreviewSvgParams {
   theme: EmbedPreviewTheme;
   size: EmbedPreviewSize;
   language: EmbedPreviewLanguage;
   overview: CharacterOverview | null;
+  displayName?: string | null;
+  avatarUrl?: string | null;
+  maxAp?: number | null;
 }
 
 interface UseEmbedPreviewSvgResult {
@@ -31,18 +36,21 @@ export function useEmbedPreviewSvg({
   size,
   language,
   overview,
+  displayName,
+  avatarUrl,
+  maxAp,
 }: UseEmbedPreviewSvgParams): UseEmbedPreviewSvgResult {
   const catalogQuery = useCatalog(language);
   const itemNameMap = useMemo(
     () => buildCatalogItemNameMap(catalogQuery.data),
     [catalogQuery.data]
   );
+  const resolvedSpriteMap = useMemo(() => {
+    return buildCatalogSpriteMap(catalogQuery.data);
+  }, [catalogQuery.data]);
   const resolvedOverview = useMemo(() => {
     if (!overview) {
       return null;
-    }
-    if (!catalogQuery.data) {
-      return overview;
     }
 
     return {
@@ -50,9 +58,16 @@ export function useEmbedPreviewSvg({
       equipment: overview.equipment.map((item) => ({
         ...item,
         name: resolveCatalogItemName(itemNameMap, item.code, item.name),
+        sprite: (() => {
+          const resolvedSprite = resolveEmbedItemSprite(
+            item,
+            resolvedSpriteMap
+          );
+          return isValidSpriteUrl(resolvedSprite) ? resolvedSprite : null;
+        })(),
       })),
     };
-  }, [catalogQuery.data, itemNameMap, overview]);
+  }, [catalogQuery.data, itemNameMap, overview, resolvedSpriteMap]);
   const [svgMarkup, setSvgMarkup] = useState<string | null>(null);
   const [svgDataUrl, setSvgDataUrl] = useState<string | null>(null);
   const [renderError, setRenderError] = useState<string | null>(null);
@@ -78,6 +93,9 @@ export function useEmbedPreviewSvg({
       size,
       language,
       overview: resolvedOverview,
+      displayName,
+      avatarUrl,
+      maxAp,
     })
       .then((svg) => {
         if (!cancelled) {
@@ -105,7 +123,7 @@ export function useEmbedPreviewSvg({
     return () => {
       cancelled = true;
     };
-  }, [theme, size, language, resolvedOverview]);
+  }, [theme, size, language, resolvedOverview, displayName, avatarUrl, maxAp]);
 
   return {
     svgMarkup,
@@ -113,4 +131,80 @@ export function useEmbedPreviewSvg({
     renderError,
     isRendering,
   };
+}
+
+interface CatalogSpriteMap {
+  spriteUrlMap: Record<string, string>;
+  assetsBaseUrl: string | null;
+  spriteIdByCode: Record<string, string>;
+}
+
+function buildCatalogSpriteMap(
+  catalog: CatalogData | null | undefined
+): CatalogSpriteMap {
+  if (!catalog) {
+    return { spriteUrlMap: {}, assetsBaseUrl: null, spriteIdByCode: {} };
+  }
+  return {
+    spriteUrlMap: catalog.spriteMap ?? {},
+    assetsBaseUrl: catalog.assetsBaseUrl ?? null,
+    spriteIdByCode: Object.fromEntries(
+      catalog.items
+        .filter((item) => item.spriteId != null)
+        .map((item) => [item.code, String(item.spriteId)])
+    ),
+  };
+}
+
+function resolveEmbedItemSprite(
+  item: CharacterOverview["equipment"][number],
+  catalog: CatalogSpriteMap
+) {
+  if (isValidSpriteUrl(item.sprite)) {
+    return item.sprite;
+  }
+
+  const spriteKey = item.sprite ?? catalog.spriteIdByCode[item.code] ?? null;
+  const resolvedFromCatalog = resolveCatalogSpriteUrl(spriteKey, catalog);
+  if (isValidSpriteUrl(resolvedFromCatalog)) {
+    return resolvedFromCatalog;
+  }
+
+  const localSprite = resolveLocalItemSprite(item.code, spriteKey);
+  return isValidSpriteUrl(localSprite) ? localSprite : null;
+}
+
+function resolveCatalogSpriteUrl(
+  spriteKey: string | null,
+  catalog: CatalogSpriteMap
+) {
+  if (!spriteKey) {
+    return null;
+  }
+
+  const mapped = catalog.spriteUrlMap[spriteKey];
+  if (mapped) {
+    return mapped;
+  }
+
+  if (!catalog.assetsBaseUrl) {
+    return null;
+  }
+
+  const base = catalog.assetsBaseUrl.endsWith("/")
+    ? catalog.assetsBaseUrl
+    : `${catalog.assetsBaseUrl}/`;
+  return `${base}${spriteKey}`;
+}
+
+function isValidSpriteUrl(sprite?: string | null): sprite is string {
+  if (!sprite) {
+    return false;
+  }
+  return (
+    sprite.startsWith("data:") ||
+    sprite.startsWith("http://") ||
+    sprite.startsWith("https://") ||
+    sprite.startsWith("/")
+  );
 }

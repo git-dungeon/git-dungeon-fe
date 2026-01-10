@@ -40,6 +40,25 @@ describe("getEmbedPreview", () => {
     expect(preview.inventory.items.length).toBeGreaterThan(0);
   });
 
+  it("compact 사이즈 요청도 정상 처리된다", async () => {
+    server.use(
+      http.get(EMBEDDING_ENDPOINTS.preview, () =>
+        respondWithSuccess({
+          theme: baseParams.theme,
+          size: "compact",
+          language: baseParams.language,
+          generatedAt: "2025-01-01T00:00:00.000Z",
+          dashboard: mockDashboardResponse,
+          inventory: buildInventoryResponse(),
+        })
+      )
+    );
+
+    const preview = await getEmbedPreview({ ...baseParams, size: "compact" });
+
+    expect(preview.size).toBe("compact");
+  });
+
   it("서버가 실패 응답을 반환하면 ApiError를 던진다", async () => {
     server.use(
       http.get(EMBEDDING_ENDPOINTS.preview, () =>

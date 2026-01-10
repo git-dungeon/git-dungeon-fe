@@ -7,6 +7,11 @@ export {
 } from "./components/dashboard-embedding-banner-satori";
 export { injectBonusAnimation } from "./lib/inject-bonus-animation";
 export {
+  resolveSpriteDataUrl,
+  SPRITE_DATA_URLS,
+} from "./assets/sprites";
+export type { SpriteDataUrlKey } from "./assets/sprites";
+export {
   EMBED_SATORI_DEFAULT_FONT_FAMILY,
   EMBED_SATORI_LOCALE_STRINGS,
   EMBED_SATORI_PALETTES,

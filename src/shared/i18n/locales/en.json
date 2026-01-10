@@ -53,15 +53,11 @@
       "size": {
         "compact": {
           "label": "Compact",
-          "hint": "Blog sidebar"
-        },
-        "square": {
-          "label": "Square",
           "hint": "README card"
         },
         "wide": {
           "label": "Wide",
-          "hint": "Dashboard banner"
+          "hint": "Wide banner"
         }
       },
       "error": {
@@ -74,7 +70,9 @@
       },
       "previewAlt": "Embed SVG preview",
       "generatedAt": "Generated at: {{time}}",
-      "urlExample": "Example URL:"
+      "urlExample": "Example URL:",
+      "copy": "Copy",
+      "copied": "Copied"
     },
     "github": {
       "title": "GitHub connection",
@@ -119,7 +117,7 @@
       "level": "Level",
       "levelValue": "Lv. {{level}}",
       "hp": "HP",
-      "exp": "EXP",
+      "exp": "XP",
       "ap": "AP",
       "gold": "Gold"
     },
@@ -164,7 +162,7 @@
     },
     "summary": {
       "floorLabel": "Floor {{floor}}",
-      "expProgressLabel": "EXP progress",
+      "expProgressLabel": "XP progress",
       "floorProgress": {
         "title": "Floor progress",
         "value": "{{current}}F / {{best}}F",
@@ -212,8 +210,8 @@
           "caption": "Gold on hand"
         },
         "exp": {
-          "title": "EXP",
-          "caption": "EXP needed for the next level"
+          "title": "XP",
+          "caption": "XP needed for the next level"
         },
         "ap": {
           "title": "AP remaining",

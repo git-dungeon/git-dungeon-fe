@@ -23,6 +23,7 @@
     }
   },
   "scripts": {
+    "prebuild": "node scripts/generate-sprites.cjs",
     "build": "tsc --project tsconfig.json --emitDeclarationOnly true && tsup src/index.ts src/browser.ts src/server.ts --format esm,cjs --splitting false",
     "clean": "rm -rf dist",
     "example:express": "node examples/express-server.js"

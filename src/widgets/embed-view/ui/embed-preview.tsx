@@ -73,7 +73,7 @@ export function EmbedPreview({
           <img
             src={svgDataUrl}
             alt="임베드 SVG 프리뷰"
-            className="h-full w-full object-cover"
+            className="h-full w-full object-contain"
             loading="lazy"
           />
         </figure>

@@ -5,93 +5,64 @@ import {
   type EmbedPreviewLanguage,
   type EmbedPreviewSize,
   type EmbedPreviewTheme,
-  type EquipmentSlot,
   type EquipmentRarity,
+  type EquipmentSlot,
   type InventoryItem,
 } from "../types";
 import {
-  EMBED_SATORI_DEFAULT_FONT_FAMILY,
-  resolveEmbedSatoriPalette,
   resolveEmbedSatoriPreset,
   resolveEmbedSatoriStrings,
 } from "../lib/satori-presets";
-import {
-  formatInventoryEffect,
-  formatLocaleNumber,
-  formatModifierSummary,
-  formatRarity,
-} from "../lib/item-format";
+import { formatLocaleNumber } from "../lib/item-format";
 import { getSlotLabel } from "../lib/slot-labels";
+import { resolvePixelTheme } from "../lib/pixel-theme";
+import { COIN_ICON_DATA_URL } from "../assets/coin";
+import { resolveSpriteDataUrl } from "../assets/sprites";
 
-const BADGE_TONE_COLORS: Record<"gain" | "loss" | "neutral", string> = {
-  gain: "#10b981",
-  loss: "#ef4444",
-  neutral: "#6b7280",
+const RARITY_STYLES: Record<
+  EquipmentRarity,
+  { border: string; background: string; text: string }
+> = {
+  common: {
+    border: "#6b7280",
+    background: "#4b5563",
+    text: "#f6f0e1",
+  },
+  uncommon: {
+    border: "#22c55e",
+    background: "#166534",
+    text: "#f6f0e1",
+  },
+  rare: {
+    border: "#3b82f6",
+    background: "#1d4ed8",
+    text: "#f6f0e1",
+  },
+  epic: {
+    border: "#a855f7",
+    background: "#7e22ce",
+    text: "#f6f0e1",
+  },
+  legendary: {
+    border: "#facc15",
+    background: "#a16207",
+    text: "#f6f0e1",
+  },
 };
 
-const RARITY_COLORS: Record<EquipmentRarity, string> = {
-  common: "#6b7280",
-  uncommon: "#22c55e",
-  rare: "#3b82f6",
-  epic: "#a855f7",
-  legendary: "#facc15",
-};
-
-const STAT_KEYS = ["hp", "atk", "def", "luck"] as const;
-const SUMMARY_CARD_HEIGHT = 160;
-const STATS_CARD_HEIGHT = 176;
-const EQUIPMENT_CARD_HEIGHT = 200;
-const SUMMARY_ITEM_GAP = 16;
-const STATS_ITEM_GAP = 16;
-const EQUIPMENT_ITEM_GAP = 12;
-const SECTION_TITLE_HEIGHT = 28;
-const SECTION_VERTICAL_GAP = 24;
-
-function estimateBannerHeight(
-  preset: ReturnType<typeof resolveEmbedSatoriPreset>,
-  summaryCount: number,
-  statsCount: number,
-  equipmentCount: number
-) {
-  const summaryColumns = Math.max(1, preset.headerColumns);
-  const statsColumns = Math.max(1, preset.statsColumns);
-  const equipmentColumns = Math.max(1, preset.equipmentColumns);
-
-  const summaryRows = Math.ceil(summaryCount / summaryColumns);
-  const statsRows = Math.ceil(statsCount / statsColumns);
-  const equipmentRows = Math.ceil(equipmentCount / equipmentColumns);
-
-  const summaryHeight =
-    summaryRows * SUMMARY_CARD_HEIGHT +
-    (summaryRows > 0 ? (summaryRows - 1) * SUMMARY_ITEM_GAP : 0);
-
-  const statsHeight =
-    statsRows > 0
-      ? SECTION_VERTICAL_GAP +
-        SECTION_TITLE_HEIGHT +
-        statsRows * STATS_CARD_HEIGHT +
-        (statsRows - 1) * STATS_ITEM_GAP
-      : 0;
-
-  const equipmentHeight =
-    equipmentRows > 0
-      ? SECTION_VERTICAL_GAP +
-        SECTION_TITLE_HEIGHT +
-        equipmentRows * EQUIPMENT_CARD_HEIGHT +
-        (equipmentRows - 1) * EQUIPMENT_ITEM_GAP
-      : 0;
-
-  const rootGap = 24; // gap between header section and content section
-  const contentGap = 24; // gap between stats and equipment sections (내용 레이아웃 gap과 일치)
-
-  return (
-    preset.paddingY * 2 +
-    summaryHeight +
-    (statsHeight > 0 || equipmentHeight > 0 ? rootGap : 0) +
-    statsHeight +
-    (statsHeight > 0 && equipmentHeight > 0 ? contentGap : 0) +
-    equipmentHeight
-  );
+function isValidSpriteUrl(sprite?: string | null): sprite is string {
+  if (!sprite) {
+    return false;
+  }
+  if (sprite.startsWith("data:")) {
+    return true;
+  }
+  try {
+    const url = new URL(sprite);
+    return url.protocol === "https:";
+  } catch {
+    return false;
+  }
 }
 
 export interface DashboardEmbeddingBannerSatoriProps {
@@ -100,6 +71,9 @@ export interface DashboardEmbeddingBannerSatoriProps {
   expToLevel: number;
   gold: number;
   ap: number;
+  maxAp?: number;
+  displayName?: string;
+  avatarUrl?: string;
   floor: {
     current: number;
     best: number;
@@ -117,36 +91,15 @@ export function resolveDashboardEmbeddingBannerLayout(
 ): {
   preset: ReturnType<typeof resolveEmbedSatoriPreset>;
   strings: ReturnType<typeof resolveEmbedSatoriStrings>;
-  headerItems: SummaryCardItem[];
   height: number;
 } {
   const preset = resolveEmbedSatoriPreset(props.size);
   const strings = resolveEmbedSatoriStrings(props.language);
-  const headerItems = buildHeaderItems({
-    level: props.level,
-    exp: props.exp,
-    expToLevel: props.expToLevel,
-    floor: props.floor,
-    gold: props.gold,
-    ap: props.ap,
-    strings,
-    language: props.language,
-  });
-
-  const estimatedHeight = estimateBannerHeight(
-    preset,
-    headerItems.length,
-    STAT_KEYS.length,
-    EQUIPMENT_SLOTS.length
-  );
-
-  const height = Math.max(preset.height, Math.ceil(estimatedHeight));
 
   return {
     preset,
     strings,
-    headerItems,
-    height,
+    height: preset.height,
   };
 }
 
@@ -156,6 +109,9 @@ export function DashboardEmbeddingBannerSatori({
   expToLevel,
   gold,
   ap,
+  maxAp,
+  displayName,
+  avatarUrl,
   floor,
   stats,
   equipment,
@@ -163,468 +119,452 @@ export function DashboardEmbeddingBannerSatori({
   size,
   language,
 }: DashboardEmbeddingBannerSatoriProps) {
-  const { preset, strings, headerItems, height } =
-    resolveDashboardEmbeddingBannerLayout({
-      level,
-      exp,
-      expToLevel,
-      gold,
-      ap,
-      floor,
-      stats,
-      equipment,
-      theme,
-      size,
-      language,
-    });
-  const palette = resolveEmbedSatoriPalette(theme);
-  const isDarkTheme = theme === "dark";
+  const { preset } = resolveDashboardEmbeddingBannerLayout({
+    level,
+    exp,
+    expToLevel,
+    gold,
+    ap,
+    maxAp,
+    displayName,
+    avatarUrl,
+    floor,
+    stats,
+    equipment,
+    theme,
+    size,
+    language,
+  });
+  const strings = resolveEmbedSatoriStrings(language);
+  const palette = resolvePixelTheme(theme);
+  const isWide = size === "wide";
+  const safeAvatarUrl = isValidSpriteUrl(avatarUrl) ? avatarUrl : null;
 
-  const headerColumns = Math.max(1, preset.headerColumns);
-  const headerGap = 16;
+  const hpCurrent = stats.total.hp;
+  const hpMax = stats.total.maxHp ?? stats.total.hp;
+  const expCurrent = exp;
+  const expMax = expToLevel ?? exp;
+  const bonusPositiveColor = "#22c55e";
+  const bonusNegativeColor = "#ef4444";
+  const statLabelWidth = 60;
 
+  const isGradientBackground = palette.panelBackground.includes("gradient(");
+  const borderSize = 3;
+  const cornerSize = 8;
+  const cornerOffset = -borderSize;
+  const cornerColors = resolveCornerColors(palette.panelBackground);
+  const cornerTopColor =
+    cornerColors?.top ?? (isGradientBackground ? palette.surfaceStrong : palette.panelBackground);
+  const cornerBottomColor =
+    cornerColors?.bottom ?? (isGradientBackground ? palette.surfaceDeep : palette.panelBackground);
   const rootStyle: CSSProperties = {
     width: preset.width,
-    height,
+    height: preset.height,
     padding: `${preset.paddingY}px ${preset.paddingX}px`,
     boxSizing: "border-box",
-    borderRadius: 24,
-    border: `1px solid ${palette.border}`,
-    backgroundImage: `linear-gradient(135deg, ${palette.background}, ${palette.backgroundAccent})`,
-    color: palette.foreground,
-    fontFamily: EMBED_SATORI_DEFAULT_FONT_FAMILY,
+    display: "flex",
+    flexDirection: "row",
+    gap: 16,
+    border: `${borderSize}px solid ${palette.frameBorder}`,
+    borderRadius: 0,
+    boxShadow: `0 3px 0 ${palette.frameShadow}, inset -2px -2px 0 ${palette.frameInsetShadow}, inset 2px 2px 0 ${palette.frameHighlight}`,
+    color: palette.textPrimary,
+    fontFamily: palette.fonts.body,
+    overflow: "visible",
+    position: "relative",
+  };
+  if (isGradientBackground) {
+    rootStyle.backgroundImage = palette.panelBackground;
+  } else {
+    rootStyle.backgroundColor = palette.panelBackground;
+  }
+  const cornerCoverStyle: CSSProperties = {
+    position: "absolute",
+    width: cornerSize,
+    height: cornerSize,
+    pointerEvents: "none",
+  };
+
+  const leftSectionStyle: CSSProperties = {
+    display: "flex",
+    gap: 16,
+    flex: isWide ? "0 0 520px" : "1 1 auto",
+  };
+
+  const infoStyle: CSSProperties = {
     display: "flex",
     flexDirection: "column",
-    gap: 24,
-    boxShadow: `0 18px 36px rgba(15, 23, 42, ${isDarkTheme ? 0.35 : 0.12})`,
+    gap: 6,
+    flex: 1,
+  };
+
+  const nameStyle: CSSProperties = {
+    fontFamily: palette.fonts.title,
+    fontSize: 16,
+    fontWeight: 700,
+    textShadow: palette.textShadow,
+  };
+
+  const labelStyle: CSSProperties = {
+    fontSize: 10,
+    letterSpacing: "0.18em",
+    textTransform: "uppercase",
+    color: palette.textPrimary,
+    textShadow: palette.textShadow,
+  };
+
+  const valueStyle: CSSProperties = {
+    fontSize: 12,
+    color: palette.textPrimary,
+    textShadow: palette.textShadow,
+  };
+
+  const avatarFrameStyle: CSSProperties = {
+    width: 72,
+    height: 72,
+    borderRadius: 8,
+    border: `3px solid ${palette.panelBorder}`,
+    backgroundColor: palette.surfaceDeep,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
     overflow: "hidden",
   };
 
-  const headerWrapperStyle: CSSProperties = {
-    display: "flex",
-    flexWrap: "wrap",
-    margin: -(headerGap / 2),
-  };
+  const displayNameLabel =
+    displayName ?? (language === "ko" ? "모험가" : "Adventurer");
 
-  const contentWrapperStyle: CSSProperties =
-    size === "compact"
-      ? {
-          display: "flex",
-          flexDirection: "column",
-          gap: 24,
-        }
-      : {
-          display: "flex",
-          flexDirection: "row",
-          gap: 24,
-        };
-
-  const statsSectionStyle: CSSProperties = {
-    display: "flex",
-    flexDirection: "column",
-    gap: 16,
-    flexGrow: size === "compact" ? 0 : 1.4,
-    flexBasis: size === "compact" ? "auto" : 0,
-  };
-
-  const equipmentSectionStyle: CSSProperties = {
-    display: "flex",
-    flexDirection: "column",
-    gap: 16,
-    flexGrow: size === "compact" ? 0 : 1,
-    flexBasis: size === "compact" ? "auto" : 0,
+  const buildValueWithBonus = (value: number, bonus: number) => {
+    const formattedValue = formatLocaleNumber(value, language);
+    if (!bonus) {
+      return <span style={valueStyle}>{formattedValue}</span>;
+    }
+    const sign = bonus > 0 ? "+" : "";
+    return (
+      <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
+        <span style={valueStyle}>{formattedValue}</span>
+        <span
+          style={{
+            ...valueStyle,
+            fontSize: 10,
+            color: bonus > 0 ? bonusPositiveColor : bonusNegativeColor,
+          }}
+        >
+          ({sign}
+          {formatLocaleNumber(bonus, language)})
+        </span>
+      </span>
+    );
   };
 
   return (
     <div style={rootStyle} aria-label="캐릭터 임베딩 정보">
-      <div style={headerWrapperStyle}>
-        {headerItems.map((item) => (
-          <div
-            key={item.title}
-            style={{
-              flexBasis: `${100 / headerColumns}%`,
-              padding: headerGap / 2,
-              boxSizing: "border-box",
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
-            <SummaryCard {...item} palette={palette} isDark={isDarkTheme} />
-          </div>
-        ))}
+      <div
+        style={{
+          ...cornerCoverStyle,
+          top: cornerOffset,
+          left: cornerOffset,
+          backgroundColor: cornerTopColor,
+        }}
+      />
+      <div
+        style={{
+          ...cornerCoverStyle,
+          top: cornerOffset,
+          right: cornerOffset,
+          backgroundColor: cornerTopColor,
+        }}
+      />
+      <div
+        style={{
+          ...cornerCoverStyle,
+          bottom: cornerOffset,
+          left: cornerOffset,
+          backgroundColor: cornerBottomColor,
+        }}
+      />
+      <div
+        style={{
+          ...cornerCoverStyle,
+          bottom: cornerOffset,
+          right: cornerOffset,
+          backgroundColor: cornerBottomColor,
+        }}
+      />
+      <div style={leftSectionStyle}>
+        <div style={avatarFrameStyle}>
+          {safeAvatarUrl ? (
+            <img
+              src={safeAvatarUrl}
+              alt={displayNameLabel}
+              width={72}
+              height={72}
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
+          ) : (
+            <span style={nameStyle}>{displayNameLabel.charAt(0)}</span>
+          )}
+        </div>
+        <div style={infoStyle}>
+          <span style={nameStyle}>{displayNameLabel}</span>
+          <StatRow
+            label={strings.level}
+            value={`Lv. ${formatLocaleNumber(level, language)}`}
+            labelStyle={labelStyle}
+            valueStyle={valueStyle}
+            labelWidth={statLabelWidth}
+          />
+          <StatBar
+            label="HP"
+            current={hpCurrent}
+            total={hpMax}
+            gradient={palette.hpGradient}
+            labelStyle={labelStyle}
+            valueStyle={valueStyle}
+            barSurface={palette.barSurface}
+            barBorder={palette.barBorder}
+            language={language}
+            labelWidth={statLabelWidth}
+          />
+          <StatBar
+            label={strings.exp}
+            current={expCurrent}
+            total={expMax}
+            gradient={palette.expGradient}
+            labelStyle={labelStyle}
+            valueStyle={valueStyle}
+            barSurface={palette.barSurface}
+            barBorder={palette.barBorder}
+            language={language}
+            labelWidth={statLabelWidth}
+          />
+          <StatRow
+            label={strings.ap}
+            value={formatLocaleNumber(ap, language)}
+            labelStyle={labelStyle}
+            valueStyle={valueStyle}
+            labelWidth={statLabelWidth}
+          />
+          <StatRow
+            label={strings.gold}
+            value={formatLocaleNumber(gold, language)}
+            labelStyle={labelStyle}
+            valueStyle={valueStyle}
+            iconSrc={COIN_ICON_DATA_URL}
+            labelWidth={statLabelWidth}
+          />
+          <StatRow
+            label="ATK"
+            value={buildValueWithBonus(stats.total.atk, stats.equipmentBonus.atk)}
+            labelStyle={labelStyle}
+            valueStyle={valueStyle}
+            labelWidth={statLabelWidth}
+          />
+          <StatRow
+            label="DEF"
+            value={buildValueWithBonus(stats.total.def, stats.equipmentBonus.def)}
+            labelStyle={labelStyle}
+            valueStyle={valueStyle}
+            labelWidth={statLabelWidth}
+          />
+          <StatRow
+            label="LUCK"
+            value={buildValueWithBonus(
+              stats.total.luck,
+              stats.equipmentBonus.luck
+            )}
+            labelStyle={labelStyle}
+            valueStyle={valueStyle}
+            labelWidth={statLabelWidth}
+          />
+        </div>
       </div>
-
-      <SectionBlock containerStyle={contentWrapperStyle}>
-        <div style={statsSectionStyle}>
-          <SectionTitle palette={palette}>{strings.stats}</SectionTitle>
-          <StatsGrid
-            stats={stats}
-            columns={preset.statsColumns}
-            palette={palette}
-            language={language}
-          />
-        </div>
-        <div style={equipmentSectionStyle}>
-          <SectionTitle palette={palette}>{strings.equipment}</SectionTitle>
-          <EquipmentGrid
-            equipment={equipment}
-            columns={preset.equipmentColumns}
-            palette={palette}
-            strings={strings}
-            language={language}
-          />
-        </div>
-      </SectionBlock>
-    </div>
-  );
-}
-
-interface SummaryCardItem {
-  title: string;
-  primary: string;
-  secondary?: string;
-  progressPercent?: number;
-}
-
-function SummaryCard({
-  title,
-  primary,
-  secondary,
-  progressPercent,
-  palette,
-  isDark,
-  showProgress = true,
-}: SummaryCardItem & {
-  palette: ReturnType<typeof resolveEmbedSatoriPalette>;
-  isDark: boolean;
-  showProgress?: boolean;
-}) {
-  return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: 8,
-        padding: 16,
-        borderRadius: 12,
-        backgroundColor: palette.cardBackground,
-        border: `1px solid ${palette.border}`,
-        // boxShadow: `0 10px 20px rgba(15, 23, 42, ${isDark ? 0.28 : 0.08})`,
-      }}
-    >
-      <span
-        style={{
-          fontSize: 12,
-          fontWeight: 600,
-          letterSpacing: "0.08em",
-          textTransform: "uppercase",
-          color: palette.mutedForeground,
-        }}
-      >
-        {title}
-      </span>
-      <span
-        style={{
-          fontSize: 22,
-          fontWeight: 700,
-          color: palette.foreground,
-        }}
-      >
-        {primary}
-      </span>
-      {secondary ? (
-        <span
-          style={{
-            fontSize: 12,
-            color: palette.mutedForeground,
-          }}
-        >
-          {secondary}
-        </span>
-      ) : null}
-      {showProgress && typeof progressPercent === "number" ? (
-        <ProgressBar value={progressPercent} palette={palette} />
+      {isWide ? (
+        <EquipmentSection
+          equipment={equipment}
+          language={language}
+          palette={palette}
+        />
       ) : null}
     </div>
   );
 }
 
-function ProgressBar({
+interface StatRowProps {
+  label: string;
+  value: ReactNode;
+  labelStyle: CSSProperties;
+  valueStyle: CSSProperties;
+  iconSrc?: string;
+  labelWidth: number;
+}
+
+function StatRow({
+  label,
   value,
-  palette,
-}: {
-  value: number;
-  palette: ReturnType<typeof resolveEmbedSatoriPalette>;
-}) {
+  labelStyle,
+  valueStyle,
+  iconSrc,
+  labelWidth,
+}: StatRowProps) {
+  const valueNode =
+    typeof value === "string" ? <span style={valueStyle}>{value}</span> : value;
   return (
     <div
       style={{
         display: "flex",
-        height: 8,
-        width: "100%",
-        borderRadius: 999,
-        backgroundColor: `${palette.border}`,
-        overflow: "hidden",
+        alignItems: "center",
+        gap: 10,
       }}
     >
       <div
         style={{
           display: "flex",
-          width: `${Math.min(100, Math.max(0, value))}%`,
-          height: "100%",
-          borderRadius: 999,
-          backgroundColor: palette.foreground,
+          alignItems: "center",
+          gap: 6,
+          width: labelWidth,
         }}
-      />
+      >
+        {iconSrc ? (
+          <img
+            src={iconSrc}
+            alt=""
+            width={12}
+            height={12}
+            style={{
+              width: 12,
+              height: 12,
+              objectFit: "contain",
+              imageRendering: "pixelated",
+            }}
+          />
+        ) : null}
+        <span style={labelStyle}>{label}</span>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "flex-end",
+          flex: 1,
+        }}
+      >
+        {valueNode}
+      </div>
     </div>
   );
 }
 
-function buildHeaderItems({
-  level,
-  exp,
-  expToLevel,
-  floor,
-  gold,
-  ap,
-  strings,
-  language,
-}: {
-  level: number;
-  exp: number;
-  expToLevel: number;
-  floor: { current: number; best: number; progress: number };
-  gold: number;
-  ap: number;
-  strings: ReturnType<typeof resolveEmbedSatoriStrings>;
+interface StatBarProps {
+  label: string;
+  current: number;
+  total: number;
+  gradient: string;
+  labelStyle: CSSProperties;
+  valueStyle: CSSProperties;
+  barSurface: string;
+  barBorder: string;
   language: EmbedPreviewLanguage;
-}): SummaryCardItem[] {
-  const expPercent = calculatePercent(exp, expToLevel);
-  const floorPercent = calculatePercent(floor.progress, 100);
+  labelWidth: number;
+}
 
-  return [
-    {
-      title: strings.level,
-      primary: `Lv. ${level}`,
-      secondary: `${formatLocaleNumber(exp, language)} / ${formatLocaleNumber(expToLevel, language)}`,
-      progressPercent: expPercent,
-    },
-    {
-      title: strings.floorProgress,
-      primary: `${floor.current}F / ${floor.best}F`,
-      secondary:
-        language === "ko"
-          ? `진행도 ${floorPercent}%`
-          : `Progress ${floorPercent}%`,
-      progressPercent: floorPercent,
-    },
-    {
-      title: strings.gold,
-      primary: `${formatLocaleNumber(gold, language)} G`,
-      secondary: language === "ko" ? "총 보유 골드" : "Total Gold",
-    },
-    {
-      title: strings.ap,
-      primary: formatLocaleNumber(ap, language),
-      secondary: language === "ko" ? "행동력" : "Action Points",
-    },
-  ];
+function StatBar({
+  label,
+  current,
+  total,
+  gradient,
+  labelStyle,
+  valueStyle,
+  barSurface,
+  barBorder,
+  language,
+  labelWidth,
+}: StatBarProps) {
+  const percent = calculatePercent(current, total);
+  const valueText = `${formatLocaleNumber(current, language)} / ${formatLocaleNumber(
+    total,
+    language
+  )}`;
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          width: labelWidth,
+        }}
+      >
+        <span style={labelStyle}>{label}</span>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+          position: "relative",
+          height: 14,
+          borderRadius: 6,
+          background: barSurface,
+          border: `1px solid ${barBorder}`,
+          overflow: "hidden",
+          boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.04)",
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            height: "100%",
+            width: `${percent}%`,
+            backgroundImage: gradient,
+          }}
+        />
+        <span
+          style={{
+            position: "relative",
+            zIndex: 1,
+            fontSize: 9,
+            color: valueStyle.color,
+            textShadow: valueStyle.textShadow as string | undefined,
+          }}
+        >
+          {valueText}
+        </span>
+      </div>
+    </div>
+  );
 }
 
 function calculatePercent(value: number, total: number) {
-  if (total <= 0) {
+  if (!Number.isFinite(value) || !Number.isFinite(total) || total <= 0) {
     return 0;
   }
   return Math.min(100, Math.max(0, Math.round((value / total) * 100)));
 }
 
-interface SectionBlockProps {
-  children: ReactNode;
-  containerStyle?: CSSProperties;
-}
-
-function SectionBlock({ children, containerStyle }: SectionBlockProps) {
-  return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: 16,
-        ...containerStyle,
-      }}
-    >
-      {children}
-    </div>
-  );
-}
-
-function SectionTitle({
-  palette,
-  children,
-}: {
-  palette: ReturnType<typeof resolveEmbedSatoriPalette>;
-  children: ReactNode;
-}) {
-  return (
-    <h3
-      style={{
-        fontSize: 14,
-        fontWeight: 600,
-        color: palette.foreground,
-      }}
-    >
-      {children}
-    </h3>
-  );
-}
-
-interface StatsGridProps {
-  stats: CharacterStatSummary;
-  columns: number;
-  palette: ReturnType<typeof resolveEmbedSatoriPalette>;
-  language: EmbedPreviewLanguage;
-}
-
-function StatsGrid({ stats, columns, palette, language }: StatsGridProps) {
-  const columnCount = Math.max(1, columns);
-  const itemGap = 16;
-  const containerStyle: CSSProperties = {
-    display: "flex",
-    flexWrap: "wrap",
-    margin: -(itemGap / 2),
+function resolveCornerColors(background: string) {
+  if (!background.includes("gradient(")) {
+    return null;
+  }
+  const colors = background.match(/#(?:[0-9a-fA-F]{3,8})/g);
+  if (!colors || colors.length === 0) {
+    return null;
+  }
+  return {
+    top: colors[0],
+    bottom: colors[colors.length - 1] ?? colors[0],
   };
-
-  const isKorean = language === "ko";
-  const resolveBonusSign = (value: number) =>
-    value > 0 ? "positive" : value < 0 ? "negative" : "zero";
-
-  const entries = [
-    {
-      key: "hp",
-      title: "HP",
-      caption: isKorean
-        ? `최대 HP ${formatLocaleNumber(stats.total.maxHp, language)}`
-        : `Max HP ${formatLocaleNumber(stats.total.maxHp, language)}`,
-      total: stats.total.hp,
-      bonus: stats.equipmentBonus.hp,
-      bonusSign: resolveBonusSign(stats.equipmentBonus.hp),
-    },
-    {
-      key: "atk",
-      title: "ATK",
-      caption: isKorean ? "공격력" : "Attack",
-      total: stats.total.atk,
-      bonus: stats.equipmentBonus.atk,
-      bonusSign: resolveBonusSign(stats.equipmentBonus.atk),
-    },
-    {
-      key: "def",
-      title: "DEF",
-      caption: isKorean ? "방어력" : "Defense",
-      total: stats.total.def,
-      bonus: stats.equipmentBonus.def,
-      bonusSign: resolveBonusSign(stats.equipmentBonus.def),
-    },
-    {
-      key: "luck",
-      title: "LUCK",
-      caption: isKorean ? "행운" : "Luck",
-      total: stats.total.luck,
-      bonus: stats.equipmentBonus.luck,
-      bonusSign: resolveBonusSign(stats.equipmentBonus.luck),
-    },
-  ];
-
-  return (
-    <div style={containerStyle}>
-      {entries.map((entry) => (
-        <div
-          key={entry.key}
-          style={{
-            flexBasis: `${100 / columnCount}%`,
-            padding: itemGap / 2,
-            boxSizing: "border-box",
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <div
-            style={{
-              borderRadius: 12,
-              border: `1px solid ${palette.border}`,
-              backgroundColor: palette.cardBackground,
-              padding: 16,
-              display: "flex",
-              flexDirection: "column",
-              gap: 8,
-            }}
-          >
-            <span
-              style={{
-                fontSize: 12,
-                letterSpacing: "0.08em",
-                textTransform: "uppercase",
-                color: palette.mutedForeground,
-                fontWeight: 600,
-              }}
-            >
-              {entry.title}
-            </span>
-            <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-              <span style={{ fontSize: 24, fontWeight: 700 }}>
-                {formatLocaleNumber(entry.total, language)}
-              </span>
-              {entry.bonus !== 0 ? (
-                <span
-                  style={{
-                    fontSize: 14,
-                    fontWeight: 600,
-                    color:
-                      entry.bonus > 0
-                        ? BADGE_TONE_COLORS.gain
-                        : BADGE_TONE_COLORS.loss,
-                  }}
-                  data-embed-anim="stat-bonus"
-                  data-embed-bonus-sign={entry.bonusSign}
-                >
-                  ({entry.bonus > 0 ? "+" : ""}
-                  {formatLocaleNumber(Math.abs(entry.bonus), language)})
-                </span>
-              ) : null}
-            </div>
-            <span style={{ fontSize: 12, color: palette.mutedForeground }}>
-              {entry.caption}
-            </span>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
 }
 
-interface EquipmentGridProps {
+interface EquipmentSectionProps {
   equipment: InventoryItem[];
-  columns: number;
-  palette: ReturnType<typeof resolveEmbedSatoriPalette>;
-  strings: ReturnType<typeof resolveEmbedSatoriStrings>;
   language: EmbedPreviewLanguage;
+  palette: ReturnType<typeof resolvePixelTheme>;
 }
 
-function EquipmentGrid({
-  equipment,
-  columns,
-  palette,
-  strings,
-  language,
-}: EquipmentGridProps) {
-  const columnCount = Math.max(1, columns);
-  const itemGap = 12;
-  const containerStyle: CSSProperties = {
-    display: "flex",
-    flexWrap: "wrap",
-    margin: -(itemGap / 2),
-  };
-
+function EquipmentSection({ equipment, language, palette }: EquipmentSectionProps) {
   const equipmentMap = EQUIPMENT_SLOTS.reduce<
     Record<EquipmentSlot, InventoryItem | null>
   >(
@@ -641,261 +581,142 @@ function EquipmentGrid({
   );
 
   return (
-    <div style={containerStyle}>
-      {EQUIPMENT_SLOTS.map((slot) => {
-        const item = equipmentMap[slot];
-        if (!item) {
+    <div
+      style={{
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        gap: 10,
+      }}
+    >
+      <span
+        style={{
+          fontFamily: palette.fonts.title,
+          fontSize: 14,
+          textShadow: palette.textShadow,
+          color: palette.textPrimary,
+        }}
+      >
+        {language === "ko" ? "착용 장비" : "Equipment"}
+      </span>
+      <div style={{ display: "flex", flexWrap: "wrap", margin: -6 }}>
+        {EQUIPMENT_SLOTS.map((slot) => {
+          const item = equipmentMap[slot];
           return (
             <div
               key={slot}
               style={{
-                flexBasis: `${100 / columnCount}%`,
-                padding: itemGap / 2,
+                flexBasis: "50%",
+                padding: 6,
                 boxSizing: "border-box",
                 display: "flex",
                 flexDirection: "column",
               }}
             >
-              <EmptyEquipmentCard
+              <SlotCard
                 slot={slot}
-                palette={palette}
+                item={item}
                 language={language}
-                emptyLabel={strings.equipmentEmpty}
+                palette={palette}
               />
             </div>
           );
-        }
-
-        return (
-          <div
-            key={`${slot}-${item.id}`}
-            style={{
-              flexBasis: `${100 / columnCount}%`,
-              padding: itemGap / 2,
-              boxSizing: "border-box",
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
-            <EquipmentCard item={item} palette={palette} language={language} />
-          </div>
-        );
-      })}
+        })}
+      </div>
     </div>
   );
 }
 
-function EquipmentCard({
-  item,
-  palette,
-  language,
-}: {
-  item: InventoryItem;
-  palette: ReturnType<typeof resolveEmbedSatoriPalette>;
+interface SlotCardProps {
+  slot: EquipmentSlot;
+  item: InventoryItem | null;
   language: EmbedPreviewLanguage;
-}) {
-  const slotLabel = getSlotLabel(item.slot, language);
-  const rarityLabel = formatRarity(item.rarity, language);
-  const effectLabel = item.effect
-    ? formatInventoryEffect(item.effect, language)
-    : null;
+  palette: ReturnType<typeof resolvePixelTheme>;
+}
+
+function SlotCard({ slot, item, language, palette }: SlotCardProps) {
+  const slotLabel = getSlotLabel(slot, language);
+  const rarityStyle = item ? RARITY_STYLES[item.rarity] : null;
+  const slotBorderColor = palette.panelBorder;
+  const iconBorderColor = rarityStyle?.border ?? palette.panelBorder;
+  const iconBackgroundColor = rarityStyle?.background ?? palette.slotPlaceholder;
+  const resolvedFromCode = item?.code ? resolveSpriteDataUrl(item.code) : null;
+  const resolvedFromSprite =
+    !resolvedFromCode &&
+    item?.sprite &&
+    !isValidSpriteUrl(item.sprite)
+      ? resolveSpriteDataUrl(item.sprite)
+      : null;
+  const spriteSrc =
+    resolvedFromCode ??
+    resolvedFromSprite ??
+    (isValidSpriteUrl(item?.sprite) ? item?.sprite : null);
 
   return (
     <div
       style={{
-        borderRadius: 12,
-        border: `1px solid ${palette.border}`,
-        backgroundColor: palette.cardBackground,
-        padding: 12,
+        borderRadius: 10,
+        border: `2px solid ${slotBorderColor}`,
+        backgroundColor: palette.surfaceStrong,
+        padding: 8,
         display: "flex",
-        flexDirection: "column",
         alignItems: "center",
-        gap: 12,
-        textAlign: "center",
+        gap: 8,
       }}
     >
       <div
         style={{
-          width: 56,
-          height: 56,
-          borderRadius: 12,
-          border: `1px solid ${palette.border}`,
-          backgroundColor: palette.secondary,
+          width: 40,
+          height: 40,
+          borderRadius: 8,
+          border: `2px solid ${iconBorderColor}`,
+          backgroundColor: iconBackgroundColor,
+          boxShadow: "inset 0 0 0 1px rgba(255, 255, 255, 0.08)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           overflow: "hidden",
         }}
       >
-        {item.sprite ? (
+        {spriteSrc ? (
           <img
-            src={item.sprite}
-            alt={item.name}
-            width={56}
-            height={56}
-            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            src={spriteSrc}
+            alt={item?.name ?? ""}
+            width={40}
+            height={40}
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              imageRendering: "pixelated",
+            }}
           />
-        ) : (
+        ) : null}
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        <span
+          style={{
+            fontSize: 9,
+            letterSpacing: "0.12em",
+            textTransform: "uppercase",
+            color: palette.textMuted,
+            textShadow: palette.textShadow,
+          }}
+        >
+          {slotLabel}
+        </span>
+        {item?.name ? (
           <span
             style={{
-              fontSize: 18,
-              fontWeight: 600,
-              color: palette.mutedForeground,
+              fontSize: 12,
+              color: palette.textPrimary,
+              textShadow: palette.textShadow,
             }}
           >
-            {item.name.charAt(0).toUpperCase()}
+            {item.name}
           </span>
-        )}
-      </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-        <span
-          style={{
-            fontSize: 11,
-            fontWeight: 600,
-            letterSpacing: "0.04em",
-            textTransform: "uppercase",
-            color: palette.mutedForeground,
-            justifyContent: "center",
-          }}
-        >
-          {slotLabel}
-        </span>
-        <span
-          style={{
-            fontSize: 14,
-            fontWeight: 600,
-            color: palette.foreground,
-          }}
-        >
-          {item.name}
-        </span>
-      </div>
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: 6,
-          justifyContent: "center",
-        }}
-      >
-        <Badge palette={palette} rarity={item.rarity}>
-          {rarityLabel}
-        </Badge>
-        {item.modifiers.map((modifier, index) => {
-          const { text, tone } = formatModifierSummary(modifier, language);
-          return (
-            <Badge
-              key={`${modifier.stat}-${modifier.value}-${index}`}
-              palette={palette}
-              tone={tone}
-            >
-              {text}
-            </Badge>
-          );
-        })}
-        {effectLabel ? <Badge palette={palette}>{effectLabel}</Badge> : null}
+        ) : null}
       </div>
     </div>
-  );
-}
-
-function EmptyEquipmentCard({
-  slot,
-  palette,
-  language,
-  emptyLabel,
-}: {
-  slot: EquipmentSlot;
-  palette: ReturnType<typeof resolveEmbedSatoriPalette>;
-  language: EmbedPreviewLanguage;
-  emptyLabel: string;
-}) {
-  const slotLabel = getSlotLabel(slot, language);
-
-  return (
-    <div
-      style={{
-        borderRadius: 12,
-        border: `1px solid ${palette.border}`,
-        backgroundColor: palette.cardBackground,
-        padding: 12,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: 12,
-        textAlign: "center",
-        color: palette.mutedForeground,
-      }}
-    >
-      <div
-        style={{
-          width: 56,
-          height: 56,
-          borderRadius: 12,
-          border: `1px dashed ${palette.border}`,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <span style={{ fontSize: 18 }}>—</span>
-      </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-        <span
-          style={{
-            fontSize: 11,
-            fontWeight: 600,
-            letterSpacing: "0.04em",
-            textTransform: "uppercase",
-          }}
-        >
-          {slotLabel}
-        </span>
-        <span style={{ fontSize: 12 }}>{emptyLabel}</span>
-      </div>
-    </div>
-  );
-}
-
-interface BadgeProps {
-  children: ReactNode;
-  palette: ReturnType<typeof resolveEmbedSatoriPalette>;
-  tone?: "gain" | "loss" | "neutral";
-  rarity?: EquipmentRarity;
-}
-
-function Badge({
-  children,
-  palette,
-  tone = "neutral",
-  rarity,
-}: BadgeProps) {
-  const toneColor = BADGE_TONE_COLORS[tone];
-  const isNeutral = tone === "neutral";
-  const rarityColor = rarity ? RARITY_COLORS[rarity] : null;
-  const borderColor = rarityColor ?? (isNeutral ? palette.border : toneColor);
-  const backgroundColor = rarityColor
-    ? `${rarityColor}1f`
-    : isNeutral
-      ? palette.secondary
-      : `${toneColor}1f`;
-  const textColor = rarityColor ?? (isNeutral ? palette.mutedForeground : toneColor);
-
-  return (
-    <span
-      style={{
-        borderRadius: 999,
-        border: `1px solid ${borderColor}`,
-        backgroundColor,
-        color: textColor,
-        padding: "4px 10px",
-        fontSize: 11,
-        fontWeight: 600,
-        letterSpacing: "0.04em",
-        textTransform: "uppercase",
-      }}
-    >
-      {children}
-    </span>
   );
 }

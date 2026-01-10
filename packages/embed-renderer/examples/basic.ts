@@ -12,7 +12,7 @@ async function example() {
 
   const svg = await renderEmbedSvg({
     theme: "light",
-    size: "square",
+    size: "compact",
     language: "ko",
     overview: {
       level: 12,

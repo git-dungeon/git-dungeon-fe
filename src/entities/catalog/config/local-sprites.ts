@@ -258,12 +258,15 @@ function normalizeSpriteId(spriteId?: string) {
 
 export function resolveLocalItemSprite(code?: string, spriteId?: string) {
   if (code) {
-    return LOCAL_ITEM_SPRITES[code] ?? missingImage;
+    const resolved = LOCAL_ITEM_SPRITES[code];
+    if (resolved) {
+      return resolved;
+    }
   }
 
   const normalized = normalizeSpriteId(spriteId);
   if (!normalized) {
-    return undefined;
+    return code ? missingImage : undefined;
   }
 
   return LOCAL_ITEM_SPRITES[normalized] ?? missingImage;

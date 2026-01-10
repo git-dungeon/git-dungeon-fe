@@ -53,15 +53,11 @@
       "size": {
         "compact": {
           "label": "Compact",
-          "hint": "블로그 사이드바"
-        },
-        "square": {
-          "label": "Square",
           "hint": "README 카드"
         },
         "wide": {
           "label": "Wide",
-          "hint": "대시보드 배너"
+          "hint": "Wide 배너"
         }
       },
       "error": {
@@ -74,7 +70,9 @@
       },
       "previewAlt": "임베드 SVG 프리뷰",
       "generatedAt": "생성 시각: {{time}}",
-      "urlExample": "URL 예시:"
+      "urlExample": "URL 예시:",
+      "copy": "복사",
+      "copied": "복사됨"
     },
     "github": {
       "title": "GitHub 연동",
@@ -119,7 +117,7 @@
       "level": "레벨",
       "levelValue": "Lv. {{level}}",
       "hp": "HP",
-      "exp": "EXP",
+      "exp": "XP",
       "ap": "AP",
       "gold": "골드"
     },
@@ -164,7 +162,7 @@
     },
     "summary": {
       "floorLabel": "지하 {{floor}}층",
-      "expProgressLabel": "경험치 진행률",
+      "expProgressLabel": "XP 진행률",
       "floorProgress": {
         "title": "층 진행",
         "value": "{{current}}F / {{best}}F",
@@ -212,8 +210,8 @@
           "caption": "보유 골드"
         },
         "exp": {
-          "title": "경험치",
-          "caption": "다음 레벨까지 필요 EXP"
+          "title": "XP",
+          "caption": "다음 레벨까지 필요 XP"
         },
         "ap": {
           "title": "남은 AP",
