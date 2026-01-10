@@ -50,16 +50,19 @@ const RARITY_STYLES: Record<
   },
 };
 
-function isValidSpriteUrl(sprite?: string | null) {
+function isValidSpriteUrl(sprite?: string | null): sprite is string {
   if (!sprite) {
     return false;
   }
-  return (
-    sprite.startsWith("data:") ||
-    sprite.startsWith("http://") ||
-    sprite.startsWith("https://") ||
-    sprite.startsWith("/")
-  );
+  if (sprite.startsWith("data:")) {
+    return true;
+  }
+  try {
+    const url = new URL(sprite);
+    return url.protocol === "https:";
+  } catch {
+    return false;
+  }
 }
 
 export interface DashboardEmbeddingBannerSatoriProps {
@@ -135,6 +138,7 @@ export function DashboardEmbeddingBannerSatori({
   const strings = resolveEmbedSatoriStrings(language);
   const palette = resolvePixelTheme(theme);
   const isWide = size === "wide";
+  const safeAvatarUrl = isValidSpriteUrl(avatarUrl) ? avatarUrl : null;
 
   const hpCurrent = stats.total.hp;
   const hpMax = stats.total.maxHp ?? stats.total.hp;
@@ -289,9 +293,9 @@ export function DashboardEmbeddingBannerSatori({
       />
       <div style={leftSectionStyle}>
         <div style={avatarFrameStyle}>
-          {avatarUrl ? (
+          {safeAvatarUrl ? (
             <img
-              src={avatarUrl}
+              src={safeAvatarUrl}
               alt={displayNameLabel}
               width={72}
               height={72}
@@ -636,11 +640,17 @@ function SlotCard({ slot, item, language, palette }: SlotCardProps) {
   const slotBorderColor = palette.panelBorder;
   const iconBorderColor = rarityStyle?.border ?? palette.panelBorder;
   const iconBackgroundColor = rarityStyle?.background ?? palette.slotPlaceholder;
-  const resolvedSprite =
-    (item?.sprite ? resolveSpriteDataUrl(item.sprite) : null) ??
-    (item?.code ? resolveSpriteDataUrl(item.code) : null);
+  const resolvedFromCode = item?.code ? resolveSpriteDataUrl(item.code) : null;
+  const resolvedFromSprite =
+    !resolvedFromCode &&
+    item?.sprite &&
+    !isValidSpriteUrl(item.sprite)
+      ? resolveSpriteDataUrl(item.sprite)
+      : null;
   const spriteSrc =
-    resolvedSprite ?? (isValidSpriteUrl(item?.sprite) ? item?.sprite : null);
+    resolvedFromCode ??
+    resolvedFromSprite ??
+    (isValidSpriteUrl(item?.sprite) ? item?.sprite : null);
 
   return (
     <div

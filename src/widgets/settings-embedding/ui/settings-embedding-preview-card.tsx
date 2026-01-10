@@ -87,7 +87,6 @@ export function SettingsEmbeddingPreviewCard() {
     isFetchingOverview || isFetchingProfile || isRendering || !character;
   const hasOverviewError = overview.isError;
   const hasProfileError = profileQuery.isError;
-  const hasError = hasOverviewError || hasProfileError;
 
   const generatedAtLabel = useMemo(() => {
     return formatDateTime(new Date());
@@ -137,44 +136,68 @@ export function SettingsEmbeddingPreviewCard() {
       <p className="pixel-text-muted pixel-text-sm">
         {t("settings.embedding.description")}
       </p>
-      {hasError
+      {hasOverviewError
         ? renderOverviewError(t, handleRetry)
-        : embedRenderError
-          ? renderEmbedError(t, embedRenderError, embedSize, embedLanguage)
-          : !svgDataUrl
-            ? renderSkeleton(embedSize, embedLanguage)
-            : renderPreviewContent({
-                t,
-                svgDataUrl,
-                size: embedSize,
-                theme: embedTheme,
-                language: embedLanguage,
-                generatedAtLabel,
-                exampleUrl,
-                isCopied,
-                onCopy: async () => {
-                  try {
-                    await navigator.clipboard.writeText(exampleUrl);
-                    setIsCopied(true);
-                    if (copyTimeoutRef.current !== null) {
-                      window.clearTimeout(copyTimeoutRef.current);
+        : hasProfileError
+          ? renderProfileError(t, handleRetry)
+          : embedRenderError
+            ? renderEmbedError(t, embedRenderError, embedSize, embedLanguage)
+            : !svgDataUrl
+              ? renderSkeleton(embedSize, embedLanguage)
+              : renderPreviewContent({
+                  t,
+                  svgDataUrl,
+                  size: embedSize,
+                  theme: embedTheme,
+                  language: embedLanguage,
+                  generatedAtLabel,
+                  exampleUrl,
+                  isCopied,
+                  onCopy: async () => {
+                    try {
+                      await navigator.clipboard.writeText(exampleUrl);
+                      setIsCopied(true);
+                      if (copyTimeoutRef.current !== null) {
+                        window.clearTimeout(copyTimeoutRef.current);
+                      }
+                      copyTimeoutRef.current = window.setTimeout(() => {
+                        setIsCopied(false);
+                        copyTimeoutRef.current = null;
+                      }, 1500);
+                    } catch (error) {
+                      if (import.meta.env?.DEV) {
+                        console.error("[embed-preview] copy failed", error);
+                      }
                     }
-                    copyTimeoutRef.current = window.setTimeout(() => {
-                      setIsCopied(false);
-                      copyTimeoutRef.current = null;
-                    }, 1500);
-                  } catch (error) {
-                    if (import.meta.env?.DEV) {
-                      console.error("[embed-preview] copy failed", error);
-                    }
-                  }
-                },
-              })}
+                  },
+                })}
     </PixelPanel>
   );
 }
 
 function renderOverviewError(t: TFunction, onRetry: () => Promise<void>) {
+  return (
+    <div className="bg-destructive/5 border-destructive/20 flex flex-col items-start gap-3 rounded-lg border p-6">
+      <div>
+        <p className="pixel-text-danger font-semibold">
+          {t("settings.embedding.error.title")}
+        </p>
+        <p className="pixel-text-danger pixel-text-sm opacity-80">
+          {t("settings.embedding.error.description")}
+        </p>
+      </div>
+      <PixelButton
+        tone="danger"
+        pixelSize="compact"
+        onClick={() => void onRetry()}
+      >
+        {t("settings.embedding.error.retry")}
+      </PixelButton>
+    </div>
+  );
+}
+
+function renderProfileError(t: TFunction, onRetry: () => Promise<void>) {
   return (
     <div className="bg-destructive/5 border-destructive/20 flex flex-col items-start gap-3 rounded-lg border p-6">
       <div>
