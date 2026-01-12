@@ -26,16 +26,12 @@ const inventoryModifierModeSchema = z.enum(["flat", "percent"]);
 const equipmentStatBlockSchema = z
   .object({
     hp: z.number(),
-    maxHp: z.number().optional(),
+    maxHp: z.number(),
     atk: z.number(),
     def: z.number(),
     luck: z.number(),
   })
-  .strict()
-  .transform((value) => ({
-    ...value,
-    maxHp: value.maxHp ?? value.hp,
-  }));
+  .strict();
 
 const equipmentStatSummarySchema = z
   .object({

@@ -171,7 +171,7 @@ function resolveEquipmentBonus(
 
 function buildModifierFromStatBlock(block: {
   hp: number;
-  maxHp?: number;
+  maxHp: number;
   atk: number;
   def: number;
   luck: number;
@@ -179,7 +179,7 @@ function buildModifierFromStatBlock(block: {
   return {
     ...DEFAULT_MODIFIER,
     hp: block.hp,
-    maxHp: block.maxHp ?? block.hp,
+    maxHp: block.maxHp,
     atk: block.atk,
     def: block.def,
     luck: block.luck,
