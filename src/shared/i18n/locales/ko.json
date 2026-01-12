@@ -13,6 +13,27 @@
     "logs": "로그",
     "settings": "설정"
   },
+  "onboarding": {
+    "title": "ONBOARDING ADVENTURE START",
+    "subtitle": "던전에 들어가기 전에 AP를 정산하세요.",
+    "headline": "GIT IDLE DUNGEON에 오신 것을 환영합니다!",
+    "description": "픽셀 던전을 끝없이 탐험하세요. 잊혀진 지하묘지를 누비고, 무시무시한 몬스터와 전투하며, 영웅을 성장시키고 전설 장비를 수집합니다. 모든 것은 당신이 커밋을 남기는 동안 진행됩니다.",
+    "hint": "AP 계산을 완료해야 모험이 시작됩니다.",
+    "cta": "AP 계산 시작",
+    "status": {
+      "checking": "동기화 상태 확인 중...",
+      "cooldown": "현재 AP 계산을 진행할 수 없습니다. 잠시 후 다시 시도하세요.",
+      "notConnected": "GitHub 계정이 연동되어 있지 않습니다."
+    },
+    "errors": {
+      "notConnected": "GitHub 계정이 연동되어 있지 않습니다.",
+      "sessionExpired": "세션이 만료되었습니다. 다시 로그인해 주세요.",
+      "rateLimited": "요청 한도에 도달했습니다. 잠시 후 다시 시도해 주세요.",
+      "conflict": "현재 동기화를 진행할 수 없습니다. 잠시 후 다시 시도해 주세요.",
+      "unknown": "AP 계산에 실패했습니다."
+    },
+    "footer": "© 2024 Git Idle Dungeon | Made with <3 and Pixels"
+  },
   "settings": {
     "title": "설정",
     "subtitle": "계정 정보와 로컬 환경설정을 관리하고 임베딩 미리보기를 확인하세요.",

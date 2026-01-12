@@ -13,6 +13,27 @@
     "logs": "Logs",
     "settings": "Settings"
   },
+  "onboarding": {
+    "title": "ONBOARDING ADVENTURE START",
+    "subtitle": "Calculate your AP before entering the dungeon.",
+    "headline": "WELCOME TO GIT IDLE DUNGEON!",
+    "description": "Embark on an endless journey through pixelated dungeons. Explore forgotten crypts, battle fearsome monsters, level up your hero, and collect legendary loot, all while you idle.",
+    "hint": "Complete AP calculation to begin your adventure.",
+    "cta": "START ADVENTURE",
+    "status": {
+      "checking": "Checking sync status...",
+      "cooldown": "AP calculation is temporarily unavailable. Try again soon.",
+      "notConnected": "GitHub account is not connected."
+    },
+    "errors": {
+      "notConnected": "GitHub account is not connected.",
+      "sessionExpired": "Your session has expired. Please log in again.",
+      "rateLimited": "Request limit reached. Please try again later.",
+      "conflict": "Sync is currently unavailable. Please try again later.",
+      "unknown": "Failed to calculate AP."
+    },
+    "footer": "© 2024 Git Idle Dungeon | Made with <3 and Pixels"
+  },
   "settings": {
     "title": "Settings",
     "subtitle": "Manage your account and local preferences, and review the embed preview.",
