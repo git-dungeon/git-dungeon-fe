@@ -16,7 +16,7 @@ export type EquipmentRarity =
   | "epic"
   | "legendary";
 
-export type EquipmentStat = "hp" | "atk" | "def" | "luck" | "ap";
+export type EquipmentStat = "hp" | "maxHp" | "atk" | "def" | "luck" | "ap";
 
 export interface EquipmentModifier {
   stat: EquipmentStat;

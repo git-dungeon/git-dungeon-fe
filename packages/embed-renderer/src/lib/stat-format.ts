@@ -2,6 +2,7 @@ import type { StatTone } from "../types";
 
 const STAT_LABEL_MAP: Record<string, string> = {
   hp: "HP",
+  maxHp: "MAX HP",
   atk: "ATK",
   def: "DEF",
   luck: "LUCK",
