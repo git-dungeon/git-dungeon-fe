@@ -544,6 +544,7 @@ export function buildInventoryResponse(): InventoryResponse {
 
   const equipmentBonus: InventoryStatValues = {
     hp: 0,
+    maxHp: 0,
     atk: 0,
     def: 0,
     luck: 0,
@@ -581,6 +582,8 @@ export function buildInventoryResponse(): InventoryResponse {
     });
   });
 
+  equipmentBonus.maxHp = equipmentBonus.hp;
+
   return {
     version: inventoryVersion,
     items: inventoryItems.map((item) => ({ ...item })),
@@ -588,12 +591,14 @@ export function buildInventoryResponse(): InventoryResponse {
     summary: {
       base: {
         hp: hp - equipmentBonus.hp,
+        maxHp: maxHp - equipmentBonus.maxHp,
         atk: atk - equipmentBonus.atk,
         def: def - equipmentBonus.def,
         luck: luck - equipmentBonus.luck,
       },
       total: {
         hp,
+        maxHp,
         atk,
         def,
         luck,

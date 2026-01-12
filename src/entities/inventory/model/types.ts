@@ -50,11 +50,16 @@ export type InventoryEquippedMap = z.infer<typeof inventoryEquippedMapSchema>;
 export const inventoryStatValuesSchema = z
   .object({
     hp: z.number(),
+    maxHp: z.number().optional(),
     atk: z.number(),
     def: z.number(),
     luck: z.number(),
   })
-  .strict();
+  .strict()
+  .transform((value) => ({
+    ...value,
+    maxHp: value.maxHp ?? value.hp,
+  }));
 export type InventoryStatValues = z.infer<typeof inventoryStatValuesSchema>;
 
 export const inventorySummarySchema = z
