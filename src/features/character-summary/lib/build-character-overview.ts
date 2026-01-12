@@ -132,6 +132,9 @@ function calculateEquipmentBonus(
             acc.hp += modifier.value;
             acc.maxHp += modifier.value;
             break;
+          case "maxHp":
+            acc.maxHp += modifier.value;
+            break;
           case "atk":
             acc.atk += modifier.value;
             break;

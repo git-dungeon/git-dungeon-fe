@@ -348,7 +348,7 @@ function calculateEquipmentBonus(
     });
   });
 
-  bonus.maxHp = bonus.hp;
+  bonus.maxHp += bonus.hp;
 
   return bonus;
 }

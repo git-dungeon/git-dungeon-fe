@@ -2,6 +2,7 @@ export type StatTone = "gain" | "loss" | "neutral";
 
 const STAT_LABEL_MAP: Record<string, string> = {
   hp: "HP",
+  maxHp: "MAX HP",
   atk: "ATK",
   def: "DEF",
   luck: "LUCK",
