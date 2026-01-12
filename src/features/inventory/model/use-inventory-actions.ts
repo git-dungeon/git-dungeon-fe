@@ -320,6 +320,7 @@ function calculateEquipmentBonus(
 ): InventoryStatValues {
   const bonus: InventoryStatValues = {
     hp: 0,
+    maxHp: 0,
     atk: 0,
     def: 0,
     luck: 0,
@@ -347,6 +348,8 @@ function calculateEquipmentBonus(
     });
   });
 
+  bonus.maxHp += bonus.hp;
+
   return bonus;
 }
 
@@ -359,6 +362,7 @@ function calculateBaseStats(
 
   return {
     hp: summary.total.hp - summary.equipmentBonus.hp,
+    maxHp: summary.total.maxHp - summary.equipmentBonus.maxHp,
     atk: summary.total.atk - summary.equipmentBonus.atk,
     def: summary.total.def - summary.equipmentBonus.def,
     luck: summary.total.luck - summary.equipmentBonus.luck,
@@ -481,6 +485,7 @@ function mergeBaseWithEquipment(
 ): InventoryStatValues {
   return {
     hp: base.hp + equipment.hp,
+    maxHp: base.maxHp + equipment.maxHp,
     atk: base.atk + equipment.atk,
     def: base.def + equipment.def,
     luck: base.luck + equipment.luck,

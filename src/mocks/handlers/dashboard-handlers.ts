@@ -28,18 +28,21 @@ export const mockDashboardResponse: DashboardResponse = {
     stats: {
       base: {
         hp: 36,
+        maxHp: 36,
         atk: 13,
         def: 6,
         luck: 3,
       },
       equipmentBonus: {
         hp: 4,
+        maxHp: 4,
         atk: 5,
         def: 8,
         luck: 3,
       },
       total: {
         hp: 40,
+        maxHp: 40,
         atk: 18,
         def: 14,
         luck: 6,

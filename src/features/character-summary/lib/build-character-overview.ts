@@ -132,6 +132,9 @@ function calculateEquipmentBonus(
             acc.hp += modifier.value;
             acc.maxHp += modifier.value;
             break;
+          case "maxHp":
+            acc.maxHp += modifier.value;
+            break;
           case "atk":
             acc.atk += modifier.value;
             break;
@@ -171,6 +174,7 @@ function resolveEquipmentBonus(
 
 function buildModifierFromStatBlock(block: {
   hp: number;
+  maxHp: number;
   atk: number;
   def: number;
   luck: number;
@@ -178,7 +182,7 @@ function buildModifierFromStatBlock(block: {
   return {
     ...DEFAULT_MODIFIER,
     hp: block.hp,
-    maxHp: block.hp,
+    maxHp: block.maxHp,
     atk: block.atk,
     def: block.def,
     luck: block.luck,

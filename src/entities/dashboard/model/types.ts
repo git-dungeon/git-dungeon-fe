@@ -20,12 +20,13 @@ export type EquipmentItemSlot = z.infer<typeof equipmentItemSlotSchema>;
 export const equipmentRaritySchema = z.enum(EQUIPMENT_RARITIES);
 export type EquipmentRarity = z.infer<typeof equipmentRaritySchema>;
 
-const inventoryStatSchema = z.enum(["hp", "atk", "def", "luck"]);
+const inventoryStatSchema = z.enum(["hp", "maxHp", "atk", "def", "luck"]);
 const inventoryModifierModeSchema = z.enum(["flat", "percent"]);
 
 const equipmentStatBlockSchema = z
   .object({
     hp: z.number(),
+    maxHp: z.number(),
     atk: z.number(),
     def: z.number(),
     luck: z.number(),

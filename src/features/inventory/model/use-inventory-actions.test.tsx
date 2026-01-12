@@ -59,9 +59,9 @@ const inventoryFixture: InventoryResponse = {
     consumable: null,
   },
   summary: {
-    base: { hp: 10, atk: 10, def: 10, luck: 10 },
-    total: { hp: 10, atk: 10, def: 10, luck: 10 },
-    equipmentBonus: { hp: 0, atk: 0, def: 0, luck: 0 },
+    base: { hp: 10, maxHp: 10, atk: 10, def: 10, luck: 10 },
+    total: { hp: 10, maxHp: 10, atk: 10, def: 10, luck: 10 },
+    equipmentBonus: { hp: 0, maxHp: 0, atk: 0, def: 0, luck: 0 },
   },
 };
 

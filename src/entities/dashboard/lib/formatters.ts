@@ -13,6 +13,7 @@ const MODIFIER_LABEL_MAP: Record<
   atk: "ATK",
   def: "DEF",
   hp: "HP",
+  maxHp: "MAX HP",
   luck: "LUCK",
 };
 
