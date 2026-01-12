@@ -4,6 +4,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
 import { PixelPanel } from "@/shared/ui/pixel-panel";
 import { PixelButton } from "@/shared/ui/pixel-button";
+import { PixelCheckIcon } from "@/shared/ui/pixel-check-icon";
 import { ApiError } from "@/shared/api/http-client";
 import { useGithubSyncStatus } from "@/entities/github/model/use-github-sync-status";
 import { useGithubSync } from "@/features/settings/model/use-github-sync";
@@ -52,29 +53,60 @@ export function OnboardingPage() {
 
   return (
     <section className="space-y-6">
-      <header className="flex flex-col gap-2 text-center">
-        <h1 className="font-pixel-title pixel-page-title">
+      <header>
+        <h1
+          className="font-pixel-title pixel-page-title"
+          data-text={t("onboarding.title")}
+        >
           {t("onboarding.title")}
         </h1>
-        <p className="pixel-text-muted text-sm">{t("onboarding.subtitle")}</p>
       </header>
 
-      <PixelPanel
-        className="px-6 py-10"
-        contentClassName="items-center text-center gap-6"
-      >
-        <div className="space-y-3">
+      <PixelPanel className="px-6 py-10" contentClassName="gap-6">
+        <div className="space-y-3 text-center">
           <h2 className="font-pixel-title text-2xl">
             {t("onboarding.headline")}
           </h2>
-          <p className="pixel-text-muted text-sm leading-relaxed">
+          <p className="pixel-text-muted mx-auto max-w-2xl text-left text-sm leading-relaxed">
             {t("onboarding.description")}
           </p>
+          <ul className="mx-auto max-w-2xl space-y-2 text-left text-sm">
+            <li className="flex items-start gap-3">
+              <PixelCheckIcon className="mt-0.5 shrink-0" />
+              <span className="pixel-text-muted">
+                {t("onboarding.apDefinition")}
+              </span>
+            </li>
+            <li className="flex items-start gap-3">
+              <PixelCheckIcon className="mt-0.5 shrink-0" />
+              <span className="pixel-text-muted">
+                {t("onboarding.apCalculation")}
+              </span>
+            </li>
+            <li className="flex items-start gap-3">
+              <PixelCheckIcon className="mt-0.5 shrink-0" />
+              <span className="pixel-text-muted">
+                {t("onboarding.apWindow")}
+              </span>
+            </li>
+            <li className="flex items-start gap-3">
+              <PixelCheckIcon className="mt-0.5 shrink-0" />
+              <span className="pixel-text-muted">
+                {t("onboarding.batchInfo")}
+              </span>
+            </li>
+            <li className="flex items-start gap-3">
+              <PixelCheckIcon className="mt-0.5 shrink-0" />
+              <span className="pixel-text-muted">
+                {t("onboarding.manualSyncInfo")}
+              </span>
+            </li>
+          </ul>
         </div>
 
         <PixelButton
           type="button"
-          className="gap-2 px-10 py-4 text-base"
+          className="gap-2 self-center px-10 py-4 text-base"
           disabled={isSyncDisabled}
           onClick={() => void handleSync()}
         >
@@ -87,18 +119,16 @@ export function OnboardingPage() {
         <p
           className={
             helperMessage.tone === "error"
-              ? "pixel-text-danger text-xs"
-              : "pixel-text-muted text-xs"
+              ? "pixel-text-danger text-center text-xs"
+              : helperMessage.tone === "muted"
+                ? "pixel-text-danger text-center text-xs"
+                : "pixel-text-muted text-center text-xs"
           }
           role={helperMessage.tone === "error" ? "alert" : undefined}
         >
           {helperMessage.text}
         </p>
       </PixelPanel>
-
-      <p className="pixel-text-muted text-center text-xs">
-        {t("onboarding.footer")}
-      </p>
     </section>
   );
 }

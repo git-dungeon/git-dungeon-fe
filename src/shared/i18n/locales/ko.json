@@ -14,10 +14,14 @@
     "settings": "설정"
   },
   "onboarding": {
-    "title": "ONBOARDING ADVENTURE START",
-    "subtitle": "던전에 들어가기 전에 AP를 정산하세요.",
+    "title": "시작하기",
     "headline": "GIT IDLE DUNGEON에 오신 것을 환영합니다!",
     "description": "픽셀 던전을 끝없이 탐험하세요. 잊혀진 지하묘지를 누비고, 무시무시한 몬스터와 전투하며, 영웅을 성장시키고 전설 장비를 수집합니다. 모든 것은 당신이 커밋을 남기는 동안 진행됩니다.",
+    "apDefinition": "AP(Action Point)는 던전에서 행동할 수 있는 포인트입니다.",
+    "apCalculation": "GitHub 기여(커밋/PR/리뷰/이슈) 증가분이 AP로 적립됩니다.",
+    "apWindow": "최초 계산은 최근 7일 기준이며, 이후에는 마지막 동기화 이후 증가분만 반영됩니다.",
+    "batchInfo": "AP는 배치가 주기적으로(기본 5분마다) 소모하여 자동 탐험을 진행합니다.",
+    "manualSyncInfo": "지금은 AP 계산 버튼을 눌러 즉시 정산할 수 있습니다.",
     "hint": "AP 계산을 완료해야 모험이 시작됩니다.",
     "cta": "AP 계산 시작",
     "status": {
@@ -31,8 +35,7 @@
       "rateLimited": "요청 한도에 도달했습니다. 잠시 후 다시 시도해 주세요.",
       "conflict": "현재 동기화를 진행할 수 없습니다. 잠시 후 다시 시도해 주세요.",
       "unknown": "AP 계산에 실패했습니다."
-    },
-    "footer": "© 2024 Git Idle Dungeon | Made with <3 and Pixels"
+    }
   },
   "settings": {
     "title": "설정",

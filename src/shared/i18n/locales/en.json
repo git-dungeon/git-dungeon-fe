@@ -14,10 +14,14 @@
     "settings": "Settings"
   },
   "onboarding": {
-    "title": "ONBOARDING ADVENTURE START",
-    "subtitle": "Calculate your AP before entering the dungeon.",
+    "title": "ONBOARDING",
     "headline": "WELCOME TO GIT IDLE DUNGEON!",
     "description": "Embark on an endless journey through pixelated dungeons. Explore forgotten crypts, battle fearsome monsters, level up your hero, and collect legendary loot, all while you idle.",
+    "apDefinition": "AP (Action Points) are the actions you can spend in the dungeon.",
+    "apCalculation": "New GitHub contributions (commits/PRs/reviews/issues) are converted into AP.",
+    "apWindow": "Your first calculation uses the last 7 days, and later runs only count changes since the last sync.",
+    "batchInfo": "AP is consumed on a scheduled batch (default every 5 minutes) to run adventures.",
+    "manualSyncInfo": "Use the AP calculation button to settle your points right away.",
     "hint": "Complete AP calculation to begin your adventure.",
     "cta": "START ADVENTURE",
     "status": {
@@ -31,8 +35,7 @@
       "rateLimited": "Request limit reached. Please try again later.",
       "conflict": "Sync is currently unavailable. Please try again later.",
       "unknown": "Failed to calculate AP."
-    },
-    "footer": "© 2024 Git Idle Dungeon | Made with <3 and Pixels"
+    }
   },
   "settings": {
     "title": "Settings",
