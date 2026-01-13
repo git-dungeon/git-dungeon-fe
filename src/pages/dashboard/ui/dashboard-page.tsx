@@ -1,8 +1,16 @@
 import { Button } from "@/shared/ui/button";
 import { useDungeonLogs } from "@/entities/dungeon-log/model/use-dungeon-logs";
+import {
+  buildLogThumbnails,
+  resolveActionThumbnail,
+} from "@/entities/dungeon-log/config/thumbnails";
 import { DASHBOARD_RECENT_LOG_LIMIT } from "@/pages/dashboard/config/constants";
 import { useCharacterOverview } from "@/features/character-summary/model/use-character-overview";
 import type { DungeonLogsFilterType } from "@/entities/dungeon-log/model/types";
+import { useProfile } from "@/entities/profile/model/use-profile";
+import { useCatalogItemNameResolver } from "@/entities/catalog/model/use-catalog-item-name";
+import { useCatalogMonsterNameResolver } from "@/entities/catalog/model/use-catalog-monster-name";
+import { useCatalogItemRarityResolver } from "@/entities/catalog/model/use-catalog-item-rarity";
 import { useTranslation } from "react-i18next";
 import { PixelErrorState, PixelSkeletonState } from "@/shared/ui/pixel-state";
 import { DashboardSummaryPanel } from "@/widgets/dashboard-skin/ui/dashboard-summary-panel";
@@ -13,6 +21,10 @@ import { DashboardProgressPanel } from "@/widgets/dashboard-skin/ui/dashboard-pr
 export function DashboardPage() {
   const { t } = useTranslation();
   const overview = useCharacterOverview();
+  const profileQuery = useProfile();
+  const resolveItemName = useCatalogItemNameResolver();
+  const resolveMonsterName = useCatalogMonsterNameResolver();
+  const resolveItemRarity = useCatalogItemRarityResolver();
   const { data: logsData } = useDungeonLogs({
     limit: DASHBOARD_RECENT_LOG_LIMIT,
     type: "EXPLORATION" satisfies DungeonLogsFilterType,
@@ -24,6 +36,23 @@ export function DashboardPage() {
   const showError = overview.isError;
 
   const logs = logsData?.logs ?? [];
+  const latestLog = logs.at(0);
+  const latestThumbnails = latestLog
+    ? buildLogThumbnails(latestLog, {
+        resolveItemName,
+        resolveMonsterName,
+        resolveItemRarity,
+      })
+    : [];
+  const latestThumbnail = latestThumbnails.at(0);
+  const progressThumbnail = latestThumbnail?.src
+    ? latestThumbnail
+    : latestLog
+      ? {
+          src: resolveActionThumbnail(latestLog.action),
+          alt: t("dashboard.progress.monsterAlt"),
+        }
+      : undefined;
 
   const renderSkeleton = () => (
     <PixelSkeletonState
@@ -82,6 +111,7 @@ export function DashboardPage() {
               expToLevel={character.expToLevel}
               gold={character.gold}
               equipment={character.equipment}
+              avatarUrl={profileQuery.data?.profile.avatarUrl}
             />
             <DashboardAttributesPanel
               stats={character.stats}
@@ -91,7 +121,10 @@ export function DashboardPage() {
               <DashboardLogsPanel logs={logs} />
             </div>
           </div>
-          <DashboardProgressPanel floor={character.floor} />
+          <DashboardProgressPanel
+            floor={character.floor}
+            thumbnail={progressThumbnail}
+          />
         </div>
       ) : null}
     </section>
