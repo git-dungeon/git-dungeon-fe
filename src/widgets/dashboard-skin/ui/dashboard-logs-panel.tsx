@@ -41,7 +41,7 @@ export function DashboardLogsPanel({ logs }: DashboardLogsPanelProps) {
           {t("dashboard.activity.empty.message")}
         </p>
       ) : (
-        <ul className="max-h-80 space-y-2 overflow-y-auto pr-2">
+        <ul className="pixel-scrollbar max-h-80 space-y-2 overflow-y-auto pr-2">
           {logs.map((log) => {
             const thumbnails = buildLogThumbnails(log, {
               resolveItemName,

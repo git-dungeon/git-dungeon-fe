@@ -1559,6 +1559,51 @@
     transform: translateY(1px);
   }
 
+  .pixel-toast {
+    display: grid;
+    gap: 0.35rem;
+    padding: 0.65rem 0.75rem;
+    border: 2px solid var(--pixel-border-strong);
+    background: var(--pixel-panel-surface);
+    box-shadow: 0 3px 0 var(--pixel-panel-shadow);
+    color: var(--pixel-text-base);
+    text-shadow: var(--pixel-text-shadow);
+    font-family: "DungGeunMo Thin", "Noto Sans KR", system-ui, sans-serif;
+  }
+
+  .pixel-toast [data-title] {
+    font-family: "DungGeunMo Bold", "Noto Sans KR", system-ui, sans-serif;
+  }
+
+  .pixel-scrollbar,
+  .pixel-app,
+  .pixel-app * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--pixel-accent-strong) var(--pixel-surface-deep);
+  }
+
+  .pixel-scrollbar::-webkit-scrollbar,
+  .pixel-app::-webkit-scrollbar,
+  .pixel-app *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  .pixel-scrollbar::-webkit-scrollbar-track,
+  .pixel-app::-webkit-scrollbar-track,
+  .pixel-app *::-webkit-scrollbar-track {
+    background: var(--pixel-surface-deep);
+    border: 2px solid var(--pixel-border-strong);
+  }
+
+  .pixel-scrollbar::-webkit-scrollbar-thumb,
+  .pixel-app::-webkit-scrollbar-thumb,
+  .pixel-app *::-webkit-scrollbar-thumb {
+    background: var(--pixel-accent-strong);
+    border: 2px solid var(--pixel-border-strong);
+    box-shadow: inset -2px -2px 0 rgba(0, 0, 0, 0.25);
+  }
+
   @media (min-width: 640px) {
     .pixel-brand {
       font-size: 1.125rem;
