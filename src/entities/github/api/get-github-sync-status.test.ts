@@ -14,6 +14,7 @@ describe("getGithubSyncStatus", () => {
           allowed: false,
           cooldownMs: 21600000,
           lastSyncAt: "2025-12-15T00:00:00.000Z",
+          lastManualSyncAt: "2025-12-15T00:00:00.000Z",
           nextAvailableAt: "2025-12-15T06:00:00.000Z",
           retryAfterMs: 1000,
         })

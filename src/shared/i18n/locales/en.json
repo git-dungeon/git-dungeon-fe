@@ -13,6 +13,30 @@
     "logs": "Logs",
     "settings": "Settings"
   },
+  "onboarding": {
+    "title": "ONBOARDING",
+    "headline": "WELCOME TO GIT IDLE DUNGEON!",
+    "description": "Embark on an endless journey through pixelated dungeons. Explore forgotten crypts, battle fearsome monsters, level up your hero, and collect legendary loot, all while you idle.",
+    "apDefinition": "AP (Action Points) are the actions you can spend in the dungeon.",
+    "apCalculation": "New GitHub contributions (commits/PRs/reviews/issues) are converted into AP.",
+    "apWindow": "Your first calculation uses the last 7 days, and later runs only count changes since the last sync.",
+    "batchInfo": "AP is consumed on a scheduled batch (default every 5 minutes) to run adventures.",
+    "manualSyncInfo": "Use the AP calculation button to settle your points right away.",
+    "hint": "Complete AP calculation to begin your adventure.",
+    "cta": "START ADVENTURE",
+    "status": {
+      "checking": "Checking sync status...",
+      "cooldown": "AP calculation is temporarily unavailable. Try again soon.",
+      "notConnected": "GitHub account is not connected."
+    },
+    "errors": {
+      "notConnected": "GitHub account is not connected.",
+      "sessionExpired": "Your session has expired. Please log in again.",
+      "rateLimited": "Request limit reached. Please try again later.",
+      "conflict": "Sync is currently unavailable. Please try again later.",
+      "unknown": "Failed to calculate AP."
+    }
+  },
   "settings": {
     "title": "Settings",
     "subtitle": "Manage your account and local preferences, and review the embed preview.",

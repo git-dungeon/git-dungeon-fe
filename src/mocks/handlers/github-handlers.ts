@@ -43,18 +43,21 @@ function buildSyncStatus() {
       allowed: false,
       cooldownMs: SYNC_COOLDOWN_MS,
       lastSyncAt: null,
+      lastManualSyncAt: null,
       nextAvailableAt: null,
       retryAfterMs: null,
     };
   }
 
   const lastSyncAt = resolveLastSyncAt();
+  const lastManualSyncAt = lastSyncAt ?? null;
   if (!lastSyncAt) {
     return {
       connected: true,
       allowed: true,
       cooldownMs: SYNC_COOLDOWN_MS,
       lastSyncAt: null,
+      lastManualSyncAt: null,
       nextAvailableAt: null,
       retryAfterMs: null,
     };
@@ -67,6 +70,7 @@ function buildSyncStatus() {
       allowed: true,
       cooldownMs: SYNC_COOLDOWN_MS,
       lastSyncAt: null,
+      lastManualSyncAt: null,
       nextAvailableAt: null,
       retryAfterMs: null,
     };
@@ -81,6 +85,7 @@ function buildSyncStatus() {
       allowed: true,
       cooldownMs: SYNC_COOLDOWN_MS,
       lastSyncAt,
+      lastManualSyncAt,
       nextAvailableAt: null,
       retryAfterMs: 0,
     };
@@ -91,6 +96,7 @@ function buildSyncStatus() {
     allowed: false,
     cooldownMs: SYNC_COOLDOWN_MS,
     lastSyncAt,
+    lastManualSyncAt,
     nextAvailableAt: nextAvailableAt.toISOString(),
     retryAfterMs: remaining,
   };

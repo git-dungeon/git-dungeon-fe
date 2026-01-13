@@ -30,6 +30,7 @@ export const githubSyncStatusDataSchema = z
     allowed: z.boolean(),
     cooldownMs: z.number(),
     lastSyncAt: z.string().nullable(),
+    lastManualSyncAt: z.string().nullable(),
     nextAvailableAt: z.string().nullable(),
     retryAfterMs: z.number().nullable(),
   })
