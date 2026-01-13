@@ -69,7 +69,7 @@ export function SettingsEmbeddingPreviewCard() {
   const userId = overview.dashboard.data?.userId ?? "me";
   const exampleUrl = useMemo(() => {
     return resolveApiUrl(
-      `${EMBEDDING_ENDPOINTS.preview}.svg?userId=${encodeURIComponent(
+      `${EMBEDDING_ENDPOINTS.previewSvg}?userId=${encodeURIComponent(
         userId
       )}&size=${embedSize}&theme=${embedTheme}&language=${embedLanguage}`
     );

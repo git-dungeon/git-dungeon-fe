@@ -140,6 +140,7 @@ export const SETTINGS_ENDPOINTS = {
 
 export const EMBEDDING_ENDPOINTS = {
   preview: "/api/embedding/preview",
+  previewSvg: "/api/embedding/preview.svg",
 } as const;
 
 export const CATALOG_ENDPOINTS = {
