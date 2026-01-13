@@ -117,13 +117,7 @@ export function OnboardingPage() {
         </PixelButton>
 
         <p
-          className={
-            helperMessage.tone === "error"
-              ? "pixel-text-danger text-center text-xs"
-              : helperMessage.tone === "muted"
-                ? "pixel-text-danger text-center text-xs"
-                : "pixel-text-muted text-center text-xs"
-          }
+          className={resolveHelperMessageClassName(helperMessage.tone)}
           role={helperMessage.tone === "error" ? "alert" : undefined}
         >
           {helperMessage.text}
@@ -182,4 +176,14 @@ function resolveGithubSyncErrorMessage(
   }
 
   return t("onboarding.errors.unknown");
+}
+
+function resolveHelperMessageClassName(
+  tone: "error" | "info" | "muted"
+): string {
+  if (tone === "error") {
+    return "pixel-text-danger text-center text-xs";
+  }
+
+  return "pixel-text-muted text-center text-xs";
 }
