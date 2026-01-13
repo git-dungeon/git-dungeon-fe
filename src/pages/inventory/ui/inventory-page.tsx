@@ -1,4 +1,3 @@
-import { PixelPanel } from "@/shared/ui/pixel-panel";
 import { PixelButton } from "@/shared/ui/pixel-button";
 import { InventoryLayout } from "@/widgets/inventory/ui/inventory-layout";
 import { useInventoryActions } from "@/features/inventory/model/use-inventory-actions";
@@ -13,7 +12,6 @@ export function InventoryPage() {
   const profileQuery = useProfile();
 
   const inventoryData = overview.inventory.data;
-  const items = inventoryData?.items ?? [];
   const showLoading = overview.isLoading && !inventoryData;
   const avatarUrl = profileQuery.data?.profile.avatarUrl ?? null;
 
@@ -55,15 +53,6 @@ export function InventoryPage() {
           <div className="bg-muted h-4 w-1/3 rounded" />
           <div className="bg-muted h-4 w-2/3 rounded" />
           <div className="bg-muted h-20 rounded" />
-        </PixelPanel>
-      ) : null}
-
-      {!showLoading &&
-      !overview.isFetching &&
-      !overview.isError &&
-      items.length === 0 ? (
-        <PixelPanel className="p-4" contentClassName="text-sm">
-          <span className="pixel-text-muted">{t("inventory.empty")}</span>
         </PixelPanel>
       ) : null}
 
