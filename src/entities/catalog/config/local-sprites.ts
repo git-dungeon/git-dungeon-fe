@@ -223,7 +223,7 @@ const LOCAL_ITEM_SPRITES = buildSpriteMap(ITEM_CODES, {
   ...withPrefix("ring", RING_SPRITES),
 });
 
-const LOCAL_MONSTER_SPRITES = buildSpriteMap(MONSTER_CODES, {
+const BASE_MONSTER_SPRITES = buildSpriteMap(MONSTER_CODES, {
   "ancient-dragon": ancientDragonImage,
   "monster-ancient-dragon": ancientDragonImage,
   "cave-bat": caveBatImage,
@@ -245,6 +245,21 @@ const LOCAL_MONSTER_SPRITES = buildSpriteMap(MONSTER_CODES, {
   zombie: zombieImage,
   "monster-zombie": zombieImage,
 });
+
+const ELITE_MONSTER_SPRITES = withPrefix(
+  "monster",
+  Object.fromEntries(
+    MONSTER_NAME_CODES.map((code) => [
+      `${code}-elite`,
+      BASE_MONSTER_SPRITES[code] ?? missingImage,
+    ])
+  )
+);
+
+const LOCAL_MONSTER_SPRITES = {
+  ...BASE_MONSTER_SPRITES,
+  ...ELITE_MONSTER_SPRITES,
+};
 
 function normalizeSpriteId(spriteId?: string) {
   if (!spriteId) {
@@ -282,7 +297,12 @@ export function resolveLocalMonsterSprite(code?: string, spriteId?: string) {
     return undefined;
   }
 
-  return LOCAL_MONSTER_SPRITES[normalized] ?? missingImage;
+  const resolved = LOCAL_MONSTER_SPRITES[normalized];
+  if (resolved && resolved !== missingImage) {
+    return resolved;
+  }
+
+  return missingImage;
 }
 
 export { missingImage as MISSING_SPRITE };
