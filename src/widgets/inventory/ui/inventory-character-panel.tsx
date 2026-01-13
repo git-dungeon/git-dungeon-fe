@@ -1,4 +1,4 @@
-import fallbackAvatar from "@/assets/helmet/knights-helm.png";
+import { MISSING_SPRITE } from "@/entities/catalog/config/local-sprites";
 import { formatNumber } from "@/entities/dashboard/lib/formatters";
 import { PixelPanel } from "@/shared/ui/pixel-panel";
 import { DashboardStatRow } from "@/widgets/dashboard-skin/ui/dashboard-stat-row";
@@ -100,7 +100,7 @@ export function InventoryCharacterPanel({
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
         <div className="pixel-avatar w-fit">
           <img
-            src={avatarUrl ?? fallbackAvatar}
+            src={avatarUrl ?? MISSING_SPRITE}
             alt={t("dashboard.summaryRows.avatar")}
             className="h-16 w-16 object-contain"
           />
