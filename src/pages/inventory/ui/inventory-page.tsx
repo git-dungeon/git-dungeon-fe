@@ -1,4 +1,5 @@
 import { PixelButton } from "@/shared/ui/pixel-button";
+import { PixelPanel } from "@/shared/ui/pixel-panel";
 import { InventoryLayout } from "@/widgets/inventory/ui/inventory-layout";
 import { useInventoryActions } from "@/features/inventory/model/use-inventory-actions";
 import { useCharacterOverview } from "@/features/character-summary/model/use-character-overview";
