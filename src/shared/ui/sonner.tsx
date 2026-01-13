@@ -9,11 +9,11 @@ export function Toaster(props: ToasterProps) {
       position="top-right"
       toastOptions={{
         classNames: {
-          toast:
-            "bg-background text-foreground border-border shadow-lg border text-sm",
-          description: "text-muted-foreground",
-          actionButton: "bg-primary text-primary-foreground",
-          cancelButton: "bg-muted text-muted-foreground",
+          toast: "pixel-toast",
+          title: "pixel-text-base",
+          description: "pixel-text-muted text-xs",
+          actionButton: "pixel-button pixel-button--compact",
+          cancelButton: "pixel-button pixel-button--compact",
         },
       }}
       {...props}

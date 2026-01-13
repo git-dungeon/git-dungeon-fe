@@ -1,4 +1,4 @@
-import emptyImage from "@/assets/event/empty.png";
+import { MISSING_SPRITE } from "@/entities/catalog/config/local-sprites";
 import type { DungeonLogEntry } from "@/entities/dungeon-log/model/types";
 import {
   buildLogDescription,
@@ -41,7 +41,7 @@ export function DashboardLogsPanel({ logs }: DashboardLogsPanelProps) {
           {t("dashboard.activity.empty.message")}
         </p>
       ) : (
-        <ul className="max-h-80 space-y-2 overflow-y-auto pr-2">
+        <ul className="pixel-scrollbar max-h-80 space-y-2 overflow-y-auto pr-2">
           {logs.map((log) => {
             const thumbnails = buildLogThumbnails(log, {
               resolveItemName,
@@ -51,7 +51,7 @@ export function DashboardLogsPanel({ logs }: DashboardLogsPanelProps) {
             const icon =
               thumbnails.at(0)?.src ??
               resolveActionThumbnail(log.action) ??
-              emptyImage;
+              MISSING_SPRITE;
 
             return (
               <li key={log.id} className="pixel-log-row">

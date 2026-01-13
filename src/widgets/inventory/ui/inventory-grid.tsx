@@ -8,6 +8,7 @@ import { PixelCheckIcon } from "@/shared/ui/pixel-check-icon";
 import { useTranslation } from "react-i18next";
 import { useCatalogItemNameResolver } from "@/entities/catalog/model/use-catalog-item-name";
 import { PixelPanel } from "@/shared/ui/pixel-panel";
+import { PixelEmptyState } from "@/shared/ui/pixel-state";
 
 interface InventoryGridProps {
   items: InventoryItem[];
@@ -44,17 +45,21 @@ export function InventoryGrid({
 
   return (
     <PixelPanel title={t("inventory.grid.title")}>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-        {sortedItems.map((item) => (
-          <InventoryGridCell
-            key={item.id}
-            item={item}
-            isSelected={item.id === selectedItemId}
-            onSelect={onSelect}
-            resolveItemName={resolveItemName}
-          />
-        ))}
-      </div>
+      {sortedItems.length === 0 ? (
+        <PixelEmptyState message={t("inventory.empty")} />
+      ) : (
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+          {sortedItems.map((item) => (
+            <InventoryGridCell
+              key={item.id}
+              item={item}
+              isSelected={item.id === selectedItemId}
+              onSelect={onSelect}
+              resolveItemName={resolveItemName}
+            />
+          ))}
+        </div>
+      )}
     </PixelPanel>
   );
 }

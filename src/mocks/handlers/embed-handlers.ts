@@ -1,4 +1,4 @@
-import { http } from "msw";
+import { http, HttpResponse } from "msw";
 import { EMBEDDING_ENDPOINTS } from "@/shared/config/env";
 import { mockDashboardResponse } from "@/mocks/handlers/dashboard-handlers";
 import { buildInventoryResponse } from "@/mocks/handlers/inventory-handlers";
@@ -17,6 +17,10 @@ function resolveEmbedPreviewSize(rawSize: string | null) {
     return rawSize as EmbedPreviewSize;
   }
   return "wide";
+}
+
+function buildMockSvg(userId: string) {
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="480" height="120"><rect width="480" height="120" fill="#1f2937"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#f9fafb" font-size="16" font-family="Inter, Arial, sans-serif">${userId}</text></svg>`;
 }
 
 export const embedHandlers = [
@@ -44,6 +48,26 @@ export const embedHandlers = [
       generatedAt: new Date().toISOString(),
       dashboard,
       inventory,
+    });
+  }),
+  http.get(EMBEDDING_ENDPOINTS.previewSvg, ({ request }) => {
+    const url = new URL(request.url);
+    const userId = url.searchParams.get("userId");
+
+    if (!userId) {
+      return respondWithError("userId query parameter is required", {
+        status: 400,
+        code: "EMBED_USER_ID_REQUIRED",
+      });
+    }
+
+    const svg = buildMockSvg(userId);
+
+    return new HttpResponse(svg, {
+      status: 200,
+      headers: {
+        "Content-Type": "image/svg+xml",
+      },
     });
   }),
 ];

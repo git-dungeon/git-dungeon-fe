@@ -18,10 +18,15 @@ import {
   getEmbedPreviewAspectClass,
   getEmbedPreviewContainerClass,
 } from "@/widgets/embed-view/ui/embed-container";
-import { EMBEDDING_ENDPOINTS, resolveApiUrl } from "@/shared/config/env";
+import {
+  EMBEDDING_ENDPOINTS,
+  resolveApiUrl,
+  resolveWebUrl,
+} from "@/shared/config/env";
 import { useTranslation } from "react-i18next";
 import { PixelPanel } from "@/shared/ui/pixel-panel";
 import { PixelButton } from "@/shared/ui/pixel-button";
+import { toast } from "sonner";
 
 const EMBEDDING_SIZE_OPTIONS: Array<{
   value: EmbedPreviewSize;
@@ -60,14 +65,19 @@ export function SettingsEmbeddingPreviewCard() {
   const profile = profileQuery.data?.profile;
   const displayName = profile?.displayName ?? profile?.username ?? undefined;
   const avatarUrl = profile?.avatarUrl ?? undefined;
+  const webLinkUrl = resolveWebUrl("/");
   const userId = overview.dashboard.data?.userId ?? "me";
   const exampleUrl = useMemo(() => {
     return resolveApiUrl(
-      `${EMBEDDING_ENDPOINTS.preview}?userId=${encodeURIComponent(
+      `${EMBEDDING_ENDPOINTS.previewSvg}?userId=${encodeURIComponent(
         userId
       )}&size=${embedSize}&theme=${embedTheme}&language=${embedLanguage}`
     );
   }, [embedLanguage, embedSize, embedTheme, userId]);
+  const exampleSnippet = useMemo(() => {
+    const imgTag = `<img src="${exampleUrl}"/>`;
+    return `<a href="${webLinkUrl}">\n  ${imgTag}\n</a>`;
+  }, [exampleUrl, webLinkUrl]);
   const {
     svgDataUrl,
     renderError: embedRenderError,
@@ -151,12 +161,13 @@ export function SettingsEmbeddingPreviewCard() {
                   theme: embedTheme,
                   language: embedLanguage,
                   generatedAtLabel,
-                  exampleUrl,
+                  exampleSnippet,
                   isCopied,
                   onCopy: async () => {
                     try {
-                      await navigator.clipboard.writeText(exampleUrl);
+                      await navigator.clipboard.writeText(exampleSnippet);
                       setIsCopied(true);
+                      toast.success(t("settings.embedding.copySuccess"));
                       if (copyTimeoutRef.current !== null) {
                         window.clearTimeout(copyTimeoutRef.current);
                       }
@@ -165,6 +176,7 @@ export function SettingsEmbeddingPreviewCard() {
                         copyTimeoutRef.current = null;
                       }, 1500);
                     } catch (error) {
+                      toast.error(t("settings.embedding.copyError"));
                       if (import.meta.env?.DEV) {
                         console.error("[embed-preview] copy failed", error);
                       }
@@ -251,7 +263,7 @@ interface RenderPreviewContentParams {
   theme: EmbedPreviewTheme;
   language: EmbedPreviewLanguage;
   generatedAtLabel: string;
-  exampleUrl: string;
+  exampleSnippet: string;
   isCopied: boolean;
   onCopy: () => void;
 }
@@ -263,7 +275,7 @@ function renderPreviewContent({
   theme,
   language,
   generatedAtLabel,
-  exampleUrl,
+  exampleSnippet,
   isCopied,
   onCopy,
 }: RenderPreviewContentParams) {
@@ -297,12 +309,12 @@ function renderPreviewContent({
           </span>
           <div className="flex flex-col gap-2 sm:max-w-[70%]">
             <span className="pixel-text-muted pixel-text-xs">
-              {t("settings.embedding.urlExample")}
+              {t("settings.embedding.snippetExample")}
             </span>
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-              <code className="pixel-text-xs font-mono break-all">
-                {exampleUrl}
-              </code>
+              <pre className="pixel-text-xs bg-muted/40 rounded border px-3 py-2 font-mono text-[10px] break-all whitespace-pre-wrap">
+                {exampleSnippet}
+              </pre>
               <PixelButton
                 type="button"
                 pixelSize="compact"

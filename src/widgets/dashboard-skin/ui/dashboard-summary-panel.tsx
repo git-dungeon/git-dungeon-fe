@@ -1,5 +1,7 @@
-import fallbackAvatar from "@/assets/helmet/knights-helm.png";
-import { resolveLocalItemSprite } from "@/entities/catalog/config/local-sprites";
+import {
+  MISSING_SPRITE,
+  resolveLocalItemSprite,
+} from "@/entities/catalog/config/local-sprites";
 import type { InventoryItem } from "@/entities/inventory/model/types";
 import { formatNumber } from "@/entities/dashboard/lib/formatters";
 import { calcRoundedPercent } from "@/entities/dashboard/lib/progress";
@@ -19,6 +21,7 @@ interface DashboardSummaryPanelProps {
   expToLevel: number;
   gold: number;
   equipment: InventoryItem[];
+  avatarUrl?: string | null;
 }
 
 export function DashboardSummaryPanel({
@@ -30,11 +33,14 @@ export function DashboardSummaryPanel({
   expToLevel,
   gold,
   equipment,
+  avatarUrl,
 }: DashboardSummaryPanelProps) {
   const { t } = useTranslation();
   const hpPercent = calcRoundedPercent(hp, maxHp);
   const expPercent = calcRoundedPercent(exp, expToLevel);
-  const avatarSrc = resolveAvatarSprite(equipment) ?? fallbackAvatar;
+  const profileAvatar = avatarUrl?.trim() ? avatarUrl : null;
+  const equipmentAvatar = resolveAvatarSprite(equipment);
+  const avatarSrc = profileAvatar ?? equipmentAvatar ?? MISSING_SPRITE;
 
   return (
     <PixelPanel

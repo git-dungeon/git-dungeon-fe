@@ -73,7 +73,7 @@
     },
     "embedding": {
       "title": "캐릭터 대시보드",
-      "description": "대시보드와 인벤토리 데이터를 조합한 임베딩 미리보기입니다.",
+      "description": "아래 HTML을 GitHub README에 붙여넣으면 캐릭터 상태를 뱃지 형태로 볼 수 있습니다.",
       "size": {
         "compact": {
           "label": "Compact",
@@ -94,9 +94,11 @@
       },
       "previewAlt": "임베드 SVG 프리뷰",
       "generatedAt": "생성 시각: {{time}}",
-      "urlExample": "URL 예시:",
+      "snippetExample": "임베딩 HTML:",
       "copy": "복사",
-      "copied": "복사됨"
+      "copied": "복사됨",
+      "copySuccess": "임베딩 HTML을 복사했습니다.",
+      "copyError": "복사에 실패했습니다."
     },
     "github": {
       "title": "GitHub 연동",

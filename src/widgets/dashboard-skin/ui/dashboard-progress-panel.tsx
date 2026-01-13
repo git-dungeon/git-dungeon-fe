@@ -1,4 +1,4 @@
-import skeletonImage from "@/assets/monster/skeleton-warrior.png";
+import { MISSING_SPRITE } from "@/entities/catalog/config/local-sprites";
 import { roundPercent } from "@/entities/dashboard/lib/progress";
 import { PixelPanel } from "@/shared/ui/pixel-panel";
 import { DashboardStatBar } from "@/widgets/dashboard-skin/ui/dashboard-stat-bar";
@@ -11,11 +11,20 @@ interface DashboardProgressPanelProps {
     best: number;
     progress: number;
   };
+  thumbnail?: {
+    src?: string;
+    alt?: string;
+  };
 }
 
-export function DashboardProgressPanel({ floor }: DashboardProgressPanelProps) {
+export function DashboardProgressPanel({
+  floor,
+  thumbnail,
+}: DashboardProgressPanelProps) {
   const { t } = useTranslation();
   const progressValue = roundPercent(floor.progress);
+  const thumbnailSrc = thumbnail?.src ?? MISSING_SPRITE;
+  const thumbnailAlt = thumbnail?.alt ?? t("dashboard.progress.monsterAlt");
 
   return (
     <PixelPanel title={t("dashboard.panels.progress")}>
@@ -39,8 +48,8 @@ export function DashboardProgressPanel({ floor }: DashboardProgressPanelProps) {
         </div>
         <div className="pixel-avatar">
           <img
-            src={skeletonImage}
-            alt={t("dashboard.progress.monsterAlt")}
+            src={thumbnailSrc}
+            alt={thumbnailAlt}
             className="h-14 w-14 object-contain"
           />
         </div>

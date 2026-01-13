@@ -73,7 +73,7 @@
     },
     "embedding": {
       "title": "Character Dashboard",
-      "description": "Embed preview combining dashboard and inventory data.",
+      "description": "Paste the HTML below into your GitHub README to see your character status as a badge.",
       "size": {
         "compact": {
           "label": "Compact",
@@ -94,9 +94,11 @@
       },
       "previewAlt": "Embed SVG preview",
       "generatedAt": "Generated at: {{time}}",
-      "urlExample": "Example URL:",
+      "snippetExample": "Embed HTML:",
       "copy": "Copy",
-      "copied": "Copied"
+      "copied": "Copied",
+      "copySuccess": "Copied embed HTML.",
+      "copyError": "Failed to copy."
     },
     "github": {
       "title": "GitHub connection",
