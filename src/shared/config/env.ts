@@ -1,4 +1,5 @@
 const RAW_API_BASE_URL = import.meta.env.VITE_API_BASE_URL?.trim();
+const RAW_WEB_BASE_URL = import.meta.env.VITE_WEB_BASE_URL?.trim();
 
 function detectVitestEnv(): boolean {
   if (typeof process !== "undefined" && process.env?.VITEST === "true") {
@@ -32,6 +33,11 @@ const BROWSER_ORIGIN =
 export const API_BASE_URL =
   RAW_API_BASE_URL && RAW_API_BASE_URL.length > 0
     ? RAW_API_BASE_URL
+    : undefined;
+
+export const WEB_BASE_URL =
+  RAW_WEB_BASE_URL && RAW_WEB_BASE_URL.length > 0
+    ? RAW_WEB_BASE_URL
     : undefined;
 
 export const IS_MSW_ENABLED =
@@ -139,6 +145,23 @@ export const EMBEDDING_ENDPOINTS = {
 export const CATALOG_ENDPOINTS = {
   catalog: "/api/catalog",
 } as const;
+
+export function resolveWebUrl(path: string): string {
+  if (/^https?:/i.test(path)) {
+    return path;
+  }
+
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  const runtimeOrigin =
+    typeof window !== "undefined" && window.location?.origin
+      ? window.location.origin
+      : BROWSER_ORIGIN;
+  const baseOrigin = WEB_BASE_URL
+    ? resolveAbsoluteOrigin(WEB_BASE_URL, runtimeOrigin)
+    : runtimeOrigin;
+
+  return new URL(normalizedPath, baseOrigin).toString();
+}
 
 export function resolveApiUrl(path: string): string {
   if (/^https?:/i.test(path)) {
