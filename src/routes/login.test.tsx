@@ -1,7 +1,7 @@
 import React, { StrictMode, act } from "react";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { createRoot } from "react-dom/client";
-import { LoginContainer } from "@/pages/login/ui/login-container";
+import { LoginScreen } from "@/widgets/login/ui/login-screen";
 
 const navigateMock = vi.fn();
 
@@ -76,7 +76,7 @@ describe("/login 화면", () => {
   it("로그인 실패 시 에러 메시지를 표시한다", async () => {
     loginMock.mockRejectedValueOnce(new Error("테스트 에러"));
     const { container, unmount } = render(
-      <LoginContainer safeRedirect="/dashboard" />
+      <LoginScreen safeRedirect="/dashboard" />
     );
 
     const button = container.querySelector(
@@ -108,7 +108,7 @@ describe("/login 화면", () => {
     });
 
     const { container, unmount } = render(
-      <LoginContainer safeRedirect="/dashboard" />
+      <LoginScreen safeRedirect="/dashboard" />
     );
 
     const alertElement = container.querySelector('[role="alert"]');
@@ -137,7 +137,7 @@ describe("/login 화면", () => {
     });
 
     const { container, unmount } = render(
-      <LoginContainer safeRedirect="/dashboard" />
+      <LoginScreen safeRedirect="/dashboard" />
     );
 
     const statusElement = container.querySelector('[role="status"]');
@@ -163,7 +163,7 @@ describe("/login 화면", () => {
     });
 
     const { container, unmount } = render(
-      <LoginContainer safeRedirect="/dashboard" />
+      <LoginScreen safeRedirect="/dashboard" />
     );
 
     const button = container.querySelector(
@@ -181,10 +181,7 @@ describe("/login 화면", () => {
 
   it("authError 파라미터가 전달되면 메시지를 표시하고 재시도 시 쿼리를 제거한다", async () => {
     const { container, unmount } = render(
-      <LoginContainer
-        safeRedirect="/logs"
-        authErrorCode="AUTH_PROVIDER_DENIED"
-      />
+      <LoginScreen safeRedirect="/logs" authErrorCode="AUTH_PROVIDER_DENIED" />
     );
 
     const alertElement = container.querySelector('[role="alert"]');

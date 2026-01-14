@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { LoginContainer } from "@/pages/login/ui/login-container";
+import { LoginScreen } from "@/widgets/login/ui/login-screen";
 import { NetworkError } from "@/shared/api/http-client";
 import { sanitizeRedirectPath } from "@/shared/lib/navigation/sanitize-redirect-path";
 
@@ -38,7 +38,5 @@ export const Route = createFileRoute("/login")({
 function LoginRoute() {
   const { redirect, authError } = Route.useSearch();
   const safeRedirect = sanitizeRedirectPath(redirect, "/dashboard");
-  return (
-    <LoginContainer safeRedirect={safeRedirect} authErrorCode={authError} />
-  );
+  return <LoginScreen safeRedirect={safeRedirect} authErrorCode={authError} />;
 }
