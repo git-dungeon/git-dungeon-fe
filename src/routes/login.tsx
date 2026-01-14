@@ -3,6 +3,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { GithubLoginButton } from "@/features/auth/github-login/ui/github-login-button";
 import { useAuthSession } from "@/entities/auth/model/use-auth-session";
 import { sanitizeRedirectPath } from "@/shared/lib/navigation/sanitize-redirect-path";
+import { PixelPanel } from "@/shared/ui/pixel-panel";
 
 interface LoginSearch {
   redirect?: string;
@@ -155,48 +156,54 @@ export function LoginContent({
   }, [navigate, safeRedirect, session]);
 
   return (
-    <section className="mx-auto flex w-full max-w-md flex-col items-center gap-6 text-center">
-      <div>
-        <h1 className="text-foreground text-3xl font-semibold">Git Dungeon</h1>
-        <p className="text-muted-foreground mt-2 text-sm">
-          GitHub 계정으로 로그인하고 자동 탐험을 시작하세요.
-        </p>
-      </div>
-      <div className="flex w-full flex-col gap-3">
-        <GithubLoginButton
-          redirectTo={safeRedirect}
-          onLoginStart={() => {
-            if (authErrorCode) {
-              clearAuthError();
-            }
-            setLoginError(null);
-          }}
-          onLoginError={(error) => setLoginError(error.message)}
-          disabled={isButtonDisabled}
-        >
-          GitHub로 계속하기
-        </GithubLoginButton>
-        {status ? (
-          <p
-            role={status.type === "info" ? "status" : "alert"}
-            aria-live={status.type === "info" ? "polite" : "assertive"}
-            className={
-              status.type === "info"
-                ? "text-muted-foreground flex items-center justify-center gap-2 text-xs"
-                : "text-destructive text-xs"
-            }
-          >
-            {status.type === "info" ? (
-              <>
-                <span className="inline-block h-3 w-3 animate-spin rounded-full border border-current border-t-transparent" />
-                {status.text}
-              </>
-            ) : (
-              status.text
-            )}
+    <section className="mx-auto flex w-full max-w-3xl flex-col gap-8 text-center">
+      <PixelPanel
+        className="w-full"
+        contentClassName="items-center text-center gap-6"
+      >
+        <div className="space-y-2">
+          <h1 className="font-pixel-title text-3xl sm:text-4xl">GIT DUNGEON</h1>
+          <p className="pixel-text-muted pixel-text-sm">
+            GitHub 계정으로 로그인하고 자동 탐험을 시작하세요.
           </p>
-        ) : null}
-      </div>
+        </div>
+        <div className="flex w-full flex-col items-center gap-3">
+          <GithubLoginButton
+            redirectTo={safeRedirect}
+            onLoginStart={() => {
+              if (authErrorCode) {
+                clearAuthError();
+              }
+              setLoginError(null);
+            }}
+            onLoginError={(error) => setLoginError(error.message)}
+            disabled={isButtonDisabled}
+            className="pixel-button w-full sm:w-auto"
+          >
+            GitHub로 계속하기
+          </GithubLoginButton>
+          {status ? (
+            <p
+              role={status.type === "info" ? "status" : "alert"}
+              aria-live={status.type === "info" ? "polite" : "assertive"}
+              className={
+                status.type === "info"
+                  ? "pixel-text-muted flex items-center justify-center gap-2 text-xs"
+                  : "pixel-text-danger text-xs"
+              }
+            >
+              {status.type === "info" ? (
+                <>
+                  <span className="inline-block h-3 w-3 animate-spin rounded-full border border-current border-t-transparent" />
+                  {status.text}
+                </>
+              ) : (
+                status.text
+              )}
+            </p>
+          ) : null}
+        </div>
+      </PixelPanel>
     </section>
   );
 }
