@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { GithubLoginButton } from "@/features/auth/github-login/ui/github-login-button";
 import { PixelPanel } from "@/shared/ui/pixel-panel";
 import { PixelIcon } from "@/shared/ui/pixel-icon";
@@ -18,6 +19,7 @@ interface LoginPageProps {
   cards: LoginInfoCard[];
   status: LoginStatus | null;
   isLoginDisabled: boolean;
+  languageControl?: ReactNode;
   onLoginStart: () => void;
   onLoginError: (error: Error) => void;
 }
@@ -32,6 +34,7 @@ export function LoginPage({
   cards,
   status,
   isLoginDisabled,
+  languageControl,
   onLoginStart,
   onLoginError,
 }: LoginPageProps) {
@@ -41,6 +44,9 @@ export function LoginPage({
         className="w-full"
         contentClassName="items-center text-center gap-8"
       >
+        {languageControl ? (
+          <div className="flex w-full justify-end">{languageControl}</div>
+        ) : null}
         <LoginHero
           imageSrc={heroImageSrc}
           imageAlt={heroImageAlt}
@@ -54,6 +60,7 @@ export function LoginPage({
             onLoginError={onLoginError}
             disabled={isLoginDisabled}
             className="pixel-button w-full sm:w-auto"
+            data-testid="github-login-button"
           >
             <span className="inline-flex items-center gap-2">
               <PixelIcon name="github" size={14} />

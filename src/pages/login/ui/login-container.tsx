@@ -4,6 +4,8 @@ import cardGithubImage from "@/assets/login/git-intergration.webp";
 import cardAutoImage from "@/assets/login/auto-exploration.webp";
 import cardLootImage from "@/assets/login/epic-loot.webp";
 import { useLoginState } from "@/pages/login/model/use-login-state";
+import { useLanguagePreference } from "@/features/settings/model/use-language-preference";
+import { LanguageSelect } from "@/features/settings/ui/language-select";
 import { LoginPage } from "./login-page";
 
 interface LoginContainerProps {
@@ -19,6 +21,7 @@ export function LoginContainer({
   const { status, isLoginDisabled, onLoginStart, onLoginError } = useLoginState(
     { authErrorCode }
   );
+  const { language, setLanguage } = useLanguagePreference();
 
   const cards = [
     {
@@ -37,6 +40,15 @@ export function LoginContainer({
       description: t("auth.login.cards.loot.description"),
     },
   ];
+  const languageControl = (
+    <LanguageSelect
+      value={language}
+      onChange={setLanguage}
+      triggerId="login-language"
+      ariaLabel={t("settings.preferences.language.label")}
+      className="min-w-32"
+    />
+  );
 
   return (
     <LoginPage
@@ -49,6 +61,7 @@ export function LoginContainer({
       cards={cards}
       status={status}
       isLoginDisabled={isLoginDisabled}
+      languageControl={languageControl}
       onLoginStart={onLoginStart}
       onLoginError={onLoginError}
     />

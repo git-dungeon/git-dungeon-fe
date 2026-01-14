@@ -79,7 +79,9 @@ describe("/login 화면", () => {
       <LoginContainer safeRedirect="/dashboard" />
     );
 
-    const button = container.querySelector("button") as HTMLButtonElement;
+    const button = container.querySelector(
+      '[data-testid="github-login-button"]'
+    ) as HTMLButtonElement;
     expect(button).not.toBeNull();
 
     await act(async () => {
@@ -115,7 +117,9 @@ describe("/login 화면", () => {
       "서버에 문제가 있어 로그인할 수 없습니다."
     );
 
-    const errorButton = container.querySelector("button") as HTMLButtonElement;
+    const errorButton = container.querySelector(
+      '[data-testid="github-login-button"]'
+    ) as HTMLButtonElement;
     expect(errorButton).not.toBeNull();
     expect(errorButton.disabled).toBe(true);
 
@@ -143,7 +147,9 @@ describe("/login 화면", () => {
     expect(spinner).not.toBeNull();
     expect(spinner?.className).toContain("animate-spin");
 
-    const button = container.querySelector("button") as HTMLButtonElement;
+    const button = container.querySelector(
+      '[data-testid="github-login-button"]'
+    ) as HTMLButtonElement;
     expect(button.disabled).toBe(true);
 
     unmount();
@@ -160,7 +166,9 @@ describe("/login 화면", () => {
       <LoginContainer safeRedirect="/dashboard" />
     );
 
-    const button = container.querySelector("button") as HTMLButtonElement;
+    const button = container.querySelector(
+      '[data-testid="github-login-button"]'
+    ) as HTMLButtonElement;
     expect(button).not.toBeNull();
     expect(button.disabled).toBe(true);
     expect(button.getAttribute("aria-busy")).toBe("true");
@@ -185,7 +193,9 @@ describe("/login 화면", () => {
       "GitHub 로그인 요청이 취소되었습니다. 다시 시도해주세요."
     );
 
-    const button = container.querySelector("button") as HTMLButtonElement;
+    const button = container.querySelector(
+      '[data-testid="github-login-button"]'
+    ) as HTMLButtonElement;
     await act(async () => {
       button.dispatchEvent(new MouseEvent("click", { bubbles: true }));
     });
