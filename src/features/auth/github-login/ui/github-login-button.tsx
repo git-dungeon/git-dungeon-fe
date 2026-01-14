@@ -1,7 +1,9 @@
 import type { MouseEvent } from "react";
+import { useTranslation } from "react-i18next";
 import { cn } from "@/shared/lib/utils";
 import { useGithubLogin } from "@/features/auth/github-login/model/use-github-login";
-import { Button, type ButtonProps } from "@/shared/ui/button";
+import { PixelButton } from "@/shared/ui/pixel-button";
+import type { ButtonProps } from "@/shared/ui/button";
 
 export interface GithubLoginButtonProps extends Omit<ButtonProps, "onClick"> {
   redirectTo?: string;
@@ -20,6 +22,7 @@ export function GithubLoginButton(props: GithubLoginButtonProps) {
     onLoginError,
     ...rest
   } = props;
+  const { t } = useTranslation();
   const { login, isLoading } = useGithubLogin({ redirectTo });
 
   const handleClick = async (event: MouseEvent<HTMLButtonElement>) => {
@@ -31,18 +34,16 @@ export function GithubLoginButton(props: GithubLoginButtonProps) {
       const fallbackError =
         rawError instanceof Error
           ? rawError
-          : new Error(
-              "로그인 중 문제가 발생했습니다. 잠시 후 다시 시도하세요."
-            );
+          : new Error(t("auth.login.errors.generic"));
       onLoginError?.(fallbackError);
     }
   };
 
   const isDisabled = isLoading || disabled;
-  const content = children ?? "GitHub로 계속하기";
+  const content = children ?? t("auth.login.button.default");
 
   return (
-    <Button
+    <PixelButton
       type="button"
       size={size}
       {...rest}
@@ -64,11 +65,11 @@ export function GithubLoginButton(props: GithubLoginButtonProps) {
             className="inline-flex h-4 w-4 animate-spin rounded-full border border-current border-t-transparent"
           />
           <span>{content}</span>
-          <span className="sr-only">GitHub 로그인 진행 중</span>
+          <span className="sr-only">{t("auth.login.button.loading")}</span>
         </>
       ) : (
         content
       )}
-    </Button>
+    </PixelButton>
   );
 }

@@ -324,6 +324,43 @@
       "requestFailed": "Inventory request failed."
     }
   },
+  "auth": {
+    "login": {
+      "cta": "Login With Github",
+      "subtitle": "Log in with your GitHub account and start exploring.",
+      "imageAlt": "Dungeon gate",
+      "cards": {
+        "github": {
+          "title": "GITHUB INTEGRATION",
+          "description": "Connect your repos to earn unique rewards and track progress!"
+        },
+        "idle": {
+          "title": "AUTO EXPLORATION",
+          "description": "Explore automatically and grow stronger!"
+        },
+        "loot": {
+          "title": "EPIC LOOT",
+          "description": "Discover powerful gear and items to upgrade your champions!"
+        }
+      },
+      "status": {
+        "checking": "Checking server ...",
+        "serverUnavailable": "The server is unavailable. Please try again later."
+      },
+      "errors": {
+        "providerDenied": "GitHub login was cancelled. Please try again.",
+        "redirectInvalid": "Login request expired. Please try again.",
+        "sessionExpired": "Session expired. Please log in again to continue.",
+        "sessionInvalid": "Login session is invalid. Please log in again.",
+        "providerError": "Something went wrong during login. Please try again.",
+        "generic": "Something went wrong during login. Please try again."
+      },
+      "button": {
+        "default": "Login With Github",
+        "loading": "Logging in with GitHub"
+      }
+    }
+  },
   "logs": {
     "page": {
       "title": "Exploration Logs",

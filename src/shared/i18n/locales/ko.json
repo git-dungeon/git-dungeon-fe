@@ -324,6 +324,43 @@
       "requestFailed": "인벤토리 요청이 실패했습니다."
     }
   },
+  "auth": {
+    "login": {
+      "cta": "Login With Github",
+      "subtitle": "GitHub 계정으로 로그인하고 탐험을 시작하세요.",
+      "imageAlt": "던전 게이트",
+      "cards": {
+        "github": {
+          "title": "GITHUB INTEGRATION",
+          "description": "레포를 연동해 기여를 던전 보상으로 전환하세요!"
+        },
+        "idle": {
+          "title": "AUTO EXPLORATION",
+          "description": "자동으로 탐험하고 강해지세요!"
+        },
+        "loot": {
+          "title": "EPIC LOOT",
+          "description": "강력한 장비를 찾아 영웅을 강화하세요!"
+        }
+      },
+      "status": {
+        "checking": "서버 확인 중 ...",
+        "serverUnavailable": "서버에 문제가 있어 로그인할 수 없습니다."
+      },
+      "errors": {
+        "providerDenied": "GitHub 로그인 요청이 취소되었습니다. 다시 시도해주세요.",
+        "redirectInvalid": "로그인 요청이 만료되었습니다. 다시 시도해주세요.",
+        "sessionExpired": "세션이 만료되었습니다. 다시 로그인해 Git Dungeon을 계속하세요.",
+        "sessionInvalid": "로그인 세션이 유효하지 않습니다. 다시 로그인해주세요.",
+        "providerError": "로그인 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.",
+        "generic": "로그인 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요."
+      },
+      "button": {
+        "default": "GitHub로 계속하기",
+        "loading": "GitHub 로그인 진행 중"
+      }
+    }
+  },
   "logs": {
     "page": {
       "title": "탐험 기록",

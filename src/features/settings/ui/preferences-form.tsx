@@ -2,10 +2,7 @@ import type {
   LanguagePreference,
   ThemePreference,
 } from "@/shared/lib/preferences/types";
-import {
-  LANGUAGE_PREFERENCE_VALUES,
-  THEME_PREFERENCE_VALUES,
-} from "@/shared/lib/preferences/types";
+import { THEME_PREFERENCE_VALUES } from "@/shared/lib/preferences/types";
 import {
   Select,
   SelectContent,
@@ -13,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/ui/select";
+import { LanguageSelect } from "@/features/settings/ui/language-select";
 import { useTranslation } from "react-i18next";
 
 interface PreferencesFormProps {
@@ -33,10 +31,6 @@ export function PreferencesForm({
     system: t("settings.preferences.theme.system"),
     light: t("settings.preferences.theme.light"),
     dark: t("settings.preferences.theme.dark"),
-  };
-  const languageLabelMap: Record<LanguagePreference, string> = {
-    ko: t("settings.preferences.language.ko"),
-    en: t("settings.preferences.language.en"),
   };
 
   return (
@@ -63,27 +57,11 @@ export function PreferencesForm({
       </Fieldset>
 
       <Fieldset label={t("settings.preferences.language.label")}>
-        <Select value={language} onValueChange={onLanguageChange}>
-          <SelectTrigger
-            id="settings-language"
-            className="pixel-select-trigger"
-          >
-            <SelectValue
-              placeholder={t("settings.preferences.language.placeholder")}
-            />
-          </SelectTrigger>
-          <SelectContent className="pixel-select-content">
-            {LANGUAGE_PREFERENCE_VALUES.map((preference) => (
-              <SelectItem
-                key={preference}
-                value={preference}
-                className="pixel-select-item"
-              >
-                {languageLabelMap[preference]}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <LanguageSelect
+          value={language}
+          onChange={onLanguageChange}
+          triggerId="settings-language"
+        />
       </Fieldset>
     </div>
   );

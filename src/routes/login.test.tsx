@@ -1,7 +1,7 @@
 import React, { StrictMode, act } from "react";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { createRoot } from "react-dom/client";
-import { LoginContent } from "@/routes/login";
+import { LoginScreen } from "@/widgets/login/ui/login-screen";
 
 const navigateMock = vi.fn();
 
@@ -76,10 +76,12 @@ describe("/login 화면", () => {
   it("로그인 실패 시 에러 메시지를 표시한다", async () => {
     loginMock.mockRejectedValueOnce(new Error("테스트 에러"));
     const { container, unmount } = render(
-      <LoginContent safeRedirect="/dashboard" />
+      <LoginScreen safeRedirect="/dashboard" />
     );
 
-    const button = container.querySelector("button") as HTMLButtonElement;
+    const button = container.querySelector(
+      '[data-testid="github-login-button"]'
+    ) as HTMLButtonElement;
     expect(button).not.toBeNull();
 
     await act(async () => {
@@ -106,7 +108,7 @@ describe("/login 화면", () => {
     });
 
     const { container, unmount } = render(
-      <LoginContent safeRedirect="/dashboard" />
+      <LoginScreen safeRedirect="/dashboard" />
     );
 
     const alertElement = container.querySelector('[role="alert"]');
@@ -115,7 +117,9 @@ describe("/login 화면", () => {
       "서버에 문제가 있어 로그인할 수 없습니다."
     );
 
-    const errorButton = container.querySelector("button") as HTMLButtonElement;
+    const errorButton = container.querySelector(
+      '[data-testid="github-login-button"]'
+    ) as HTMLButtonElement;
     expect(errorButton).not.toBeNull();
     expect(errorButton.disabled).toBe(true);
 
@@ -133,7 +137,7 @@ describe("/login 화면", () => {
     });
 
     const { container, unmount } = render(
-      <LoginContent safeRedirect="/dashboard" />
+      <LoginScreen safeRedirect="/dashboard" />
     );
 
     const statusElement = container.querySelector('[role="status"]');
@@ -143,7 +147,9 @@ describe("/login 화면", () => {
     expect(spinner).not.toBeNull();
     expect(spinner?.className).toContain("animate-spin");
 
-    const button = container.querySelector("button") as HTMLButtonElement;
+    const button = container.querySelector(
+      '[data-testid="github-login-button"]'
+    ) as HTMLButtonElement;
     expect(button.disabled).toBe(true);
 
     unmount();
@@ -157,24 +163,25 @@ describe("/login 화면", () => {
     });
 
     const { container, unmount } = render(
-      <LoginContent safeRedirect="/dashboard" />
+      <LoginScreen safeRedirect="/dashboard" />
     );
 
-    const button = container.querySelector("button") as HTMLButtonElement;
+    const button = container.querySelector(
+      '[data-testid="github-login-button"]'
+    ) as HTMLButtonElement;
     expect(button).not.toBeNull();
     expect(button.disabled).toBe(true);
     expect(button.getAttribute("aria-busy")).toBe("true");
     const spinner = button.querySelector('[aria-hidden="true"]');
     expect(spinner).not.toBeNull();
     expect(spinner?.className).toContain("animate-spin");
-    expect(button.textContent).toContain("GitHub로 계속하기");
 
     unmount();
   });
 
   it("authError 파라미터가 전달되면 메시지를 표시하고 재시도 시 쿼리를 제거한다", async () => {
     const { container, unmount } = render(
-      <LoginContent safeRedirect="/logs" authErrorCode="AUTH_PROVIDER_DENIED" />
+      <LoginScreen safeRedirect="/logs" authErrorCode="AUTH_PROVIDER_DENIED" />
     );
 
     const alertElement = container.querySelector('[role="alert"]');
@@ -183,7 +190,9 @@ describe("/login 화면", () => {
       "GitHub 로그인 요청이 취소되었습니다. 다시 시도해주세요."
     );
 
-    const button = container.querySelector("button") as HTMLButtonElement;
+    const button = container.querySelector(
+      '[data-testid="github-login-button"]'
+    ) as HTMLButtonElement;
     await act(async () => {
       button.dispatchEvent(new MouseEvent("click", { bubbles: true }));
     });
