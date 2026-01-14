@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import loginSubImage from "@/assets/login/login-sub.webp";
+import cardGithubImage from "@/assets/login/git-intergration.webp";
+import cardAutoImage from "@/assets/login/auto-exploration.webp";
+import cardLootImage from "@/assets/login/epic-loot.webp";
 import { GithubLoginButton } from "@/features/auth/github-login/ui/github-login-button";
 import { useAuthSession } from "@/entities/auth/model/use-auth-session";
 import { sanitizeRedirectPath } from "@/shared/lib/navigation/sanitize-redirect-path";
@@ -159,23 +162,43 @@ export function LoginContent({
     });
   }, [navigate, safeRedirect, session]);
 
+  const infoCards = [
+    {
+      image: cardGithubImage,
+      title: t("auth.login.cards.github.title"),
+      description: t("auth.login.cards.github.description"),
+    },
+    {
+      image: cardAutoImage,
+      title: t("auth.login.cards.idle.title"),
+      description: t("auth.login.cards.idle.description"),
+    },
+    {
+      image: cardLootImage,
+      title: t("auth.login.cards.loot.title"),
+      description: t("auth.login.cards.loot.description"),
+    },
+  ];
+
   return (
-    <section className="mx-auto flex w-full max-w-3xl flex-col gap-8 text-center">
+    <section className="mx-auto flex w-full max-w-5xl flex-col gap-8 text-center">
       <PixelPanel
         className="w-full"
-        contentClassName="items-center text-center gap-6"
+        contentClassName="items-center text-center gap-8"
       >
-        <div className="flex flex-col items-center gap-4">
-          <h1 className="font-pixel-title text-3xl sm:text-4xl">GIT DUNGEON</h1>
+        <div className="flex w-full flex-col items-center">
           <img
             src={loginSubImage}
-            alt="Dungeon gate"
-            className="w-full max-w-md border-2 border-[#3a2b1b]/60 object-cover shadow-[0_10px_0_rgba(35,23,11,0.6)]"
+            alt={t("auth.login.imageAlt")}
+            className="login-hero w-full max-w-2xl object-cover"
           />
-          <p className="pixel-text-muted pixel-text-sm">
-            GitHub 계정으로 로그인하고 탐험을 시작하세요.
-          </p>
+          <h1 className="text-foreground -mt-6 text-3xl font-semibold sm:-mt-8 sm:text-4xl">
+            <span className="font-pixel-title">GIT DUNGEON</span>
+          </h1>
         </div>
+        <p className="pixel-text-muted pixel-text-sm">
+          {t("auth.login.subtitle")}
+        </p>
         <div className="flex w-full flex-col items-center gap-3">
           <GithubLoginButton
             redirectTo={safeRedirect}
@@ -214,6 +237,26 @@ export function LoginContent({
               )}
             </p>
           ) : null}
+        </div>
+        <div className="grid w-full gap-4 text-left md:grid-cols-3">
+          {infoCards.map((card) => (
+            <div key={card.title} className="pixel-panel p-5">
+              <div className="flex items-start gap-4">
+                <img
+                  src={card.image}
+                  alt=""
+                  aria-hidden="true"
+                  className="h-14 w-14 shrink-0"
+                />
+                <div>
+                  <h3 className="pixel-panel__title text-sm">{card.title}</h3>
+                  <p className="pixel-text-muted pixel-text-sm mt-2">
+                    {card.description}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </PixelPanel>
     </section>

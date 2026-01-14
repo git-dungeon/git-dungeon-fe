@@ -63,7 +63,9 @@ function RootComponent() {
       <main
         className={cn(
           "flex w-full flex-1 flex-col",
-          isLoginScreen ? "px-6 py-10" : "pixel-main"
+          isLoginScreen
+            ? "items-center justify-center px-6 py-10"
+            : "pixel-main"
         )}
       >
         {isLoginScreen ? (

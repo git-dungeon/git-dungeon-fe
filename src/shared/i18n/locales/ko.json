@@ -326,7 +326,23 @@
   },
   "auth": {
     "login": {
-      "cta": "Login With Github"
+      "cta": "Login With Github",
+      "subtitle": "GitHub 계정으로 로그인하고 탐험을 시작하세요.",
+      "imageAlt": "던전 게이트",
+      "cards": {
+        "github": {
+          "title": "GITHUB INTEGRATION",
+          "description": "레포를 연동해 기여를 던전 보상으로 전환하세요!"
+        },
+        "idle": {
+          "title": "AUTO EXPLORATION",
+          "description": "자동으로 탐험하고 강해지세요!"
+        },
+        "loot": {
+          "title": "EPIC LOOT",
+          "description": "강력한 장비를 찾아 영웅을 강화하세요!"
+        }
+      }
     }
   },
   "logs": {
