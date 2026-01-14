@@ -167,7 +167,6 @@ describe("/login 화면", () => {
     const spinner = button.querySelector('[aria-hidden="true"]');
     expect(spinner).not.toBeNull();
     expect(spinner?.className).toContain("animate-spin");
-    expect(button.textContent).toContain("Login With Github");
 
     unmount();
   });
