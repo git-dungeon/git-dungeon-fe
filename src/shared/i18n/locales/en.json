@@ -342,6 +342,18 @@
           "title": "EPIC LOOT",
           "description": "Discover powerful gear and items to upgrade your champions!"
         }
+      },
+      "status": {
+        "checking": "Checking server ...",
+        "serverUnavailable": "The server is unavailable. Please try again later."
+      },
+      "errors": {
+        "providerDenied": "GitHub login was cancelled. Please try again.",
+        "redirectInvalid": "Login request expired. Please try again.",
+        "sessionExpired": "Session expired. Please log in again to continue.",
+        "sessionInvalid": "Login session is invalid. Please log in again.",
+        "providerError": "Something went wrong during login. Please try again.",
+        "generic": "Something went wrong during login. Please try again."
       }
     }
   },

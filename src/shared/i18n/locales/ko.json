@@ -342,6 +342,18 @@
           "title": "EPIC LOOT",
           "description": "강력한 장비를 찾아 영웅을 강화하세요!"
         }
+      },
+      "status": {
+        "checking": "서버 확인 중 ...",
+        "serverUnavailable": "서버에 문제가 있어 로그인할 수 없습니다."
+      },
+      "errors": {
+        "providerDenied": "GitHub 로그인 요청이 취소되었습니다. 다시 시도해주세요.",
+        "redirectInvalid": "로그인 요청이 만료되었습니다. 다시 시도해주세요.",
+        "sessionExpired": "세션이 만료되었습니다. 다시 로그인해 Git Dungeon을 계속하세요.",
+        "sessionInvalid": "로그인 세션이 유효하지 않습니다. 다시 로그인해주세요.",
+        "providerError": "로그인 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.",
+        "generic": "로그인 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요."
       }
     }
   },
