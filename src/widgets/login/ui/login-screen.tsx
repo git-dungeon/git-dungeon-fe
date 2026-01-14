@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import loginSubImage from "@/assets/login/login-sub.webp";
-import cardGithubImage from "@/assets/login/git-intergration.webp";
+import cardGithubImage from "@/assets/login/git-integration.webp";
 import cardAutoImage from "@/assets/login/auto-exploration.webp";
 import cardLootImage from "@/assets/login/epic-loot.webp";
 import { GithubLoginButton } from "@/features/auth/github-login/ui/github-login-button";

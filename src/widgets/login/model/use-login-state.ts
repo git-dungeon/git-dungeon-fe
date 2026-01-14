@@ -3,11 +3,6 @@ import { useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { useAuthSession } from "@/entities/auth/model/use-auth-session";
 
-interface LoginSearch {
-  redirect?: string;
-  authError?: string;
-}
-
 interface UseLoginStateParams {
   authErrorCode?: string;
 }
@@ -66,7 +61,7 @@ function resolveLoginStatus(
 
 export function useLoginState({ authErrorCode }: UseLoginStateParams) {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const navigate = useNavigate({ from: "/login" });
   const sessionQuery = useAuthSession();
   const [loginError, setLoginError] = useState<string | null>(null);
 
@@ -85,12 +80,7 @@ export function useLoginState({ authErrorCode }: UseLoginStateParams) {
   });
 
   const clearAuthError = useCallback(() => {
-    const updateNavigate = navigate as unknown as (options: {
-      search: (prev: LoginSearch) => LoginSearch;
-      replace?: boolean;
-    }) => void;
-
-    updateNavigate({
+    navigate({
       search: (prev) => ({
         ...prev,
         authError: undefined,
