@@ -354,6 +354,10 @@
         "sessionInvalid": "로그인 세션이 유효하지 않습니다. 다시 로그인해주세요.",
         "providerError": "로그인 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.",
         "generic": "로그인 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요."
+      },
+      "button": {
+        "default": "GitHub로 계속하기",
+        "loading": "GitHub 로그인 진행 중"
       }
     }
   },

@@ -354,6 +354,10 @@
         "sessionInvalid": "Login session is invalid. Please log in again.",
         "providerError": "Something went wrong during login. Please try again.",
         "generic": "Something went wrong during login. Please try again."
+      },
+      "button": {
+        "default": "Login With Github",
+        "loading": "Logging in with GitHub"
       }
     }
   },
