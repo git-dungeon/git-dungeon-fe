@@ -324,6 +324,11 @@
       "requestFailed": "인벤토리 요청이 실패했습니다."
     }
   },
+  "auth": {
+    "login": {
+      "cta": "Login With Github"
+    }
+  },
   "logs": {
     "page": {
       "title": "탐험 기록",

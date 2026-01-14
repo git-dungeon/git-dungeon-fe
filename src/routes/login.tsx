@@ -5,6 +5,8 @@ import { GithubLoginButton } from "@/features/auth/github-login/ui/github-login-
 import { useAuthSession } from "@/entities/auth/model/use-auth-session";
 import { sanitizeRedirectPath } from "@/shared/lib/navigation/sanitize-redirect-path";
 import { PixelPanel } from "@/shared/ui/pixel-panel";
+import { PixelIcon } from "@/shared/ui/pixel-icon";
+import { useTranslation } from "react-i18next";
 
 interface LoginSearch {
   redirect?: string;
@@ -60,6 +62,7 @@ export function LoginContent({
   safeRedirect,
   authErrorCode,
 }: LoginContentProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const sessionQuery = useAuthSession();
   const session = sessionQuery.data ?? null;
@@ -170,7 +173,7 @@ export function LoginContent({
             className="w-full max-w-md border-2 border-[#3a2b1b]/60 object-cover shadow-[0_10px_0_rgba(35,23,11,0.6)]"
           />
           <p className="pixel-text-muted pixel-text-sm">
-            GitHub 계정으로 로그인하고 자동 탐험을 시작하세요.
+            GitHub 계정으로 로그인하고 탐험을 시작하세요.
           </p>
         </div>
         <div className="flex w-full flex-col items-center gap-3">
@@ -186,7 +189,10 @@ export function LoginContent({
             disabled={isButtonDisabled}
             className="pixel-button w-full sm:w-auto"
           >
-            GitHub로 계속하기
+            <span className="inline-flex items-center gap-2">
+              <PixelIcon name="github" size={14} />
+              {t("auth.login.cta")}
+            </span>
           </GithubLoginButton>
           {status ? (
             <p

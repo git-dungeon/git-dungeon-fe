@@ -324,6 +324,11 @@
       "requestFailed": "Inventory request failed."
     }
   },
+  "auth": {
+    "login": {
+      "cta": "Login With Github"
+    }
+  },
   "logs": {
     "page": {
       "title": "Exploration Logs",

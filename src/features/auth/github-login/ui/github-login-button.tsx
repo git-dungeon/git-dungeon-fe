@@ -1,7 +1,8 @@
 import type { MouseEvent } from "react";
 import { cn } from "@/shared/lib/utils";
 import { useGithubLogin } from "@/features/auth/github-login/model/use-github-login";
-import { Button, type ButtonProps } from "@/shared/ui/button";
+import { PixelButton } from "@/shared/ui/pixel-button";
+import type { ButtonProps } from "@/shared/ui/button";
 
 export interface GithubLoginButtonProps extends Omit<ButtonProps, "onClick"> {
   redirectTo?: string;
@@ -42,7 +43,7 @@ export function GithubLoginButton(props: GithubLoginButtonProps) {
   const content = children ?? "GitHub로 계속하기";
 
   return (
-    <Button
+    <PixelButton
       type="button"
       size={size}
       {...rest}
@@ -69,6 +70,6 @@ export function GithubLoginButton(props: GithubLoginButtonProps) {
       ) : (
         content
       )}
-    </Button>
+    </PixelButton>
   );
 }
