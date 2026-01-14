@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import loginSubImage from "@/assets/login/login-sub.webp";
 import { GithubLoginButton } from "@/features/auth/github-login/ui/github-login-button";
 import { useAuthSession } from "@/entities/auth/model/use-auth-session";
 import { sanitizeRedirectPath } from "@/shared/lib/navigation/sanitize-redirect-path";
@@ -161,8 +162,13 @@ export function LoginContent({
         className="w-full"
         contentClassName="items-center text-center gap-6"
       >
-        <div className="space-y-2">
+        <div className="flex flex-col items-center gap-4">
           <h1 className="font-pixel-title text-3xl sm:text-4xl">GIT DUNGEON</h1>
+          <img
+            src={loginSubImage}
+            alt="Dungeon gate"
+            className="w-full max-w-md border-2 border-[#3a2b1b]/60 object-cover shadow-[0_10px_0_rgba(35,23,11,0.6)]"
+          />
           <p className="pixel-text-muted pixel-text-sm">
             GitHub 계정으로 로그인하고 자동 탐험을 시작하세요.
           </p>
