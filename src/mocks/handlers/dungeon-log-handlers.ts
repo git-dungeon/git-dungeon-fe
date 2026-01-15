@@ -448,6 +448,21 @@ const mockDungeonLogs: DungeonLogEntry[] = [
     },
     extra: null,
   },
+  {
+    id: "log-015",
+    category: "EXPLORATION",
+    floor: 13,
+    action: "EMPTY",
+    status: "COMPLETED",
+    createdAt: mockTimestampMinutesAgo(15),
+    delta: {
+      type: "EMPTY",
+      detail: {
+        progress: { delta: 5 },
+      },
+    },
+    extra: null,
+  },
 ];
 
 function isValidFilterType(type: string | null): type is DungeonLogsFilterType {
