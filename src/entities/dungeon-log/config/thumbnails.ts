@@ -7,6 +7,7 @@ import trapImage from "@/assets/event/trap.png";
 import treasureImage from "@/assets/event/treasure.png";
 import moveImage from "@/assets/event/move.png";
 import goldImage from "@/assets/event/gold.png";
+import emptyImage from "@/assets/event/empty.png";
 import {
   resolveLocalItemSprite,
   resolveLocalMonsterSprite,
@@ -46,6 +47,7 @@ const ACTION_IMAGE_MAP: Partial<Record<DungeonLogAction, string>> = {
   REST: restImage,
   TRAP: trapImage,
   MOVE: moveImage,
+  EMPTY: emptyImage,
 };
 
 const BADGE_PRESENTATIONS: Record<

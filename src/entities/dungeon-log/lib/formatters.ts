@@ -121,6 +121,7 @@ export function formatDelta(
     }
     case "REST":
     case "TRAP":
+    case "EMPTY":
     case "DEATH": {
       entries.push(...formatStatsDelta(entry.id, delta.detail.stats));
       pushProgress(entries, entry.id, delta.detail.progress?.delta);

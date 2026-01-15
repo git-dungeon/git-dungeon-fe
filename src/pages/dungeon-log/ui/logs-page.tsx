@@ -37,6 +37,7 @@ export function LogsPage() {
     TREASURE: t("logs.filters.labels.TREASURE"),
     REST: t("logs.filters.labels.REST"),
     TRAP: t("logs.filters.labels.TRAP"),
+    EMPTY: t("logs.filters.labels.EMPTY"),
     MOVE: t("logs.filters.labels.MOVE"),
     DEATH: t("logs.filters.labels.DEATH"),
     REVIVE: t("logs.filters.labels.REVIVE"),
