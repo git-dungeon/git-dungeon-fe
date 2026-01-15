@@ -82,6 +82,7 @@ export const dashboardCurrentActionSchema = z.enum([
   "REST",
   "TREASURE",
   "TRAP",
+  "EMPTY",
 ]);
 export type DashboardCurrentAction = z.infer<
   typeof dashboardCurrentActionSchema

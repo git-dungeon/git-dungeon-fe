@@ -8,6 +8,7 @@ export const DUNGEON_LOGS_FILTER_TYPES = [
   "TREASURE",
   "REST",
   "TRAP",
+  "EMPTY",
   "MOVE",
   "DEATH",
   "REVIVE",
@@ -31,6 +32,7 @@ export const DUNGEON_LOG_ACTIONS = [
   "TREASURE",
   "REST",
   "TRAP",
+  "EMPTY",
   "MOVE",
   "DEATH",
   "REVIVE",
@@ -183,6 +185,16 @@ const dungeonLogTrapDeltaSchema = z.object({
     .strict(),
 });
 
+const dungeonLogEmptyDeltaSchema = z.object({
+  type: z.literal("EMPTY"),
+  detail: z
+    .object({
+      stats: dungeonLogStatsDeltaSchema.optional(),
+      progress: dungeonLogProgressDeltaSchema.optional(),
+    })
+    .strict(),
+});
+
 const dungeonLogTreasureDeltaSchema = z.object({
   type: z.literal("TREASURE"),
   detail: z
@@ -282,6 +294,7 @@ export const dungeonLogDeltaSchema = z.union([
   dungeonLogReviveDeltaSchema,
   dungeonLogRestDeltaSchema,
   dungeonLogTrapDeltaSchema,
+  dungeonLogEmptyDeltaSchema,
   dungeonLogTreasureDeltaSchema,
   dungeonLogMoveDeltaSchema,
   dungeonLogAcquireItemDeltaSchema,

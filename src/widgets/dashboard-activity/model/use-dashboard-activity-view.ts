@@ -174,6 +174,8 @@ function mapDashboardActionToDungeonAction(
       return "TREASURE";
     case "TRAP":
       return "TRAP";
+    case "EMPTY":
+      return "EMPTY";
     case "EXPLORING":
       return "MOVE";
     case "IDLE":

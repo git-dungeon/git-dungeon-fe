@@ -33,6 +33,11 @@ describe("getDungeonLogs", () => {
     expect(data.logs.every((log) => log.action === "REVIVE")).toBe(true);
   });
 
+  it("type=EMPTY 필터가 적용된다", async () => {
+    const data = await getDungeonLogs({ limit: 50, type: "EMPTY" });
+    expect(data.logs.every((log) => log.action === "EMPTY")).toBe(true);
+  });
+
   it("잘못된 쿼리(limit=0)는 400 LOGS_INVALID_QUERY로 처리된다", async () => {
     try {
       await getDungeonLogs({ limit: 0 });
