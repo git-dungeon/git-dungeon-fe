@@ -557,5 +557,23 @@
       "item": "Item",
       "goldChange": "Gold change"
     }
+  },
+  "errors": {
+    "AUTH_UNAUTHORIZED": "Login required.",
+    "AUTH_FORBIDDEN": "You do not have permission.",
+    "AUTH_EXPIRED": "Session expired. Please log in again.",
+    "AUTH_PROVIDER_ERROR": "Authentication provider error occurred.",
+    "AUTH_PROVIDER_DENIED": "Authentication was denied.",
+    "NETWORK_OFFLINE": "You are offline. Check your connection.",
+    "NETWORK_TIMEOUT": "Network request timed out.",
+    "NETWORK_FAILED": "Network request failed.",
+    "API_BAD_REQUEST": "Invalid request.",
+    "API_VALIDATION": "Please check your input.",
+    "API_CONFLICT": "Request conflict. Please try again.",
+    "API_NOT_FOUND": "Requested resource not found.",
+    "API_RATE_LIMIT": "Too many requests. Try again later.",
+    "API_SERVER": "Server error occurred. Please try again later.",
+    "API_UNAVAILABLE": "Service is unavailable. Please try again later.",
+    "UNKNOWN": "An unknown error occurred."
   }
 }
