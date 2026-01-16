@@ -3,8 +3,8 @@ import { http } from "msw";
 import { server } from "@/mocks/tests/server";
 import { respondWithError, respondWithSuccess } from "@/mocks/lib/api-response";
 import { GITHUB_ENDPOINTS } from "@/shared/config/env";
-import { ApiError } from "@/shared/api/http-client";
 import { postGithubSync } from "./post-github-sync";
+import { isAppError } from "@/shared/errors/app-error";
 
 describe("postGithubSync", () => {
   it("성공 시 GithubSyncData를 반환한다", async () => {
@@ -32,7 +32,7 @@ describe("postGithubSync", () => {
     expect(data.logId).toBeTypeOf("string");
   });
 
-  it("409 응답은 ApiError(409)를 던진다", async () => {
+  it("409 응답은 AppError(API_CONFLICT)를 던진다", async () => {
     server.use(
       http.post(GITHUB_ENDPOINTS.sync, () =>
         respondWithError("쿨다운입니다.", {
@@ -43,12 +43,12 @@ describe("postGithubSync", () => {
     );
 
     await expect(postGithubSync()).rejects.toMatchObject({
-      name: "ApiError",
-      status: 409,
+      name: "AppError",
+      code: "API_CONFLICT",
     });
   });
 
-  it("400 응답은 ApiError(400)를 던진다", async () => {
+  it("400 응답은 AppError(API_BAD_REQUEST)를 던진다", async () => {
     server.use(
       http.post(GITHUB_ENDPOINTS.sync, () =>
         respondWithError("미연결입니다.", {
@@ -62,9 +62,10 @@ describe("postGithubSync", () => {
       await postGithubSync();
       throw new Error("Expected postGithubSync to throw");
     } catch (error) {
-      expect(error).toBeInstanceOf(ApiError);
-      expect((error as ApiError).status).toBe(400);
-      const payload = (error as ApiError).payload as
+      expect(isAppError(error)).toBe(true);
+      if (!isAppError(error)) return;
+      expect(error.code).toBe("API_BAD_REQUEST");
+      const payload = error.meta?.payload as
         | { error?: { code?: string } }
         | undefined;
       expect(payload?.error?.code).toBe("GITHUB_NOT_CONNECTED");

@@ -6,7 +6,7 @@ import {
 } from "@/entities/auth/model/auth-session-query";
 import type { AuthSession } from "@/entities/auth/model/types";
 import { sanitizeRedirectPath } from "@/shared/lib/navigation/sanitize-redirect-path";
-import { NetworkError } from "@/shared/api/http-client";
+import { isAppError } from "@/shared/errors/app-error";
 
 interface AuthorizeParams {
   location: ParsedLocation;
@@ -85,7 +85,7 @@ export function createAuthService(queryClient: QueryClient): AuthService {
       try {
         return await queryClient.ensureQueryData(authSessionQueryOptions);
       } catch (error) {
-        if (error instanceof NetworkError) {
+        if (isAppError(error) && error.code.startsWith("NETWORK_")) {
           throw error;
         }
 
@@ -119,7 +119,7 @@ export function createAuthService(queryClient: QueryClient): AuthService {
       try {
         session = await this.ensureSession();
       } catch (error) {
-        if (error instanceof NetworkError) {
+        if (isAppError(error) && error.code.startsWith("NETWORK_")) {
           session = null;
         } else {
           throw error;
@@ -148,7 +148,7 @@ export function createAuthService(queryClient: QueryClient): AuthService {
       try {
         session = await this.ensureSession();
       } catch (error) {
-        if (error instanceof NetworkError) {
+        if (isAppError(error) && error.code.startsWith("NETWORK_")) {
           return;
         }
         throw error;

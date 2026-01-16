@@ -5,7 +5,7 @@ import { getAuthSession } from "@/entities/auth/api/get-auth-session";
 import { respondWithError, respondWithSuccess } from "@/mocks/lib/api-response";
 import { server } from "@/mocks/tests/server";
 import * as httpClient from "@/shared/api/http-client";
-import { NetworkError } from "@/shared/api/http-client";
+import { createAppError } from "@/shared/errors/app-error";
 
 describe("getAuthSession", () => {
   it("세션 정보를 반환한다", async () => {
@@ -63,12 +63,16 @@ describe("getAuthSession", () => {
     expect(session).toBeNull();
   });
 
-  it("네트워크 오류 시 NetworkError를 던진다", async () => {
+  it("네트워크 오류 시 AppError를 던진다", async () => {
     const requestWithSchemaSpy = vi
       .spyOn(httpClient, "requestWithSchema")
-      .mockRejectedValueOnce(new NetworkError());
+      .mockRejectedValueOnce(
+        createAppError("NETWORK_FAILED", "Network request failed")
+      );
 
-    await expect(getAuthSession()).rejects.toBeInstanceOf(NetworkError);
+    await expect(getAuthSession()).rejects.toMatchObject({
+      code: "NETWORK_FAILED",
+    });
 
     requestWithSchemaSpy.mockRestore();
   });

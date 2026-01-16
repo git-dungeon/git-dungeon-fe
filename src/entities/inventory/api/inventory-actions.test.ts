@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { http } from "msw";
-import { ApiError } from "@/shared/api/http-client";
+import { isAppError } from "@/shared/errors/app-error";
 import { respondWithError } from "@/mocks/lib/api-response";
 import { INVENTORY_ENDPOINTS } from "@/shared/config/env";
 import { server } from "@/mocks/tests/server";
@@ -24,9 +24,10 @@ describe("inventory actions", () => {
       });
       throw new Error("Expected postInventoryEquip to throw");
     } catch (error) {
-      expect(error).toBeInstanceOf(ApiError);
-      expect((error as ApiError).status).toBe(412);
-      const payload = (error as ApiError).payload as
+      expect(isAppError(error)).toBe(true);
+      if (!isAppError(error)) return;
+      expect(error.code).toBe("API_PRECONDITION_FAILED");
+      const payload = error.meta?.payload as
         | { error?: { code?: string } }
         | undefined;
       expect(payload?.error?.code).toBe("INVENTORY_VERSION_MISMATCH");
@@ -47,8 +48,9 @@ describe("inventory actions", () => {
       });
       throw new Error("Expected postInventoryEquip to throw");
     } catch (error) {
-      expect(error).toBeInstanceOf(ApiError);
-      expect((error as ApiError).status).toBe(409);
+      expect(isAppError(error)).toBe(true);
+      if (!isAppError(error)) return;
+      expect(error.code).toBe("API_CONFLICT");
     }
   });
 
@@ -66,8 +68,9 @@ describe("inventory actions", () => {
       });
       throw new Error("Expected postInventoryUnequip to throw");
     } catch (error) {
-      expect(error).toBeInstanceOf(ApiError);
-      expect((error as ApiError).status).toBe(409);
+      expect(isAppError(error)).toBe(true);
+      if (!isAppError(error)) return;
+      expect(error.code).toBe("API_CONFLICT");
     }
   });
 
@@ -92,9 +95,10 @@ describe("inventory actions", () => {
       });
       throw new Error("Expected postInventoryEquip to throw");
     } catch (error) {
-      expect(error).toBeInstanceOf(ApiError);
-      expect((error as ApiError).status).toBe(429);
-      const payload = (error as ApiError).payload as
+      expect(isAppError(error)).toBe(true);
+      if (!isAppError(error)) return;
+      expect(error.code).toBe("API_RATE_LIMIT");
+      const payload = error.meta?.payload as
         | { error?: { code?: string } }
         | undefined;
       expect(payload?.error?.code).toBe("INVENTORY_RATE_LIMITED");

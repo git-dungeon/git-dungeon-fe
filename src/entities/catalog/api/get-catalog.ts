@@ -1,10 +1,12 @@
 import { CATALOG_ENDPOINTS } from "@/shared/config/env";
-import { ApiError, NetworkError, apiClient } from "@/shared/api/http-client";
+import { ApiError, apiClient } from "@/shared/api/http-client";
 import {
   createApiResponseSchema,
   formatZodError,
   type ApiResponse,
 } from "@/shared/api/api-response";
+import { createAppError } from "@/shared/errors/app-error";
+import { normalizeError } from "@/shared/errors/normalize-error";
 import { catalogDataSchema, type CatalogData } from "../model/types";
 
 export interface GetCatalogParams {
@@ -87,9 +89,10 @@ async function parseJsonSafely(response: Response): Promise<unknown> {
     if (error instanceof SyntaxError) {
       const preview = await clone.text().catch(() => "");
       const context = preview ? { error, preview } : error;
-      throw new NetworkError(
+      throw createAppError(
+        "NETWORK_FAILED",
         "API 응답이 JSON 형식이 아닙니다. 백엔드 URL 또는 프록시 설정을 확인하세요.",
-        context
+        { cause: context }
       );
     }
     throw error;
@@ -116,10 +119,15 @@ function parseCatalogResponse(body: unknown): CatalogData {
   const parsed = responseSchema.safeParse(body);
 
   if (!parsed.success) {
-    throw new ApiError(
+    throw createAppError(
+      "API_VALIDATION",
       "API 응답 스키마가 올바르지 않습니다.",
-      422,
-      formatZodError(parsed.error)
+      {
+        cause: parsed.error,
+        meta: {
+          zod: formatZodError(parsed.error),
+        },
+      }
     );
   }
 
@@ -127,19 +135,25 @@ function parseCatalogResponse(body: unknown): CatalogData {
 
   if (!response.success) {
     const errorPayload = response.error;
-    throw new ApiError(errorPayload.message, 200, {
-      error: errorPayload,
-      meta: response.meta,
+    throw createAppError("UNKNOWN", errorPayload.message, {
+      meta: {
+        error: errorPayload,
+        meta: response.meta,
+      },
     });
   }
 
   return response.data;
 }
 
+type CatalogFetchResult =
+  | { status: "ok"; data: CatalogData; etag: string | null; raw: unknown }
+  | { status: "not-modified"; etag: string | null };
+
 async function fetchCatalogFromServer(
   params: GetCatalogParams,
   etag: string | null
-): Promise<{ data: CatalogData; etag: string | null; raw: unknown }> {
+): Promise<CatalogFetchResult> {
   const requestPath = CATALOG_ENDPOINTS.catalog.replace(/^\//, "");
   let response: Response;
 
@@ -152,13 +166,15 @@ async function fetchCatalogFromServer(
     });
   } catch (error) {
     if (error instanceof TypeError) {
-      throw new NetworkError("Network request failed", error);
+      throw createAppError("NETWORK_FAILED", "Network request failed", {
+        cause: error,
+      });
     }
-    throw error;
+    throw normalizeError(error);
   }
 
   if (response.status === 304) {
-    throw new ApiError("Not Modified", 304, null);
+    return { status: "not-modified", etag: extractEtag(response) };
   }
 
   if (!response.ok) {
@@ -173,10 +189,12 @@ async function fetchCatalogFromServer(
         }
       });
 
-    throw new ApiError(
-      `HTTP ${response.status} ${response.statusText}`,
-      response.status,
-      payload
+    throw normalizeError(
+      new ApiError(
+        `HTTP ${response.status} ${response.statusText}`,
+        response.status,
+        payload
+      )
     );
   }
 
@@ -184,7 +202,7 @@ async function fetchCatalogFromServer(
   const parsedData = parseCatalogResponse(raw);
   const resolvedEtag = extractEtag(response, raw);
 
-  return { data: parsedData, etag: resolvedEtag, raw };
+  return { status: "ok", data: parsedData, etag: resolvedEtag, raw };
 }
 
 export async function getCatalog(
@@ -195,28 +213,34 @@ export async function getCatalog(
   const cachedEtag = cached?.etag ?? null;
 
   try {
-    const { data, etag } = await fetchCatalogFromServer(params, cachedEtag);
-    writeCache(locale, {
-      etag: etag ?? cachedEtag,
-      data,
-    });
-    return data;
-  } catch (error) {
-    if (error instanceof ApiError && error.status === 304) {
+    const response = await fetchCatalogFromServer(params, cachedEtag);
+
+    if (response.status === "not-modified") {
       if (cached?.data) {
         return cached.data;
       }
 
       clearCache(locale);
-      const { data, etag } = await fetchCatalogFromServer(params, null);
-      writeCache(locale, { etag, data });
-      return data;
+      const fallback = await fetchCatalogFromServer(params, null);
+      if (fallback.status === "not-modified") {
+        throw createAppError("UNKNOWN", "Catalog cache miss");
+      }
+      writeCache(locale, { etag: fallback.etag ?? null, data: fallback.data });
+      return fallback.data;
     }
 
-    if (error instanceof ApiError && error.status === 422) {
+    writeCache(locale, {
+      etag: response.etag ?? cachedEtag,
+      data: response.data,
+    });
+    return response.data;
+  } catch (error) {
+    const normalized = normalizeError(error);
+
+    if (normalized.code === "API_VALIDATION") {
       clearCache(locale);
     }
 
-    throw error;
+    throw normalized;
   }
 }

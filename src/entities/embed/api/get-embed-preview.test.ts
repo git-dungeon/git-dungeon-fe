@@ -4,9 +4,9 @@ import { EMBEDDING_ENDPOINTS } from "@/shared/config/env";
 import { getEmbedPreview } from "@/entities/embed/api/get-embed-preview";
 import { respondWithError, respondWithSuccess } from "@/mocks/lib/api-response";
 import { server } from "@/mocks/tests/server";
-import { ApiError } from "@/shared/api/http-client";
 import { mockDashboardResponse } from "@/mocks/handlers/dashboard-handlers";
 import { buildInventoryResponse } from "@/mocks/handlers/inventory-handlers";
+import { isAppError } from "@/shared/errors/app-error";
 
 const baseParams = {
   userId: "user-123",
@@ -59,7 +59,7 @@ describe("getEmbedPreview", () => {
     expect(preview.size).toBe("compact");
   });
 
-  it("서버가 실패 응답을 반환하면 ApiError를 던진다", async () => {
+  it("서버가 실패 응답을 반환하면 AppError를 던진다", async () => {
     server.use(
       http.get(EMBEDDING_ENDPOINTS.preview, () =>
         respondWithError("Preview failed", {
@@ -73,18 +73,12 @@ describe("getEmbedPreview", () => {
       await getEmbedPreview({ ...baseParams });
       throw new Error("Expected getEmbedPreview to throw");
     } catch (error) {
-      const embedError = error as ApiError;
+      expect(isAppError(error)).toBe(true);
 
-      expect(embedError).toMatchObject({
-        name: "EmbedApiError",
-        status: 500,
-      });
-      expect(embedError.payload).toMatchObject({
-        error: {
-          message: "Preview failed",
-          code: "EMBED_PREVIEW_FAILED",
-        },
-      });
+      if (isAppError(error)) {
+        expect(error.code).toBe("API_SERVER");
+        expect(error.meta?.status).toBe(500);
+      }
     }
   });
 });
