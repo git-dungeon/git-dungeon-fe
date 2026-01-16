@@ -3,7 +3,6 @@ import { http, HttpResponse } from "msw";
 import { server } from "@/mocks/tests/server";
 import { CATALOG_ENDPOINTS } from "@/shared/config/env";
 import { respondWithSuccess } from "@/mocks/lib/api-response";
-import { NetworkError } from "@/shared/api/http-client";
 import { getCatalog } from "./get-catalog";
 
 describe("getCatalog", () => {
@@ -105,15 +104,15 @@ describe("getCatalog", () => {
     expect(requestCount).toBe(2);
   });
 
-  it("네트워크 오류는 NetworkError로 처리한다", async () => {
+  it("네트워크 오류는 AppError로 처리한다", async () => {
     server.use(
       http.get(CATALOG_ENDPOINTS.catalog, () => {
         return HttpResponse.error();
       })
     );
 
-    await expect(getCatalog({ locale: "en" })).rejects.toBeInstanceOf(
-      NetworkError
-    );
+    await expect(getCatalog({ locale: "en" })).rejects.toMatchObject({
+      code: "NETWORK_FAILED",
+    });
   });
 });

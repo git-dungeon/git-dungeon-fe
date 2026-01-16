@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ApiError } from "@/shared/api/http-client";
+import { isAppError } from "@/shared/errors/app-error";
 import { getDungeonLogs } from "./get-dungeon-logs";
 
 describe("getDungeonLogs", () => {
@@ -43,9 +43,10 @@ describe("getDungeonLogs", () => {
       await getDungeonLogs({ limit: 0 });
       throw new Error("Expected getDungeonLogs to throw");
     } catch (error) {
-      expect(error).toBeInstanceOf(ApiError);
-      expect((error as ApiError).status).toBe(400);
-      const payload = (error as ApiError).payload as
+      expect(isAppError(error)).toBe(true);
+      if (!isAppError(error)) return;
+      expect(error.code).toBe("API_BAD_REQUEST");
+      const payload = error.meta?.payload as
         | { error?: { code?: string } }
         | undefined;
       expect(payload?.error?.code).toBe("LOGS_INVALID_QUERY");

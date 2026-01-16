@@ -1,6 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 import { getCatalog } from "@/entities/catalog/api/get-catalog";
-import { NetworkError } from "@/shared/api/http-client";
+import { isAppError } from "@/shared/errors/app-error";
 
 export type CatalogLocale = "ko" | "en";
 
@@ -12,7 +12,7 @@ export function catalogQueryOptions(locale?: CatalogLocale) {
     queryFn: () => getCatalog({ locale }),
     staleTime: 1000 * 60 * 60 * 24,
     retry: (failureCount, error) => {
-      if (error instanceof NetworkError) {
+      if (isAppError(error) && error.code.startsWith("NETWORK_")) {
         return false;
       }
       return failureCount < 1;

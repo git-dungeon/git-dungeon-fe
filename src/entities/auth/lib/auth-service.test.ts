@@ -4,7 +4,7 @@ import type { QueryClient } from "@tanstack/react-query";
 import { createAuthService } from "./auth-service";
 import { AUTH_SESSION_QUERY_KEY } from "../model/auth-session-query";
 import type { AuthSession } from "../model/types";
-import { NetworkError } from "@/shared/api/http-client";
+import { createAppError } from "@/shared/errors/app-error";
 
 vi.mock("@tanstack/react-router", async (importOriginal) => {
   const actual =
@@ -206,7 +206,11 @@ describe("createAuthService", () => {
   it("authorize는 네트워크 오류 발생 시 세션 없음으로 처리한다", async () => {
     const queryClient = createMockQueryClient();
     const service = createAuthService(queryClient);
-    queryClient.ensureQueryData = vi.fn().mockRejectedValue(new NetworkError());
+    queryClient.ensureQueryData = vi
+      .fn()
+      .mockRejectedValue(
+        createAppError("NETWORK_FAILED", "Network request failed")
+      );
 
     await expect(
       service.authorize({
@@ -240,7 +244,11 @@ describe("createAuthService", () => {
   it("redirectIfAuthenticated는 네트워크 오류 발생 시 에러 없이 종료한다", async () => {
     const queryClient = createMockQueryClient();
     const service = createAuthService(queryClient);
-    queryClient.ensureQueryData = vi.fn().mockRejectedValue(new NetworkError());
+    queryClient.ensureQueryData = vi
+      .fn()
+      .mockRejectedValue(
+        createAppError("NETWORK_FAILED", "Network request failed")
+      );
 
     await expect(
       service.redirectIfAuthenticated({

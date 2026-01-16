@@ -1,9 +1,6 @@
 import { AUTH_ENDPOINTS } from "@/shared/config/env";
-import {
-  ApiError,
-  NetworkError,
-  requestWithSchema,
-} from "@/shared/api/http-client";
+import { requestWithSchema } from "@/shared/api/http-client";
+import { normalizeError } from "@/shared/errors/normalize-error";
 import { authSessionPayloadSchema, type AuthSession } from "../model/types";
 
 export async function getAuthSession(): Promise<AuthSession | null> {
@@ -17,24 +14,28 @@ export async function getAuthSession(): Promise<AuthSession | null> {
 
     return session;
   } catch (error) {
-    if (error instanceof ApiError) {
-      if ([401, 403, 404].includes(error.status)) {
-        return null;
-      }
+    const normalized = normalizeError(error);
 
-      const payloadError = (
-        error.payload as { error?: { code?: string } } | undefined
-      )?.error;
-
-      if (payloadError) {
-        return null;
-      }
+    if (
+      normalized.code === "AUTH_UNAUTHORIZED" ||
+      normalized.code === "AUTH_FORBIDDEN" ||
+      normalized.code === "API_NOT_FOUND"
+    ) {
+      return null;
     }
 
-    if (error instanceof NetworkError) {
-      throw error;
+    const payloadError = (
+      normalized.meta?.payload as { error?: { code?: string } } | undefined
+    )?.error;
+
+    if (payloadError) {
+      return null;
     }
 
-    throw error;
+    if (normalized.code.startsWith("NETWORK_")) {
+      throw normalized;
+    }
+
+    throw normalized;
   }
 }

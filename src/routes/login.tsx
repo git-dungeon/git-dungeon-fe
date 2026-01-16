@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { LoginScreen } from "@/widgets/login/ui/login-screen";
-import { NetworkError } from "@/shared/api/http-client";
 import { sanitizeRedirectPath } from "@/shared/lib/navigation/sanitize-redirect-path";
+import { normalizeError } from "@/shared/errors/normalize-error";
 
 interface LoginSearch {
   redirect?: string;
@@ -26,10 +26,11 @@ export const Route = createFileRoute("/login")({
     try {
       await context.auth.ensureSession();
     } catch (error) {
-      if (error instanceof NetworkError) {
+      const appError = normalizeError(error);
+      if (appError.code.startsWith("NETWORK_")) {
         return;
       }
-      throw error;
+      throw appError;
     }
   },
   component: LoginRoute,

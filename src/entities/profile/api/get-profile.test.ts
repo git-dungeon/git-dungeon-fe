@@ -5,7 +5,7 @@ import { respondWithError, respondWithSuccess } from "@/mocks/lib/api-response";
 import { SETTINGS_ENDPOINTS } from "@/shared/config/env";
 import { getProfile } from "@/entities/profile/api/get-profile";
 import * as httpClient from "@/shared/api/http-client";
-import { ApiError, NetworkError } from "@/shared/api/http-client";
+import { createAppError } from "@/shared/errors/app-error";
 import { DEFAULT_USER_ID } from "@/mocks/fixtures/profile-overview";
 
 describe("getProfile", () => {
@@ -41,7 +41,7 @@ describe("getProfile", () => {
     await expect(getProfile()).resolves.toEqual(payload);
   });
 
-  it("API 오류 응답 시 ApiError를 던진다", async () => {
+  it("API 오류 응답 시 AppError를 던진다", async () => {
     server.use(
       http.get(SETTINGS_ENDPOINTS.profile, () =>
         respondWithError("PROFILE_UNAUTHORIZED", {
@@ -51,15 +51,22 @@ describe("getProfile", () => {
       )
     );
 
-    await expect(getProfile()).rejects.toBeInstanceOf(ApiError);
+    await expect(getProfile()).rejects.toMatchObject({
+      name: "AppError",
+      code: "UNKNOWN",
+    });
   });
 
-  it("네트워크 오류 시 NetworkError를 그대로 전달한다", async () => {
+  it("네트워크 오류 시 AppError로 전달한다", async () => {
     const requestWithSchemaSpy = vi
       .spyOn(httpClient, "requestWithSchema")
-      .mockRejectedValueOnce(new NetworkError());
+      .mockRejectedValueOnce(
+        createAppError("NETWORK_FAILED", "Network request failed")
+      );
 
-    await expect(getProfile()).rejects.toBeInstanceOf(NetworkError);
+    await expect(getProfile()).rejects.toMatchObject({
+      code: "NETWORK_FAILED",
+    });
 
     requestWithSchemaSpy.mockRestore();
   });
