@@ -15,11 +15,13 @@ import {
 import { useDungeonLogTimeline } from "@/widgets/dungeon-log-timeline/model/use-dungeon-log-timeline";
 import { buildLogThumbnails } from "@/entities/dungeon-log/config/thumbnails";
 import { DungeonLogDetailDialog } from "@/widgets/dungeon-log-timeline/ui/dungeon-log-detail-dialog";
-import { ApiError } from "@/shared/api/http-client";
 import { useTranslation } from "react-i18next";
 import { useCatalogItemNameResolver } from "@/entities/catalog/model/use-catalog-item-name";
 import { useCatalogMonsterNameResolver } from "@/entities/catalog/model/use-catalog-monster-name";
 import { useCatalogItemRarityResolver } from "@/entities/catalog/model/use-catalog-item-rarity";
+import { normalizeError } from "@/shared/errors/normalize-error";
+import { getErrorMessageKey } from "@/shared/errors/error-message";
+import { isAppError } from "@/shared/errors/app-error";
 
 interface DungeonLogTimelineProps {
   filterType?: DungeonLogsFilterType;
@@ -51,17 +53,16 @@ export function DungeonLogTimeline({
   }
 
   if (status === "error") {
-    const apiErrorCode =
-      error instanceof ApiError
-        ? (error.payload as { error?: { code?: string } } | undefined)?.error
-            ?.code
-        : undefined;
+    const appError = normalizeError(error);
+    const apiErrorCode = (
+      appError.meta?.payload as { error?: { code?: string } } | undefined
+    )?.error?.code;
 
     return (
       <ErrorState
         t={t}
         onRetry={refetch}
-        error={error}
+        error={appError}
         showInvalidQueryHint={apiErrorCode === "LOGS_INVALID_QUERY"}
         onResetFilter={onResetFilter}
       />
@@ -142,7 +143,11 @@ function ErrorState({
   showInvalidQueryHint,
   onResetFilter,
 }: ErrorStateProps) {
-  const message = error instanceof Error ? error.message : undefined;
+  const message = isAppError(error)
+    ? t(getErrorMessageKey(error.code))
+    : error instanceof Error
+      ? error.message
+      : undefined;
 
   return (
     <PixelErrorState

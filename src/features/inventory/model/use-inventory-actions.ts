@@ -1,8 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { QueryClient } from "@tanstack/react-query";
 import { useRef, useState } from "react";
-import { ApiError } from "@/shared/api/http-client";
 import { i18next } from "@/shared/i18n/i18n";
+import type { AppError } from "@/shared/errors/app-error";
+import { normalizeError } from "@/shared/errors/normalize-error";
 import type {
   InventoryEquippedMap,
   InventoryItem,
@@ -16,12 +17,16 @@ import { DASHBOARD_STATE_QUERY_KEY } from "@/entities/dashboard/model/dashboard-
 import { postInventoryDiscard } from "@/entities/inventory/api/post-inventory-discard";
 import { postInventoryEquip } from "@/entities/inventory/api/post-inventory-equip";
 import { postInventoryUnequip } from "@/entities/inventory/api/post-inventory-unequip";
+import {
+  isInventoryErrorCode,
+  type InventoryErrorCode,
+} from "@/entities/inventory/model/error-codes";
 
 type InventoryActionType = "equip" | "unequip" | "discard";
 
 interface InventoryActionFailure {
   source: InventoryActionType;
-  code?: string;
+  code?: InventoryErrorCode | string;
   error: Error;
 }
 
@@ -373,7 +378,8 @@ function buildActionFailure(
   source: InventoryActionType,
   error: unknown
 ): InventoryActionFailure {
-  const message = resolveInventoryActionMessage(error);
+  const appError = normalizeError(error);
+  const message = resolveInventoryActionMessage(appError);
   const normalizedError =
     error instanceof Error
       ? new Error(message)
@@ -381,63 +387,49 @@ function buildActionFailure(
 
   return {
     source,
-    code: resolveErrorCode(error),
+    code: resolveErrorCode(appError),
     error: normalizedError,
   };
 }
 
-function resolveErrorCode(error: unknown): string | undefined {
-  if (error instanceof ApiError) {
-    const payload = error.payload;
-    const apiCode =
-      payload && typeof payload === "object"
-        ? (payload as { error?: { code?: unknown } }).error?.code
-        : undefined;
+function resolveErrorCode(
+  error: AppError
+): InventoryErrorCode | string | undefined {
+  const payload = extractApiErrorPayload(error);
+  const apiCode =
+    payload && typeof payload === "object"
+      ? (payload as { error?: { code?: unknown } }).error?.code
+      : undefined;
 
-    if (typeof apiCode === "string" && apiCode.length > 0) {
-      return apiCode;
-    }
-
-    return String(error.status);
+  if (isInventoryErrorCode(apiCode)) {
+    return apiCode;
   }
 
-  if (error && typeof error === "object" && "code" in error) {
-    const rawCode = (error as Record<string, unknown>).code;
-    if (typeof rawCode === "string") {
-      return rawCode;
-    }
-  }
-
-  return undefined;
+  return error.code;
 }
 
-function resolveInventoryActionMessage(error: unknown): string {
+function resolveInventoryActionMessage(error: AppError): string {
   const t = (key: string) => i18next.t(key);
 
-  if (error instanceof ApiError) {
-    const payload = error.payload;
-    const errorObject =
-      payload && typeof payload === "object"
-        ? (payload as { error?: { message?: unknown; code?: unknown } }).error
-        : undefined;
+  const payload = extractApiErrorPayload(error);
+  const errorObject =
+    payload && typeof payload === "object"
+      ? (payload as { error?: { message?: unknown; code?: unknown } }).error
+      : undefined;
 
-    const apiMessage =
-      typeof errorObject?.message === "string" ? errorObject.message : null;
-    const apiCode =
-      typeof errorObject?.code === "string" ? errorObject.code : null;
+  const apiMessage =
+    typeof errorObject?.message === "string" ? errorObject.message : null;
+  const apiCode = isInventoryErrorCode(errorObject?.code)
+    ? errorObject.code
+    : null;
 
-    switch (apiCode) {
-      case "INVENTORY_VERSION_MISMATCH":
-        return t("inventory.errors.versionMismatch");
-      case "INVENTORY_RATE_LIMITED":
-        return t("inventory.errors.rateLimited");
-      default:
-        return apiMessage ?? t("inventory.errors.requestFailed");
-    }
-  }
-
-  if (error instanceof Error) {
-    return error.message;
+  switch (apiCode) {
+    case "INVENTORY_VERSION_MISMATCH":
+      return t("inventory.errors.versionMismatch");
+    case "INVENTORY_RATE_LIMITED":
+      return t("inventory.errors.rateLimited");
+    default:
+      return apiMessage ?? t("inventory.errors.requestFailed");
   }
 
   return t("inventory.errors.requestFailed");
@@ -472,11 +464,16 @@ function rollbackOnError(queryClient: QueryClient, context?: MutationContext) {
 }
 
 function isVersionMismatchError(error: unknown): boolean {
-  if (error instanceof ApiError && error.status === 412) {
+  const appError = normalizeError(error);
+  if (appError.code === "API_PRECONDITION_FAILED") {
     return true;
   }
 
-  return resolveErrorCode(error) === "INVENTORY_VERSION_MISMATCH";
+  return resolveErrorCode(appError) === "INVENTORY_VERSION_MISMATCH";
+}
+
+function extractApiErrorPayload(error: AppError): unknown {
+  return error.meta?.payload ?? null;
 }
 
 function mergeBaseWithEquipment(

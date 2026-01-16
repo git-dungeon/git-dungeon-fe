@@ -5,7 +5,7 @@ import { Loader2 } from "lucide-react";
 import { PixelPanel } from "@/shared/ui/pixel-panel";
 import { PixelButton } from "@/shared/ui/pixel-button";
 import { PixelCheckIcon } from "@/shared/ui/pixel-check-icon";
-import { ApiError } from "@/shared/api/http-client";
+import { normalizeError } from "@/shared/errors/normalize-error";
 import { useGithubSyncStatus } from "@/entities/github/model/use-github-sync-status";
 import { useGithubSync } from "@/features/settings/model/use-github-sync";
 
@@ -155,27 +155,25 @@ function resolveGithubSyncErrorMessage(
   t: (key: string) => string,
   error: unknown
 ): string | null {
-  if (!(error instanceof ApiError)) {
+  if (!error) {
     return null;
   }
 
-  if (error.status === 400) {
-    return t("onboarding.errors.notConnected");
-  }
+  const appError = normalizeError(error);
 
-  if (error.status === 401 || error.status === 403) {
-    return t("onboarding.errors.sessionExpired");
+  switch (appError.code) {
+    case "API_BAD_REQUEST":
+      return t("onboarding.errors.notConnected");
+    case "AUTH_UNAUTHORIZED":
+    case "AUTH_FORBIDDEN":
+      return t("onboarding.errors.sessionExpired");
+    case "API_RATE_LIMIT":
+      return t("onboarding.errors.rateLimited");
+    case "API_CONFLICT":
+      return t("onboarding.errors.conflict");
+    default:
+      return t("onboarding.errors.unknown");
   }
-
-  if (error.status === 429) {
-    return t("onboarding.errors.rateLimited");
-  }
-
-  if (error.status === 409) {
-    return t("onboarding.errors.conflict");
-  }
-
-  return t("onboarding.errors.unknown");
 }
 
 function resolveHelperMessageClassName(

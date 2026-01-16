@@ -574,6 +574,7 @@
     "API_RATE_LIMIT": "Too many requests. Try again later.",
     "API_SERVER": "Server error occurred. Please try again later.",
     "API_UNAVAILABLE": "Service is unavailable. Please try again later.",
-    "UNKNOWN": "An unknown error occurred."
+    "UNKNOWN": "An unknown error occurred.",
+    "API_PRECONDITION_FAILED": "Request precondition failed."
   }
 }

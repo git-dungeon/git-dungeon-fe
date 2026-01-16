@@ -4,7 +4,7 @@ import {
   formatRelativeTime,
 } from "@/shared/lib/datetime/formatters";
 import { PixelButton } from "@/shared/ui/pixel-button";
-import { ApiError } from "@/shared/api/http-client";
+import { normalizeError } from "@/shared/errors/normalize-error";
 import type { ProfileConnections } from "@/entities/profile/model/types";
 import { useGithubSyncStatus } from "@/entities/github/model/use-github-sync-status";
 import { useGithubSync } from "@/features/settings/model/use-github-sync";
@@ -159,27 +159,15 @@ function resolveGithubSyncErrorMessage(
   t: (key: string) => string,
   error: unknown
 ): string | null {
-  if (!(error instanceof ApiError)) {
+  if (!error) {
     return null;
   }
 
-  if (error.status === 400) {
-    return t("settings.github.errors.notConnected");
-  }
-
-  if (error.status === 401 || error.status === 403) {
-    return t("settings.github.errors.sessionExpired");
-  }
-
-  if (error.status === 429) {
-    return t("settings.github.errors.rateLimited");
-  }
-
-  if (error.status === 409) {
-    return t("settings.github.errors.conflict");
-  }
-
-  const payload = error.payload as { error?: { message?: unknown } } | null;
+  const appError = normalizeError(error);
+  const payload = appError.meta?.payload as
+    | { error?: { message?: unknown } }
+    | null
+    | undefined;
   const payloadMessage =
     payload &&
     typeof payload === "object" &&
@@ -187,5 +175,17 @@ function resolveGithubSyncErrorMessage(
       ? payload.error.message
       : null;
 
-  return payloadMessage ?? t("settings.github.errors.unknown");
+  switch (appError.code) {
+    case "API_BAD_REQUEST":
+      return t("settings.github.errors.notConnected");
+    case "AUTH_UNAUTHORIZED":
+    case "AUTH_FORBIDDEN":
+      return t("settings.github.errors.sessionExpired");
+    case "API_RATE_LIMIT":
+      return t("settings.github.errors.rateLimited");
+    case "API_CONFLICT":
+      return t("settings.github.errors.conflict");
+    default:
+      return payloadMessage ?? t("settings.github.errors.unknown");
+  }
 }

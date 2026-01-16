@@ -9,6 +9,7 @@ function resolveCodeFromStatus(status?: number): AppErrorCode {
   if (status === 403) return "AUTH_FORBIDDEN";
   if (status === 404) return "API_NOT_FOUND";
   if (status === 409) return "API_CONFLICT";
+  if (status === 412) return "API_PRECONDITION_FAILED";
   if (status === 422) return "API_VALIDATION";
   if (status === 429) return "API_RATE_LIMIT";
   if (status && status >= 500 && status < 600) return "API_SERVER";
@@ -48,9 +49,7 @@ export function normalizeError(error: unknown): AppError {
   });
 }
 
-function isApiError(
-  error: unknown
-): error is {
+function isApiError(error: unknown): error is {
   name: string;
   status: number;
   payload?: unknown;
