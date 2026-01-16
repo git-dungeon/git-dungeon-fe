@@ -5,6 +5,7 @@ import type {
   QueryObserverOptions,
 } from "@tanstack/react-query";
 import { ApiError, NetworkError } from "@/shared/api/http-client";
+import { isAppError } from "@/shared/errors/app-error";
 
 export async function ensureQueryDataSafe<
   TQueryFnData = unknown,
@@ -29,6 +30,7 @@ export async function ensureQueryDataSafe<
       /Failed to fetch|fetch failed|NetworkError/i.test(error.message);
 
     if (
+      isAppError(error) ||
       error instanceof ApiError ||
       error instanceof NetworkError ||
       isFetchTypeError ||

@@ -6,6 +6,7 @@ import {
   formatZodError,
   type ApiResponse,
 } from "@/shared/api/api-response";
+import { normalizeError } from "@/shared/errors/normalize-error";
 
 const REFRESH_ATTEMPT_HEADER = "x-refresh-attempted";
 const AUTH_REFRESH_ENDPOINT_SEGMENT = "/auth/refresh";
@@ -264,18 +265,20 @@ async function handleRequestError(error: unknown): Promise<never> {
     const { response } = error;
     const payload = await extractResponsePayload(response);
 
-    throw new ApiError(
-      `HTTP ${response.status} ${response.statusText}`,
-      response.status,
-      payload
+    throw normalizeError(
+      new ApiError(
+        `HTTP ${response.status} ${response.statusText}`,
+        response.status,
+        payload
+      )
     );
   }
 
   if (error instanceof TypeError) {
-    throw new NetworkError("Network request failed", error);
+    throw normalizeError(new NetworkError("Network request failed", error));
   }
 
-  throw error;
+  throw normalizeError(error);
 }
 
 async function extractResponsePayload(response: Response): Promise<unknown> {
@@ -307,10 +310,12 @@ export async function requestWithSchema<TSchema extends z.ZodTypeAny>(
   const parsed = responseSchema.safeParse(raw);
 
   if (!parsed.success) {
-    throw new ApiError(
-      "API 응답 스키마가 올바르지 않습니다.",
-      422,
-      formatZodError(parsed.error)
+    throw normalizeError(
+      new ApiError(
+        "API 응답 스키마가 올바르지 않습니다.",
+        422,
+        formatZodError(parsed.error)
+      )
     );
   }
 
@@ -318,10 +323,12 @@ export async function requestWithSchema<TSchema extends z.ZodTypeAny>(
 
   if (!response.success) {
     const errorPayload = response.error;
-    throw new ApiError(errorPayload.message, 200, {
-      error: errorPayload,
-      meta: response.meta,
-    });
+    throw normalizeError(
+      new ApiError(errorPayload.message, 200, {
+        error: errorPayload,
+        meta: response.meta,
+      })
+    );
   }
 
   return mapData ? mapData(response.data) : response.data;
