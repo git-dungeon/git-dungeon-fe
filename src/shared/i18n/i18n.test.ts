@@ -31,4 +31,16 @@ describe("i18n", () => {
 
     changeSpy.mockRestore();
   });
+
+  it("AppError 메시지 키가 번역에 존재한다", () => {
+    expect(i18next.t("errors.AUTH_UNAUTHORIZED")).not.toBe(
+      "errors.AUTH_UNAUTHORIZED"
+    );
+    expect(i18next.t("errors.NETWORK_FAILED")).not.toBe(
+      "errors.NETWORK_FAILED"
+    );
+    expect(i18next.t("errors.API_PRECONDITION_FAILED")).not.toBe(
+      "errors.API_PRECONDITION_FAILED"
+    );
+  });
 });
