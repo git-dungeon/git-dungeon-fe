@@ -7,6 +7,7 @@ import { DeltaList } from "@/entities/dungeon-log/ui/delta-list";
 import { LogCard } from "@/entities/dungeon-log/ui/log-card";
 import { LogThumbnailStack } from "@/entities/dungeon-log/ui/log-thumbnail-stack";
 import { PixelButton } from "@/shared/ui/pixel-button";
+import { PixelIcon } from "@/shared/ui/pixel-icon";
 import {
   PixelEmptyState,
   PixelErrorState,
@@ -87,7 +88,9 @@ export function DungeonLogTimeline({
           onClick={() => refetch()}
           disabled={isRefreshing}
           data-testid="logs-refresh-button"
+          className="flex items-center gap-2"
         >
+          <PixelIcon name="refresh" size={14} />
           {isRefreshing
             ? t("logs.timeline.refreshing")
             : t("logs.timeline.refresh")}
