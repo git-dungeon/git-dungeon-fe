@@ -373,6 +373,11 @@
         "category": "카테고리",
         "action": "액션"
       },
+      "dateRange": {
+        "from": "시작 날짜",
+        "to": "종료 날짜",
+        "hint": "비워두면 전체 기간을 조회합니다."
+      },
       "labels": {
         "ALL": "전체",
         "EXPLORATION": "탐험(카테고리)",
@@ -403,6 +408,8 @@
       "loadingNext": "다음 로그를 불러오는 중...",
       "loadMore": "더 불러오기",
       "allLoaded": "모든 로그를 확인했습니다.",
+      "refresh": "새로고침",
+      "refreshing": "새로고침 중...",
       "error": "로그를 불러오는 중 문제가 발생했습니다.",
       "invalidFilter": "선택한 필터가 유효하지 않습니다. 필터를 변경하거나 초기화한 뒤 다시 시도하세요.",
       "resetFilter": "필터 초기화",

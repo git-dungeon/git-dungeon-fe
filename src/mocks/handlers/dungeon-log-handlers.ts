@@ -484,6 +484,43 @@ function filterLogs(
   return logs.filter((log) => log.action === filterType);
 }
 
+function parseDateParam(raw: string | null): number | null | undefined {
+  if (raw == null) {
+    return undefined;
+  }
+  if (!raw.trim()) {
+    return null;
+  }
+  const parsed = Date.parse(raw);
+  if (Number.isNaN(parsed)) {
+    return null;
+  }
+  return parsed;
+}
+
+function filterLogsByDateRange(
+  logs: DungeonLogEntry[],
+  from?: number,
+  to?: number
+): DungeonLogEntry[] {
+  if (from == null && to == null) {
+    return logs;
+  }
+  return logs.filter((log) => {
+    const timestamp = Date.parse(log.createdAt);
+    if (Number.isNaN(timestamp)) {
+      return false;
+    }
+    if (typeof from === "number" && timestamp < from) {
+      return false;
+    }
+    if (typeof to === "number" && timestamp > to) {
+      return false;
+    }
+    return true;
+  });
+}
+
 function resolveLimit(raw: string | null): number | null {
   if (raw == null) {
     return 10;
@@ -523,9 +560,35 @@ export const dungeonLogHandlers = [
       });
     }
 
+    const fromParam = parseDateParam(url.searchParams.get("from"));
+    if (fromParam === null) {
+      return respondWithError("잘못된 로그 조회 요청입니다.", {
+        status: 400,
+        code: "LOGS_INVALID_QUERY",
+      });
+    }
+    const toParam = parseDateParam(url.searchParams.get("to"));
+    if (toParam === null) {
+      return respondWithError("잘못된 로그 조회 요청입니다.", {
+        status: 400,
+        code: "LOGS_INVALID_QUERY",
+      });
+    }
+    if (
+      typeof fromParam === "number" &&
+      typeof toParam === "number" &&
+      fromParam > toParam
+    ) {
+      return respondWithError("잘못된 로그 조회 요청입니다.", {
+        status: 400,
+        code: "LOGS_INVALID_QUERY",
+      });
+    }
+
     const cursorParam = url.searchParams.get("cursor");
 
     const sourceLogs = filterLogs(mockDungeonLogs, filterType);
+    const rangedLogs = filterLogsByDateRange(sourceLogs, fromParam, toParam);
 
     const cursor = cursorParam ? decodeCursor(cursorParam) : null;
     if (cursorParam && cursor === null) {
@@ -535,7 +598,7 @@ export const dungeonLogHandlers = [
       });
     }
 
-    if (typeof cursor === "number" && cursor >= sourceLogs.length) {
+    if (typeof cursor === "number" && cursor >= rangedLogs.length) {
       return respondWithError("잘못된 로그 조회 요청입니다.", {
         status: 400,
         code: "LOGS_INVALID_QUERY",
@@ -543,8 +606,8 @@ export const dungeonLogHandlers = [
     }
 
     const startIndex = typeof cursor === "number" ? cursor + 1 : 0;
-    const page = sourceLogs.slice(startIndex, startIndex + limit);
-    const hasMore = startIndex + limit < sourceLogs.length;
+    const page = rangedLogs.slice(startIndex, startIndex + limit);
+    const hasMore = startIndex + limit < rangedLogs.length;
     const nextSequence = startIndex + page.length - 1;
 
     return respondWithSuccess({

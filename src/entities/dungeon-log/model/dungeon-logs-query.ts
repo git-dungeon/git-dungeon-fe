@@ -7,7 +7,13 @@ import {
 export const DUNGEON_LOGS_DEFAULT_LIMIT = 10;
 
 export function dungeonLogsQueryKey(params?: FetchDungeonLogsParams) {
-  const { limit = DUNGEON_LOGS_DEFAULT_LIMIT, cursor, type } = params ?? {};
+  const {
+    limit = DUNGEON_LOGS_DEFAULT_LIMIT,
+    cursor,
+    type,
+    from,
+    to,
+  } = params ?? {};
 
   return [
     "dungeon-logs",
@@ -15,6 +21,8 @@ export function dungeonLogsQueryKey(params?: FetchDungeonLogsParams) {
       limit,
       cursor: cursor ?? null,
       type: type ?? null,
+      from: from ?? null,
+      to: to ?? null,
     },
   ] as const;
 }
@@ -24,6 +32,8 @@ export function dungeonLogsQueryOptions(params?: FetchDungeonLogsParams) {
     limit: params?.limit ?? DUNGEON_LOGS_DEFAULT_LIMIT,
     cursor: params?.cursor,
     type: params?.type,
+    from: params?.from,
+    to: params?.to,
   };
 
   return queryOptions({

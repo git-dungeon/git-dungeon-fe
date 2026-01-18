@@ -6,22 +6,27 @@ import { DUNGEON_LOGS_PAGE_SIZE } from "@/widgets/dungeon-log-timeline/config/co
 interface UseDungeonLogTimelineParams {
   filterType?: DungeonLogsFilterType;
   pageSize?: number;
+  from?: string;
+  to?: string;
 }
 
 export function useDungeonLogTimeline(
   params: UseDungeonLogTimelineParams = {}
 ) {
-  const { filterType, pageSize = DUNGEON_LOGS_PAGE_SIZE } = params;
+  const { filterType, pageSize = DUNGEON_LOGS_PAGE_SIZE, from, to } = params;
 
   const query = useInfiniteDungeonLogs({
     limit: pageSize,
     type: filterType,
+    from,
+    to,
   });
 
   const {
     data,
     status,
     error,
+    isFetching,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
@@ -64,6 +69,7 @@ export function useDungeonLogTimeline(
     logs,
     status,
     error,
+    isFetching,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,

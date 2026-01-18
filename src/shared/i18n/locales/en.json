@@ -373,6 +373,11 @@
         "category": "Category",
         "action": "Action"
       },
+      "dateRange": {
+        "from": "Start date",
+        "to": "End date",
+        "hint": "Leave blank to include all dates."
+      },
       "labels": {
         "ALL": "All",
         "EXPLORATION": "Exploration (Category)",
@@ -403,6 +408,8 @@
       "loadingNext": "Loading more logs...",
       "loadMore": "Load more",
       "allLoaded": "All logs are loaded.",
+      "refresh": "Refresh",
+      "refreshing": "Refreshing...",
       "error": "Something went wrong while loading logs.",
       "invalidFilter": "The selected filter is invalid. Change or reset the filter and try again.",
       "resetFilter": "Reset filter",

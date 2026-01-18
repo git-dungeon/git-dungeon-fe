@@ -23,13 +23,17 @@ import { normalizeError } from "@/shared/errors/normalize-error";
 import { getErrorMessageKey } from "@/shared/errors/error-message";
 import { isAppError } from "@/shared/errors/app-error";
 
-interface DungeonLogTimelineProps {
+export interface DungeonLogTimelineProps {
   filterType?: DungeonLogsFilterType;
+  from?: string;
+  to?: string;
   onResetFilter?: () => void;
 }
 
 export function DungeonLogTimeline({
   filterType,
+  from,
+  to,
   onResetFilter,
 }: DungeonLogTimelineProps) {
   const { t } = useTranslation();
@@ -37,12 +41,13 @@ export function DungeonLogTimeline({
     logs,
     status,
     error,
+    isFetching,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
     refetch,
     sentinelRef,
-  } = useDungeonLogTimeline({ filterType });
+  } = useDungeonLogTimeline({ filterType, from, to });
   const [selectedLog, setSelectedLog] = useState<DungeonLogEntry | null>(null);
   const resolveItemName = useCatalogItemNameResolver();
   const resolveMonsterName = useCatalogMonsterNameResolver();
@@ -73,8 +78,21 @@ export function DungeonLogTimeline({
     return <EmptyState t={t} />;
   }
 
+  const isRefreshing = isFetching || isFetchingNextPage;
+
   return (
     <div className="space-y-4">
+      <div className="flex justify-end">
+        <PixelButton
+          onClick={() => refetch()}
+          disabled={isRefreshing}
+          data-testid="logs-refresh-button"
+        >
+          {isRefreshing
+            ? t("logs.timeline.refreshing")
+            : t("logs.timeline.refresh")}
+        </PixelButton>
+      </div>
       <ul className="pixel-log-list">
         {logs.map((log) => {
           const thumbnails = buildLogThumbnails(log, {
