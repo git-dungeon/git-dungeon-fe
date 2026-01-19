@@ -14,8 +14,23 @@ const queryClient = new QueryClient({
   },
 });
 
-if (typeof window !== "undefined") {
-  void startMockServiceWorker();
+let mswReady: Promise<void> | null = null;
+
+async function ensureMswReady() {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  if (!mswReady) {
+    mswReady = startMockServiceWorker().catch((error) => {
+      mswReady = null;
+      if (import.meta.env?.DEV) {
+        console.warn("[storybook] MSW 시작 실패", error);
+      }
+    });
+  }
+
+  await mswReady;
 }
 
 const preview: Preview = {
@@ -23,6 +38,12 @@ const preview: Preview = {
     actions: { argTypesRegex: "^on[A-Z].*" },
     controls: { expanded: true },
   },
+  loaders: [
+    async () => {
+      await ensureMswReady();
+      return {};
+    },
+  ],
   decorators: [
     (Story) => (
       <QueryClientProvider client={queryClient}>
