@@ -489,7 +489,7 @@ function parseDateParam(raw: string | null): number | null | undefined {
     return undefined;
   }
   if (!raw.trim()) {
-    return null;
+    return undefined;
   }
   const parsed = Date.parse(raw);
   if (Number.isNaN(parsed)) {
