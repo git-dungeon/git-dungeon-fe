@@ -8,7 +8,6 @@ import { InventorySlots } from "@/widgets/inventory/ui/inventory-slots";
 import { InventoryCharacterPanel } from "@/widgets/inventory/ui/inventory-character-panel";
 import { InventoryGrid } from "@/widgets/inventory/ui/inventory-grid";
 import { InventoryModal } from "@/widgets/inventory/ui/inventory-modal";
-// import { HintCard } from "@/entities/inventory/ui/hint-card";
 import type { CharacterStatSummary } from "@/features/character-summary/lib/build-character-overview";
 
 interface InventoryLayoutProps {
@@ -85,8 +84,6 @@ export function InventoryLayout({
         selectedItemId={selectedItemId}
         onSelect={(item) => handleSelect(item, item.slot)}
       />
-
-      {/* <HintCard /> */}
 
       <InventoryModal
         item={selectedItem}
