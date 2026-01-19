@@ -12,12 +12,29 @@ export interface FetchDungeonLogsParams {
   limit?: number;
   cursor?: string;
   type?: DungeonLogsFilterType;
+  from?: string;
+  to?: string;
+}
+
+function setOptionalParam(
+  params: URLSearchParams,
+  key: string,
+  value?: string
+): void {
+  if (typeof value !== "string") {
+    return;
+  }
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return;
+  }
+  params.set(key, trimmed);
 }
 
 export async function getDungeonLogs(
   params: FetchDungeonLogsParams = {}
 ): Promise<DungeonLogsPayload> {
-  const { limit, cursor, type } = params;
+  const { limit, cursor, type, from, to } = params;
   const searchParams = new URLSearchParams();
 
   if (typeof limit === "number") {
@@ -31,6 +48,9 @@ export async function getDungeonLogs(
   if (type) {
     searchParams.set("type", type);
   }
+
+  setOptionalParam(searchParams, "from", from);
+  setOptionalParam(searchParams, "to", to);
 
   const endpoint = searchParams.size
     ? `${DASHBOARD_ENDPOINTS.logs}?${searchParams.toString()}`

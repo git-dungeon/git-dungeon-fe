@@ -7,6 +7,7 @@ import { DeltaList } from "@/entities/dungeon-log/ui/delta-list";
 import { LogCard } from "@/entities/dungeon-log/ui/log-card";
 import { LogThumbnailStack } from "@/entities/dungeon-log/ui/log-thumbnail-stack";
 import { PixelButton } from "@/shared/ui/pixel-button";
+import { PixelIcon } from "@/shared/ui/pixel-icon";
 import {
   PixelEmptyState,
   PixelErrorState,
@@ -23,13 +24,17 @@ import { normalizeError } from "@/shared/errors/normalize-error";
 import { getErrorMessageKey } from "@/shared/errors/error-message";
 import { isAppError } from "@/shared/errors/app-error";
 
-interface DungeonLogTimelineProps {
+export interface DungeonLogTimelineProps {
   filterType?: DungeonLogsFilterType;
+  from?: string;
+  to?: string;
   onResetFilter?: () => void;
 }
 
 export function DungeonLogTimeline({
   filterType,
+  from,
+  to,
   onResetFilter,
 }: DungeonLogTimelineProps) {
   const { t } = useTranslation();
@@ -37,12 +42,13 @@ export function DungeonLogTimeline({
     logs,
     status,
     error,
+    isFetching,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
     refetch,
     sentinelRef,
-  } = useDungeonLogTimeline({ filterType });
+  } = useDungeonLogTimeline({ filterType, from, to });
   const [selectedLog, setSelectedLog] = useState<DungeonLogEntry | null>(null);
   const resolveItemName = useCatalogItemNameResolver();
   const resolveMonsterName = useCatalogMonsterNameResolver();
@@ -73,8 +79,23 @@ export function DungeonLogTimeline({
     return <EmptyState t={t} />;
   }
 
+  const isRefreshing = isFetching || isFetchingNextPage;
+
   return (
     <div className="space-y-4">
+      <div className="flex justify-end">
+        <PixelButton
+          onClick={() => refetch()}
+          disabled={isRefreshing}
+          data-testid="logs-refresh-button"
+          className="flex items-center gap-2"
+        >
+          <PixelIcon name="refresh" size={14} />
+          {isRefreshing
+            ? t("logs.timeline.refreshing")
+            : t("logs.timeline.refresh")}
+        </PixelButton>
+      </div>
       <ul className="pixel-log-list">
         {logs.map((log) => {
           const thumbnails = buildLogThumbnails(log, {

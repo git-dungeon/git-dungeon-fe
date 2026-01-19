@@ -4,6 +4,7 @@ import { cn } from "@/shared/lib/utils";
 type PixelIconName =
   | "copy"
   | "close"
+  | "refresh"
   | "arrow-up"
   | "arrow-down"
   | "check"
@@ -25,6 +26,9 @@ const ICON_PATHS: Record<PixelIconName, string[]> = {
   ],
   close: [
     "M5 5h2v2H5zm4 4H7V7h2zm2 2H9V9h2zm2 0h-2v2H9v2H7v2H5v2h2v-2h2v-2h2v-2h2v2h2v2h2v2h2v-2h-2v-2h-2v-2h-2zm2-2v2h-2V9zm2-2v2h-2V7zm0 0V5h2v2z",
+  ],
+  refresh: [
+    "M23 14v1h-1v2h-1v2h-1v1h-1v1h-2v1h-2v1H9v-1H7v-1H5v-1H3v1H2v1H1v-8h8v1H8v1H7v2h1v1h2v1h4v-1h2v-1h1v-1h1v-2h1v-1zm0-12v8h-8V9h1V8h1V6h-1V5h-2V4h-4v1H8v1H7v1H6v2H5v1H1V9h1V7h1V5h1V4h1V3h2V2h2V1h6v1h2v1h2v1h2V3h1V2z",
   ],
   "arrow-up": [
     "M11 1h2v1h1v1h1v1h1v1h1v1h1v1h1v1h1v1h1v1h1v1h1v1h-1v1h-1v1h-1v-1h-1v-1h-1v-1h-1v-1h-1V9h-1V8h-1v15h-4V8H9v1H8v1H7v1H6v1H5v1H4v1H3v-1H2v-1H1v-1h1v-1h1V9h1V8h1V7h1V6h1V5h1V4h1V3h1V2h1z",

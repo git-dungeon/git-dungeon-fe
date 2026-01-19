@@ -8,6 +8,8 @@ import { DUNGEON_LOGS_DEFAULT_LIMIT } from "@/entities/dungeon-log/model/dungeon
 export function useInfiniteDungeonLogs(params?: FetchDungeonLogsParams) {
   const limit = params?.limit ?? DUNGEON_LOGS_DEFAULT_LIMIT;
   const type = params?.type;
+  const from = params?.from;
+  const to = params?.to;
 
   return useInfiniteQuery({
     queryKey: [
@@ -16,6 +18,8 @@ export function useInfiniteDungeonLogs(params?: FetchDungeonLogsParams) {
       {
         limit,
         type: type ?? null,
+        from: from ?? null,
+        to: to ?? null,
       },
     ] as const,
     queryFn: ({ pageParam }) =>
@@ -23,6 +27,8 @@ export function useInfiniteDungeonLogs(params?: FetchDungeonLogsParams) {
         limit,
         type,
         cursor: pageParam ?? undefined,
+        from,
+        to,
       }),
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,

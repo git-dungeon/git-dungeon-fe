@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { isAppError } from "@/shared/errors/app-error";
+import { mockTimestampMinutesAgo } from "@/mocks/handlers/shared/time";
 import { getDungeonLogs } from "./get-dungeon-logs";
 
 describe("getDungeonLogs", () => {
@@ -36,6 +37,21 @@ describe("getDungeonLogs", () => {
   it("type=EMPTY 필터가 적용된다", async () => {
     const data = await getDungeonLogs({ limit: 50, type: "EMPTY" });
     expect(data.logs.every((log) => log.action === "EMPTY")).toBe(true);
+  });
+
+  it("from/to 날짜 범위 필터가 적용된다", async () => {
+    const from = mockTimestampMinutesAgo(4);
+    const to = mockTimestampMinutesAgo(2);
+    const data = await getDungeonLogs({ from, to });
+    const fromTime = Date.parse(from);
+    const toTime = Date.parse(to);
+
+    expect(data.logs).not.toHaveLength(0);
+    data.logs.forEach((log) => {
+      const timestamp = Date.parse(log.createdAt);
+      expect(timestamp).toBeGreaterThanOrEqual(fromTime);
+      expect(timestamp).toBeLessThanOrEqual(toTime);
+    });
   });
 
   it("잘못된 쿼리(limit=0)는 400 LOGS_INVALID_QUERY로 처리된다", async () => {
