@@ -44,7 +44,7 @@ export const Syncing: Story = {
   },
 };
 
-export const Error: Story = {
+export const ErrorState: Story = {
   args: {
     item,
     slot: item.slot,
