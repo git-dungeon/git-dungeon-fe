@@ -183,6 +183,7 @@ export function buildLogThumbnails(
       return false;
     }
 
+    let pushed = false;
     items.forEach((item, index) => {
       const itemThumbnail = resolveItemThumbnail(item.code);
       if (!itemThumbnail) {
@@ -197,8 +198,9 @@ export function buildLogThumbnails(
         badge,
         rarity,
       });
+      pushed = true;
     });
-    return true;
+    return pushed;
   };
 
   if (actionThumbnail && (isBattleAction || isTreasureAction)) {
