@@ -737,10 +737,20 @@
   }
 
   .inventory-item__icon {
-    background-color: var(--rarity-bg, rgba(107, 114, 128, 0.2));
+    position: relative;
+    background-color: var(--pixel-surface-deep);
     border: 2px solid var(--rarity-border, var(--border));
-    border-radius: 8px;
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+    border-radius: 0;
+    clip-path: polygon(
+      3px 0,
+      calc(100% - 3px) 0,
+      100% 3px,
+      100% calc(100% - 3px),
+      calc(100% - 3px) 100%,
+      3px 100%,
+      0 calc(100% - 3px),
+      0 3px
+    );
   }
 
   .rarity-common {
@@ -1335,7 +1345,7 @@
 
   .pixel-app .pixel-log-thumb {
     border: 2px solid var(--rarity-border, var(--pixel-border-strong));
-    background: var(--rarity-bg, var(--pixel-surface-deep));
+    background: var(--pixel-surface-deep);
     border-radius: 0;
     box-shadow:
       inset 0 0 0 1px rgba(255, 255, 255, 0.12),
