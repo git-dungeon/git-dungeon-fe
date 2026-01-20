@@ -65,7 +65,7 @@ function decodeCursor(cursor: string): number | null {
   return parsed;
 }
 
-const mockDungeonLogs: DungeonLogEntry[] = [
+export const mockDungeonLogs: DungeonLogEntry[] = [
   {
     id: "log-001",
     category: "EXPLORATION",
