@@ -29,7 +29,7 @@ describe("formatDelta", () => {
     const summary = entries.find((item) => item.text === "아이템 3개");
 
     expect(summary).toBeDefined();
-    expect(summary?.tone).toBe("gain");
+    expect(summary?.tone).toBe("success");
   });
 
   it("MOVE 로그에서 층 증가와 진행도 변화를 함께 표시한다", () => {
@@ -64,9 +64,9 @@ describe("formatDelta", () => {
     );
 
     expect(floorDelta).toBeDefined();
-    expect(floorDelta?.tone).toBe("gain");
+    expect(floorDelta?.tone).toBe("success");
     expect(floorProgress).toBeDefined();
-    expect(floorProgress?.tone).toBe("gain");
+    expect(floorProgress?.tone).toBe("success");
   });
 
   it("BATTLE 완료 시 전투 결과 문구를 우선 적용한다", () => {

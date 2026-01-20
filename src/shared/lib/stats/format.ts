@@ -1,4 +1,4 @@
-export type StatTone = "gain" | "loss" | "neutral";
+export type StatTone = "success" | "danger" | "neutral";
 
 const STAT_LABEL_MAP: Record<string, string> = {
   hp: "HP",
@@ -15,7 +15,8 @@ export function resolveStatLabel(stat: string): string {
 
 export function formatStatChange(stat: string, value: number) {
   const label = resolveStatLabel(stat);
-  const tone: StatTone = value > 0 ? "gain" : value < 0 ? "loss" : "neutral";
+  const tone: StatTone =
+    value > 0 ? "success" : value < 0 ? "danger" : "neutral";
   const prefix = value > 0 ? "+" : value < 0 ? "" : "";
   return {
     label,
@@ -38,7 +39,7 @@ export function determineItemTone(action: string): StatTone {
     upper === "LEVEL_UP" ||
     upper === "REVIVE"
   ) {
-    return "gain";
+    return "success";
   }
   if (
     normalized === "discard" ||
@@ -48,7 +49,7 @@ export function determineItemTone(action: string): StatTone {
     upper === "BUFF_EXPIRED" ||
     upper === "DEATH"
   ) {
-    return "loss";
+    return "danger";
   }
   return "neutral";
 }

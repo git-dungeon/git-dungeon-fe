@@ -174,15 +174,19 @@ export function InventoryModal({
                           text: `${label} ${modifier.value > 0 ? "+" : ""}${modifier.value}%`,
                           tone:
                             modifier.value > 0
-                              ? ("gain" as const)
+                              ? ("success" as const)
                               : modifier.value < 0
-                                ? ("loss" as const)
+                                ? ("danger" as const)
                                 : ("neutral" as const),
                         }
                       : formatStatChange(modifier.stat, modifier.value);
 
                   const iconTone =
-                    tone === "gain" ? "up" : tone === "loss" ? "down" : null;
+                    tone === "success"
+                      ? "up"
+                      : tone === "danger"
+                        ? "down"
+                        : null;
 
                   return (
                     <li

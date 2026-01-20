@@ -2,7 +2,7 @@ import type { HTMLAttributes } from "react";
 import { cn } from "@/shared/lib/utils";
 import { PixelIcon } from "@/shared/ui/pixel-icon";
 
-type PixelCheckIconTone = "gain" | "loss";
+type PixelCheckIconTone = "success" | "danger";
 
 interface PixelCheckIconProps extends HTMLAttributes<HTMLSpanElement> {
   checked?: boolean;
@@ -28,10 +28,10 @@ export function PixelCheckIcon({
   const mergedStyle = size ? { width: size, height: size, ...style } : style;
 
   const toneClass =
-    tone === "gain"
-      ? "pixel-log-thumb-badge--gain"
-      : tone === "loss"
-        ? "pixel-log-thumb-badge--loss"
+    tone === "success"
+      ? "pixel-log-thumb-badge--success"
+      : tone === "danger"
+        ? "pixel-log-thumb-badge--danger"
         : undefined;
 
   return (

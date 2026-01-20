@@ -14,7 +14,7 @@ type Story = StoryObj<typeof SummaryTile>;
 export const Default: Story = {
   render: () => (
     <SummaryTile title="Daily EXP" value="2,340">
-      <PixelPill tone="gain" icon="up">
+      <PixelPill tone="success" icon="up">
         +12%
       </PixelPill>
     </SummaryTile>

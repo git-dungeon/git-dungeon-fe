@@ -51,7 +51,7 @@ export function BattleMonsterSummary({
           label: "LV",
           base: String(player.level),
           bonus: undefined as string | undefined,
-          bonusTone: undefined as "gain" | "loss" | undefined,
+          bonusTone: undefined as "success" | "danger" | undefined,
         },
         {
           label: "HP",
@@ -60,7 +60,7 @@ export function BattleMonsterSummary({
               ? `${player.hp}/${player.maxHp}`
               : undefined,
           bonus: undefined as string | undefined,
-          bonusTone: undefined as "gain" | "loss" | undefined,
+          bonusTone: undefined as "success" | "danger" | undefined,
         },
         {
           label: "ATK",
@@ -127,9 +127,9 @@ export function BattleMonsterSummary({
                       <span
                         className={cn(
                           "ml-0.5",
-                          stat.bonusTone === "gain" &&
+                          stat.bonusTone === "success" &&
                             "text-emerald-600 dark:text-emerald-400",
-                          stat.bonusTone === "loss" &&
+                          stat.bonusTone === "danger" &&
                             "text-rose-600 dark:text-rose-400"
                         )}
                       >
@@ -194,7 +194,7 @@ export function BattleMonsterSummary({
 function formatStatValue(
   value?: number,
   bonus?: number
-): { base?: string; bonus?: string; bonusTone?: "gain" | "loss" } {
+): { base?: string; bonus?: string; bonusTone?: "success" | "danger" } {
   if (typeof value !== "number") {
     return { base: undefined, bonus: undefined, bonusTone: undefined };
   }
@@ -204,7 +204,7 @@ function formatStatValue(
     return {
       base: String(value),
       bonus: `${sign}${bonus}`,
-      bonusTone: bonus > 0 ? "gain" : "loss",
+      bonusTone: bonus > 0 ? "success" : "danger",
     };
   }
 

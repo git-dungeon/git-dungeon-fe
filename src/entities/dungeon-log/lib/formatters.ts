@@ -155,7 +155,7 @@ export function formatDelta(
           text: t("logs.delta.skillPoints", {
             value: `${prefix}${skillPoints}`,
           }),
-          tone: "gain",
+          tone: "success",
         });
       }
       break;
@@ -166,7 +166,7 @@ export function formatDelta(
         entries.push({
           id: `${entry.id}-buff-applied`,
           text: t("logs.delta.buffApplied", { count: applied.length }),
-          tone: "gain",
+          tone: "success",
         });
       }
       break;
@@ -177,7 +177,7 @@ export function formatDelta(
         entries.push({
           id: `${entry.id}-buff-expired`,
           text: t("logs.delta.buffExpired", { count: expired.length }),
-          tone: "loss",
+          tone: "danger",
         });
       }
       break;
@@ -199,7 +199,7 @@ function pushNumeric(
   if (typeof value !== "number" || value === 0) {
     return;
   }
-  const tone = value > 0 ? "gain" : "loss";
+  const tone = value > 0 ? "success" : "danger";
   const prefix = value > 0 ? "+" : "";
   const label = translate(`logs.delta.${labelKey}`, labelKey);
   acc.push({
@@ -217,7 +217,7 @@ function pushProgress(
   if (typeof value !== "number" || value === 0) {
     return;
   }
-  const tone = value > 0 ? "gain" : "loss";
+  const tone = value > 0 ? "success" : "danger";
   const prefix = value > 0 ? "+" : "";
   acc.push({
     id: `${entryId}-progress-${acc.length}`,
@@ -241,7 +241,7 @@ function pushRewardItemsSummary(
   acc.push({
     id: `${entryId}-reward-items`,
     text: t("logs.delta.itemSummary", { count }),
-    tone: "gain",
+    tone: "success",
     icon: "count",
   });
 }
@@ -281,7 +281,7 @@ function formatInventoryDelta(
     entries.push({
       id: `${entryId}-equipped`,
       text: t("logs.delta.equipped", { item: itemName }),
-      tone: "gain",
+      tone: "success",
       icon: "plus",
     });
   }
@@ -291,7 +291,7 @@ function formatInventoryDelta(
     entries.push({
       id: `${entryId}-unequipped`,
       text: t("logs.delta.unequipped", { item: itemName }),
-      tone: "loss",
+      tone: "danger",
       icon: "minus",
     });
   }
@@ -305,7 +305,7 @@ function formatInventoryDelta(
         item: itemName,
         count: quantity,
       }),
-      tone: "gain",
+      tone: "success",
       icon: "plus",
     });
   }
@@ -319,7 +319,7 @@ function formatInventoryDelta(
         item: itemName,
         count: quantity,
       }),
-      tone: "loss",
+      tone: "danger",
       icon: "minus",
     });
   }

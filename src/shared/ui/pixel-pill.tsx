@@ -3,7 +3,7 @@ import { cn } from "@/shared/lib/utils";
 import type { EquipmentRarity } from "@/entities/inventory/model/types";
 import { PixelIcon } from "@/shared/ui/pixel-icon";
 
-type PixelPillTone = "neutral" | "gain" | "loss" | "rarity";
+type PixelPillTone = "neutral" | "success" | "danger" | "rarity";
 type PixelPillIcon = "up" | "down" | "count" | "plus" | "minus";
 
 interface PixelPillProps extends HTMLAttributes<HTMLSpanElement> {
@@ -25,10 +25,10 @@ export function PixelPill({
     <span
       className={cn(
         "pixel-pill",
-        tone === "gain"
-          ? "pixel-pill--gain"
-          : tone === "loss"
-            ? "pixel-pill--loss"
+        tone === "success"
+          ? "pixel-pill--success"
+          : tone === "danger"
+            ? "pixel-pill--danger"
             : tone === "rarity"
               ? "pixel-pill--rarity"
               : "pixel-pill--neutral",
