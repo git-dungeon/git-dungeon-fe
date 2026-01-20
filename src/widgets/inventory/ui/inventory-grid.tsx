@@ -101,6 +101,8 @@ function InventoryGridCell({
       {item.isEquipped ? (
         <PixelCheckIcon
           className="absolute top-1 left-1"
+          size={24}
+          tone="gain"
           title={t("inventory.grid.equipped")}
         />
       ) : null}
