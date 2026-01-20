@@ -18,7 +18,7 @@ export const Empty: Story = {
   render: () => <PixelEmptyState message="아직 탐험 기록이 없습니다." />,
 };
 
-export const Error: Story = {
+export const ErrorState: Story = {
   render: () => (
     <PixelErrorState
       message="데이터를 불러오지 못했습니다."
