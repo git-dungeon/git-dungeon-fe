@@ -20,17 +20,17 @@ export const Neutral: Story = {
   },
 };
 
-export const Gain: Story = {
+export const Success: Story = {
   args: {
-    tone: "gain",
+    tone: "success",
     icon: "up",
     children: "+12",
   },
 };
 
-export const Loss: Story = {
+export const Danger: Story = {
   args: {
-    tone: "loss",
+    tone: "danger",
     icon: "down",
     children: "-3",
   },

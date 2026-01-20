@@ -14,12 +14,12 @@ export function PixelSkeleton({
 }: PixelSkeletonProps) {
   return (
     <div className={cn("pixel-skeleton", className)} {...props}>
-      <div className={cn("pixel-skeleton__line", titleWidth)} />
-      <div className="pixel-skeleton__block">
+      <div className={cn("pixel-skeleton-line", titleWidth)} />
+      <div className="pixel-skeleton-block">
         {lineWidths.map((widthClass, index) => (
           <div
             key={`${widthClass}-${index}`}
-            className={cn("pixel-skeleton__line", widthClass)}
+            className={cn("pixel-skeleton-line", widthClass)}
           />
         ))}
       </div>

@@ -20,9 +20,9 @@ export function DeltaList({ entry }: DeltaListProps) {
       {entries.map((item) => {
         const iconTone =
           item.icon ??
-          (item.tone === "gain"
+          (item.tone === "success"
             ? "up"
-            : item.tone === "loss"
+            : item.tone === "danger"
               ? "down"
               : undefined);
 

@@ -51,7 +51,7 @@ export function BattleMonsterSummary({
           label: "LV",
           base: String(player.level),
           bonus: undefined as string | undefined,
-          bonusTone: undefined as "gain" | "loss" | undefined,
+          bonusTone: undefined as "success" | "danger" | undefined,
         },
         {
           label: "HP",
@@ -60,7 +60,7 @@ export function BattleMonsterSummary({
               ? `${player.hp}/${player.maxHp}`
               : undefined,
           bonus: undefined as string | undefined,
-          bonusTone: undefined as "gain" | "loss" | undefined,
+          bonusTone: undefined as "success" | "danger" | undefined,
         },
         {
           label: "ATK",
@@ -87,13 +87,13 @@ export function BattleMonsterSummary({
       {player ? (
         <div
           className={cn(
-            "pixel-log-summary__card flex gap-3",
+            "pixel-log-summary-card flex gap-3",
             size === "detail" ? "items-start" : "items-center"
           )}
         >
           <div
             className={cn(
-              "pixel-log-summary__avatar flex shrink-0 items-center justify-center overflow-hidden",
+              "pixel-log-summary-avatar flex shrink-0 items-center justify-center overflow-hidden",
               size === "detail" ? "h-16 w-16" : "h-10 w-10"
             )}
           >
@@ -110,26 +110,26 @@ export function BattleMonsterSummary({
           </div>
           <div className="min-w-0 space-y-2">
             <div className="flex items-center gap-2">
-              <p className="pixel-log-summary__title text-sm font-semibold">
+              <p className="pixel-log-summary-title text-sm font-semibold">
                 {profileName ?? "유저"}
               </p>
             </div>
             {playerStats.length > 0 ? (
-              <div className="pixel-log-summary__stats flex flex-wrap gap-1">
+              <div className="pixel-log-summary-stats flex flex-wrap gap-1">
                 {playerStats.map((stat) => (
                   <PixelPill
                     key={stat.label}
                     tone="neutral"
-                    className="pixel-log-summary__stat text-[10px]"
+                    className="pixel-log-summary-stat text-[10px]"
                   >
                     {stat.label} {stat.base}
                     {stat.bonus && (
                       <span
                         className={cn(
                           "ml-0.5",
-                          stat.bonusTone === "gain" &&
+                          stat.bonusTone === "success" &&
                             "text-emerald-600 dark:text-emerald-400",
-                          stat.bonusTone === "loss" &&
+                          stat.bonusTone === "danger" &&
                             "text-rose-600 dark:text-rose-400"
                         )}
                       >
@@ -147,14 +147,14 @@ export function BattleMonsterSummary({
       {monster ? (
         <div
           className={cn(
-            "pixel-log-summary__card flex gap-3",
+            "pixel-log-summary-card flex gap-3",
             size === "detail" ? "items-start" : "items-center"
           )}
         >
           {image ? (
             <div
               className={cn(
-                "pixel-log-summary__avatar shrink-0 overflow-hidden",
+                "pixel-log-summary-avatar shrink-0 overflow-hidden",
                 size === "detail" ? "h-16 w-16" : "h-10 w-10"
               )}
             >
@@ -167,17 +167,17 @@ export function BattleMonsterSummary({
           ) : null}
           <div className="min-w-0 space-y-1">
             <div className="flex items-center gap-2">
-              <p className="pixel-log-summary__title text-sm font-semibold">
+              <p className="pixel-log-summary-title text-sm font-semibold">
                 {monsterLabel}
               </p>
             </div>
             {monsterStats.length > 0 ? (
-              <div className="pixel-log-summary__stats flex flex-wrap gap-1">
+              <div className="pixel-log-summary-stats flex flex-wrap gap-1">
                 {monsterStats.map((stat) => (
                   <PixelPill
                     key={stat.label}
                     tone="neutral"
-                    className="pixel-log-summary__stat text-[10px]"
+                    className="pixel-log-summary-stat text-[10px]"
                   >
                     {stat.label} {stat.value}
                   </PixelPill>
@@ -194,7 +194,7 @@ export function BattleMonsterSummary({
 function formatStatValue(
   value?: number,
   bonus?: number
-): { base?: string; bonus?: string; bonusTone?: "gain" | "loss" } {
+): { base?: string; bonus?: string; bonusTone?: "success" | "danger" } {
   if (typeof value !== "number") {
     return { base: undefined, bonus: undefined, bonusTone: undefined };
   }
@@ -204,7 +204,7 @@ function formatStatValue(
     return {
       base: String(value),
       bonus: `${sign}${bonus}`,
-      bonusTone: bonus > 0 ? "gain" : "loss",
+      bonusTone: bonus > 0 ? "success" : "danger",
     };
   }
 

@@ -69,8 +69,8 @@ export function DungeonLogDetailDialog({
                 <PixelIcon name="close" />
               </PixelButton>
             </DialogClose>
-            <DialogHeader className="pixel-modal__header items-start">
-              <DialogTitle className="pixel-modal__title text-left">
+            <DialogHeader className="pixel-modal-header items-start">
+              <DialogTitle className="pixel-modal-title text-left">
                 {resolveActionLabel(log.action)}
               </DialogTitle>
               <DialogDescription className="pixel-text-muted pixel-text-sm text-left">
@@ -82,7 +82,7 @@ export function DungeonLogDetailDialog({
             </DialogHeader>
 
             {monster || player ? (
-              <section className="pixel-modal__section">
+              <section className="pixel-modal-section">
                 <p className="pixel-text-xs pixel-text-muted tracking-wide uppercase">
                   {t("logs.detail.battleInfo")}
                 </p>
@@ -95,7 +95,7 @@ export function DungeonLogDetailDialog({
               </section>
             ) : null}
 
-            <section className="pixel-modal__section">
+            <section className="pixel-modal-section">
               <p className="pixel-text-xs pixel-text-muted tracking-wide uppercase">
                 {t("logs.detail.images")}
               </p>
@@ -124,14 +124,14 @@ export function DungeonLogDetailDialog({
                         {badgeStyles ? (
                           <span
                             className={cn(
-                              "pixel-checkbox pixel-log-thumb__badge absolute top-1 left-1",
+                              "pixel-checkbox pixel-status-badge absolute top-1 left-1",
                               badgeStyles.className
                             )}
                           >
                             <PixelIcon
                               name={badgeStyles.icon}
                               size={12}
-                              className="pixel-checkbox__icon"
+                              className="pixel-checkbox-icon"
                             />
                           </span>
                         ) : null}
@@ -146,7 +146,7 @@ export function DungeonLogDetailDialog({
               </div>
             </section>
 
-            <section className="pixel-modal__section">
+            <section className="pixel-modal-section">
               <p className="pixel-text-xs pixel-text-muted tracking-wide uppercase">
                 {t("logs.detail.delta")}
               </p>

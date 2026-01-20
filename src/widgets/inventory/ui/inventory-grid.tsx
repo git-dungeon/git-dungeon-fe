@@ -102,7 +102,7 @@ function InventoryGridCell({
         <PixelCheckIcon
           className="absolute top-1 left-1"
           size={24}
-          tone="gain"
+          tone="success"
           title={t("inventory.grid.equipped")}
         />
       ) : null}

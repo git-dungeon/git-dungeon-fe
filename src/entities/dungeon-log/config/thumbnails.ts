@@ -22,7 +22,7 @@ import type {
   DungeonLogRewardItem,
 } from "@/entities/dungeon-log/model/types";
 
-export type LogThumbnailBadge = "gain" | "loss";
+export type LogThumbnailBadge = "success" | "danger";
 
 export interface LogThumbnailDescriptor {
   id: string;
@@ -56,8 +56,8 @@ const BADGE_PRESENTATIONS: Record<
   LogThumbnailBadge,
   { icon: "plus" | "minus"; className: string }
 > = {
-  gain: { icon: "plus", className: "pixel-log-thumb__badge--gain" },
-  loss: { icon: "minus", className: "pixel-log-thumb__badge--loss" },
+  success: { icon: "plus", className: "pixel-status-badge--success" },
+  danger: { icon: "minus", className: "pixel-status-badge--danger" },
 };
 
 export function resolveThumbnailBadgePresentation(badge?: LogThumbnailBadge) {
@@ -114,7 +114,7 @@ function resolveGoldBadge(
     return undefined;
   }
 
-  return gold > 0 ? "gain" : "loss";
+  return gold > 0 ? "success" : "danger";
 }
 
 type ItemNameResolver = (code: string, fallback?: string | null) => string;
@@ -170,7 +170,7 @@ export function buildLogThumbnails(
         id: `${entry.id}-reward-item-${index + 1}`,
         src: itemThumbnail,
         alt: itemName ?? t("logs.thumbnails.rewardItem"),
-        badge: "gain",
+        badge: "success",
         rarity,
       });
     });
@@ -237,7 +237,7 @@ export function buildLogThumbnails(
 
   if (delta?.type === "ACQUIRE_ITEM") {
     const inventory = delta.detail.inventory;
-    if (!pushInventoryItems(inventory.added, "gain")) {
+    if (!pushInventoryItems(inventory.added, "success")) {
       const primaryItem =
         inventory.equipped ??
         inventory.unequipped ??
@@ -256,7 +256,7 @@ export function buildLogThumbnails(
           id: `${entry.id}-item`,
           src: itemThumbnail,
           alt: itemName ?? t("logs.thumbnails.item"),
-          badge: "gain",
+          badge: "success",
           rarity,
         });
       }
@@ -285,8 +285,8 @@ export function buildLogThumbnails(
           : undefined;
       const badge: LogThumbnailBadge | undefined =
         delta.type === "UNEQUIP_ITEM" || delta.type === "DISCARD_ITEM"
-          ? "loss"
-          : "gain";
+          ? "danger"
+          : "success";
       thumbnails.push({
         id: `${entry.id}-item`,
         src: itemThumbnail,
