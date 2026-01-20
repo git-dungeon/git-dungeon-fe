@@ -29,9 +29,9 @@ export function PixelCheckIcon({
 
   const toneClass =
     tone === "success"
-      ? "pixel-log-thumb-badge--success"
+      ? "pixel-status-badge--success"
       : tone === "danger"
-        ? "pixel-log-thumb-badge--danger"
+        ? "pixel-status-badge--danger"
         : undefined;
 
   return (
