@@ -1,5 +1,5 @@
 import type { Decorator, Meta, StoryObj } from "@storybook/react";
-import { useMemo } from "react";
+import { useMemo, type ReactElement } from "react";
 import type { InfiniteData } from "@tanstack/react-query";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { DungeonLogTimeline } from "@/widgets/dungeon-log-timeline/ui/dungeon-log-timeline";
@@ -9,7 +9,7 @@ import { sampleDungeonLogs } from "@/mocks/fixtures/storybook";
 
 const withLogData: Decorator = (Story) => <LogDataProvider Story={Story} />;
 
-function LogDataProvider({ Story }: { Story: () => JSX.Element }) {
+function LogDataProvider({ Story }: { Story: () => ReactElement }) {
   const queryClient = useMemo(() => {
     const client = new QueryClient({
       defaultOptions: {

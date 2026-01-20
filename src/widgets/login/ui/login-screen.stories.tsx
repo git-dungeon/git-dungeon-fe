@@ -1,5 +1,5 @@
 import type { Decorator, Meta, StoryObj } from "@storybook/react";
-import { useMemo } from "react";
+import { useMemo, type ReactElement } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   Outlet,
@@ -13,7 +13,7 @@ import { LoginScreen } from "@/widgets/login/ui/login-screen";
 import type { RouterContext } from "@/shared/lib/router/router-context";
 import { createAuthService } from "@/entities/auth/lib/auth-service";
 
-function LoginStoryRouter({ Story }: { Story: () => JSX.Element }) {
+function LoginStoryRouter({ Story }: { Story: () => ReactElement }) {
   const queryClient = useQueryClient();
   const router = useMemo(() => {
     const rootRoute = createRootRouteWithContext<RouterContext>()({

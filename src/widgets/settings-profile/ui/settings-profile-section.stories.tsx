@@ -1,5 +1,5 @@
 import type { Decorator, Meta, StoryObj } from "@storybook/react";
-import { useMemo } from "react";
+import { useMemo, type ReactElement } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SettingsProfileSection } from "@/widgets/settings-profile/ui/settings-profile-section";
 import { PROFILE_QUERY_KEY } from "@/entities/profile/model/profile-query";
@@ -9,7 +9,7 @@ const withProfileData: Decorator = (Story) => (
   <ProfileDataProvider Story={Story} />
 );
 
-function ProfileDataProvider({ Story }: { Story: () => JSX.Element }) {
+function ProfileDataProvider({ Story }: { Story: () => ReactElement }) {
   const queryClient = useMemo(() => {
     const client = new QueryClient({
       defaultOptions: {

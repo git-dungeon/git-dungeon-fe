@@ -1,5 +1,5 @@
 import type { Decorator, Meta, StoryObj } from "@storybook/react";
-import { useMemo } from "react";
+import { useMemo, type ReactElement } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SettingsEmbeddingPreviewCard } from "@/widgets/settings-embedding/ui/settings-embedding-preview-card";
 import { DASHBOARD_STATE_QUERY_KEY } from "@/entities/dashboard/model/dashboard-state-query";
@@ -17,7 +17,7 @@ const withSettingsData: Decorator = (Story) => (
   <SettingsDataProvider Story={Story} />
 );
 
-function SettingsDataProvider({ Story }: { Story: () => JSX.Element }) {
+function SettingsDataProvider({ Story }: { Story: () => ReactElement }) {
   const queryClient = useMemo(() => {
     const client = new QueryClient({
       defaultOptions: {
