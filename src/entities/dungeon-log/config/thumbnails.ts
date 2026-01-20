@@ -18,6 +18,8 @@ import type { EquipmentRarity } from "@/entities/inventory/model/types";
 import type {
   DungeonLogEntry,
   DungeonLogAction,
+  DungeonLogInventoryDeltaItem,
+  DungeonLogRewardItem,
 } from "@/entities/dungeon-log/model/types";
 
 export type LogThumbnailBadge = "gain" | "loss";
@@ -152,6 +154,52 @@ export function buildLogThumbnails(
   const actionThumbnail = resolveActionThumbnail(entry.action);
   const isBattleAction = entry.action === "BATTLE";
   const isTreasureAction = entry.action === "TREASURE";
+  const pushRewardItems = (items?: DungeonLogRewardItem[]) => {
+    if (!items?.length) {
+      return;
+    }
+
+    items.forEach((rewardItem, index) => {
+      const itemThumbnail = resolveItemThumbnail(rewardItem.code);
+      if (!itemThumbnail) {
+        return;
+      }
+      const itemName = resolveName(rewardItem.code);
+      const rarity = resolveRarity(rewardItem.code);
+      thumbnails.push({
+        id: `${entry.id}-reward-item-${index + 1}`,
+        src: itemThumbnail,
+        alt: itemName ?? t("logs.thumbnails.rewardItem"),
+        badge: "gain",
+        rarity,
+      });
+    });
+  };
+  const pushInventoryItems = (
+    items: DungeonLogInventoryDeltaItem[] | undefined,
+    badge: LogThumbnailBadge
+  ) => {
+    if (!items?.length) {
+      return false;
+    }
+
+    items.forEach((item, index) => {
+      const itemThumbnail = resolveItemThumbnail(item.code);
+      if (!itemThumbnail) {
+        return;
+      }
+      const itemName = resolveName(item.code);
+      const rarity = resolveRarity(item.code, item.rarity);
+      thumbnails.push({
+        id: `${entry.id}-item-${index + 1}`,
+        src: itemThumbnail,
+        alt: itemName ?? t("logs.thumbnails.item"),
+        badge,
+        rarity,
+      });
+    });
+    return true;
+  };
 
   if (actionThumbnail && (isBattleAction || isTreasureAction)) {
     thumbnails.push({
@@ -182,30 +230,41 @@ export function buildLogThumbnails(
   const delta = entry.delta;
 
   if (delta?.type === "BATTLE") {
-    const rewardItem = delta.detail.rewards?.items?.at(0);
-    const itemThumbnail = resolveItemThumbnail(rewardItem?.code);
-    if (itemThumbnail) {
-      const itemName = rewardItem?.code
-        ? resolveName(rewardItem.code)
-        : undefined;
-      const rarity = rewardItem?.code
-        ? resolveRarity(rewardItem.code)
-        : undefined;
-      thumbnails.push({
-        id: `${entry.id}-reward-item`,
-        src: itemThumbnail,
-        alt: itemName ?? t("logs.thumbnails.rewardItem"),
-        badge: "gain",
-        rarity,
-      });
+    pushRewardItems(delta.detail.rewards?.items);
+  }
+
+  if (delta?.type === "ACQUIRE_ITEM") {
+    const inventory = delta.detail.inventory;
+    if (!pushInventoryItems(inventory.added, "gain")) {
+      const primaryItem =
+        inventory.equipped ??
+        inventory.unequipped ??
+        inventory.added?.at(0) ??
+        inventory.removed?.at(0);
+
+      const itemKey = primaryItem?.code;
+      const itemThumbnail = resolveItemThumbnail(itemKey);
+      if (itemThumbnail) {
+        const itemName = itemKey ? resolveName(itemKey) : undefined;
+        const rarity =
+          itemKey && primaryItem
+            ? resolveRarity(itemKey, primaryItem.rarity)
+            : undefined;
+        thumbnails.push({
+          id: `${entry.id}-item`,
+          src: itemThumbnail,
+          alt: itemName ?? t("logs.thumbnails.item"),
+          badge: "gain",
+          rarity,
+        });
+      }
     }
   }
 
   if (
     delta?.type === "EQUIP_ITEM" ||
     delta?.type === "UNEQUIP_ITEM" ||
-    delta?.type === "DISCARD_ITEM" ||
-    delta?.type === "ACQUIRE_ITEM"
+    delta?.type === "DISCARD_ITEM"
   ) {
     const inventory = delta.detail.inventory;
     const primaryItem =
@@ -237,23 +296,7 @@ export function buildLogThumbnails(
   }
 
   if (delta?.type === "TREASURE") {
-    const rewardItem = delta.detail.rewards?.items?.at(0);
-    const itemThumbnail = resolveItemThumbnail(rewardItem?.code);
-    if (itemThumbnail) {
-      const itemName = rewardItem?.code
-        ? resolveName(rewardItem.code)
-        : undefined;
-      const rarity = rewardItem?.code
-        ? resolveRarity(rewardItem.code)
-        : undefined;
-      thumbnails.push({
-        id: `${entry.id}-reward-item`,
-        src: itemThumbnail,
-        alt: itemName ?? t("logs.thumbnails.rewardItem"),
-        badge: "gain",
-        rarity,
-      });
-    }
+    pushRewardItems(delta.detail.rewards?.items);
   }
 
   if (actionThumbnail && !isBattleAction && !isTreasureAction) {

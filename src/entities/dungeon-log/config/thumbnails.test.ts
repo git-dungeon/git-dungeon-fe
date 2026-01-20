@@ -55,7 +55,7 @@ describe("buildLogThumbnails", () => {
     expect(thumbnails.map((thumbnail) => thumbnail.id)).toEqual([
       "log-battle-order-action",
       "log-battle-order-monster",
-      "log-battle-order-reward-item",
+      "log-battle-order-reward-item-1",
       "log-battle-order-gold",
     ]);
   });
@@ -82,8 +82,39 @@ describe("buildLogThumbnails", () => {
     const thumbnails = buildLogThumbnails(entry);
     expect(thumbnails.map((thumbnail) => thumbnail.id)).toEqual([
       "log-treasure-order-action",
-      "log-treasure-order-reward-item",
+      "log-treasure-order-reward-item-1",
       "log-treasure-order-gold",
+    ]);
+  });
+
+  it("BATTLE 보상 아이템이 여러 개면 썸네일을 모두 추가한다", () => {
+    const entry: DungeonLogEntry = {
+      id: "log-battle-multi-reward",
+      category: "EXPLORATION",
+      floor: 1,
+      action: "BATTLE",
+      status: "COMPLETED",
+      createdAt: "2025-12-01T00:00:00Z",
+      delta: {
+        type: "BATTLE",
+        detail: {
+          rewards: {
+            gold: 5,
+            items: [
+              { code: "ring-copper-band", quantity: 1 },
+              { code: "ring-silver-band", quantity: 1 },
+            ],
+          },
+        },
+      },
+    };
+
+    const thumbnails = buildLogThumbnails(entry);
+    expect(thumbnails.map((thumbnail) => thumbnail.id)).toEqual([
+      "log-battle-multi-reward-action",
+      "log-battle-multi-reward-reward-item-1",
+      "log-battle-multi-reward-reward-item-2",
+      "log-battle-multi-reward-gold",
     ]);
   });
 });
