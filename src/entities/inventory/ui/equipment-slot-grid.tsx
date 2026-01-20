@@ -79,7 +79,7 @@ export function InventoryEmptySlot({ slot }: { slot: EquipmentSlot }) {
   const { t } = useTranslation();
   return (
     <div className="flex w-full flex-col items-center gap-2 text-center">
-      <div className="pixel-slot__placeholder flex size-14 items-center justify-center rounded-md" />
+      <div className="pixel-slot-placeholder flex size-14 items-center justify-center rounded-md" />
       <div className="space-y-1">
         <p className="text-xs font-semibold tracking-wide">
           {getInventorySlotLabel(slot)}

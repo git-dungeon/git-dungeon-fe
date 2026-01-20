@@ -123,7 +123,7 @@ export function InventoryModal({
           <DialogHeader className="flex-row items-start gap-3">
             <div
               className={cn(
-                "inventory-item__icon flex size-16 shrink-0 items-center justify-center",
+                "inventory-item-icon flex size-16 shrink-0 items-center justify-center",
                 rarityClass
               )}
             >
@@ -141,11 +141,11 @@ export function InventoryModal({
               )}
             </div>
             <div className="w-full text-left">
-              <DialogTitle className="pixel-modal__title">
+              <DialogTitle className="pixel-modal-title">
                 {displayName}
               </DialogTitle>
               <DialogDescription className="pixel-text-muted pixel-text-sm flex flex-wrap items-center gap-2">
-                <span className="pixel-modal__slot-label">
+                <span className="pixel-modal-slot-label">
                   {getInventorySlotLabel(slot)}
                 </span>
                 <PixelPill

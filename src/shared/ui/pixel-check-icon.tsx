@@ -29,9 +29,9 @@ export function PixelCheckIcon({
 
   const toneClass =
     tone === "gain"
-      ? "pixel-log-thumb__badge--gain"
+      ? "pixel-log-thumb-badge--gain"
       : tone === "loss"
-        ? "pixel-log-thumb__badge--loss"
+        ? "pixel-log-thumb-badge--loss"
         : undefined;
 
   return (
@@ -49,7 +49,7 @@ export function PixelCheckIcon({
       <PixelIcon
         name="check"
         size={resolvedIconSize}
-        className="pixel-checkbox__icon"
+        className="pixel-checkbox-icon"
         style={{ width: resolvedIconSize, height: resolvedIconSize }}
       />
     </span>

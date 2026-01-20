@@ -27,8 +27,8 @@ export const Default: Story = {
         <PixelButton>Open Dialog</PixelButton>
       </DialogTrigger>
       <DialogContent className="pixel-modal">
-        <DialogHeader className="pixel-modal__header">
-          <DialogTitle className="pixel-modal__title">알림</DialogTitle>
+        <DialogHeader className="pixel-modal-header">
+          <DialogTitle className="pixel-modal-title">알림</DialogTitle>
         </DialogHeader>
         <DialogDescription className="pixel-text-muted text-sm">
           던전 입장 전에 장비를 점검하세요.

@@ -82,9 +82,9 @@ export function LogCard({
         isInteractive && "pixel-log-card--interactive"
       )}
     >
-      <div className="pixel-log-card__content">
-        <div className="pixel-log-card__details">
-          <div className="pixel-log-card__header">
+      <div className="pixel-log-card-content">
+        <div className="pixel-log-card-details">
+          <div className="pixel-log-card-header">
             {showCategoryBadge ? (
               <Badge variant="outline" className="pixel-log-badge">
                 [{resolveLogCategoryLabel(log.category)}]
@@ -97,7 +97,7 @@ export function LogCard({
           </div>
           <p className="pixel-log-meta">{meta}</p>
           {monster || player ? (
-            <div className="pixel-log-card__summary">
+            <div className="pixel-log-card-summary">
               <BattleMonsterSummary
                 monster={monster}
                 player={player}
@@ -107,11 +107,11 @@ export function LogCard({
           ) : null}
         </div>
         {renderThumbnail ? (
-          <div className="pixel-log-card__thumb">{renderThumbnail()}</div>
+          <div className="pixel-log-card-thumb">{renderThumbnail()}</div>
         ) : null}
       </div>
       {deltaContent ? (
-        <div className="pixel-log-card__delta">{deltaContent}</div>
+        <div className="pixel-log-card-delta">{deltaContent}</div>
       ) : null}
     </div>
   );

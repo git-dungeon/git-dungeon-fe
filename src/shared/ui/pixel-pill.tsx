@@ -51,7 +51,7 @@ export function PixelPill({
                     : "item-count"
           }
           size={10}
-          className="pixel-pill__icon"
+          className="pixel-pill-icon"
         />
       ) : null}
       {children}

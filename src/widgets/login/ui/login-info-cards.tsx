@@ -21,7 +21,7 @@ export function LoginInfoCards({ cards }: LoginInfoCardsProps) {
               className="h-14 w-14 shrink-0"
             />
             <div>
-              <h3 className="pixel-panel__title text-sm">{card.title}</h3>
+              <h3 className="pixel-panel-title text-sm">{card.title}</h3>
               <p className="pixel-text-muted pixel-text-sm mt-2">
                 {card.description}
               </p>

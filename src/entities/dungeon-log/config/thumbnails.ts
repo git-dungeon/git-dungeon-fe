@@ -56,8 +56,8 @@ const BADGE_PRESENTATIONS: Record<
   LogThumbnailBadge,
   { icon: "plus" | "minus"; className: string }
 > = {
-  gain: { icon: "plus", className: "pixel-log-thumb__badge--gain" },
-  loss: { icon: "minus", className: "pixel-log-thumb__badge--loss" },
+  gain: { icon: "plus", className: "pixel-log-thumb-badge--gain" },
+  loss: { icon: "minus", className: "pixel-log-thumb-badge--loss" },
 };
 
 export function resolveThumbnailBadgePresentation(badge?: LogThumbnailBadge) {

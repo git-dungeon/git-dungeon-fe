@@ -46,7 +46,7 @@ export function InventoryItemCard({
       >
         <div
           className={cn(
-            "inventory-item__icon flex size-14 items-center justify-center overflow-hidden",
+            "inventory-item-icon flex size-14 items-center justify-center overflow-hidden",
             rarityClass
           )}
         >
@@ -76,7 +76,7 @@ export function InventoryItemCard({
     >
       <div
         className={cn(
-          "inventory-item__icon relative flex size-14 items-center justify-center overflow-hidden",
+          "inventory-item-icon relative flex size-14 items-center justify-center overflow-hidden",
           rarityClass
         )}
       >

@@ -37,7 +37,7 @@ export function PixelCheckbox({
     >
       <input className="sr-only" {...inputProps} />
       {isChecked ? (
-        <PixelIcon name="check" className="pixel-checkbox__icon" />
+        <PixelIcon name="check" className="pixel-checkbox-icon" />
       ) : null}
     </label>
   );

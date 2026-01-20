@@ -32,10 +32,10 @@ export function DashboardStatBar({
         <span className="pixel-stat-label pixel-stat-label--bar">{label}</span>
         <div className="pixel-bar pixel-bar--value flex-1">
           <div
-            className={cn("pixel-bar__fill", `pixel-bar__fill--${tone}`)}
+            className={cn("pixel-bar-fill", `pixel-bar-fill--${tone}`)}
             style={{ width: `${percent}%` }}
           />
-          <span className="pixel-bar__value">{value}</span>
+          <span className="pixel-bar-value">{value}</span>
         </div>
       </div>
     );
@@ -49,7 +49,7 @@ export function DashboardStatBar({
       </div>
       <div className="pixel-bar">
         <div
-          className={cn("pixel-bar__fill", `pixel-bar__fill--${tone}`)}
+          className={cn("pixel-bar-fill", `pixel-bar-fill--${tone}`)}
           style={{ width: `${percent}%` }}
         />
       </div>

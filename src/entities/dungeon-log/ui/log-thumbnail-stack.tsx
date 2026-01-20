@@ -46,14 +46,14 @@ export function LogThumbnailStack({ thumbnails }: LogThumbnailStackProps) {
             {badgeStyles ? (
               <span
                 className={cn(
-                  "pixel-checkbox pixel-log-thumb__badge absolute top-1 left-1",
+                  "pixel-checkbox pixel-log-thumb-badge absolute top-1 left-1",
                   badgeStyles.className
                 )}
               >
                 <PixelIcon
                   name={badgeStyles.icon}
                   size={12}
-                  className="pixel-checkbox__icon"
+                  className="pixel-checkbox-icon"
                 />
               </span>
             ) : null}
