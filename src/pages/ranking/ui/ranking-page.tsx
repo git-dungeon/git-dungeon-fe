@@ -7,7 +7,7 @@ export function RankingPage() {
   const rankingList = useRankingList();
 
   return (
-    <section className="space-y-6">
+    <section className="flex min-h-[calc(100svh-var(--pixel-page-offset))] flex-col gap-6">
       <header>
         <h1
           className="font-pixel-title pixel-page-title"

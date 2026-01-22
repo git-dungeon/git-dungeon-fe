@@ -11,7 +11,7 @@ import type { RankingListState } from "@/features/ranking-list/model/use-ranking
 
 type RankingTableProps = RankingListState;
 
-const PANEL_MIN_HEIGHT_CLASS = "min-h-screen";
+const PANEL_FLEX_CLASS = "flex-1";
 
 export function RankingTable({
   rankings,
@@ -26,7 +26,7 @@ export function RankingTable({
   const { t } = useTranslation();
 
   if (status === "pending") {
-    return <PixelSkeletonState className={PANEL_MIN_HEIGHT_CLASS} count={2} />;
+    return <PixelSkeletonState className={PANEL_FLEX_CLASS} count={2} />;
   }
 
   if (status === "error") {
@@ -34,7 +34,7 @@ export function RankingTable({
 
     return (
       <PixelErrorState
-        className={PANEL_MIN_HEIGHT_CLASS}
+        className={PANEL_FLEX_CLASS}
         message={t("ranking.state.error")}
         actions={
           <PixelButton onClick={() => refetch()}>
@@ -50,7 +50,7 @@ export function RankingTable({
   if (rankings.length === 0) {
     return (
       <PixelEmptyState
-        className={PANEL_MIN_HEIGHT_CLASS}
+        className={PANEL_FLEX_CLASS}
         message={t("ranking.state.empty")}
       />
     );
@@ -60,8 +60,8 @@ export function RankingTable({
 
   return (
     <PixelPanel
-      className={`p-4 ${PANEL_MIN_HEIGHT_CLASS}`}
-      contentClassName="flex min-h-full flex-col gap-4"
+      className={`p-4 ${PANEL_FLEX_CLASS}`}
+      contentClassName="flex min-h-0 flex-1 flex-col gap-4"
     >
       <div className="flex-1 overflow-x-auto">
         <table className="w-full min-w-[520px] table-fixed text-left text-sm">
