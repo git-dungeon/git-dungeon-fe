@@ -6,6 +6,7 @@ import { settingsHandlers } from "./settings-handlers";
 import { embedHandlers } from "./embed-handlers";
 import { catalogHandlers } from "./catalog-handlers";
 import { githubHandlers } from "./github-handlers";
+import { rankingHandlers } from "./ranking-handlers";
 
 export const handlers = [
   ...authHandlers,
@@ -16,4 +17,5 @@ export const handlers = [
   ...catalogHandlers,
   ...githubHandlers,
   ...embedHandlers,
+  ...rankingHandlers,
 ];

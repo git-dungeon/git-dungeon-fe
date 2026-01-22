@@ -147,6 +147,10 @@ export const CATALOG_ENDPOINTS = {
   catalog: "/api/catalog",
 } as const;
 
+export const RANKING_ENDPOINTS = {
+  list: "/api/ranking",
+} as const;
+
 export function resolveWebUrl(path: string): string {
   if (/^https?:/i.test(path)) {
     return path;
