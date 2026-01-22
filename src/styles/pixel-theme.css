@@ -55,7 +55,18 @@
     --ring: #f4c76f;
     --radius: 0.55rem;
     --pixel-container: 1280px;
+    --pixel-header-height: 72px;
+    --pixel-main-padding-top: 28px;
+    --pixel-main-padding-bottom: 40px;
     --pixel-frame-border: 14px;
+    --pixel-frame-border-2: calc(var(--pixel-frame-border) * 2);
+    --pixel-frame-padding: 22px;
+    --pixel-frame-padding-2: calc(var(--pixel-frame-padding) * 2);
+    --pixel-page-offset: calc(
+      var(--pixel-header-height) + var(--pixel-main-padding-top) +
+        var(--pixel-main-padding-bottom) + var(--pixel-frame-padding-2) +
+        var(--pixel-frame-border-2)
+    );
     --pixel-frame-slice: 180;
     --pixel-panel-border: 14px;
     --pixel-panel-slice: 180;
@@ -333,7 +344,7 @@
   }
 
   .pixel-main {
-    padding: 28px 16px 40px;
+    padding: var(--pixel-main-padding-top) 16px var(--pixel-main-padding-bottom);
     display: flex;
     justify-content: center;
   }
@@ -341,7 +352,7 @@
   .pixel-frame {
     width: min(var(--pixel-container), 100%);
     margin: 0 auto;
-    padding: 22px;
+    padding: var(--pixel-frame-padding);
     position: relative;
     border-radius: 0;
     background: var(--pixel-surface-strong);

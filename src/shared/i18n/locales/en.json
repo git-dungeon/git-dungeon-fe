@@ -11,7 +11,8 @@
     "dashboard": "Dashboard",
     "inventory": "Inventory",
     "logs": "Logs",
-    "settings": "Settings"
+    "settings": "Settings",
+    "ranking": "Ranking"
   },
   "onboarding": {
     "title": "ONBOARDING",
@@ -583,5 +584,23 @@
     "API_UNAVAILABLE": "Service is unavailable. Please try again later.",
     "UNKNOWN": "An unknown error occurred.",
     "API_PRECONDITION_FAILED": "Request precondition failed."
+  },
+  "ranking": {
+    "title": "Ranking",
+    "table": {
+      "rank": "Rank",
+      "player": "Player",
+      "level": "Level",
+      "highestFloor": "Highest Floor"
+    },
+    "state": {
+      "empty": "No rankings available.",
+      "error": "Failed to load rankings.",
+      "retry": "Retry",
+      "loadingMore": "Loading...",
+      "allLoaded": "All loaded.",
+      "loadMore": "Load more"
+    },
+    "avatarAlt": "Player avatar"
   }
 }

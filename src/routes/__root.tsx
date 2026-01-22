@@ -16,6 +16,7 @@ import { NotFoundPage } from "@/pages/not-found/ui/not-found-page";
 const NAVIGATION_LINKS = [
   { to: "/dashboard", labelKey: "navigation.dashboard" },
   { to: "/inventory", labelKey: "navigation.inventory" },
+  { to: "/ranking", labelKey: "navigation.ranking" },
   { to: "/logs", labelKey: "navigation.logs" },
   { to: "/settings", labelKey: "navigation.settings" },
 ] as const;
