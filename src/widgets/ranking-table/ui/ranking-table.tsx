@@ -13,6 +13,8 @@ interface RankingTableProps {
   limit?: number;
 }
 
+const PANEL_MIN_HEIGHT_CLASS = "min-h-screen";
+
 export function RankingTable({ limit = 10 }: RankingTableProps) {
   const { t } = useTranslation();
   const {
@@ -27,7 +29,7 @@ export function RankingTable({ limit = 10 }: RankingTableProps) {
   } = useRankingList({ limit });
 
   if (status === "pending") {
-    return <PixelSkeletonState count={2} />;
+    return <PixelSkeletonState className={PANEL_MIN_HEIGHT_CLASS} count={2} />;
   }
 
   if (status === "error") {
@@ -35,6 +37,7 @@ export function RankingTable({ limit = 10 }: RankingTableProps) {
 
     return (
       <PixelErrorState
+        className={PANEL_MIN_HEIGHT_CLASS}
         message={t("ranking.state.error")}
         actions={
           <PixelButton onClick={() => refetch()}>
@@ -48,14 +51,22 @@ export function RankingTable({ limit = 10 }: RankingTableProps) {
   }
 
   if (rankings.length === 0) {
-    return <PixelEmptyState message={t("ranking.state.empty")} />;
+    return (
+      <PixelEmptyState
+        className={PANEL_MIN_HEIGHT_CLASS}
+        message={t("ranking.state.empty")}
+      />
+    );
   }
 
   const isRefreshing = isFetching || isFetchingNextPage;
 
   return (
-    <PixelPanel className="p-4" contentClassName="space-y-4">
-      <div className="overflow-x-auto">
+    <PixelPanel
+      className={`p-4 ${PANEL_MIN_HEIGHT_CLASS}`}
+      contentClassName="flex min-h-full flex-col gap-4"
+    >
+      <div className="flex-1 overflow-x-auto">
         <table className="w-full min-w-[520px] table-fixed text-left text-sm">
           <thead>
             <tr className="text-muted-foreground border-b border-white/10 text-xs tracking-wider uppercase">
