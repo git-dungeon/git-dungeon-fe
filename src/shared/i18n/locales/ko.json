@@ -11,7 +11,8 @@
     "dashboard": "대시보드",
     "inventory": "인벤토리",
     "logs": "로그",
-    "settings": "설정"
+    "settings": "설정",
+    "ranking": "랭킹"
   },
   "onboarding": {
     "title": "시작하기",

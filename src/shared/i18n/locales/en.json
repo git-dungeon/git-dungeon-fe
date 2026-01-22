@@ -11,7 +11,8 @@
     "dashboard": "Dashboard",
     "inventory": "Inventory",
     "logs": "Logs",
-    "settings": "Settings"
+    "settings": "Settings",
+    "ranking": "Ranking"
   },
   "onboarding": {
     "title": "ONBOARDING",
