@@ -585,10 +585,10 @@
   "ranking": {
     "title": "랭킹",
     "table": {
-      "rank": "Rank",
-      "player": "Player",
-      "level": "Level",
-      "highestFloor": "Highest Floor"
+      "rank": "순위",
+      "player": "플레이어",
+      "level": "레벨",
+      "highestFloor": "최고 층수"
     },
     "state": {
       "empty": "표시할 랭킹이 없습니다.",
