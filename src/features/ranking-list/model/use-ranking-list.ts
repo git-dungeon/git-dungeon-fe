@@ -36,3 +36,5 @@ export function useRankingList(params: UseRankingListParams = {}) {
     refetch,
   };
 }
+
+export type RankingListState = ReturnType<typeof useRankingList>;

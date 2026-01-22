@@ -1,8 +1,10 @@
 import { useTranslation } from "react-i18next";
 import { RankingTable } from "@/widgets/ranking-table/ui/ranking-table";
+import { useRankingList } from "@/features/ranking-list/model/use-ranking-list";
 
 export function RankingPage() {
   const { t } = useTranslation();
+  const rankingList = useRankingList();
 
   return (
     <section className="space-y-6">
@@ -14,7 +16,7 @@ export function RankingPage() {
           {t("ranking.title")}
         </h1>
       </header>
-      <RankingTable />
+      <RankingTable {...rankingList} />
     </section>
   );
 }

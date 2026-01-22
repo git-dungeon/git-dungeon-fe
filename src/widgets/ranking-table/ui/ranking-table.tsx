@@ -5,28 +5,25 @@ import {
   PixelSkeletonState,
 } from "@/shared/ui/pixel-state";
 import { PixelPanel } from "@/shared/ui/pixel-panel";
-import { useRankingList } from "@/widgets/ranking-table/model/use-ranking-list";
 import type { RankingEntry } from "@/entities/ranking/model/types";
 import { useTranslation } from "react-i18next";
+import type { RankingListState } from "@/features/ranking-list/model/use-ranking-list";
 
-interface RankingTableProps {
-  limit?: number;
-}
+type RankingTableProps = RankingListState;
 
 const PANEL_MIN_HEIGHT_CLASS = "min-h-screen";
 
-export function RankingTable({ limit = 10 }: RankingTableProps) {
+export function RankingTable({
+  rankings,
+  status,
+  error,
+  isFetching,
+  fetchNextPage,
+  hasNextPage,
+  isFetchingNextPage,
+  refetch,
+}: RankingTableProps) {
   const { t } = useTranslation();
-  const {
-    rankings,
-    status,
-    error,
-    isFetching,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    refetch,
-  } = useRankingList({ limit });
 
   if (status === "pending") {
     return <PixelSkeletonState className={PANEL_MIN_HEIGHT_CLASS} count={2} />;
