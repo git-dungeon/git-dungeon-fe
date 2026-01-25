@@ -3,6 +3,7 @@ import { server } from "./server";
 import { resetApiClientAuthentication } from "@/shared/api/http-client";
 import { resetInventoryMockState } from "@/mocks/handlers/inventory-handlers";
 import { resetGithubMockState } from "@/mocks/handlers/github-handlers";
+import { resetLevelUpMockState } from "@/mocks/handlers/level-up-handlers";
 import "@/shared/i18n/i18n";
 
 beforeAll(() => {
@@ -16,6 +17,7 @@ afterEach(() => {
   resetApiClientAuthentication();
   resetInventoryMockState();
   resetGithubMockState();
+  resetLevelUpMockState();
 });
 
 afterAll(() => {

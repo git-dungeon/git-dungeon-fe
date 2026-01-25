@@ -28,15 +28,25 @@ const OPTION_SETS: LevelUpOption[][] = [
   ],
 ];
 
-let levelUpPoints = 2;
-let rollIndex = 0;
-let currentStats: LevelUpStatBlock = {
+const INITIAL_LEVEL_UP_POINTS = 2;
+const INITIAL_ROLL_INDEX = 0;
+const INITIAL_STATS: LevelUpStatBlock = {
   hp: 32,
   maxHp: 40,
   atk: 18,
   def: 14,
   luck: 6,
 };
+
+let levelUpPoints = INITIAL_LEVEL_UP_POINTS;
+let rollIndex = INITIAL_ROLL_INDEX;
+let currentStats: LevelUpStatBlock = { ...INITIAL_STATS };
+
+export function resetLevelUpMockState() {
+  levelUpPoints = INITIAL_LEVEL_UP_POINTS;
+  rollIndex = INITIAL_ROLL_INDEX;
+  currentStats = { ...INITIAL_STATS };
+}
 
 function buildSelection(): LevelUpSelectionResponse {
   const options = OPTION_SETS[rollIndex % OPTION_SETS.length];
