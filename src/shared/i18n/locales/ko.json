@@ -14,6 +14,14 @@
     "settings": "설정",
     "ranking": "랭킹"
   },
+  "levelUp": {
+    "banner": {
+      "title": "LEVEL UP!",
+      "message": "레벨업 포인트 {{points}}개가 남아 있습니다.",
+      "points": "{{points}} 포인트",
+      "cta": "능력치 선택"
+    }
+  },
   "onboarding": {
     "title": "시작하기",
     "headline": "GIT IDLE DUNGEON에 오신 것을 환영합니다!",

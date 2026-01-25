@@ -12,6 +12,8 @@ import { ensureQueryDataSafe } from "@/shared/lib/query/ensure-query-data-safe";
 import { catalogQueryOptions } from "@/entities/catalog/model/catalog-query";
 import { getLanguagePreference } from "@/shared/lib/preferences/preferences";
 import { NotFoundPage } from "@/pages/not-found/ui/not-found-page";
+import { useDashboardState } from "@/entities/dashboard/model/use-dashboard-state";
+import { LevelUpBanner } from "@/features/level-up-banner/ui/level-up-banner";
 
 const NAVIGATION_LINKS = [
   { to: "/dashboard", labelKey: "navigation.dashboard" },
@@ -42,6 +44,9 @@ function RootComponent() {
   const pathname = routerState.location.pathname;
   const isLoginScreen = pathname.startsWith("/login");
   const shouldRenderHeader = !isLoginScreen;
+  const dashboardState = useDashboardState({ enabled: shouldRenderHeader });
+  const levelUpPoints = dashboardState.data?.levelUpPoints ?? 0;
+  const shouldShowLevelUpBanner = shouldRenderHeader && levelUpPoints > 0;
 
   return (
     <div className={cn("pixel-app font-pixel-body flex min-h-screen flex-col")}>
@@ -59,6 +64,9 @@ function RootComponent() {
               ))}
             </div>
           </nav>
+          {shouldShowLevelUpBanner ? (
+            <LevelUpBanner points={levelUpPoints} />
+          ) : null}
         </header>
       ) : null}
       <main

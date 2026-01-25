@@ -14,6 +14,14 @@
     "settings": "Settings",
     "ranking": "Ranking"
   },
+  "levelUp": {
+    "banner": {
+      "title": "LEVEL UP!",
+      "message": "{{points}} level-up points available.",
+      "points": "{{points}} POINTS",
+      "cta": "Choose stats"
+    }
+  },
   "onboarding": {
     "title": "ONBOARDING",
     "headline": "WELCOME TO GIT IDLE DUNGEON!",
