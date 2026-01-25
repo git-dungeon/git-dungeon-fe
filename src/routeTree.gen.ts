@@ -14,6 +14,7 @@ import { Route as RankingRouteImport } from './routes/ranking'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as LogsRouteImport } from './routes/logs'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as LevelUpRouteImport } from './routes/level-up'
 import { Route as InventoryRouteImport } from './routes/inventory'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
@@ -43,6 +44,11 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LevelUpRoute = LevelUpRouteImport.update({
+  id: '/level-up',
+  path: '/level-up',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const InventoryRoute = InventoryRouteImport.update({
   id: '/inventory',
   path: '/inventory',
@@ -63,6 +69,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/inventory': typeof InventoryRoute
+  '/level-up': typeof LevelUpRoute
   '/login': typeof LoginRoute
   '/logs': typeof LogsRoute
   '/onboarding': typeof OnboardingRoute
@@ -73,6 +80,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/inventory': typeof InventoryRoute
+  '/level-up': typeof LevelUpRoute
   '/login': typeof LoginRoute
   '/logs': typeof LogsRoute
   '/onboarding': typeof OnboardingRoute
@@ -84,6 +92,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/inventory': typeof InventoryRoute
+  '/level-up': typeof LevelUpRoute
   '/login': typeof LoginRoute
   '/logs': typeof LogsRoute
   '/onboarding': typeof OnboardingRoute
@@ -96,6 +105,7 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/inventory'
+    | '/level-up'
     | '/login'
     | '/logs'
     | '/onboarding'
@@ -106,6 +116,7 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/inventory'
+    | '/level-up'
     | '/login'
     | '/logs'
     | '/onboarding'
@@ -116,6 +127,7 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/inventory'
+    | '/level-up'
     | '/login'
     | '/logs'
     | '/onboarding'
@@ -127,6 +139,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRoute
   InventoryRoute: typeof InventoryRoute
+  LevelUpRoute: typeof LevelUpRoute
   LoginRoute: typeof LoginRoute
   LogsRoute: typeof LogsRoute
   OnboardingRoute: typeof OnboardingRoute
@@ -171,6 +184,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/level-up': {
+      id: '/level-up'
+      path: '/level-up'
+      fullPath: '/level-up'
+      preLoaderRoute: typeof LevelUpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/inventory': {
       id: '/inventory'
       path: '/inventory'
@@ -199,6 +219,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRoute,
   InventoryRoute: InventoryRoute,
+  LevelUpRoute: LevelUpRoute,
   LoginRoute: LoginRoute,
   LogsRoute: LogsRoute,
   OnboardingRoute: OnboardingRoute,

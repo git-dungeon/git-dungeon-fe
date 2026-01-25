@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { PixelPill } from "@/shared/ui/pixel-pill";
 import { cn } from "@/shared/lib/utils";
@@ -16,7 +17,7 @@ export function LevelUpBanner({ points, className }: LevelUpBannerProps) {
 
   return (
     <section className={cn("level-up-banner", className)}>
-      <a href="/level-up" className="level-up-banner-inner">
+      <Link to="/level-up" className="level-up-banner-inner">
         <div className="level-up-banner-content">
           <span className="level-up-banner-title font-pixel-title">
             {t("levelUp.banner.title")}
@@ -31,7 +32,7 @@ export function LevelUpBanner({ points, className }: LevelUpBannerProps) {
           </PixelPill>
           <span className="level-up-banner-cta">{t("levelUp.banner.cta")}</span>
         </div>
-      </a>
+      </Link>
     </section>
   );
 }
