@@ -19,6 +19,7 @@ export const DUNGEON_LOGS_FILTER_TYPES = [
   "BUFF_APPLIED",
   "BUFF_EXPIRED",
   "LEVEL_UP",
+  "STAT_APPLIED",
 ] as const;
 
 export const dungeonLogsFilterTypeSchema = z.enum(DUNGEON_LOGS_FILTER_TYPES);
@@ -43,6 +44,7 @@ export const DUNGEON_LOG_ACTIONS = [
   "BUFF_APPLIED",
   "BUFF_EXPIRED",
   "LEVEL_UP",
+  "STAT_APPLIED",
 ] as const;
 
 export const dungeonLogActionSchema = z.enum(DUNGEON_LOG_ACTIONS);
@@ -256,6 +258,15 @@ const dungeonLogLevelUpDeltaSchema = z.object({
     .strict(),
 });
 
+const dungeonLogStatAppliedDeltaSchema = z.object({
+  type: z.literal("STAT_APPLIED"),
+  detail: z
+    .object({
+      stats: dungeonLogStatsDeltaSchema,
+    })
+    .strict(),
+});
+
 function buffDeltaSchema(type: "BUFF_APPLIED" | "BUFF_EXPIRED") {
   return z.object({
     type: z.literal(type),
@@ -302,6 +313,7 @@ export const dungeonLogDeltaSchema = z.union([
   dungeonLogUnequipItemDeltaSchema,
   dungeonLogDiscardItemDeltaSchema,
   dungeonLogLevelUpDeltaSchema,
+  dungeonLogStatAppliedDeltaSchema,
   dungeonLogBuffAppliedDeltaSchema,
   dungeonLogBuffExpiredDeltaSchema,
 ]);
@@ -452,6 +464,15 @@ const dungeonLogLevelUpDetailsSchema = z.object({
   }),
 });
 
+const dungeonLogStatAppliedDetailsSchema = z.object({
+  type: z.literal("STAT_APPLIED"),
+  details: z
+    .object({
+      applied: dungeonLogStatsDeltaSchema,
+    })
+    .strict(),
+});
+
 const dungeonLogRestDetailsSchema = z.object({
   type: z.literal("REST"),
   details: z.object({ source: z.string().optional() }).strict(),
@@ -509,6 +530,7 @@ export const dungeonLogDetailsSchema = z.union([
   dungeonLogUnequipItemDetailsSchema,
   dungeonLogDiscardItemDetailsSchema,
   dungeonLogLevelUpDetailsSchema,
+  dungeonLogStatAppliedDetailsSchema,
   dungeonLogRestDetailsSchema,
   dungeonLogTrapDetailsSchema,
   dungeonLogTreasureDetailsSchema,

@@ -20,6 +20,19 @@
       "message": "{{points}} level-up points available.",
       "points": "{{points}} POINTS",
       "cta": "Choose stats"
+    },
+    "page": {
+      "title": "LEVEL UP!",
+      "subtitle": "Spend points to choose the stats you want.",
+      "pointsLabel": "Points",
+      "points": "{{points}} POINTS",
+      "loadError": "Failed to load level-up options.",
+      "retry": "Retry",
+      "emptyTitle": "No points to spend.",
+      "emptyDescription": "Earn level-up points to choose your stats here.",
+      "select": "Select",
+      "pending": "Applying...",
+      "optionValue": "{{stat}} +{{value}}"
     }
   },
   "onboarding": {
@@ -405,7 +418,8 @@
         "DISCARD_ITEM": "Discard",
         "BUFF_APPLIED": "Buff Applied",
         "BUFF_EXPIRED": "Buff Expired",
-        "LEVEL_UP": "Level Up"
+        "LEVEL_UP": "Level Up",
+        "STAT_APPLIED": "Stat Applied"
       },
       "descriptions": {
         "ALL": "View all records.",
@@ -499,7 +513,8 @@
       "DISCARD_ITEM": "Discard",
       "BUFF_APPLIED": "Buff Applied",
       "BUFF_EXPIRED": "Buff Expired",
-      "LEVEL_UP": "Level Up"
+      "LEVEL_UP": "Level Up",
+      "STAT_APPLIED": "Stat Applied"
     },
     "statusAction": {
       "STARTED": {
@@ -517,7 +532,8 @@
         "DISCARD_ITEM": "Discarding item",
         "BUFF_APPLIED": "Applying buff",
         "BUFF_EXPIRED": "Buff ending",
-        "LEVEL_UP": "Preparing level up"
+        "LEVEL_UP": "Preparing level up",
+        "STAT_APPLIED": "Applying stats"
       },
       "COMPLETED": {
         "BATTLE": "Battle completed",
@@ -534,7 +550,8 @@
         "DISCARD_ITEM": "Item discarded",
         "BUFF_APPLIED": "Buff applied",
         "BUFF_EXPIRED": "Buff expired",
-        "LEVEL_UP": "Level up completed"
+        "LEVEL_UP": "Level up completed",
+        "STAT_APPLIED": "Stats applied"
       }
     },
     "status": {

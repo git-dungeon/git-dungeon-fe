@@ -8,6 +8,10 @@ import treasureImage from "@/assets/event/treasure.png";
 import moveImage from "@/assets/event/move.png";
 import goldImage from "@/assets/event/gold.png";
 import emptyImage from "@/assets/event/empty.png";
+import atkIcon from "@/assets/stat/atk.png";
+import defIcon from "@/assets/stat/def.png";
+import hpIcon from "@/assets/stat/hp.png";
+import luckIcon from "@/assets/stat/luck.png";
 import {
   resolveLocalItemSprite,
   resolveLocalMonsterSprite,
@@ -51,6 +55,13 @@ const ACTION_IMAGE_MAP: Partial<Record<DungeonLogAction, string>> = {
   MOVE: moveImage,
   EMPTY: emptyImage,
 };
+
+const STAT_ICON_MAP = {
+  hp: hpIcon,
+  atk: atkIcon,
+  def: defIcon,
+  luck: luckIcon,
+} as const;
 
 const BADGE_PRESENTATIONS: Record<
   LogThumbnailBadge,
@@ -299,6 +310,39 @@ export function buildLogThumbnails(
 
   if (delta?.type === "TREASURE") {
     pushRewardItems(delta.detail.rewards?.items);
+  }
+
+  if (entry.action === "STAT_APPLIED") {
+    const applied =
+      entry.extra?.type === "STAT_APPLIED"
+        ? entry.extra.details?.applied
+        : delta?.type === "STAT_APPLIED"
+          ? delta.detail.stats
+          : undefined;
+    const appliedStats: Array<keyof typeof STAT_ICON_MAP> = [];
+    const hasHp =
+      typeof applied?.hp === "number" || typeof applied?.maxHp === "number";
+
+    if (hasHp) {
+      appliedStats.push("hp");
+    }
+    if (typeof applied?.atk === "number") {
+      appliedStats.push("atk");
+    }
+    if (typeof applied?.def === "number") {
+      appliedStats.push("def");
+    }
+    if (typeof applied?.luck === "number") {
+      appliedStats.push("luck");
+    }
+
+    appliedStats.forEach((stat) => {
+      thumbnails.push({
+        id: `${entry.id}-stat-${stat}`,
+        src: STAT_ICON_MAP[stat],
+        alt: t(`dashboard.attributes.${stat}`),
+      });
+    });
   }
 
   if (actionThumbnail && !isBattleAction && !isTreasureAction) {

@@ -117,4 +117,38 @@ describe("buildLogThumbnails", () => {
       "log-battle-multi-reward-gold",
     ]);
   });
+
+  it("STAT_APPLIED 로그에서 적용된 스탯 아이콘을 표시한다", () => {
+    const entry: DungeonLogEntry = {
+      id: "log-stat-applied",
+      category: "STATUS",
+      floor: null,
+      action: "STAT_APPLIED",
+      status: "COMPLETED",
+      createdAt: "2025-12-01T00:00:00Z",
+      delta: {
+        type: "STAT_APPLIED",
+        detail: {
+          stats: {
+            hp: 1,
+            maxHp: 1,
+          },
+        },
+      },
+      extra: {
+        type: "STAT_APPLIED",
+        details: {
+          applied: {
+            hp: 1,
+            maxHp: 1,
+          },
+        },
+      },
+    };
+
+    const thumbnails = buildLogThumbnails(entry);
+    expect(thumbnails.map((thumbnail) => thumbnail.id)).toEqual([
+      "log-stat-applied-stat-hp",
+    ]);
+  });
 });
