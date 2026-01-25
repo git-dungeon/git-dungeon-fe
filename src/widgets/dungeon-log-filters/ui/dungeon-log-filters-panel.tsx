@@ -62,6 +62,7 @@ export function DungeonLogFiltersPanel({
     BUFF_APPLIED: t("logs.filters.labels.BUFF_APPLIED"),
     BUFF_EXPIRED: t("logs.filters.labels.BUFF_EXPIRED"),
     LEVEL_UP: t("logs.filters.labels.LEVEL_UP"),
+    STAT_APPLIED: t("logs.filters.labels.STAT_APPLIED"),
   };
   const filterDescriptionMap: Partial<Record<LogsFilterSelection, string>> = {
     ALL: t("logs.filters.descriptions.ALL"),
