@@ -15,12 +15,14 @@ import { LevelUpOptionGrid } from "@/widgets/level-up/ui/level-up-option-grid";
 export function LevelUpPage() {
   const { t } = useTranslation();
   const dashboardQuery = useDashboardState();
-  const initialPoints = dashboardQuery.data?.levelUpPoints ?? 0;
-  const selectionQuery = useLevelUpSelection({ enabled: initialPoints > 0 });
+  const initialPoints = dashboardQuery.data?.levelUpPoints ?? undefined;
+  const selectionQuery = useLevelUpSelection({
+    enabled: initialPoints !== undefined ? initialPoints > 0 : true,
+  });
   const applyMutation = useLevelUpApply();
 
   const selection = selectionQuery.data ?? null;
-  const points = selection?.points ?? initialPoints;
+  const points = selection?.points ?? initialPoints ?? 0;
   const rollIndex = selection?.rollIndex ?? 0;
   const options = selection?.options ?? [];
   const isSelecting = applyMutation.isPending;

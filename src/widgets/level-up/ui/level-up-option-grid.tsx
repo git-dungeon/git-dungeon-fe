@@ -14,9 +14,9 @@ export function LevelUpOptionGrid({
 }: LevelUpOptionGridProps) {
   return (
     <div className="level-up-option-grid">
-      {options.map((option) => (
+      {options.map((option, index) => (
         <LevelUpOptionCard
-          key={option.stat}
+          key={`${option.stat}-${index}`}
           option={option}
           onSelect={onSelect}
           isPending={isPending}
