@@ -5,18 +5,20 @@ interface LevelUpOptionGridProps {
   options: LevelUpOption[];
   onSelect: (option: LevelUpOption) => void;
   isPending?: boolean;
+  rollIndex?: number;
 }
 
 export function LevelUpOptionGrid({
   options,
   onSelect,
   isPending = false,
+  rollIndex = 0,
 }: LevelUpOptionGridProps) {
   return (
     <div className="level-up-option-grid">
-      {options.map((option, index) => (
+      {options.map((option) => (
         <LevelUpOptionCard
-          key={`${option.stat}-${index}`}
+          key={`${rollIndex}-${option.stat}`}
           option={option}
           onSelect={onSelect}
           isPending={isPending}

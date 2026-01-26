@@ -21,13 +21,19 @@ export function LevelUpPage() {
   });
   const applyMutation = useLevelUpApply();
 
-  const selection = selectionQuery.data ?? null;
-  const points = selection?.points ?? initialPoints ?? 0;
+  const shouldIgnoreSelection = initialPoints === 0;
+  const selection = shouldIgnoreSelection
+    ? null
+    : (selectionQuery.data ?? null);
+  const points = shouldIgnoreSelection
+    ? 0
+    : (selection?.points ?? initialPoints ?? 0);
   const rollIndex = selection?.rollIndex ?? 0;
   const options = selection?.options ?? [];
   const isSelecting = applyMutation.isPending;
   const isLoading =
-    selectionQuery.isLoading || (selectionQuery.isFetching && !selection);
+    !shouldIgnoreSelection &&
+    (selectionQuery.isLoading || (selectionQuery.isFetching && !selection));
   const hasPoints = points > 0;
 
   const handleSelect = (option: LevelUpOption) => {
@@ -99,6 +105,7 @@ export function LevelUpPage() {
             options={options}
             onSelect={handleSelect}
             isPending={isSelecting}
+            rollIndex={rollIndex}
           />
         </>
       ) : null}
