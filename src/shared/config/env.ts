@@ -151,6 +151,11 @@ export const RANKING_ENDPOINTS = {
   list: "/api/ranking",
 } as const;
 
+export const LEVEL_UP_ENDPOINTS = {
+  selection: "/api/level-up",
+  apply: "/api/level-up/select",
+} as const;
+
 export function resolveWebUrl(path: string): string {
   if (/^https?:/i.test(path)) {
     return path;

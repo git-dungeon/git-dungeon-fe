@@ -160,6 +160,10 @@ export function formatDelta(
       }
       break;
     }
+    case "STAT_APPLIED": {
+      entries.push(...formatStatsDelta(entry.id, delta.detail.stats));
+      break;
+    }
     case "BUFF_APPLIED": {
       const applied = delta.detail.applied ?? [];
       if (applied.length > 0) {

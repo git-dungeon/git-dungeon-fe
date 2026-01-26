@@ -14,6 +14,27 @@
     "settings": "설정",
     "ranking": "랭킹"
   },
+  "levelUp": {
+    "banner": {
+      "title": "LEVEL UP!",
+      "message": "레벨업 포인트 {{points}}개가 남아 있습니다.",
+      "points": "{{points}} 포인트",
+      "cta": "능력치 선택"
+    },
+    "page": {
+      "title": "LEVEL UP!",
+      "subtitle": "포인트를 사용해 원하는 능력치를 선택하세요.",
+      "pointsLabel": "누적 포인트",
+      "points": "{{points}} 포인트",
+      "loadError": "레벨업 선택지를 불러오지 못했습니다.",
+      "retry": "다시 시도",
+      "emptyTitle": "사용할 포인트가 없습니다.",
+      "emptyDescription": "레벨업 포인트가 생기면 이곳에서 능력치를 선택할 수 있습니다.",
+      "select": "선택",
+      "pending": "적용 중...",
+      "optionValue": "{{stat}} +{{value}}"
+    }
+  },
   "onboarding": {
     "title": "시작하기",
     "headline": "GIT IDLE DUNGEON에 오신 것을 환영합니다!",
@@ -397,7 +418,8 @@
         "DISCARD_ITEM": "버리기",
         "BUFF_APPLIED": "버프 적용",
         "BUFF_EXPIRED": "버프 종료",
-        "LEVEL_UP": "레벨 업"
+        "LEVEL_UP": "레벨 업",
+        "STAT_APPLIED": "능력치 적용"
       },
       "descriptions": {
         "ALL": "모든 기록을 확인합니다.",
@@ -488,7 +510,8 @@
       "DISCARD_ITEM": "버리기",
       "BUFF_APPLIED": "버프 적용",
       "BUFF_EXPIRED": "버프 종료",
-      "LEVEL_UP": "레벨 업"
+      "LEVEL_UP": "레벨 업",
+      "STAT_APPLIED": "능력치 적용"
     },
     "statusAction": {
       "STARTED": {
@@ -506,7 +529,8 @@
         "DISCARD_ITEM": "아이템을 버립니다",
         "BUFF_APPLIED": "버프가 적용됩니다",
         "BUFF_EXPIRED": "버프가 종료됩니다",
-        "LEVEL_UP": "레벨 업을 준비합니다"
+        "LEVEL_UP": "레벨 업을 준비합니다",
+        "STAT_APPLIED": "능력치를 적용합니다"
       },
       "COMPLETED": {
         "BATTLE": "전투를 완료했습니다",
@@ -523,7 +547,8 @@
         "DISCARD_ITEM": "아이템을 버렸습니다",
         "BUFF_APPLIED": "버프가 적용되었습니다",
         "BUFF_EXPIRED": "버프가 종료되었습니다",
-        "LEVEL_UP": "레벨이 올랐습니다"
+        "LEVEL_UP": "레벨이 올랐습니다",
+        "STAT_APPLIED": "능력치가 적용되었습니다"
       }
     },
     "status": {

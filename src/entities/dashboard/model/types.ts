@@ -93,6 +93,7 @@ export const dashboardStateSchema = z.object({
   level: z.number(),
   exp: z.number(),
   expToLevel: z.number().nullable().optional(),
+  levelUpPoints: z.number(),
   hp: z.number(),
   maxHp: z.number(),
   atk: z.number(),
