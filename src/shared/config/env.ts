@@ -156,6 +156,10 @@ export const LEVEL_UP_ENDPOINTS = {
   apply: "/api/level-up/select",
 } as const;
 
+export const CHEST_ENDPOINTS = {
+  open: "/api/chest/open",
+} as const;
+
 export function resolveWebUrl(path: string): string {
   if (/^https?:/i.test(path)) {
     return path;
