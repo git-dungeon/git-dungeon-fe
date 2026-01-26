@@ -302,6 +302,92 @@
     padding: 0 16px 16px;
   }
 
+  .chest-banner {
+    width: min(var(--pixel-container), 100%);
+    margin: 0 auto;
+    padding: 0 16px 16px;
+  }
+
+  .chest-banner-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px 16px;
+    text-decoration: none;
+    background: linear-gradient(180deg, #402c1b 0%, #2b1c10 100%);
+    border: 2px solid #c6903e;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.15),
+      0 4px 0 #694118;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .chest-banner-inner:hover {
+    transform: translateY(-1px);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.2),
+      0 6px 0 #694118;
+  }
+
+  .chest-banner-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .chest-banner-title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .chest-banner-icon {
+    width: 32px;
+    height: 32px;
+    image-rendering: pixelated;
+  }
+
+  .chest-banner-title {
+    font-size: 1rem;
+  }
+
+  .chest-banner-message {
+    font-size: 0.8rem;
+    color: #f7e3bf;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+  }
+
+  .chest-banner-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .chest-banner-pill {
+    --pixel-pill-bg: #3b281a;
+    --pixel-pill-border: #d4a251;
+    --pixel-pill-text: #ffe4ab;
+  }
+
+  .chest-banner-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 12px;
+    font-family: "DungGeunMo Bold", "Noto Sans KR", system-ui, sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #2a1a0b;
+    background: linear-gradient(180deg, #f3d27b 0%, #c68631 100%);
+    border: 2px solid #84551c;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.3),
+      0 3px 0 #6b3f15;
+  }
+
   .level-up-banner-inner {
     display: flex;
     flex-direction: column;
@@ -388,6 +474,26 @@
     }
 
     .level-up-banner-message {
+      font-size: 0.85rem;
+    }
+
+    .chest-banner-inner {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .chest-banner-content {
+      flex-direction: row;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .chest-banner-title {
+      font-size: 1.1rem;
+    }
+
+    .chest-banner-message {
       font-size: 0.85rem;
     }
   }

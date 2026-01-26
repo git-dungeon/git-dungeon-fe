@@ -14,6 +14,15 @@
     "settings": "설정",
     "ranking": "랭킹"
   },
+  "chest": {
+    "banner": {
+      "title": "TREASURE!",
+      "message": "열 수 있는 상자 {{count}}개가 있습니다.",
+      "count": "{{count}} 상자",
+      "cta": "상자 열기",
+      "iconAlt": "보물 상자"
+    }
+  },
   "levelUp": {
     "banner": {
       "title": "LEVEL UP!",
