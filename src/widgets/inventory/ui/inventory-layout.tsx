@@ -7,6 +7,7 @@ import type {
 import { InventorySlots } from "@/widgets/inventory/ui/inventory-slots";
 import { InventoryCharacterPanel } from "@/widgets/inventory/ui/inventory-character-panel";
 import { InventoryGrid } from "@/widgets/inventory/ui/inventory-grid";
+import { InventoryFiltersPanel } from "@/widgets/inventory/ui/inventory-filters-panel";
 import { InventoryModal } from "@/widgets/inventory/ui/inventory-modal";
 import type { CharacterStatSummary } from "@/features/character-summary/lib/build-character-overview";
 
@@ -78,6 +79,8 @@ export function InventoryLayout({
           avatarUrl={avatarUrl}
         />
       </div>
+
+      <InventoryFiltersPanel />
 
       <InventoryGrid
         items={items}
