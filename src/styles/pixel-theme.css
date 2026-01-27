@@ -372,8 +372,7 @@
   }
 
   .pixel-button--accent,
-  .pixel-button--cta,
-  .chest-banner-cta {
+  .pixel-button--cta {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -462,21 +461,9 @@
     --pixel-pill-text: #ffe6b0;
   }
 
-  .level-up-banner-cta {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 6px 12px;
-    font-family: "DungGeunMo Bold", "Noto Sans KR", system-ui, sans-serif;
-    font-size: 0.75rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #2a1a0b;
-    background: linear-gradient(180deg, #f4d482 0%, #c18b3c 100%);
-    border: 2px solid #7a4f1f;
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.3),
-      0 3px 0 #6b4420;
+  .level-up-banner-cta,
+  .chest-banner-cta {
+    text-decoration: none;
   }
 
   @media (min-width: 640px) {

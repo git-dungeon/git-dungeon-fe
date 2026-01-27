@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { PixelPill } from "@/shared/ui/pixel-pill";
+import { PixelButton } from "@/shared/ui/pixel-button";
 import { cn } from "@/shared/lib/utils";
 import chestIcon from "@/assets/event/chest.png";
 
@@ -38,9 +39,9 @@ export function ChestBanner({ count, className }: ChestBannerProps) {
           <PixelPill icon="plus" className="chest-banner-pill">
             {t("chest.banner.count", { count })}
           </PixelPill>
-          <span className="chest-banner-cta pixel-button--accent">
-            {t("chest.banner.cta")}
-          </span>
+          <PixelButton tone="accent" asChild className="chest-banner-cta">
+            <span>{t("chest.banner.cta")}</span>
+          </PixelButton>
         </div>
       </Link>
     </section>

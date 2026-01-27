@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { PixelPill } from "@/shared/ui/pixel-pill";
+import { PixelButton } from "@/shared/ui/pixel-button";
 import { cn } from "@/shared/lib/utils";
 
 interface LevelUpBannerProps {
@@ -30,7 +31,9 @@ export function LevelUpBanner({ points, className }: LevelUpBannerProps) {
           <PixelPill icon="plus" className="level-up-banner-pill">
             {t("levelUp.banner.points", { points })}
           </PixelPill>
-          <span className="level-up-banner-cta">{t("levelUp.banner.cta")}</span>
+          <PixelButton tone="accent" asChild className="level-up-banner-cta">
+            <span>{t("levelUp.banner.cta")}</span>
+          </PixelButton>
         </div>
       </Link>
     </section>
