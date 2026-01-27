@@ -17,6 +17,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as LevelUpRouteImport } from './routes/level-up'
 import { Route as InventoryRouteImport } from './routes/inventory'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as ChestRouteImport } from './routes/chest'
 import { Route as IndexRouteImport } from './routes/index'
 
 const SettingsRoute = SettingsRouteImport.update({
@@ -59,6 +60,11 @@ const DashboardRoute = DashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ChestRoute = ChestRouteImport.update({
+  id: '/chest',
+  path: '/chest',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -67,6 +73,7 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/chest': typeof ChestRoute
   '/dashboard': typeof DashboardRoute
   '/inventory': typeof InventoryRoute
   '/level-up': typeof LevelUpRoute
@@ -78,6 +85,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/chest': typeof ChestRoute
   '/dashboard': typeof DashboardRoute
   '/inventory': typeof InventoryRoute
   '/level-up': typeof LevelUpRoute
@@ -90,6 +98,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/chest': typeof ChestRoute
   '/dashboard': typeof DashboardRoute
   '/inventory': typeof InventoryRoute
   '/level-up': typeof LevelUpRoute
@@ -103,6 +112,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/chest'
     | '/dashboard'
     | '/inventory'
     | '/level-up'
@@ -114,6 +124,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/chest'
     | '/dashboard'
     | '/inventory'
     | '/level-up'
@@ -125,6 +136,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/chest'
     | '/dashboard'
     | '/inventory'
     | '/level-up'
@@ -137,6 +149,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ChestRoute: typeof ChestRoute
   DashboardRoute: typeof DashboardRoute
   InventoryRoute: typeof InventoryRoute
   LevelUpRoute: typeof LevelUpRoute
@@ -205,6 +218,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/chest': {
+      id: '/chest'
+      path: '/chest'
+      fullPath: '/chest'
+      preLoaderRoute: typeof ChestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -217,6 +237,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ChestRoute: ChestRoute,
   DashboardRoute: DashboardRoute,
   InventoryRoute: InventoryRoute,
   LevelUpRoute: LevelUpRoute,

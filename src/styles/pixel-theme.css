@@ -371,6 +371,8 @@
     --pixel-pill-text: #ffe4ab;
   }
 
+  .pixel-button--accent,
+  .pixel-button--cta,
   .chest-banner-cta {
     display: inline-flex;
     align-items: center;
@@ -386,6 +388,27 @@
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.3),
       0 3px 0 #6b3f15;
+  }
+
+  .pixel-app .pixel-button.pixel-button--accent,
+  .pixel-app .pixel-button.pixel-button--cta {
+    color: #2a1a0b;
+    background: linear-gradient(180deg, #f3d27b 0%, #c68631 100%);
+    border-color: #84551c;
+    border-width: 2px;
+    letter-spacing: 0.08em;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+    clip-path: none;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.3),
+      0 3px 0 #6b3f15;
+  }
+
+  .pixel-app .pixel-button.pixel-button--accent::before,
+  .pixel-app .pixel-button.pixel-button--cta::before {
+    inset: 1px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    clip-path: none;
   }
 
   .level-up-banner-inner {
@@ -496,6 +519,203 @@
     .chest-banner-message {
       font-size: 0.85rem;
     }
+  }
+
+  .chest-page {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .chest-page-header {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+
+  .chest-page-subtitle {
+    font-size: 0.9rem;
+    color: var(--muted-foreground);
+    text-shadow: var(--pixel-text-shadow);
+  }
+
+  .chest-page-counter {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-start;
+  }
+
+  .chest-page-counter-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+    text-shadow: var(--pixel-text-shadow);
+  }
+
+  .chest-stage {
+    display: flex;
+    justify-content: center;
+    padding: 8px 0 16px;
+  }
+
+  .chest-slot {
+    position: relative;
+    width: min(360px, 92vw);
+    height: 240px;
+    padding: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(
+      circle,
+      rgba(30, 26, 37, 0.96) 0%,
+      rgba(18, 16, 25, 1) 70%
+    );
+    border-color: #6b7280;
+    overflow: hidden;
+    transition:
+      border-color 0.12s linear,
+      filter 0.2s ease;
+  }
+
+  .chest-slot--opening {
+    background: radial-gradient(
+      circle,
+      rgba(45, 36, 60, 0.98) 0%,
+      rgba(20, 16, 32, 1) 72%
+    );
+  }
+
+  .chest-slot--common {
+    border-color: #6b7280;
+    filter: none;
+  }
+
+  .chest-slot--uncommon {
+    border-color: #22c55e;
+    filter: drop-shadow(0 0 12px rgba(34, 197, 94, 0.35));
+  }
+
+  .chest-slot--rare {
+    border-color: #3b82f6;
+    filter: drop-shadow(0 0 14px rgba(59, 130, 246, 0.4));
+  }
+
+  .chest-slot--epic {
+    border-color: #a855f7;
+    filter: drop-shadow(0 0 16px rgba(168, 85, 247, 0.45));
+  }
+
+  .chest-slot--legendary {
+    border-color: #facc15;
+    filter: drop-shadow(0 0 18px rgba(250, 204, 21, 0.5));
+  }
+
+  .chest-slot--revealed {
+    outline: 2px solid rgba(255, 255, 255, 0.16);
+    outline-offset: -10px;
+  }
+
+  .chest-slot-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform-origin: center;
+  }
+
+  .chest-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 140px;
+    height: 140px;
+  }
+
+  .chest-item--opening {
+    will-change: transform;
+  }
+
+  .chest-item--empty {
+    opacity: 0.95;
+  }
+
+  .chest-item-icon {
+    width: 72px;
+    height: 72px;
+    image-rendering: pixelated;
+    filter: drop-shadow(0 4px 0 rgba(0, 0, 0, 0.35));
+  }
+
+  .chest-item-glow {
+    position: absolute;
+    inset: -20%;
+    background: radial-gradient(
+      circle,
+      rgba(255, 210, 140, 0.5),
+      transparent 60%
+    );
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    mix-blend-mode: screen;
+  }
+
+  .chest-item--opening .chest-item-glow {
+    opacity: 1;
+  }
+
+  .chest-item-label {
+    position: relative;
+    font-size: 0.75rem;
+    text-align: center;
+    text-shadow: var(--pixel-text-shadow);
+    color: #ffe9bf;
+  }
+
+  .chest-reveal-card {
+    width: min(280px, 84vw);
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.28);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  .chest-reveal-card-content {
+    width: 100%;
+  }
+
+  .chest-reveal-card .inventory-item-icon {
+    margin-bottom: 2px;
+  }
+
+  .chest-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    min-height: 92px;
+  }
+
+  .chest-actions .pixel-button.pixel-button--accent {
+    min-width: 148px;
+  }
+
+  .chest-skip {
+    opacity: 0.85;
+  }
+
+  .chest-skip--hidden {
+    visibility: hidden;
+    pointer-events: none;
   }
 
   .level-up-page {
@@ -1134,6 +1354,10 @@
     filter: brightness(1.05);
   }
 
+  .pixel-app .pixel-button.pixel-button--accent:hover:not(:disabled) {
+    color: #2a1a0b;
+  }
+
   .pixel-app .pixel-button:focus-visible {
     border-color: var(--pixel-focus-ring);
     box-shadow:
@@ -1378,6 +1602,63 @@
       inset 0 0 0 3px rgba(255, 224, 170, 0.2),
       0 0 0 2px rgba(255, 224, 170, 0.55),
       0 3px 0 rgba(0, 0, 0, 0.25);
+  }
+
+  /* chest-slot rarity overrides live after pixel-slot so border colors win */
+  .pixel-slot.chest-slot {
+    width: min(360px, 92vw);
+    height: 240px;
+    padding: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(
+      circle,
+      rgba(30, 26, 37, 0.96) 0%,
+      rgba(18, 16, 25, 1) 70%
+    );
+    transition:
+      border-color 0.12s linear,
+      filter 0.2s ease,
+      background 0.2s ease;
+  }
+
+  .pixel-slot.chest-slot--opening {
+    background: radial-gradient(
+      circle,
+      rgba(45, 36, 60, 0.98) 0%,
+      rgba(20, 16, 32, 1) 72%
+    );
+  }
+
+  .pixel-slot.chest-slot--common {
+    border-color: #6b7280;
+    filter: none;
+  }
+
+  .pixel-slot.chest-slot--uncommon {
+    border-color: #22c55e;
+    filter: drop-shadow(0 0 12px rgba(34, 197, 94, 0.35));
+  }
+
+  .pixel-slot.chest-slot--rare {
+    border-color: #3b82f6;
+    filter: drop-shadow(0 0 14px rgba(59, 130, 246, 0.4));
+  }
+
+  .pixel-slot.chest-slot--epic {
+    border-color: #a855f7;
+    filter: drop-shadow(0 0 16px rgba(168, 85, 247, 0.45));
+  }
+
+  .pixel-slot.chest-slot--legendary {
+    border-color: #facc15;
+    filter: drop-shadow(0 0 18px rgba(250, 204, 21, 0.5));
+  }
+
+  .pixel-slot.chest-slot--revealed {
+    outline: 2px solid rgba(255, 255, 255, 0.16);
+    outline-offset: -10px;
   }
 
   .pixel-slot-placeholder {

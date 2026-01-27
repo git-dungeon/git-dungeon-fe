@@ -38,7 +38,9 @@ export function ChestBanner({ count, className }: ChestBannerProps) {
           <PixelPill icon="plus" className="chest-banner-pill">
             {t("chest.banner.count", { count })}
           </PixelPill>
-          <span className="chest-banner-cta">{t("chest.banner.cta")}</span>
+          <span className="chest-banner-cta pixel-button--accent">
+            {t("chest.banner.cta")}
+          </span>
         </div>
       </Link>
     </section>

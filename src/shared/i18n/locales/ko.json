@@ -21,6 +21,20 @@
       "count": "{{count}} 상자",
       "cta": "상자 열기",
       "iconAlt": "보물 상자"
+    },
+    "page": {
+      "title": "TREASURE CHEST",
+      "subtitle": "상자를 열어 아이템을 확정하세요.",
+      "countLabel": "보유 상자",
+      "count": "{{count}} 개",
+      "open": "열기",
+      "opening": "여는 중",
+      "empty": "상자가 없습니다",
+      "claim": "받기",
+      "skip": "스킵",
+      "emptyDescription": "아직 열 수 있는 상자가 없습니다.",
+      "error": "상자 정보를 불러오지 못했습니다.",
+      "emptyAlt": "빈 상자"
     }
   },
   "levelUp": {
