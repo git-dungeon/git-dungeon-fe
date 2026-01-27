@@ -14,6 +14,7 @@ interface InventoryGridProps {
   items: InventoryItem[];
   selectedItemId?: string | null;
   onSelect: (item: InventoryItem) => void;
+  disableDefaultSort?: boolean;
 }
 
 const SLOT_ORDER: Record<InventoryItemSlot, number> = {
@@ -28,20 +29,25 @@ export function InventoryGrid({
   items,
   selectedItemId,
   onSelect,
+  disableDefaultSort = false,
 }: InventoryGridProps) {
   const { t } = useTranslation();
   const resolveItemName = useCatalogItemNameResolver();
-  const sortedItems = [...items].sort((a, b) => {
-    if (a.isEquipped !== b.isEquipped) {
-      return a.isEquipped ? -1 : 1;
-    }
+  const sortedItems = disableDefaultSort
+    ? items
+    : [...items].sort((a, b) => {
+        if (a.isEquipped !== b.isEquipped) {
+          return a.isEquipped ? -1 : 1;
+        }
 
-    if (SLOT_ORDER[a.slot] !== SLOT_ORDER[b.slot]) {
-      return SLOT_ORDER[a.slot] - SLOT_ORDER[b.slot];
-    }
+        if (SLOT_ORDER[a.slot] !== SLOT_ORDER[b.slot]) {
+          return SLOT_ORDER[a.slot] - SLOT_ORDER[b.slot];
+        }
 
-    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-  });
+        return (
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+      });
 
   return (
     <PixelPanel title={t("inventory.grid.title")}>

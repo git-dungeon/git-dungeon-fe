@@ -1,4 +1,3 @@
-import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type {
   EquipmentRarity,
@@ -33,63 +32,72 @@ const RARITY_OPTIONS: EquipmentRarity[] = [
   "legendary",
 ];
 
-type EquippedFilter = "ALL" | "EQUIPPED" | "UNEQUIPPED";
-type SortFilter = "DEFAULT" | "ACQUIRED_DESC" | "ACQUIRED_ASC";
+export type InventoryEquippedFilter = "ALL" | "EQUIPPED" | "UNEQUIPPED";
+export type InventorySortFilter = "DEFAULT" | "ACQUIRED_DESC" | "ACQUIRED_ASC";
 
-interface DateRangeState {
+export interface InventoryDateRange {
   start: string;
   end: string;
 }
 
-export function InventoryFiltersPanel() {
-  const { t, i18n } = useTranslation();
-  const labels = useMemo(() => {
-    const isKo = i18n.language?.startsWith("ko");
-    return {
-      equippedLabel: isKo ? "장착 여부" : "Equipped",
-      sortLabel: isKo ? "정렬" : "Sort",
-      slotsLabel: isKo ? "슬롯" : "Slots",
-      rarityLabel: isKo ? "희귀도" : "Rarity",
-      dateLabel: isKo ? "획득일" : "Acquired",
-      all: isKo ? "전체" : "All",
-      equipped: isKo ? "장착" : "Equipped",
-      unequipped: isKo ? "미장착" : "Unequipped",
-      sortDefault: isKo ? "기본 정렬" : "Default order",
-      sortNewest: isKo ? "획득일 최신" : "Newest",
-      sortOldest: isKo ? "획득일 오래된" : "Oldest",
-      from: isKo ? "시작" : "From",
-      to: isKo ? "끝" : "To",
-      hint: isKo
-        ? "기간을 선택하지 않으면 전체 기간으로 표시됩니다."
-        : "Leaving dates empty shows all items.",
-    };
-  }, [i18n.language]);
+interface InventoryFiltersPanelProps {
+  equippedFilter: InventoryEquippedFilter;
+  sortFilter: InventorySortFilter;
+  selectedSlots: InventoryItemSlot[];
+  selectedRarities: EquipmentRarity[];
+  dateRange: InventoryDateRange;
+  onEquippedChange: (value: InventoryEquippedFilter) => void;
+  onSortChange: (value: InventorySortFilter) => void;
+  onSlotsChange: (value: InventoryItemSlot[]) => void;
+  onRaritiesChange: (value: EquipmentRarity[]) => void;
+  onDateRangeChange: (value: InventoryDateRange) => void;
+}
 
-  const [equippedFilter, setEquippedFilter] = useState<EquippedFilter>("ALL");
-  const [sortFilter, setSortFilter] = useState<SortFilter>("DEFAULT");
-  const [selectedSlots, setSelectedSlots] = useState<InventoryItemSlot[]>([]);
-  const [selectedRarities, setSelectedRarities] = useState<EquipmentRarity[]>(
-    []
-  );
-  const [dateRange, setDateRange] = useState<DateRangeState>({
-    start: "",
-    end: "",
-  });
+export function InventoryFiltersPanel({
+  equippedFilter,
+  sortFilter,
+  selectedSlots,
+  selectedRarities,
+  dateRange,
+  onEquippedChange,
+  onSortChange,
+  onSlotsChange,
+  onRaritiesChange,
+  onDateRangeChange,
+}: InventoryFiltersPanelProps) {
+  const { t, i18n } = useTranslation();
+  const isKo = i18n.language?.startsWith("ko");
+  const labels = {
+    equippedLabel: isKo ? "장착 여부" : "Equipped",
+    sortLabel: isKo ? "정렬" : "Sort",
+    slotsLabel: isKo ? "슬롯" : "Slots",
+    rarityLabel: isKo ? "희귀도" : "Rarity",
+    dateLabel: isKo ? "획득일" : "Acquired",
+    all: isKo ? "전체" : "All",
+    equipped: isKo ? "장착" : "Equipped",
+    unequipped: isKo ? "미장착" : "Unequipped",
+    sortDefault: isKo ? "기본 정렬" : "Default order",
+    sortNewest: isKo ? "획득일 최신" : "Newest",
+    sortOldest: isKo ? "획득일 오래된" : "Oldest",
+    from: isKo ? "시작" : "From",
+    to: isKo ? "끝" : "To",
+    hint: isKo
+      ? "기간을 선택하지 않으면 전체 기간으로 표시됩니다."
+      : "Leaving dates empty shows all items.",
+  };
 
   const toggleSlot = (slot: InventoryItemSlot) => {
-    setSelectedSlots((prev) =>
-      prev.includes(slot)
-        ? prev.filter((value) => value !== slot)
-        : [...prev, slot]
-    );
+    const next = selectedSlots.includes(slot)
+      ? selectedSlots.filter((value) => value !== slot)
+      : [...selectedSlots, slot];
+    onSlotsChange(next);
   };
 
   const toggleRarity = (rarity: EquipmentRarity) => {
-    setSelectedRarities((prev) =>
-      prev.includes(rarity)
-        ? prev.filter((value) => value !== rarity)
-        : [...prev, rarity]
-    );
+    const next = selectedRarities.includes(rarity)
+      ? selectedRarities.filter((value) => value !== rarity)
+      : [...selectedRarities, rarity];
+    onRaritiesChange(next);
   };
 
   return (
@@ -103,7 +111,9 @@ export function InventoryFiltersPanel() {
           <p className="pixel-text-muted text-xs">{labels.equippedLabel}</p>
           <Select
             value={equippedFilter}
-            onValueChange={(next) => setEquippedFilter(next as EquippedFilter)}
+            onValueChange={(next) =>
+              onEquippedChange(next as InventoryEquippedFilter)
+            }
           >
             <SelectTrigger className="pixel-select-trigger w-full">
               <SelectValue />
@@ -126,7 +136,7 @@ export function InventoryFiltersPanel() {
           <p className="pixel-text-muted text-xs">{labels.sortLabel}</p>
           <Select
             value={sortFilter}
-            onValueChange={(next) => setSortFilter(next as SortFilter)}
+            onValueChange={(next) => onSortChange(next as InventorySortFilter)}
           >
             <SelectTrigger className="pixel-select-trigger w-full">
               <SelectValue />
@@ -198,10 +208,10 @@ export function InventoryFiltersPanel() {
               value={dateRange.start}
               max={dateRange.end || undefined}
               onChange={(event) =>
-                setDateRange((prev) => ({
-                  ...prev,
+                onDateRangeChange({
+                  ...dateRange,
                   start: event.target.value,
-                }))
+                })
               }
               className="pixel-select-trigger w-full"
             />
@@ -213,10 +223,10 @@ export function InventoryFiltersPanel() {
               value={dateRange.end}
               min={dateRange.start || undefined}
               onChange={(event) =>
-                setDateRange((prev) => ({
-                  ...prev,
+                onDateRangeChange({
+                  ...dateRange,
                   end: event.target.value,
-                }))
+                })
               }
               className="pixel-select-trigger w-full"
             />
