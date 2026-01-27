@@ -11,6 +11,7 @@ export const mockDashboardResponse: DashboardResponse = {
     exp: 54,
     expToLevel: 80,
     levelUpPoints: 2,
+    unopenedChests: 2,
     hp: 32,
     maxHp: 40,
     atk: 18,

@@ -14,6 +14,7 @@ import { getLanguagePreference } from "@/shared/lib/preferences/preferences";
 import { NotFoundPage } from "@/pages/not-found/ui/not-found-page";
 import { useDashboardState } from "@/entities/dashboard/model/use-dashboard-state";
 import { LevelUpBanner } from "@/features/level-up-banner/ui/level-up-banner";
+import { ChestBanner } from "@/features/chest-banner/ui/chest-banner";
 
 const NAVIGATION_LINKS = [
   { to: "/dashboard", labelKey: "navigation.dashboard" },
@@ -46,7 +47,9 @@ function RootComponent() {
   const shouldRenderHeader = !isLoginScreen;
   const dashboardState = useDashboardState({ enabled: shouldRenderHeader });
   const levelUpPoints = dashboardState.data?.levelUpPoints ?? 0;
+  const chestCount = dashboardState.data?.unopenedChests ?? 0;
   const shouldShowLevelUpBanner = shouldRenderHeader && levelUpPoints > 0;
+  const shouldShowChestBanner = shouldRenderHeader && chestCount > 0;
 
   return (
     <div className={cn("pixel-app font-pixel-body flex min-h-screen flex-col")}>
@@ -67,6 +70,7 @@ function RootComponent() {
           {shouldShowLevelUpBanner ? (
             <LevelUpBanner points={levelUpPoints} />
           ) : null}
+          {shouldShowChestBanner ? <ChestBanner count={chestCount} /> : null}
         </header>
       ) : null}
       <main

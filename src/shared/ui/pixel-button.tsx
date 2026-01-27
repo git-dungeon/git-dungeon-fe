@@ -2,7 +2,7 @@ import type { ComponentProps } from "react";
 import { Button } from "@/shared/ui/button";
 import { cn } from "@/shared/lib/utils";
 
-type PixelButtonTone = "default" | "danger";
+type PixelButtonTone = "default" | "danger" | "accent";
 type PixelButtonSize = "default" | "compact";
 
 interface PixelButtonProps extends ComponentProps<typeof Button> {
@@ -19,10 +19,11 @@ export function PixelButton({
 }: PixelButtonProps) {
   return (
     <Button
-      variant={variant ?? "ghost"}
+      variant={variant ?? "pixel"}
       className={cn(
         "pixel-button",
         tone === "danger" && "pixel-button--danger",
+        tone === "accent" && "pixel-button--accent",
         pixelSize === "compact" && "pixel-button--compact",
         className
       )}

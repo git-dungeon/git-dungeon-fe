@@ -14,6 +14,29 @@
     "settings": "Settings",
     "ranking": "Ranking"
   },
+  "chest": {
+    "banner": {
+      "title": "TREASURE!",
+      "message": "{{count}} unopened chest(s) available.",
+      "count": "{{count}} chests",
+      "cta": "Open chests",
+      "iconAlt": "Treasure chest"
+    },
+    "page": {
+      "title": "TREASURE CHEST",
+      "subtitle": "Open a chest to reveal your loot.",
+      "countLabel": "Available chests",
+      "count": "{{count}}",
+      "open": "Open",
+      "opening": "Opening...",
+      "empty": "No chests",
+      "claim": "Claim",
+      "skip": "Skip",
+      "emptyDescription": "No unopened chests available.",
+      "error": "Failed to load chest status.",
+      "emptyAlt": "Empty chest"
+    }
+  },
   "levelUp": {
     "banner": {
       "title": "LEVEL UP!",

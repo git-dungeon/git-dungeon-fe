@@ -8,6 +8,7 @@ import { catalogHandlers } from "./catalog-handlers";
 import { githubHandlers } from "./github-handlers";
 import { rankingHandlers } from "./ranking-handlers";
 import { levelUpHandlers } from "./level-up-handlers";
+import { chestHandlers } from "./chest-handlers";
 
 export const handlers = [
   ...authHandlers,
@@ -20,4 +21,5 @@ export const handlers = [
   ...embedHandlers,
   ...rankingHandlers,
   ...levelUpHandlers,
+  ...chestHandlers,
 ];

@@ -94,6 +94,7 @@ export const dashboardStateSchema = z.object({
   exp: z.number(),
   expToLevel: z.number().nullable().optional(),
   levelUpPoints: z.number(),
+  unopenedChests: z.number(),
   hp: z.number(),
   maxHp: z.number(),
   atk: z.number(),
