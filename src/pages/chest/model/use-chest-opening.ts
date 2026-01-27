@@ -55,7 +55,10 @@ const SPIN_POOL: ChestOpenItem[] = [
   },
 ];
 
-function pickRandom<T>(items: T[]): T {
+function pickRandom<T>(items: T[]): T | undefined {
+  if (items.length === 0) {
+    return undefined;
+  }
   return items[Math.floor(Math.random() * items.length)];
 }
 
@@ -151,14 +154,14 @@ export function useChestOpening({
       const pool = finalItem ? [finalItem, ...SPIN_POOL] : SPIN_POOL;
 
       if (typeof window === "undefined") {
-        setCurrentItem(finalItem ?? pickRandom(pool));
+        setCurrentItem(finalItem ?? pickRandom(pool) ?? null);
         return;
       }
 
       stopAnimations();
       spinNextChangeRef.current = 0;
       const spinToken = spinTokenRef.current;
-      setCurrentItem(pickRandom(pool));
+      setCurrentItem(pickRandom(pool) ?? finalItem ?? null);
 
       spinAnimationRef.current = animate(0, 1, {
         duration: SPIN_DURATION_MS / 1000,
@@ -168,7 +171,7 @@ export function useChestOpening({
             return;
           }
           if (progress >= spinNextChangeRef.current) {
-            setCurrentItem(pickSpinItem(pool, finalItem, progress));
+            setCurrentItem(pickSpinItem(pool, finalItem, progress) ?? null);
             spinNextChangeRef.current =
               progress + resolveStepMs(progress) / SPIN_DURATION_MS;
           }
@@ -233,6 +236,15 @@ export function useChestOpening({
       const response = await postChestOpen();
       const item = response.items[0] ?? null;
       setFinalItem(item);
+
+      if (!item) {
+        setPhase("idle");
+        setError(t("chest.page.error"));
+        await queryClient.invalidateQueries({
+          queryKey: DASHBOARD_STATE_QUERY_KEY,
+        });
+        return;
+      }
 
       const shouldSkipNow = skipPendingRef.current && item;
       skipPendingRef.current = false;
