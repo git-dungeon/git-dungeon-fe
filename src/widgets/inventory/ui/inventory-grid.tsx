@@ -1,7 +1,4 @@
-import type {
-  InventoryItem,
-  InventoryItemSlot,
-} from "@/entities/inventory/model/types";
+import type { InventoryItem } from "@/entities/inventory/model/types";
 import { InventoryItemCard } from "@/entities/inventory/ui/inventory-item-card";
 import { PixelSlotButton } from "@/shared/ui/pixel-slot-button";
 import { PixelCheckIcon } from "@/shared/ui/pixel-check-icon";
@@ -16,14 +13,6 @@ interface InventoryGridProps {
   onSelect: (item: InventoryItem) => void;
 }
 
-const SLOT_ORDER: Record<InventoryItemSlot, number> = {
-  helmet: 0,
-  armor: 1,
-  weapon: 2,
-  ring: 3,
-  consumable: 4,
-};
-
 export function InventoryGrid({
   items,
   selectedItemId,
@@ -31,25 +20,14 @@ export function InventoryGrid({
 }: InventoryGridProps) {
   const { t } = useTranslation();
   const resolveItemName = useCatalogItemNameResolver();
-  const sortedItems = [...items].sort((a, b) => {
-    if (a.isEquipped !== b.isEquipped) {
-      return a.isEquipped ? -1 : 1;
-    }
-
-    if (SLOT_ORDER[a.slot] !== SLOT_ORDER[b.slot]) {
-      return SLOT_ORDER[a.slot] - SLOT_ORDER[b.slot];
-    }
-
-    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-  });
 
   return (
     <PixelPanel title={t("inventory.grid.title")}>
-      {sortedItems.length === 0 ? (
+      {items.length === 0 ? (
         <PixelEmptyState message={t("inventory.empty")} />
       ) : (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-          {sortedItems.map((item) => (
+          {items.map((item) => (
             <InventoryGridCell
               key={item.id}
               item={item}

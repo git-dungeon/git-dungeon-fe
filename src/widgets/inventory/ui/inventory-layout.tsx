@@ -1,13 +1,25 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type {
   InventoryEquippedMap,
   InventoryItem,
   InventoryItemSlot,
+  EquipmentRarity,
 } from "@/entities/inventory/model/types";
 import { InventorySlots } from "@/widgets/inventory/ui/inventory-slots";
 import { InventoryCharacterPanel } from "@/widgets/inventory/ui/inventory-character-panel";
 import { InventoryGrid } from "@/widgets/inventory/ui/inventory-grid";
+import {
+  InventoryFiltersPanel,
+  type InventoryDateRange,
+  type InventoryEquippedFilter,
+  type InventorySortFilter,
+} from "@/widgets/inventory/ui/inventory-filters-panel";
 import { InventoryModal } from "@/widgets/inventory/ui/inventory-modal";
+import {
+  filterInventoryItems,
+  sortItemsByAcquiredAt,
+  sortItemsByDefault,
+} from "@/widgets/inventory/lib/inventory-filters";
 import type { CharacterStatSummary } from "@/features/character-summary/lib/build-character-overview";
 
 interface InventoryLayoutProps {
@@ -43,14 +55,21 @@ export function InventoryLayout({
   const [selectedSlot, setSelectedSlot] = useState<InventoryItemSlot | null>(
     null
   );
+  const [equippedFilter, setEquippedFilter] =
+    useState<InventoryEquippedFilter>("ALL");
+  const [sortFilter, setSortFilter] = useState<InventorySortFilter>("DEFAULT");
+  const [selectedSlots, setSelectedSlots] = useState<InventoryItemSlot[]>([]);
+  const [selectedRarities, setSelectedRarities] = useState<EquipmentRarity[]>(
+    []
+  );
+  const [dateRange, setDateRange] = useState<InventoryDateRange>({
+    start: "",
+    end: "",
+  });
 
-  const selectedItem = useMemo(() => {
-    if (!selectedItemId) {
-      return null;
-    }
-
-    return items.find((item) => item.id === selectedItemId) ?? null;
-  }, [items, selectedItemId]);
+  const selectedItem = selectedItemId
+    ? (items.find((item) => item.id === selectedItemId) ?? null)
+    : null;
 
   const handleSelect = (item: InventoryItem, slot: InventoryItemSlot) => {
     onClearError();
@@ -63,6 +82,32 @@ export function InventoryLayout({
     setSelectedItemId(null);
     setSelectedSlot(null);
   };
+
+  const filteredItems = useMemo(
+    () =>
+      filterInventoryItems(items, {
+        equippedFilter,
+        selectedSlots,
+        selectedRarities,
+        dateRange,
+      }),
+    [items, equippedFilter, selectedSlots, selectedRarities, dateRange]
+  );
+  const resolvedItems =
+    sortFilter === "DEFAULT"
+      ? sortItemsByDefault(filteredItems)
+      : sortItemsByAcquiredAt(filteredItems, sortFilter);
+
+  useEffect(() => {
+    if (!selectedItemId) {
+      return;
+    }
+    const exists = filteredItems.some((item) => item.id === selectedItemId);
+    if (!exists) {
+      setSelectedItemId(null);
+      setSelectedSlot(null);
+    }
+  }, [filteredItems, selectedItemId]);
 
   return (
     <div className="space-y-6">
@@ -79,8 +124,21 @@ export function InventoryLayout({
         />
       </div>
 
+      <InventoryFiltersPanel
+        equippedFilter={equippedFilter}
+        sortFilter={sortFilter}
+        selectedSlots={selectedSlots}
+        selectedRarities={selectedRarities}
+        dateRange={dateRange}
+        onEquippedChange={setEquippedFilter}
+        onSortChange={setSortFilter}
+        onSlotsChange={setSelectedSlots}
+        onRaritiesChange={setSelectedRarities}
+        onDateRangeChange={setDateRange}
+      />
+
       <InventoryGrid
-        items={items}
+        items={resolvedItems}
         selectedItemId={selectedItemId}
         onSelect={(item) => handleSelect(item, item.slot)}
       />

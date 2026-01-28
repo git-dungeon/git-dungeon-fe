@@ -320,6 +320,29 @@
       "title": "인벤토리",
       "equipped": "장착"
     },
+    "filters": {
+      "title": "필터",
+      "labels": {
+        "equipped": "장착 여부",
+        "sort": "정렬",
+        "slots": "슬롯",
+        "rarity": "희귀도",
+        "acquired": "획득일"
+      },
+      "options": {
+        "all": "전체",
+        "equipped": "장착",
+        "unequipped": "미장착",
+        "sortDefault": "기본 정렬",
+        "sortNewest": "획득일 최신",
+        "sortOldest": "획득일 오래된"
+      },
+      "date": {
+        "from": "시작",
+        "to": "끝",
+        "hint": "기간을 선택하지 않으면 전체 기간으로 표시됩니다."
+      }
+    },
     "rarity": {
       "common": "일반",
       "uncommon": "고급",
