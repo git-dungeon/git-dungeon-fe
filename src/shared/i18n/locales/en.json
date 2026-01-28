@@ -320,6 +320,29 @@
       "title": "Inventory",
       "equipped": "Equipped"
     },
+    "filters": {
+      "title": "Filter",
+      "labels": {
+        "equipped": "Equipped",
+        "sort": "Sort",
+        "slots": "Slots",
+        "rarity": "Rarity",
+        "acquired": "Acquired"
+      },
+      "options": {
+        "all": "All",
+        "equipped": "Equipped",
+        "unequipped": "Unequipped",
+        "sortDefault": "Default order",
+        "sortNewest": "Newest",
+        "sortOldest": "Oldest"
+      },
+      "date": {
+        "from": "From",
+        "to": "To",
+        "hint": "Leaving dates empty shows all items."
+      }
+    },
     "rarity": {
       "common": "Common",
       "uncommon": "Uncommon",

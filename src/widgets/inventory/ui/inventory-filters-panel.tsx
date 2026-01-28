@@ -65,26 +65,7 @@ export function InventoryFiltersPanel({
   onRaritiesChange,
   onDateRangeChange,
 }: InventoryFiltersPanelProps) {
-  const { t, i18n } = useTranslation();
-  const isKo = i18n.language?.startsWith("ko");
-  const labels = {
-    equippedLabel: isKo ? "장착 여부" : "Equipped",
-    sortLabel: isKo ? "정렬" : "Sort",
-    slotsLabel: isKo ? "슬롯" : "Slots",
-    rarityLabel: isKo ? "희귀도" : "Rarity",
-    dateLabel: isKo ? "획득일" : "Acquired",
-    all: isKo ? "전체" : "All",
-    equipped: isKo ? "장착" : "Equipped",
-    unequipped: isKo ? "미장착" : "Unequipped",
-    sortDefault: isKo ? "기본 정렬" : "Default order",
-    sortNewest: isKo ? "획득일 최신" : "Newest",
-    sortOldest: isKo ? "획득일 오래된" : "Oldest",
-    from: isKo ? "시작" : "From",
-    to: isKo ? "끝" : "To",
-    hint: isKo
-      ? "기간을 선택하지 않으면 전체 기간으로 표시됩니다."
-      : "Leaving dates empty shows all items.",
-  };
+  const { t } = useTranslation();
 
   const toggleSlot = (slot: InventoryItemSlot) => {
     const next = selectedSlots.includes(slot)
@@ -102,13 +83,15 @@ export function InventoryFiltersPanel({
 
   return (
     <PixelPanel
-      title={t("logs.filters.title")}
+      title={t("inventory.filters.title")}
       className="p-4"
       contentClassName="space-y-4"
     >
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <div className="space-y-2">
-          <p className="pixel-text-muted text-xs">{labels.equippedLabel}</p>
+          <p className="pixel-text-muted text-xs">
+            {t("inventory.filters.labels.equipped")}
+          </p>
           <Select
             value={equippedFilter}
             onValueChange={(next) =>
@@ -120,20 +103,22 @@ export function InventoryFiltersPanel({
             </SelectTrigger>
             <SelectContent className="pixel-select-content">
               <SelectItem value="ALL" className="pixel-select-item">
-                {labels.all}
+                {t("inventory.filters.options.all")}
               </SelectItem>
               <SelectItem value="EQUIPPED" className="pixel-select-item">
-                {labels.equipped}
+                {t("inventory.filters.options.equipped")}
               </SelectItem>
               <SelectItem value="UNEQUIPPED" className="pixel-select-item">
-                {labels.unequipped}
+                {t("inventory.filters.options.unequipped")}
               </SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         <div className="space-y-2">
-          <p className="pixel-text-muted text-xs">{labels.sortLabel}</p>
+          <p className="pixel-text-muted text-xs">
+            {t("inventory.filters.labels.sort")}
+          </p>
           <Select
             value={sortFilter}
             onValueChange={(next) => onSortChange(next as InventorySortFilter)}
@@ -143,13 +128,13 @@ export function InventoryFiltersPanel({
             </SelectTrigger>
             <SelectContent className="pixel-select-content">
               <SelectItem value="DEFAULT" className="pixel-select-item">
-                {labels.sortDefault}
+                {t("inventory.filters.options.sortDefault")}
               </SelectItem>
               <SelectItem value="ACQUIRED_DESC" className="pixel-select-item">
-                {labels.sortNewest}
+                {t("inventory.filters.options.sortNewest")}
               </SelectItem>
               <SelectItem value="ACQUIRED_ASC" className="pixel-select-item">
-                {labels.sortOldest}
+                {t("inventory.filters.options.sortOldest")}
               </SelectItem>
             </SelectContent>
           </Select>
@@ -158,7 +143,9 @@ export function InventoryFiltersPanel({
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <div className="space-y-2">
-          <p className="pixel-text-muted text-xs">{labels.slotsLabel}</p>
+          <p className="pixel-text-muted text-xs">
+            {t("inventory.filters.labels.slots")}
+          </p>
           <div className="flex flex-wrap gap-2">
             {SLOT_OPTIONS.map((slot) => {
               const isActive = selectedSlots.includes(slot);
@@ -178,7 +165,9 @@ export function InventoryFiltersPanel({
         </div>
 
         <div className="space-y-2">
-          <p className="pixel-text-muted text-xs">{labels.rarityLabel}</p>
+          <p className="pixel-text-muted text-xs">
+            {t("inventory.filters.labels.rarity")}
+          </p>
           <div className="flex flex-wrap gap-2">
             {RARITY_OPTIONS.map((rarity) => {
               const isActive = selectedRarities.includes(rarity);
@@ -199,10 +188,14 @@ export function InventoryFiltersPanel({
       </div>
 
       <div className="space-y-2">
-        <p className="pixel-text-muted text-xs">{labels.dateLabel}</p>
+        <p className="pixel-text-muted text-xs">
+          {t("inventory.filters.labels.acquired")}
+        </p>
         <div className="grid gap-3 md:grid-cols-2">
           <label className="space-y-1">
-            <span className="pixel-text-muted text-xs">{labels.from}</span>
+            <span className="pixel-text-muted text-xs">
+              {t("inventory.filters.date.from")}
+            </span>
             <input
               type="date"
               value={dateRange.start}
@@ -217,7 +210,9 @@ export function InventoryFiltersPanel({
             />
           </label>
           <label className="space-y-1">
-            <span className="pixel-text-muted text-xs">{labels.to}</span>
+            <span className="pixel-text-muted text-xs">
+              {t("inventory.filters.date.to")}
+            </span>
             <input
               type="date"
               value={dateRange.end}
@@ -232,7 +227,9 @@ export function InventoryFiltersPanel({
             />
           </label>
         </div>
-        <p className="pixel-text-muted text-xs">{labels.hint}</p>
+        <p className="pixel-text-muted text-xs">
+          {t("inventory.filters.date.hint")}
+        </p>
       </div>
     </PixelPanel>
   );
