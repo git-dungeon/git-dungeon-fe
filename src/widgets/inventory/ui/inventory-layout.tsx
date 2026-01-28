@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type {
   InventoryEquippedMap,
   InventoryItem,
@@ -83,12 +83,16 @@ export function InventoryLayout({
     setSelectedSlot(null);
   };
 
-  const filteredItems = filterInventoryItems(items, {
-    equippedFilter,
-    selectedSlots,
-    selectedRarities,
-    dateRange,
-  });
+  const filteredItems = useMemo(
+    () =>
+      filterInventoryItems(items, {
+        equippedFilter,
+        selectedSlots,
+        selectedRarities,
+        dateRange,
+      }),
+    [items, equippedFilter, selectedSlots, selectedRarities, dateRange]
+  );
   const resolvedItems =
     sortFilter === "DEFAULT"
       ? sortItemsByDefault(filteredItems)
