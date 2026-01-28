@@ -6,6 +6,7 @@ import { INVENTORY_ENDPOINTS } from "@/shared/config/env";
 import { server } from "@/mocks/tests/server";
 import { getInventory } from "./get-inventory";
 import { postInventoryDiscard } from "./post-inventory-discard";
+import { postInventoryDismantle } from "./post-inventory-dismantle";
 import { postInventoryEquip } from "./post-inventory-equip";
 import { postInventoryUnequip } from "./post-inventory-unequip";
 
@@ -119,5 +120,46 @@ describe("inventory actions", () => {
 
     expect(next.version).toBe(inventory.version + 1);
     expect(next.items.some((item) => item.id === target!.id)).toBe(false);
+  });
+
+  it("분해 성공 시 재료가 추가되고 아이템이 제거된다", async () => {
+    const inventory = await getInventory();
+    const target = inventory.items.find(
+      (item) =>
+        !item.isEquipped &&
+        ["helmet", "armor", "weapon", "ring"].includes(item.slot)
+    );
+
+    expect(target).toBeTruthy();
+
+    const next = await postInventoryDismantle({
+      itemId: target!.id,
+      expectedVersion: target!.version,
+      inventoryVersion: inventory.version,
+    });
+
+    const materialBySlot: Record<string, string> = {
+      helmet: "material-leather-scrap",
+      armor: "material-cloth-scrap",
+      weapon: "material-metal-scrap",
+      ring: "material-mithril-dust",
+    };
+    const quantityByRarity: Record<string, number> = {
+      common: 1,
+      uncommon: 2,
+      rare: 3,
+      epic: 4,
+      legendary: 5,
+    };
+
+    const expectedMaterial = materialBySlot[target!.slot];
+    const materialItem = next.items.find(
+      (item) => item.code === expectedMaterial && item.slot === "material"
+    );
+
+    expect(next.version).toBe(inventory.version + 1);
+    expect(next.items.some((item) => item.id === target!.id)).toBe(false);
+    expect(materialItem).toBeTruthy();
+    expect(materialItem?.quantity).toBe(quantityByRarity[target!.rarity]);
   });
 });
