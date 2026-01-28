@@ -106,6 +106,130 @@ describe("inventory actions", () => {
     }
   });
 
+  it("분해 400 응답은 INVENTORY_INVALID_REQUEST 코드가 포함된다", async () => {
+    server.use(
+      http.post(INVENTORY_ENDPOINTS.dismantle, () =>
+        respondWithError("요청 정보가 올바르지 않습니다.", {
+          status: 400,
+          code: "INVENTORY_INVALID_REQUEST",
+        })
+      )
+    );
+
+    const inventory = await getInventory();
+    const target = inventory.items[0]!;
+
+    try {
+      await postInventoryDismantle({
+        itemId: target.id,
+        expectedVersion: target.version,
+        inventoryVersion: inventory.version,
+      });
+      throw new Error("Expected postInventoryDismantle to throw");
+    } catch (error) {
+      expect(isAppError(error)).toBe(true);
+      if (!isAppError(error)) return;
+      expect(error.code).toBe("API_BAD_REQUEST");
+      const payload = error.meta?.payload as
+        | { error?: { code?: string } }
+        | undefined;
+      expect(payload?.error?.code).toBe("INVENTORY_INVALID_REQUEST");
+    }
+  });
+
+  it("분해 404 응답은 INVENTORY_ITEM_NOT_FOUND 코드가 포함된다", async () => {
+    server.use(
+      http.post(INVENTORY_ENDPOINTS.dismantle, () =>
+        respondWithError("아이템을 찾을 수 없습니다.", {
+          status: 404,
+          code: "INVENTORY_ITEM_NOT_FOUND",
+        })
+      )
+    );
+
+    const inventory = await getInventory();
+    const target = inventory.items[0]!;
+
+    try {
+      await postInventoryDismantle({
+        itemId: target.id,
+        expectedVersion: target.version,
+        inventoryVersion: inventory.version,
+      });
+      throw new Error("Expected postInventoryDismantle to throw");
+    } catch (error) {
+      expect(isAppError(error)).toBe(true);
+      if (!isAppError(error)) return;
+      expect(error.code).toBe("API_NOT_FOUND");
+      const payload = error.meta?.payload as
+        | { error?: { code?: string } }
+        | undefined;
+      expect(payload?.error?.code).toBe("INVENTORY_ITEM_NOT_FOUND");
+    }
+  });
+
+  it("분해 409 응답은 INVENTORY_SLOT_CONFLICT 코드가 포함된다", async () => {
+    server.use(
+      http.post(INVENTORY_ENDPOINTS.dismantle, () =>
+        respondWithError("장착 중인 아이템은 분해할 수 없습니다.", {
+          status: 409,
+          code: "INVENTORY_SLOT_CONFLICT",
+        })
+      )
+    );
+
+    const inventory = await getInventory();
+    const target = inventory.items[0]!;
+
+    try {
+      await postInventoryDismantle({
+        itemId: target.id,
+        expectedVersion: target.version,
+        inventoryVersion: inventory.version,
+      });
+      throw new Error("Expected postInventoryDismantle to throw");
+    } catch (error) {
+      expect(isAppError(error)).toBe(true);
+      if (!isAppError(error)) return;
+      expect(error.code).toBe("API_CONFLICT");
+      const payload = error.meta?.payload as
+        | { error?: { code?: string } }
+        | undefined;
+      expect(payload?.error?.code).toBe("INVENTORY_SLOT_CONFLICT");
+    }
+  });
+
+  it("분해 429 응답은 INVENTORY_RATE_LIMITED 코드가 포함된다", async () => {
+    server.use(
+      http.post(INVENTORY_ENDPOINTS.dismantle, () =>
+        respondWithError("요청이 너무 많습니다.", {
+          status: 429,
+          code: "INVENTORY_RATE_LIMITED",
+        })
+      )
+    );
+
+    const inventory = await getInventory();
+    const target = inventory.items[0]!;
+
+    try {
+      await postInventoryDismantle({
+        itemId: target.id,
+        expectedVersion: target.version,
+        inventoryVersion: inventory.version,
+      });
+      throw new Error("Expected postInventoryDismantle to throw");
+    } catch (error) {
+      expect(isAppError(error)).toBe(true);
+      if (!isAppError(error)) return;
+      expect(error.code).toBe("API_RATE_LIMIT");
+      const payload = error.meta?.payload as
+        | { error?: { code?: string } }
+        | undefined;
+      expect(payload?.error?.code).toBe("INVENTORY_RATE_LIMITED");
+    }
+  });
+
   it("폐기 성공 시 인벤토리 버전이 증가하고 아이템이 제거된다", async () => {
     const inventory = await getInventory();
     const target = inventory.items.find((item) => !item.isEquipped);

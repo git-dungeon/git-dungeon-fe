@@ -32,6 +32,56 @@ describe("formatDelta", () => {
     expect(summary?.tone).toBe("success");
   });
 
+  it("DISMANTLE_ITEM 로그에서 제거/획득 변동을 함께 표시한다", () => {
+    const entry: DungeonLogEntry = {
+      id: "log-dismantle-delta",
+      category: "STATUS",
+      floor: null,
+      action: "DISMANTLE_ITEM",
+      status: "COMPLETED",
+      createdAt: "2025-12-01T00:00:00Z",
+      delta: {
+        type: "DISMANTLE_ITEM",
+        detail: {
+          inventory: {
+            added: [
+              {
+                itemId: "inv-material-1",
+                code: "material-metal-scrap",
+                slot: "material",
+                quantity: 3,
+              },
+            ],
+            removed: [
+              {
+                itemId: "inv-weapon-1",
+                code: "weapon-wooden-sword",
+                slot: "weapon",
+                quantity: 1,
+              },
+            ],
+          },
+        },
+      },
+      extra: null,
+    };
+
+    const entries = formatDelta(entry);
+    const acquired = entries.find(
+      (item) => item.text === "획득 material-metal-scrap x3"
+    );
+    const removed = entries.find(
+      (item) => item.text === "제거 weapon-wooden-sword x1"
+    );
+
+    expect(acquired).toBeDefined();
+    expect(acquired?.tone).toBe("success");
+    expect(acquired?.icon).toBe("plus");
+    expect(removed).toBeDefined();
+    expect(removed?.tone).toBe("danger");
+    expect(removed?.icon).toBe("minus");
+  });
+
   it("MOVE 로그에서 층 증가와 진행도 변화를 함께 표시한다", () => {
     const entry: DungeonLogEntry = {
       id: "log-move-complete",

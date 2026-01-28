@@ -6,6 +6,7 @@ import type { InventoryResponse } from "@/entities/inventory/model/types";
 import { INVENTORY_QUERY_KEY } from "@/entities/inventory/model/inventory-query";
 import { DASHBOARD_STATE_QUERY_KEY } from "@/entities/dashboard/model/dashboard-state-query";
 import { ApiError } from "@/shared/api/http-client";
+import { i18next } from "@/shared/i18n/i18n";
 import { useInventoryActions } from "./use-inventory-actions";
 
 vi.mock("@/entities/inventory/api/post-inventory-equip", () => ({
@@ -81,6 +82,7 @@ beforeAll(() => {
   (
     globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }
   ).IS_REACT_ACT_ENVIRONMENT = true;
+  void i18next.changeLanguage("ko");
 });
 
 afterEach(() => {
@@ -154,10 +156,13 @@ describe("useInventoryActions", () => {
     postInventoryDiscardMock.mockResolvedValue(inventoryFixture);
     postInventoryDismantleMock.mockResolvedValue(inventoryFixture);
 
-    const { result, unmount } = renderInventoryActions(queryClient);
+    const actions = renderInventoryActions(queryClient);
 
     await act(async () => {
-      await Promise.all([result.equip("item-1"), result.equip("item-1")]);
+      await Promise.all([
+        actions.result.equip("item-1"),
+        actions.result.equip("item-1"),
+      ]);
     });
 
     expect(refetchSpy).toHaveBeenCalledTimes(2);
@@ -168,7 +173,7 @@ describe("useInventoryActions", () => {
       expect.arrayContaining([INVENTORY_QUERY_KEY, DASHBOARD_STATE_QUERY_KEY])
     );
 
-    unmount();
+    actions.unmount();
   });
 
   it("dismantle도 버전 불일치 시 재시도를 수행한다", async () => {
@@ -200,10 +205,10 @@ describe("useInventoryActions", () => {
     postInventoryUnequipMock.mockResolvedValue(inventoryFixture);
     postInventoryDiscardMock.mockResolvedValue(inventoryFixture);
 
-    const { result, unmount } = renderInventoryActions(queryClient);
+    const actions = renderInventoryActions(queryClient);
 
     await act(async () => {
-      await result.dismantle("item-1");
+      await actions.result.dismantle("item-1");
     });
 
     expect(refetchSpy).toHaveBeenCalledTimes(2);
@@ -214,6 +219,99 @@ describe("useInventoryActions", () => {
       expect.arrayContaining([INVENTORY_QUERY_KEY, DASHBOARD_STATE_QUERY_KEY])
     );
 
-    unmount();
+    actions.unmount();
+  });
+
+  it.each([
+    {
+      apiCode: "INVENTORY_INVALID_REQUEST",
+      status: 400,
+      expectedMessage: "요청 정보가 올바르지 않습니다.",
+    },
+    {
+      apiCode: "INVENTORY_ITEM_NOT_FOUND",
+      status: 404,
+      expectedMessage: "아이템을 찾을 수 없습니다.",
+    },
+    {
+      apiCode: "INVENTORY_SLOT_CONFLICT",
+      status: 409,
+      expectedMessage: "장착 중인 아이템은 분해할 수 없습니다.",
+    },
+    {
+      apiCode: "INVENTORY_RATE_LIMITED",
+      status: 429,
+      expectedMessage: "요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.",
+    },
+  ])(
+    "dismantle 오류($apiCode)는 사용자 메시지로 매핑된다",
+    async ({ apiCode, status, expectedMessage }) => {
+      const queryClient = new QueryClient();
+      queryClient.setQueryData(INVENTORY_QUERY_KEY, inventoryFixture);
+      queryClient.setQueryData(DASHBOARD_STATE_QUERY_KEY, {
+        version: 1,
+      });
+
+      vi.spyOn(queryClient, "invalidateQueries").mockResolvedValue(undefined);
+
+      postInventoryDismantleMock.mockRejectedValueOnce(
+        new ApiError("error", status, { error: { code: apiCode } })
+      );
+      postInventoryEquipMock.mockResolvedValue(inventoryFixture);
+      postInventoryUnequipMock.mockResolvedValue(inventoryFixture);
+      postInventoryDiscardMock.mockResolvedValue(inventoryFixture);
+
+      const actions = renderInventoryActions(queryClient);
+
+      await act(async () => {
+        try {
+          await actions.result.dismantle("item-1");
+        } catch {
+          // noop
+        }
+      });
+
+      expect(actions.result.errorMap.dismantle?.error.message).toBe(
+        expectedMessage
+      );
+
+      actions.unmount();
+    }
+  );
+
+  it("dismantle 버전 불일치가 재시도 후에도 지속되면 versionMismatch 메시지를 표시한다", async () => {
+    const queryClient = new QueryClient();
+    queryClient.setQueryData(INVENTORY_QUERY_KEY, inventoryFixture);
+    queryClient.setQueryData(DASHBOARD_STATE_QUERY_KEY, {
+      version: 1,
+    });
+
+    vi.spyOn(queryClient, "invalidateQueries").mockResolvedValue(undefined);
+    vi.spyOn(queryClient, "refetchQueries").mockResolvedValue(undefined);
+
+    const mismatchError = new ApiError("version mismatch", 412, {
+      error: { code: "INVENTORY_VERSION_MISMATCH" },
+    });
+
+    postInventoryDismantleMock.mockRejectedValue(mismatchError);
+    postInventoryEquipMock.mockResolvedValue(inventoryFixture);
+    postInventoryUnequipMock.mockResolvedValue(inventoryFixture);
+    postInventoryDiscardMock.mockResolvedValue(inventoryFixture);
+
+    const actions = renderInventoryActions(queryClient);
+
+    await act(async () => {
+      try {
+        await actions.result.dismantle("item-1");
+      } catch {
+        // noop
+      }
+    });
+
+    expect(actions.result.errorMap.dismantle?.error.message).toBe(
+      "인벤토리 상태가 변경되었습니다. 새로고침 후 다시 시도해 주세요."
+    );
+
+    actions.unmount();
   });
 });

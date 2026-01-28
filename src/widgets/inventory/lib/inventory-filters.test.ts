@@ -51,6 +51,20 @@ const baseItems: InventoryItem[] = [
     quantity: 1,
     version: 1,
   },
+  {
+    id: "item-4",
+    code: "material-metal-scrap",
+    name: null,
+    slot: "material",
+    rarity: "common",
+    modifiers: [],
+    effect: null,
+    sprite: null,
+    createdAt: "2026-01-09T10:00:00.000Z",
+    isEquipped: false,
+    quantity: 5,
+    version: 1,
+  },
 ];
 
 const defaultFilterState: InventoryFilterState = {
@@ -85,6 +99,16 @@ describe("inventory-filters", () => {
       expect(filtered[0]?.id).toBe("item-2");
     });
 
+    it("filters by material slot", () => {
+      const filtered = filterInventoryItems(baseItems, {
+        ...defaultFilterState,
+        selectedSlots: ["material"],
+      });
+
+      expect(filtered).toHaveLength(1);
+      expect(filtered[0]?.id).toBe("item-4");
+    });
+
     it("filters by rarities", () => {
       const filtered = filterInventoryItems(baseItems, {
         ...defaultFilterState,
@@ -115,6 +139,7 @@ describe("inventory-filters", () => {
         "item-1",
         "item-2",
         "item-3",
+        "item-4",
       ]);
     });
   });
@@ -123,6 +148,7 @@ describe("inventory-filters", () => {
     it("sorts by acquired asc", () => {
       const sorted = sortItemsByAcquiredAt(baseItems, "ACQUIRED_ASC");
       expect(sorted.map((item) => item.id)).toEqual([
+        "item-4",
         "item-1",
         "item-3",
         "item-2",
@@ -135,6 +161,7 @@ describe("inventory-filters", () => {
         "item-2",
         "item-3",
         "item-1",
+        "item-4",
       ]);
     });
   });

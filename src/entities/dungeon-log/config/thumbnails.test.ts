@@ -151,4 +151,49 @@ describe("buildLogThumbnails", () => {
       "log-stat-applied-stat-hp",
     ]);
   });
+
+  it("DISMANTLE_ITEM 로그에서 제거/추가 아이템 썸네일을 생성한다", () => {
+    const entry: DungeonLogEntry = {
+      id: "log-dismantle-thumb",
+      category: "STATUS",
+      floor: null,
+      action: "DISMANTLE_ITEM",
+      status: "COMPLETED",
+      createdAt: "2025-12-01T00:00:00Z",
+      delta: {
+        type: "DISMANTLE_ITEM",
+        detail: {
+          inventory: {
+            removed: [
+              {
+                itemId: "inv-weapon-1",
+                code: "weapon-wooden-sword",
+                slot: "weapon",
+                rarity: "epic",
+                quantity: 1,
+              },
+            ],
+            added: [
+              {
+                itemId: "inv-material-1",
+                code: "material-metal-scrap",
+                slot: "material",
+                quantity: 4,
+              },
+            ],
+          },
+        },
+      },
+      extra: null,
+    };
+
+    const thumbnails = buildLogThumbnails(entry);
+    expect(thumbnails.map((thumbnail) => thumbnail.id)).toEqual([
+      "log-dismantle-thumb-removed-item-1",
+      "log-dismantle-thumb-added-item-1",
+    ]);
+    expect(thumbnails[0]?.badge).toBe("danger");
+    expect(thumbnails[0]?.rarity).toBe("epic");
+    expect(thumbnails[1]?.badge).toBe("success");
+  });
 });
