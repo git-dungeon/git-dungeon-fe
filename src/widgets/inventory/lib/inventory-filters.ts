@@ -22,6 +22,7 @@ const SLOT_ORDER: Record<InventoryItemSlot, number> = {
   weapon: 2,
   ring: 3,
   consumable: 4,
+  material: 5,
 };
 
 export function filterInventoryItems(

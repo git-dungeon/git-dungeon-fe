@@ -29,6 +29,7 @@ export const sampleInventoryItems: InventoryItem[] = [
     sprite: null,
     createdAt: "2026-01-18T12:00:00.000Z",
     isEquipped: true,
+    quantity: 1,
     version: 1,
   },
   {
@@ -45,6 +46,7 @@ export const sampleInventoryItems: InventoryItem[] = [
     sprite: null,
     createdAt: "2026-01-18T11:30:00.000Z",
     isEquipped: true,
+    quantity: 1,
     version: 1,
   },
   {
@@ -58,6 +60,7 @@ export const sampleInventoryItems: InventoryItem[] = [
     sprite: null,
     createdAt: "2026-01-18T10:10:00.000Z",
     isEquipped: false,
+    quantity: 1,
     version: 1,
   },
   {
@@ -71,6 +74,7 @@ export const sampleInventoryItems: InventoryItem[] = [
     sprite: null,
     createdAt: "2026-01-17T22:10:00.000Z",
     isEquipped: false,
+    quantity: 1,
     version: 1,
   },
 ];

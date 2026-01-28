@@ -358,7 +358,8 @@
         "armor": "Armor",
         "weapon": "Weapon",
         "ring": "Ring",
-        "consumable": "Consumable"
+        "consumable": "Consumable",
+        "material": "Material"
       }
     },
     "modal": {

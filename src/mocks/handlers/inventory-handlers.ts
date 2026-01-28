@@ -479,6 +479,7 @@ function buildInventoryItems(): InventoryItem[] {
     sprite: `sprite/${item.id}`,
     createdAt: mockTimestampMinutesAgo(item.obtainedMinutesAgo),
     isEquipped: Boolean(item.isEquipped),
+    quantity: 1,
     version: 1,
   }));
 }
@@ -519,6 +520,7 @@ function syncDashboardEquippedItems() {
       sprite: item.sprite ?? null,
       createdAt: item.createdAt,
       isEquipped: true,
+      quantity: item.quantity ?? 1,
       version: item.version,
     }));
 }

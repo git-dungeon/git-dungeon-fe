@@ -48,6 +48,7 @@ const inventoryFixture: InventoryResponse = {
       sprite: null,
       createdAt: "2025-12-31T00:00:00.000Z",
       isEquipped: false,
+      quantity: 1,
       version: 1,
     },
   ],

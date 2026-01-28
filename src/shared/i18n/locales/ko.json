@@ -358,7 +358,8 @@
         "armor": "방어구",
         "weapon": "무기",
         "ring": "반지",
-        "consumable": "소모품"
+        "consumable": "소모품",
+        "material": "재료"
       }
     },
     "modal": {
