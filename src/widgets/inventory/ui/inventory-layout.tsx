@@ -88,10 +88,10 @@ export function InventoryLayout({
     selectedRarities,
     dateRange,
   });
-  const shouldSkipDefaultSort = sortFilter !== "DEFAULT";
-  const resolvedItems = shouldSkipDefaultSort
-    ? sortItemsByAcquiredAt(filteredItems, sortFilter)
-    : filteredItems;
+  const resolvedItems =
+    sortFilter === "DEFAULT"
+      ? sortItemsByDefault(filteredItems)
+      : sortItemsByAcquiredAt(filteredItems, sortFilter);
 
   useEffect(() => {
     if (!selectedItemId) {
@@ -136,7 +136,6 @@ export function InventoryLayout({
         items={resolvedItems}
         selectedItemId={selectedItemId}
         onSelect={(item) => handleSelect(item, item.slot)}
-        disableDefaultSort={shouldSkipDefaultSort}
       />
 
       <InventoryModal
@@ -201,6 +200,28 @@ function sortItemsByAcquiredAt(
     (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
   );
   return sortFilter === "ACQUIRED_DESC" ? sorted.reverse() : sorted;
+}
+
+const SLOT_ORDER: Record<InventoryItemSlot, number> = {
+  helmet: 0,
+  armor: 1,
+  weapon: 2,
+  ring: 3,
+  consumable: 4,
+};
+
+function sortItemsByDefault(items: InventoryItem[]) {
+  return [...items].sort((a, b) => {
+    if (a.isEquipped !== b.isEquipped) {
+      return a.isEquipped ? -1 : 1;
+    }
+
+    if (SLOT_ORDER[a.slot] !== SLOT_ORDER[b.slot]) {
+      return SLOT_ORDER[a.slot] - SLOT_ORDER[b.slot];
+    }
+
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
 }
 
 function isWithinDateRange(value: string, range: InventoryDateRange) {
