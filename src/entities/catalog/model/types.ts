@@ -27,7 +27,7 @@ export const catalogItemSchema = z.object({
   nameKey: z.string(),
   descriptionKey: z.string().nullable(),
   name: z.string(),
-  slot: z.enum(["weapon", "armor", "helmet", "ring", "consumable"]),
+  slot: z.enum(["weapon", "armor", "helmet", "ring", "consumable", "material"]),
   rarity: z.enum(["common", "uncommon", "rare", "epic", "legendary"]),
   modifiers: z.array(inventoryModifierSchema),
   effectCode: z.string().nullable(),
