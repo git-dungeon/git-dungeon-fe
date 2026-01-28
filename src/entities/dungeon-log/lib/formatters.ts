@@ -134,7 +134,8 @@ export function formatDelta(
     case "ACQUIRE_ITEM":
     case "EQUIP_ITEM":
     case "UNEQUIP_ITEM":
-    case "DISCARD_ITEM": {
+    case "DISCARD_ITEM":
+    case "DISMANTLE_ITEM": {
       entries.push(...formatStatsDelta(entry.id, delta.detail.stats));
       entries.push(
         ...formatInventoryDelta(
