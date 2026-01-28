@@ -17,12 +17,13 @@ import { DASHBOARD_STATE_QUERY_KEY } from "@/entities/dashboard/model/dashboard-
 import { postInventoryDiscard } from "@/entities/inventory/api/post-inventory-discard";
 import { postInventoryEquip } from "@/entities/inventory/api/post-inventory-equip";
 import { postInventoryUnequip } from "@/entities/inventory/api/post-inventory-unequip";
+import { postInventoryDismantle } from "@/entities/inventory/api/post-inventory-dismantle";
 import {
   isInventoryErrorCode,
   type InventoryErrorCode,
 } from "@/entities/inventory/model/error-codes";
 
-type InventoryActionType = "equip" | "unequip" | "discard";
+type InventoryActionType = "equip" | "unequip" | "discard" | "dismantle";
 
 interface InventoryActionFailure {
   source: InventoryActionType;
@@ -94,19 +95,22 @@ export function useInventoryActions() {
       const previous =
         queryClient.getQueryData<InventoryResponse>(INVENTORY_QUERY_KEY);
 
-      let optimisticVersion: number | undefined;
-
-      if (previous) {
-        const optimistic = buildOptimisticInventory(
-          previous,
-          type,
-          payload.itemId
-        );
-        queryClient.setQueryData(INVENTORY_QUERY_KEY, optimistic);
-        optimisticVersion = optimistic.version;
+      if (!previous) {
+        return { previous };
       }
 
-      return { previous, optimisticVersion };
+      if (type === "dismantle") {
+        return { previous };
+      }
+
+      const optimistic = buildOptimisticInventory(
+        previous,
+        type,
+        payload.itemId
+      );
+      queryClient.setQueryData(INVENTORY_QUERY_KEY, optimistic);
+
+      return { previous, optimisticVersion: optimistic.version };
     };
   };
 
@@ -141,6 +145,19 @@ export function useInventoryActions() {
     onError: (error, _variables, context) => {
       if (!isVersionMismatchError(error)) {
         setLastError(buildActionFailure("discard", error));
+      }
+      rollbackOnError(queryClient, context);
+    },
+    retry: false,
+  });
+
+  const dismantleMutation = useMutation({
+    mutationFn: postInventoryDismantle,
+    onMutate: createOptimisticHandler("dismantle"),
+    onSuccess: handleSuccess,
+    onError: (error, _variables, context) => {
+      if (!isVersionMismatchError(error)) {
+        setLastError(buildActionFailure("dismantle", error));
       }
       rollbackOnError(queryClient, context);
     },
@@ -183,6 +200,7 @@ export function useInventoryActions() {
     { source: "equip" as const, error: equipMutation.error },
     { source: "unequip" as const, error: unequipMutation.error },
     { source: "discard" as const, error: discardMutation.error },
+    { source: "dismantle" as const, error: dismantleMutation.error },
   ];
 
   const errorMap = buildActionErrorMap(actionErrors);
@@ -204,6 +222,7 @@ export function useInventoryActions() {
     equipMutation.reset();
     unequipMutation.reset();
     discardMutation.reset();
+    dismantleMutation.reset();
   };
 
   return {
@@ -212,10 +231,13 @@ export function useInventoryActions() {
       executeWithRetry("unequip", itemId, unequipMutation),
     discard: (itemId: string) =>
       executeWithRetry("discard", itemId, discardMutation),
+    dismantle: (itemId: string) =>
+      executeWithRetry("dismantle", itemId, dismantleMutation),
     isPending:
       equipMutation.isPending ||
       unequipMutation.isPending ||
-      discardMutation.isPending,
+      discardMutation.isPending ||
+      dismantleMutation.isPending,
     isSyncing,
     error: aggregatedError,
     lastError,
@@ -243,7 +265,7 @@ function buildInventoryMutationVariables(
 
 function buildOptimisticInventory(
   previous: InventoryResponse,
-  action: InventoryActionType,
+  action: Exclude<InventoryActionType, "dismantle">,
   targetId: string
 ): InventoryResponse {
   const items = applyOptimisticItems(previous.items, action, targetId);
@@ -310,10 +332,11 @@ function buildEquippedMap(items: InventoryItem[]): InventoryEquippedMap {
     weapon: null,
     ring: null,
     consumable: null,
+    material: null,
   };
 
   return items.reduce<InventoryEquippedMap>((acc, item) => {
-    if (item.isEquipped) {
+    if (item.isEquipped && item.slot !== "material") {
       acc[item.slot] = { ...item };
     }
     return acc;
@@ -424,6 +447,12 @@ function resolveInventoryActionMessage(error: AppError): string {
     : null;
 
   switch (apiCode) {
+    case "INVENTORY_INVALID_REQUEST":
+      return t("inventory.errors.invalidRequest");
+    case "INVENTORY_ITEM_NOT_FOUND":
+      return t("inventory.errors.itemNotFound");
+    case "INVENTORY_SLOT_CONFLICT":
+      return t("inventory.errors.slotConflict");
     case "INVENTORY_VERSION_MISMATCH":
       return t("inventory.errors.versionMismatch");
     case "INVENTORY_RATE_LIMITED":
@@ -431,8 +460,6 @@ function resolveInventoryActionMessage(error: AppError): string {
     default:
       return apiMessage ?? t("inventory.errors.requestFailed");
   }
-
-  return t("inventory.errors.requestFailed");
 }
 
 function buildActionErrorMap(

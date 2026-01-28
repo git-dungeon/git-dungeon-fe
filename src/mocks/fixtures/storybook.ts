@@ -85,6 +85,7 @@ export const sampleEquippedMap: InventoryEquippedMap = {
   weapon: sampleInventoryItems[0],
   ring: sampleInventoryItems[2],
   consumable: null,
+  material: null,
 };
 
 const baseStats = sampleDashboardState.stats.base;

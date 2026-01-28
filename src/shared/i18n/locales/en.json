@@ -388,6 +388,9 @@
       "resurrection": "Resurrection"
     },
     "errors": {
+      "invalidRequest": "The request is invalid.",
+      "itemNotFound": "Item not found.",
+      "slotConflict": "Equipped items cannot be dismantled.",
       "versionMismatch": "Inventory state has changed. Refresh and try again.",
       "rateLimited": "Too many requests. Please try again later.",
       "requestFailed": "Inventory request failed."

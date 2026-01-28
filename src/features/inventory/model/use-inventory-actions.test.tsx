@@ -20,6 +20,10 @@ vi.mock("@/entities/inventory/api/post-inventory-discard", () => ({
   postInventoryDiscard: vi.fn(),
 }));
 
+vi.mock("@/entities/inventory/api/post-inventory-dismantle", () => ({
+  postInventoryDismantle: vi.fn(),
+}));
+
 const equipModule = await import(
   "@/entities/inventory/api/post-inventory-equip"
 );
@@ -29,10 +33,16 @@ const unequipModule = await import(
 const discardModule = await import(
   "@/entities/inventory/api/post-inventory-discard"
 );
+const dismantleModule = await import(
+  "@/entities/inventory/api/post-inventory-dismantle"
+);
 
 const postInventoryEquipMock = vi.mocked(equipModule.postInventoryEquip);
 const postInventoryUnequipMock = vi.mocked(unequipModule.postInventoryUnequip);
 const postInventoryDiscardMock = vi.mocked(discardModule.postInventoryDiscard);
+const postInventoryDismantleMock = vi.mocked(
+  dismantleModule.postInventoryDismantle
+);
 
 const inventoryFixture: InventoryResponse = {
   version: 1,
@@ -58,6 +68,7 @@ const inventoryFixture: InventoryResponse = {
     weapon: null,
     ring: null,
     consumable: null,
+    material: null,
   },
   summary: {
     base: { hp: 10, maxHp: 10, atk: 10, def: 10, luck: 10 },
@@ -141,11 +152,58 @@ describe("useInventoryActions", () => {
 
     postInventoryUnequipMock.mockResolvedValue(inventoryFixture);
     postInventoryDiscardMock.mockResolvedValue(inventoryFixture);
+    postInventoryDismantleMock.mockResolvedValue(inventoryFixture);
 
     const { result, unmount } = renderInventoryActions(queryClient);
 
     await act(async () => {
       await Promise.all([result.equip("item-1"), result.equip("item-1")]);
+    });
+
+    expect(refetchSpy).toHaveBeenCalledTimes(2);
+    const calledKeys = refetchSpy.mock.calls.map(
+      ([options]) => options?.queryKey
+    );
+    expect(calledKeys).toEqual(
+      expect.arrayContaining([INVENTORY_QUERY_KEY, DASHBOARD_STATE_QUERY_KEY])
+    );
+
+    unmount();
+  });
+
+  it("dismantle도 버전 불일치 시 재시도를 수행한다", async () => {
+    const queryClient = new QueryClient();
+    queryClient.setQueryData(INVENTORY_QUERY_KEY, inventoryFixture);
+    queryClient.setQueryData(DASHBOARD_STATE_QUERY_KEY, {
+      version: 1,
+    });
+
+    vi.spyOn(queryClient, "invalidateQueries").mockResolvedValue(undefined);
+    const refetchSpy = vi
+      .spyOn(queryClient, "refetchQueries")
+      .mockResolvedValue(undefined);
+
+    let callCount = 0;
+    const mismatchError = new ApiError("version mismatch", 412, {
+      error: { code: "INVENTORY_VERSION_MISMATCH" },
+    });
+
+    postInventoryDismantleMock.mockImplementation(async () => {
+      callCount += 1;
+      if (callCount <= 1) {
+        throw mismatchError;
+      }
+      return inventoryFixture;
+    });
+
+    postInventoryEquipMock.mockResolvedValue(inventoryFixture);
+    postInventoryUnequipMock.mockResolvedValue(inventoryFixture);
+    postInventoryDiscardMock.mockResolvedValue(inventoryFixture);
+
+    const { result, unmount } = renderInventoryActions(queryClient);
+
+    await act(async () => {
+      await result.dismantle("item-1");
     });
 
     expect(refetchSpy).toHaveBeenCalledTimes(2);

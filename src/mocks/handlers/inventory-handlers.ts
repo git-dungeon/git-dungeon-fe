@@ -519,6 +519,7 @@ const EMPTY_EQUIPPED: InventoryEquippedMap = {
   weapon: null,
   ring: null,
   consumable: null,
+  material: null,
 };
 
 function syncDashboardEquippedItems() {
