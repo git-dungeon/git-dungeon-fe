@@ -377,8 +377,18 @@
       "actions": {
         "equip": "장착",
         "unequip": "해제",
-        "discard": "버리기"
+        "discard": "버리기",
+        "dismantle": "분해"
       }
+    },
+    "dismantle": {
+      "title": "장비 분해",
+      "description": "선택한 장비를 분해해 재료를 획득합니다.",
+      "slotTitle": "분해 슬롯",
+      "expectedTitle": "예상 결과",
+      "confirm": "분해",
+      "cancel": "취소",
+      "empty": "예상 재료가 없습니다."
     },
     "hint": {
       "title": "팁",

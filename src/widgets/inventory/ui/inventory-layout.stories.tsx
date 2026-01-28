@@ -28,6 +28,8 @@ export const Default: Story = {
     onEquip: async () => undefined,
     onUnequip: async () => undefined,
     onDiscard: async () => undefined,
+    onDismantle: async () => undefined,
+    dismantleError: null,
     onClearError: () => undefined,
   },
 };

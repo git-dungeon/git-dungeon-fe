@@ -23,10 +23,13 @@ export const Default: Story = {
     isPending: false,
     isSyncing: false,
     error: null,
+    dismantleError: null,
     onClose: () => undefined,
     onEquip: async () => undefined,
     onUnequip: async () => undefined,
     onDiscard: async () => undefined,
+    onDismantle: async () => undefined,
+    onClearError: () => undefined,
   },
 };
 
@@ -37,10 +40,13 @@ export const Syncing: Story = {
     isPending: false,
     isSyncing: true,
     error: null,
+    dismantleError: null,
     onClose: () => undefined,
     onEquip: async () => undefined,
     onUnequip: async () => undefined,
     onDiscard: async () => undefined,
+    onDismantle: async () => undefined,
+    onClearError: () => undefined,
   },
 };
 
@@ -51,9 +57,12 @@ export const ErrorState: Story = {
     isPending: false,
     isSyncing: false,
     error: new Error("장비 장착에 실패했습니다."),
+    dismantleError: null,
     onClose: () => undefined,
     onEquip: async () => undefined,
     onUnequip: async () => undefined,
     onDiscard: async () => undefined,
+    onDismantle: async () => undefined,
+    onClearError: () => undefined,
   },
 };

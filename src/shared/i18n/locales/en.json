@@ -377,8 +377,18 @@
       "actions": {
         "equip": "Equip",
         "unequip": "Unequip",
-        "discard": "Discard"
+        "discard": "Discard",
+        "dismantle": "Dismantle"
       }
+    },
+    "dismantle": {
+      "title": "Dismantle Equipment",
+      "description": "Break down the selected equipment to obtain materials.",
+      "slotTitle": "Dismantle Slot",
+      "expectedTitle": "Expected Results",
+      "confirm": "Dismantle",
+      "cancel": "Cancel",
+      "empty": "No materials expected."
     },
     "hint": {
       "title": "Tip",
