@@ -17,7 +17,7 @@ import { resolveLocalItemSprite } from "@/entities/catalog/config/local-sprites"
 import { getInventorySlotLabel } from "@/entities/inventory/config/slot-labels";
 import { formatRarity } from "@/entities/dashboard/lib/formatters";
 import { buildDismantlePreview } from "@/widgets/inventory/lib/dismantle-preview";
-import { useCatalogItemNameResolver } from "@/entities/catalog/model/use-catalog-item-name";
+import { useInventoryItemNameResolver } from "@/entities/inventory/model/use-inventory-item-name";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 
@@ -41,7 +41,7 @@ export function InventoryDismantleModal({
   onConfirm,
 }: InventoryDismantleModalProps) {
   const { t } = useTranslation();
-  const resolveItemName = useCatalogItemNameResolver();
+  const resolveItemName = useInventoryItemNameResolver();
 
   if (!item) {
     return null;
@@ -141,6 +141,10 @@ export function InventoryDismantleModal({
             {previewItems.length > 0 ? (
               previewItems.map((preview, index) => {
                 const materialSprite = resolveLocalItemSprite(preview.code);
+                const materialName = resolveItemName(
+                  preview.code,
+                  preview.code
+                );
                 return (
                   <div
                     key={`${preview.code}-${index}`}
@@ -150,13 +154,13 @@ export function InventoryDismantleModal({
                       {materialSprite ? (
                         <img
                           src={materialSprite}
-                          alt={preview.code}
+                          alt={materialName}
                           className="size-10 object-contain"
                           loading="lazy"
                         />
                       ) : (
                         <div className="pixel-text-muted pixel-text-xs font-semibold tracking-wide">
-                          {preview.code.slice(0, 2).toUpperCase()}
+                          {materialName.slice(0, 2).toUpperCase()}
                         </div>
                       )}
                     </div>

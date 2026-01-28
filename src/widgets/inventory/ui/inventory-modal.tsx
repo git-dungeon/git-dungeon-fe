@@ -8,7 +8,6 @@ import { cn } from "@/shared/lib/utils";
 import { formatStatChange, resolveStatLabel } from "@/shared/lib/stats/format";
 import { resolveLocalItemSprite } from "@/entities/catalog/config/local-sprites";
 import { getInventorySlotLabel } from "@/entities/inventory/config/slot-labels";
-import { useCatalogItemNameResolver } from "@/entities/catalog/model/use-catalog-item-name";
 import { useCatalogItemDescriptionResolver } from "@/entities/catalog/model/use-catalog-item-description";
 import {
   Dialog,
@@ -28,6 +27,7 @@ import { toast } from "sonner";
 import { copyText } from "@/shared/lib/clipboard";
 import { InventoryDismantleModal } from "@/widgets/inventory/ui/inventory-dismantle-modal";
 import { canDismantleItem } from "@/widgets/inventory/lib/dismantle-preview";
+import { useInventoryItemNameResolver } from "@/entities/inventory/model/use-inventory-item-name";
 
 interface InventoryModalProps {
   item: InventoryItem | null;
@@ -59,7 +59,7 @@ export function InventoryModal({
   dismantleError,
 }: InventoryModalProps) {
   const { t } = useTranslation();
-  const resolveItemName = useCatalogItemNameResolver();
+  const resolveItemName = useInventoryItemNameResolver();
   const resolveDescription = useCatalogItemDescriptionResolver();
   const [isDismantleOpen, setIsDismantleOpen] = useState(false);
   if (!item || !slot) {

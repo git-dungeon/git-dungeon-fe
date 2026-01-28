@@ -70,6 +70,7 @@ export function ChestPage() {
       sprite: null,
       createdAt: createdAtRef.current,
       isEquipped: false,
+      quantity: 1,
       version: 0,
     };
   }, [catalogItem, currentItem]);

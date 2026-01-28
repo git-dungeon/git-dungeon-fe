@@ -11,7 +11,7 @@ import {
 } from "@/entities/inventory/ui/equipment-slot-grid";
 import { InventoryItemCard } from "@/entities/inventory/ui/inventory-item-card";
 import { useTranslation } from "react-i18next";
-import { useCatalogItemNameResolver } from "@/entities/catalog/model/use-catalog-item-name";
+import { useInventoryItemNameResolver } from "@/entities/inventory/model/use-inventory-item-name";
 
 interface InventorySlotsProps {
   equipped: InventoryEquippedMap;
@@ -25,7 +25,7 @@ export function InventorySlots({
   onSelect,
 }: InventorySlotsProps) {
   const { t } = useTranslation();
-  const resolveItemName = useCatalogItemNameResolver();
+  const resolveItemName = useInventoryItemNameResolver();
   return (
     <PixelPanel title={t("inventory.slots.title")} className="h-full">
       <EquipmentSlotGrid

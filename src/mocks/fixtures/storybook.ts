@@ -77,6 +77,20 @@ export const sampleInventoryItems: InventoryItem[] = [
     quantity: 1,
     version: 1,
   },
+  {
+    id: "inv-material-metal-scrap",
+    code: "material-metal-scrap",
+    name: null,
+    slot: "material",
+    rarity: "common",
+    modifiers: [],
+    effect: null,
+    sprite: null,
+    createdAt: "2026-01-17T21:40:00.000Z",
+    isEquipped: false,
+    quantity: 12,
+    version: 1,
+  },
 ];
 
 export const sampleEquippedMap: InventoryEquippedMap = {

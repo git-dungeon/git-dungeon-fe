@@ -362,6 +362,12 @@
         "material": "재료"
       }
     },
+    "items": {
+      "material-leather-scrap": "가죽 조각",
+      "material-cloth-scrap": "천 조각",
+      "material-metal-scrap": "금속 파편",
+      "material-mithril-dust": "미스릴 가루"
+    },
     "modal": {
       "close": "닫기",
       "additionalStats": "추가 스탯",

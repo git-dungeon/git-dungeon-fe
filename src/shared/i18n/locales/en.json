@@ -362,6 +362,12 @@
         "material": "Material"
       }
     },
+    "items": {
+      "material-leather-scrap": "Leather Scrap",
+      "material-cloth-scrap": "Cloth Scrap",
+      "material-metal-scrap": "Metal Scrap",
+      "material-mithril-dust": "Mithril Dust"
+    },
     "modal": {
       "close": "Close",
       "additionalStats": "Additional stats",
