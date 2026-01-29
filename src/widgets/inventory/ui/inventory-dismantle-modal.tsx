@@ -188,11 +188,6 @@ export function InventoryDismantleModal({
         ) : null}
 
         <DialogFooter className="flex-wrap gap-2">
-          <DialogClose asChild>
-            <PixelButton type="button" className="pixel-text-xs flex-1">
-              {t("inventory.dismantle.cancel")}
-            </PixelButton>
-          </DialogClose>
           <PixelButton
             type="button"
             onClick={handleConfirm}
