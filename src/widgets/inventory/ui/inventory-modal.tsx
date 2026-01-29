@@ -28,6 +28,7 @@ import { copyText } from "@/shared/lib/clipboard";
 import { InventoryDismantleModal } from "@/widgets/inventory/ui/inventory-dismantle-modal";
 import { canDismantleItem } from "@/widgets/inventory/lib/dismantle-preview";
 import { useInventoryItemNameResolver } from "@/entities/inventory/model/use-inventory-item-name";
+import { isEquippableSlot } from "@/entities/inventory/lib/equipable";
 
 interface InventoryModalProps {
   item: InventoryItem | null;
@@ -74,6 +75,7 @@ export function InventoryModal({
   const displayId = `#${shortId}`;
   const rarityClass = `rarity-${item.rarity ?? "common"}`;
   const canDismantle = canDismantleItem(item);
+  const canEquip = isEquippableSlot(item.slot);
 
   const handleOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) {
@@ -91,6 +93,9 @@ export function InventoryModal({
   };
 
   const handleEquip = async () => {
+    if (!canEquip) {
+      return;
+    }
     try {
       await onEquip(item.id);
       onClose();
@@ -296,7 +301,7 @@ export function InventoryModal({
             <PixelButton
               type="button"
               onClick={handleEquip}
-              disabled={item.isEquipped || isBusy}
+              disabled={item.isEquipped || isBusy || !canEquip}
               className="pixel-text-xs flex-1"
             >
               {t("inventory.modal.actions.equip")}

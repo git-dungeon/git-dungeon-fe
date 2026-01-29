@@ -2,6 +2,7 @@ import React, { StrictMode, act } from "react";
 import { createRoot } from "react-dom/client";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import type { InventoryItem } from "@/entities/inventory/model/types";
+import type { InventoryItemSlot } from "@/entities/inventory/model/types";
 import { InventoryModal } from "./inventory-modal";
 
 vi.mock("@/entities/inventory/model/use-inventory-item-name", () => ({
@@ -217,6 +218,37 @@ describe("InventoryModal", () => {
     const dismantleDialog = container.querySelector(".pixel-modal.max-w-2xl");
     expect(dismantleDialog).not.toBeNull();
     expect(dismantleDialog?.textContent).toContain("분해 실패");
+
+    unmount();
+  });
+
+  it.each([
+    { slot: "material", label: "재료" },
+    { slot: "consumable", label: "소모품" },
+  ])("$label 아이템은 장착 버튼이 비활성화된다", ({ slot }) => {
+    const { container, unmount } = render(
+      <InventoryModal
+        item={{ ...baseItem, slot: slot as InventoryItemSlot }}
+        slot={slot as InventoryItemSlot}
+        isPending={false}
+        isSyncing={false}
+        error={null}
+        onClose={() => undefined}
+        onEquip={async () => undefined}
+        onUnequip={async () => undefined}
+        onDiscard={async () => undefined}
+        onDismantle={async () => undefined}
+        onClearError={() => undefined}
+        dismantleError={null}
+      />
+    );
+
+    const modalRoot = container.querySelector(".pixel-modal.max-w-xl");
+    expect(modalRoot).not.toBeNull();
+    const equipButton = modalRoot ? findButton(modalRoot, "장착") : undefined;
+
+    expect(equipButton).toBeDefined();
+    expect(equipButton?.disabled).toBe(true);
 
     unmount();
   });
