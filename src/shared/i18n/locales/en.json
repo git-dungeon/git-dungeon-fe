@@ -315,7 +315,7 @@
     "subtitle": "List of items currently owned by the player.",
     "loadError": "Something went wrong while loading the inventory.",
     "retry": "Retry",
-    "empty": "No equipment has been acquired yet.",
+    "empty": "No items have been acquired yet.",
     "grid": {
       "title": "Inventory",
       "equipped": "Equipped"
@@ -370,8 +370,8 @@
     },
     "modal": {
       "close": "Close",
-      "additionalStats": "Additional stats",
-      "noAdditionalStats": "No additional stats",
+      "additionalStats": "Effects",
+      "noAdditionalStats": "No effects",
       "specialEffect": "Special effect",
       "description": "Description",
       "acquiredAt": "Acquired at: {{time}}",
