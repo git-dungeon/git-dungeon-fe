@@ -38,6 +38,8 @@ export function InventoryItemCard({
   const statModifiers = item.modifiers.filter(
     (modifier) => modifier.kind === "stat"
   );
+  const quantity = item.quantity ?? 1;
+  const showQuantity = item.slot === "material" || quantity > 1;
 
   if (compact) {
     return (
@@ -62,6 +64,11 @@ export function InventoryItemCard({
               {resolvedName.slice(0, 2).toUpperCase()}
             </div>
           )}
+          {showQuantity ? (
+            <span className="bg-background/80 pixel-text-xs absolute top-1 right-1 rounded px-1 font-semibold">
+              x{quantity}
+            </span>
+          ) : null}
         </div>
       </div>
     );
@@ -92,6 +99,11 @@ export function InventoryItemCard({
             {resolvedName.slice(0, 2).toUpperCase()}
           </div>
         )}
+        {showQuantity ? (
+          <span className="bg-background/80 pixel-text-xs absolute top-1 right-1 rounded px-1 font-semibold">
+            x{quantity}
+          </span>
+        ) : null}
       </div>
       <div className="flex flex-col items-center gap-1">
         {showSlotLabel ? (

@@ -460,6 +460,21 @@ const RAW_INVENTORY_ITEMS: RawInventoryItem[] = [
   },
 ];
 
+const MATERIAL_CODE_BY_SLOT: Record<string, string | undefined> = {
+  helmet: "material-leather-scrap",
+  armor: "material-cloth-scrap",
+  weapon: "material-metal-scrap",
+  ring: "material-mithril-dust",
+};
+
+const MATERIAL_QUANTITY_BY_RARITY: Record<InventoryItem["rarity"], number> = {
+  common: 1,
+  uncommon: 2,
+  rare: 3,
+  epic: 4,
+  legendary: 5,
+};
+
 function buildInventoryItems(): InventoryItem[] {
   return RAW_INVENTORY_ITEMS.map((item) => ({
     id: item.id,
@@ -479,6 +494,7 @@ function buildInventoryItems(): InventoryItem[] {
     sprite: `sprite/${item.id}`,
     createdAt: mockTimestampMinutesAgo(item.obtainedMinutesAgo),
     isEquipped: Boolean(item.isEquipped),
+    quantity: 1,
     version: 1,
   }));
 }
@@ -495,6 +511,7 @@ interface InventoryActionRequestBody {
   itemId?: string;
   expectedVersion?: number;
   inventoryVersion?: number;
+  quantity?: number;
 }
 
 const EMPTY_EQUIPPED: InventoryEquippedMap = {
@@ -503,6 +520,7 @@ const EMPTY_EQUIPPED: InventoryEquippedMap = {
   weapon: null,
   ring: null,
   consumable: null,
+  material: null,
 };
 
 function syncDashboardEquippedItems() {
@@ -519,6 +537,7 @@ function syncDashboardEquippedItems() {
       sprite: item.sprite ?? null,
       createdAt: item.createdAt,
       isEquipped: true,
+      quantity: item.quantity ?? 1,
       version: item.version,
     }));
 }
@@ -527,7 +546,7 @@ function buildEquippedMap(): InventoryEquippedMap {
   const equipped = { ...EMPTY_EQUIPPED };
 
   inventoryItems.forEach((item) => {
-    if (item.isEquipped) {
+    if (item.isEquipped && item.slot !== "material") {
       equipped[item.slot] = { ...item };
     }
   });
@@ -628,7 +647,9 @@ export const inventoryHandlers = [
       !payload ||
       typeof payload.itemId !== "string" ||
       typeof payload.expectedVersion !== "number" ||
-      typeof payload.inventoryVersion !== "number"
+      typeof payload.inventoryVersion !== "number" ||
+      (payload.quantity !== undefined &&
+        (!Number.isInteger(payload.quantity) || payload.quantity < 1))
     ) {
       return respondWithError("요청 바디가 올바르지 않습니다.", {
         status: 400,
@@ -796,9 +817,132 @@ export const inventoryHandlers = [
       });
     }
 
-    inventoryItems.splice(index, 1);
+    const target = inventoryItems[index];
+    const currentQuantity = target?.quantity ?? 1;
+    const discardQuantity = payload.quantity ?? currentQuantity;
+
+    if (discardQuantity < 1 || discardQuantity > currentQuantity) {
+      return respondWithError("버릴 수량이 올바르지 않습니다.", {
+        status: 400,
+        code: "INVENTORY_INVALID_REQUEST",
+      });
+    }
+
+    if (discardQuantity < currentQuantity) {
+      target.quantity = currentQuantity - discardQuantity;
+      target.version += 1;
+    } else {
+      inventoryItems.splice(index, 1);
+    }
 
     inventoryVersion += 1;
+
+    return respondWithSuccess(buildInventoryResponse());
+  }),
+  http.post(INVENTORY_ENDPOINTS.dismantle, async ({ request }) => {
+    if (request.headers.get("x-msw-force-rate-limit") === "true") {
+      return respondWithError("요청이 너무 많습니다.", {
+        status: 429,
+        code: "INVENTORY_RATE_LIMITED",
+      });
+    }
+
+    const payload = (await request
+      .json()
+      .catch(() => null)) as InventoryActionRequestBody | null;
+
+    if (
+      !payload ||
+      typeof payload.itemId !== "string" ||
+      typeof payload.expectedVersion !== "number" ||
+      typeof payload.inventoryVersion !== "number"
+    ) {
+      return respondWithError("요청 바디가 올바르지 않습니다.", {
+        status: 400,
+        code: "INVENTORY_INVALID_REQUEST",
+      });
+    }
+
+    const index = inventoryItems.findIndex(
+      (item) => item.id === payload.itemId
+    );
+
+    if (index < 0) {
+      return respondWithError("존재하지 않는 아이템입니다.", {
+        status: 404,
+        code: "INVENTORY_ITEM_NOT_FOUND",
+      });
+    }
+
+    if (payload.inventoryVersion !== inventoryVersion) {
+      return respondWithError("인벤토리 버전이 최신 상태가 아닙니다.", {
+        status: 412,
+        code: "INVENTORY_VERSION_MISMATCH",
+      });
+    }
+
+    const target = inventoryItems[index];
+    if (!target) {
+      return respondWithError("존재하지 않는 아이템입니다.", {
+        status: 404,
+        code: "INVENTORY_ITEM_NOT_FOUND",
+      });
+    }
+
+    if (payload.expectedVersion !== target.version) {
+      return respondWithError("아이템 버전이 최신 상태가 아닙니다.", {
+        status: 412,
+        code: "INVENTORY_VERSION_MISMATCH",
+      });
+    }
+
+    if (target.isEquipped) {
+      return respondWithError("장착 중인 아이템은 분해할 수 없습니다.", {
+        status: 409,
+        code: "INVENTORY_SLOT_CONFLICT",
+      });
+    }
+
+    const materialCode = MATERIAL_CODE_BY_SLOT[target.slot];
+    if (!materialCode) {
+      return respondWithError("분해할 수 없는 슬롯입니다.", {
+        status: 400,
+        code: "INVENTORY_INVALID_REQUEST",
+      });
+    }
+
+    const materialQuantity = MATERIAL_QUANTITY_BY_RARITY[target.rarity] ?? 1;
+    const materialRarity =
+      materialCode === "material-mithril-dust" ? "legendary" : "common";
+
+    inventoryItems.splice(index, 1);
+
+    const nextVersion = inventoryVersion + 1;
+    const materialItem = inventoryItems.find(
+      (item) => item.slot === "material" && item.code === materialCode
+    );
+
+    if (materialItem) {
+      materialItem.quantity = (materialItem.quantity ?? 1) + materialQuantity;
+      materialItem.version = nextVersion;
+    } else {
+      inventoryItems.push({
+        id: materialCode,
+        code: materialCode,
+        name: null,
+        slot: "material",
+        rarity: materialRarity,
+        modifiers: [],
+        effect: null,
+        sprite: null,
+        createdAt: mockTimestampMinutesAgo(0),
+        isEquipped: false,
+        quantity: materialQuantity,
+        version: nextVersion,
+      });
+    }
+
+    inventoryVersion = nextVersion;
 
     return respondWithSuccess(buildInventoryResponse());
   }),

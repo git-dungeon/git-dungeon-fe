@@ -1,7 +1,11 @@
 import { z } from "zod";
 
 export const EQUIPMENT_SLOTS = ["helmet", "armor", "weapon", "ring"] as const;
-const EQUIPMENT_ITEM_SLOTS = [...EQUIPMENT_SLOTS, "consumable"] as const;
+const EQUIPMENT_ITEM_SLOTS = [
+  ...EQUIPMENT_SLOTS,
+  "consumable",
+  "material",
+] as const;
 
 const EQUIPMENT_RARITIES = [
   "common",
@@ -71,6 +75,7 @@ export const equipmentItemSchema = z.object({
   sprite: z.string().nullable().optional(),
   createdAt: z.string(),
   isEquipped: z.boolean(),
+  quantity: z.number().int().min(1).default(1),
   version: z.number(),
 });
 export type EquipmentItem = z.infer<typeof equipmentItemSchema>;

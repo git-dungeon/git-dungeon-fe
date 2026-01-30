@@ -3,7 +3,7 @@ import { InventoryItemCard } from "@/entities/inventory/ui/inventory-item-card";
 import { PixelSlotButton } from "@/shared/ui/pixel-slot-button";
 import { PixelCheckIcon } from "@/shared/ui/pixel-check-icon";
 import { useTranslation } from "react-i18next";
-import { useCatalogItemNameResolver } from "@/entities/catalog/model/use-catalog-item-name";
+import { useInventoryItemNameResolver } from "@/entities/inventory/model/use-inventory-item-name";
 import { PixelPanel } from "@/shared/ui/pixel-panel";
 import { PixelEmptyState } from "@/shared/ui/pixel-state";
 
@@ -19,7 +19,7 @@ export function InventoryGrid({
   onSelect,
 }: InventoryGridProps) {
   const { t } = useTranslation();
-  const resolveItemName = useCatalogItemNameResolver();
+  const resolveItemName = useInventoryItemNameResolver();
 
   return (
     <PixelPanel title={t("inventory.grid.title")}>

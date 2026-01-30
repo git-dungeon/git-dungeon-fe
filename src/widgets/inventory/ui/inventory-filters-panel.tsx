@@ -22,6 +22,7 @@ const SLOT_OPTIONS: InventoryItemSlot[] = [
   "weapon",
   "ring",
   "consumable",
+  "material",
 ];
 
 const RARITY_OPTIONS: EquipmentRarity[] = [

@@ -1,5 +1,6 @@
 import type { InventoryItem } from "@/entities/inventory/model/types";
 import type { InventoryItemSlot } from "@/entities/inventory/model/types";
+import { useState } from "react";
 import { formatRarity } from "@/entities/dashboard/lib/formatters";
 import { formatInventoryEffect } from "@/entities/inventory/lib/formatters";
 import { formatDateTime } from "@/shared/lib/datetime/formatters";
@@ -7,7 +8,6 @@ import { cn } from "@/shared/lib/utils";
 import { formatStatChange, resolveStatLabel } from "@/shared/lib/stats/format";
 import { resolveLocalItemSprite } from "@/entities/catalog/config/local-sprites";
 import { getInventorySlotLabel } from "@/entities/inventory/config/slot-labels";
-import { useCatalogItemNameResolver } from "@/entities/catalog/model/use-catalog-item-name";
 import { useCatalogItemDescriptionResolver } from "@/entities/catalog/model/use-catalog-item-description";
 import {
   Dialog,
@@ -25,6 +25,11 @@ import { useTranslation } from "react-i18next";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { copyText } from "@/shared/lib/clipboard";
+import { InventoryDismantleModal } from "@/widgets/inventory/ui/inventory-dismantle-modal";
+import { InventoryDiscardModal } from "@/widgets/inventory/ui/inventory-discard-modal";
+import { canDismantleItem } from "@/widgets/inventory/lib/dismantle-preview";
+import { useInventoryItemNameResolver } from "@/entities/inventory/model/use-inventory-item-name";
+import { isEquippableSlot } from "@/entities/inventory/lib/equipable";
 
 interface InventoryModalProps {
   item: InventoryItem | null;
@@ -35,7 +40,10 @@ interface InventoryModalProps {
   onClose: () => void;
   onEquip: (itemId: string) => Promise<unknown>;
   onUnequip: (itemId: string) => Promise<unknown>;
-  onDiscard: (itemId: string) => Promise<unknown>;
+  onDiscard: (itemId: string, quantity?: number) => Promise<unknown>;
+  onDismantle: (itemId: string) => Promise<unknown>;
+  onClearError: () => void;
+  dismantleError: Error | null;
 }
 
 export function InventoryModal({
@@ -48,10 +56,15 @@ export function InventoryModal({
   onEquip,
   onUnequip,
   onDiscard,
+  onDismantle,
+  onClearError,
+  dismantleError,
 }: InventoryModalProps) {
   const { t } = useTranslation();
-  const resolveItemName = useCatalogItemNameResolver();
+  const resolveItemName = useInventoryItemNameResolver();
   const resolveDescription = useCatalogItemDescriptionResolver();
+  const [isDismantleOpen, setIsDismantleOpen] = useState(false);
+  const [isDiscardOpen, setIsDiscardOpen] = useState(false);
   if (!item || !slot) {
     return null;
   }
@@ -63,6 +76,9 @@ export function InventoryModal({
   const shortId = item.id.slice(-8);
   const displayId = `#${shortId}`;
   const rarityClass = `rarity-${item.rarity ?? "common"}`;
+  const canDismantle = canDismantleItem(item);
+  const canEquip = isEquippableSlot(item.slot);
+  const maxQuantity = Math.max(item.quantity ?? 1, 1);
 
   const handleOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) {
@@ -80,6 +96,9 @@ export function InventoryModal({
   };
 
   const handleEquip = async () => {
+    if (!canEquip) {
+      return;
+    }
     try {
       await onEquip(item.id);
       onClose();
@@ -98,8 +117,46 @@ export function InventoryModal({
   };
 
   const handleDiscard = async () => {
+    if (maxQuantity > 1) {
+      onClearError();
+      setIsDiscardOpen(true);
+      return;
+    }
     try {
       await onDiscard(item.id);
+      onClose();
+    } catch {
+      // 에러는 상위에서 전달된 상태로 표시한다.
+    }
+  };
+
+  const handleOpenDismantle = () => {
+    onClearError();
+    setIsDismantleOpen(true);
+  };
+
+  const handleCloseDismantle = () => {
+    setIsDismantleOpen(false);
+  };
+
+  const handleCloseDiscard = () => {
+    setIsDiscardOpen(false);
+  };
+
+  const handleConfirmDismantle = async () => {
+    try {
+      await onDismantle(item.id);
+      setIsDismantleOpen(false);
+      onClose();
+    } catch {
+      // 에러는 상위에서 전달된 상태로 표시한다.
+    }
+  };
+
+  const handleConfirmDiscard = async (quantity: number) => {
+    try {
+      await onDiscard(item.id, quantity);
+      setIsDiscardOpen(false);
       onClose();
     } catch {
       // 에러는 상위에서 전달된 상태로 표시한다.
@@ -262,11 +319,11 @@ export function InventoryModal({
             <p className="pixel-text-danger text-xs">{error.message}</p>
           ) : null}
 
-          <DialogFooter className="gap-2">
+          <DialogFooter className="flex-wrap gap-2">
             <PixelButton
               type="button"
               onClick={handleEquip}
-              disabled={item.isEquipped || isBusy}
+              disabled={item.isEquipped || isBusy || !canEquip}
               className="pixel-text-xs flex-1"
             >
               {t("inventory.modal.actions.equip")}
@@ -288,9 +345,36 @@ export function InventoryModal({
             >
               {t("inventory.modal.actions.discard")}
             </PixelButton>
+            <PixelButton
+              type="button"
+              onClick={handleOpenDismantle}
+              disabled={!canDismantle || isBusy}
+              tone="accent"
+              className="pixel-text-xs flex-1"
+            >
+              {t("inventory.modal.actions.dismantle")}
+            </PixelButton>
           </DialogFooter>
         </div>
       </DialogContent>
+      <InventoryDismantleModal
+        item={item}
+        open={isDismantleOpen}
+        isPending={isPending}
+        isSyncing={isSyncing}
+        error={dismantleError}
+        onClose={handleCloseDismantle}
+        onConfirm={handleConfirmDismantle}
+      />
+      <InventoryDiscardModal
+        item={item}
+        open={isDiscardOpen}
+        isPending={isPending}
+        isSyncing={isSyncing}
+        error={error}
+        onClose={handleCloseDiscard}
+        onConfirm={handleConfirmDiscard}
+      />
     </Dialog>
   );
 }

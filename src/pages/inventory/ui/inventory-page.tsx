@@ -15,6 +15,9 @@ export function InventoryPage() {
   const inventoryData = overview.inventory.data;
   const showLoading = overview.isLoading && !inventoryData;
   const avatarUrl = profileQuery.data?.profile.avatarUrl ?? null;
+  const inventoryError =
+    actions.lastError?.source === "dismantle" ? null : actions.error;
+  const dismantleError = actions.errorMap?.dismantle?.error ?? null;
 
   return (
     <section className="space-y-6">
@@ -66,10 +69,12 @@ export function InventoryPage() {
           avatarUrl={avatarUrl}
           isPending={actions.isPending}
           isSyncing={actions.isSyncing}
-          error={actions.error}
+          error={inventoryError}
           onEquip={actions.equip}
           onUnequip={actions.unequip}
           onDiscard={actions.discard}
+          onDismantle={actions.dismantle}
+          dismantleError={dismantleError}
           onClearError={actions.clearError}
         />
       ) : null}

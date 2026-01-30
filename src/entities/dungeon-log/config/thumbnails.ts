@@ -113,6 +113,7 @@ function resolveGoldBadge(
       case "EQUIP_ITEM":
       case "UNEQUIP_ITEM":
       case "DISCARD_ITEM":
+      case "DISMANTLE_ITEM":
       case "BUFF_APPLIED":
       case "BUFF_EXPIRED":
       case "LEVEL_UP":
@@ -188,7 +189,8 @@ export function buildLogThumbnails(
   };
   const pushInventoryItems = (
     items: DungeonLogInventoryDeltaItem[] | undefined,
-    badge: LogThumbnailBadge
+    badge: LogThumbnailBadge,
+    idPrefix = "item"
   ) => {
     if (!items?.length) {
       return false;
@@ -203,7 +205,7 @@ export function buildLogThumbnails(
       const itemName = resolveName(item.code);
       const rarity = resolveRarity(item.code, item.rarity);
       thumbnails.push({
-        id: `${entry.id}-item-${index + 1}`,
+        id: `${entry.id}-${idPrefix}-${index + 1}`,
         src: itemThumbnail,
         alt: itemName ?? t("logs.thumbnails.item"),
         badge,
@@ -272,6 +274,40 @@ export function buildLogThumbnails(
         });
       }
     }
+  }
+
+  if (delta?.type === "DISMANTLE_ITEM") {
+    const inventory = delta.detail.inventory;
+    const removedPushed = pushInventoryItems(
+      inventory.removed,
+      "danger",
+      "removed-item"
+    );
+    if (!removedPushed) {
+      const primaryItem =
+        inventory.removed?.at(0) ??
+        inventory.equipped ??
+        inventory.unequipped ??
+        inventory.added?.at(0);
+
+      const itemKey = primaryItem?.code;
+      const itemThumbnail = resolveItemThumbnail(itemKey);
+      if (itemThumbnail) {
+        const itemName = itemKey ? resolveName(itemKey) : undefined;
+        const rarity =
+          itemKey && primaryItem
+            ? resolveRarity(itemKey, primaryItem.rarity)
+            : undefined;
+        thumbnails.push({
+          id: `${entry.id}-item`,
+          src: itemThumbnail,
+          alt: itemName ?? t("logs.thumbnails.item"),
+          badge: "danger",
+          rarity,
+        });
+      }
+    }
+    pushInventoryItems(inventory.added, "success", "added-item");
   }
 
   if (

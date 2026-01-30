@@ -315,7 +315,7 @@
     "subtitle": "List of items currently owned by the player.",
     "loadError": "Something went wrong while loading the inventory.",
     "retry": "Retry",
-    "empty": "No equipment has been acquired yet.",
+    "empty": "No items have been acquired yet.",
     "grid": {
       "title": "Inventory",
       "equipped": "Equipped"
@@ -358,13 +358,20 @@
         "armor": "Armor",
         "weapon": "Weapon",
         "ring": "Ring",
-        "consumable": "Consumable"
+        "consumable": "Consumable",
+        "material": "Material"
       }
+    },
+    "items": {
+      "material-leather-scrap": "Leather Scrap",
+      "material-cloth-scrap": "Cloth Scrap",
+      "material-metal-scrap": "Metal Scrap",
+      "material-mithril-dust": "Mithril Dust"
     },
     "modal": {
       "close": "Close",
-      "additionalStats": "Additional stats",
-      "noAdditionalStats": "No additional stats",
+      "additionalStats": "Effects",
+      "noAdditionalStats": "No effects",
       "specialEffect": "Special effect",
       "description": "Description",
       "acquiredAt": "Acquired at: {{time}}",
@@ -376,8 +383,25 @@
       "actions": {
         "equip": "Equip",
         "unequip": "Unequip",
-        "discard": "Discard"
+        "discard": "Discard",
+        "dismantle": "Dismantle"
       }
+    },
+    "dismantle": {
+      "title": "Dismantle Equipment",
+      "description": "Break down the selected equipment to obtain materials.",
+      "slotTitle": "Dismantle Slot",
+      "expectedTitle": "Expected Results",
+      "confirm": "Dismantle",
+      "cancel": "Cancel",
+      "empty": "No materials expected."
+    },
+    "discard": {
+      "title": "Discard Item",
+      "description": "Select the quantity to discard.",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "available": "Available {{count}}"
     },
     "hint": {
       "title": "Tip",
@@ -387,6 +411,9 @@
       "resurrection": "Resurrection"
     },
     "errors": {
+      "invalidRequest": "The request is invalid.",
+      "itemNotFound": "Item not found.",
+      "slotConflict": "Equipped items cannot be dismantled.",
       "versionMismatch": "Inventory state has changed. Refresh and try again.",
       "rateLimited": "Too many requests. Please try again later.",
       "requestFailed": "Inventory request failed."
@@ -462,6 +489,7 @@
         "EQUIP_ITEM": "Equip",
         "UNEQUIP_ITEM": "Unequip",
         "DISCARD_ITEM": "Discard",
+        "DISMANTLE_ITEM": "Dismantle",
         "BUFF_APPLIED": "Buff Applied",
         "BUFF_EXPIRED": "Buff Expired",
         "LEVEL_UP": "Level Up",
@@ -557,6 +585,7 @@
       "EQUIP_ITEM": "Equip",
       "UNEQUIP_ITEM": "Unequip",
       "DISCARD_ITEM": "Discard",
+      "DISMANTLE_ITEM": "Dismantle",
       "BUFF_APPLIED": "Buff Applied",
       "BUFF_EXPIRED": "Buff Expired",
       "LEVEL_UP": "Level Up",
@@ -576,6 +605,7 @@
         "EQUIP_ITEM": "Equipping item",
         "UNEQUIP_ITEM": "Unequipping item",
         "DISCARD_ITEM": "Discarding item",
+        "DISMANTLE_ITEM": "Dismantling item",
         "BUFF_APPLIED": "Applying buff",
         "BUFF_EXPIRED": "Buff ending",
         "LEVEL_UP": "Preparing level up",
@@ -594,6 +624,7 @@
         "EQUIP_ITEM": "Item equipped",
         "UNEQUIP_ITEM": "Item unequipped",
         "DISCARD_ITEM": "Item discarded",
+        "DISMANTLE_ITEM": "Item dismantled",
         "BUFF_APPLIED": "Buff applied",
         "BUFF_EXPIRED": "Buff expired",
         "LEVEL_UP": "Level up completed",
@@ -615,6 +646,7 @@
     "delta": {
       "floor": "Floor",
       "gold": "Gold",
+      "chests": "Chests",
       "floorProgress": "Floor progress {{value}}",
       "itemSummary": "Items {{count}}",
       "skillPoints": "Skill points {{value}}",

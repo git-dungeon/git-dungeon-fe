@@ -33,7 +33,9 @@ interface InventoryLayoutProps {
   error: Error | null;
   onEquip: (itemId: string) => Promise<unknown>;
   onUnequip: (itemId: string) => Promise<unknown>;
-  onDiscard: (itemId: string) => Promise<unknown>;
+  onDiscard: (itemId: string, quantity?: number) => Promise<unknown>;
+  onDismantle: (itemId: string) => Promise<unknown>;
+  dismantleError: Error | null;
   onClearError: () => void;
 }
 
@@ -49,6 +51,8 @@ export function InventoryLayout({
   onEquip,
   onUnequip,
   onDiscard,
+  onDismantle,
+  dismantleError,
   onClearError,
 }: InventoryLayoutProps) {
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
@@ -153,6 +157,9 @@ export function InventoryLayout({
         onEquip={onEquip}
         onUnequip={onUnequip}
         onDiscard={onDiscard}
+        onDismantle={onDismantle}
+        onClearError={onClearError}
+        dismantleError={dismantleError}
       />
     </div>
   );

@@ -91,8 +91,10 @@ function isValidSpriteUrl(sprite?: string | null): sprite is string {
 function toRendererInventoryItem(
   item: AppCharacterOverview["equipment"][number]
 ): RendererInventoryItem {
-  if (item.slot === "consumable") {
-    throw new Error("임베드 렌더링은 consumable 슬롯을 지원하지 않습니다.");
+  if (item.slot === "consumable" || item.slot === "material") {
+    throw new Error(
+      "임베드 렌더링은 consumable/material 슬롯을 지원하지 않습니다."
+    );
   }
 
   const rawDisplayName = item.name ?? item.code;
@@ -143,7 +145,7 @@ function toRendererOverview(
     avatarUrl: avatarUrl ?? undefined,
     maxAp: maxAp ?? undefined,
     equipment: overview.equipment
-      .filter((item) => item.slot !== "consumable")
+      .filter((item) => item.slot !== "consumable" && item.slot !== "material")
       .map(toRendererInventoryItem),
   };
 }

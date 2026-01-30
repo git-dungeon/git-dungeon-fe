@@ -62,6 +62,7 @@ export const mockDashboardResponse: DashboardResponse = {
         sprite: null,
         createdAt: mockTimestampMinutesAgo(80),
         isEquipped: true,
+        quantity: 1,
         version: 3,
       },
       {
@@ -78,6 +79,7 @@ export const mockDashboardResponse: DashboardResponse = {
         sprite: null,
         createdAt: mockTimestampMinutesAgo(70),
         isEquipped: true,
+        quantity: 1,
         version: 3,
       },
       {
@@ -94,6 +96,7 @@ export const mockDashboardResponse: DashboardResponse = {
         sprite: null,
         createdAt: mockTimestampMinutesAgo(60),
         isEquipped: true,
+        quantity: 1,
         version: 3,
       },
       {
@@ -110,6 +113,7 @@ export const mockDashboardResponse: DashboardResponse = {
         sprite: null,
         createdAt: mockTimestampMinutesAgo(50),
         isEquipped: true,
+        quantity: 1,
         version: 3,
       },
     ],

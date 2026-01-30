@@ -36,6 +36,7 @@ export const inventoryEquippedMapSchema = z
     weapon: inventoryItemSchema.nullable().optional(),
     ring: inventoryItemSchema.nullable().optional(),
     consumable: inventoryItemSchema.nullable().optional(),
+    material: inventoryItemSchema.nullable().optional(),
   })
   .strict()
   .transform((value) => ({
@@ -44,6 +45,7 @@ export const inventoryEquippedMapSchema = z
     weapon: value.weapon ?? null,
     ring: value.ring ?? null,
     consumable: value.consumable ?? null,
+    material: value.material ?? null,
   }));
 export type InventoryEquippedMap = z.infer<typeof inventoryEquippedMapSchema>;
 
@@ -82,6 +84,7 @@ export const inventoryItemMutationRequestSchema = z
     itemId: z.string(),
     expectedVersion: z.number(),
     inventoryVersion: z.number(),
+    quantity: z.number().int().min(1).optional(),
   })
   .strict();
 export type InventoryItemMutationRequest = z.infer<

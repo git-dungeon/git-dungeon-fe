@@ -16,6 +16,7 @@ export const DUNGEON_LOGS_FILTER_TYPES = [
   "EQUIP_ITEM",
   "UNEQUIP_ITEM",
   "DISCARD_ITEM",
+  "DISMANTLE_ITEM",
   "BUFF_APPLIED",
   "BUFF_EXPIRED",
   "LEVEL_UP",
@@ -41,6 +42,7 @@ export const DUNGEON_LOG_ACTIONS = [
   "EQUIP_ITEM",
   "UNEQUIP_ITEM",
   "DISCARD_ITEM",
+  "DISMANTLE_ITEM",
   "BUFF_APPLIED",
   "BUFF_EXPIRED",
   "LEVEL_UP",
@@ -90,6 +92,7 @@ export type DungeonLogRewardItem = z.infer<typeof dungeonLogRewardItemSchema>;
 export const dungeonLogRewardsDeltaSchema = z
   .object({
     gold: z.number().int().optional(),
+    chests: z.number().int().optional(),
     items: z.array(dungeonLogRewardItemSchema).optional(),
     buffs: z
       .array(
@@ -221,7 +224,12 @@ const dungeonLogMoveDeltaSchema = z.object({
 });
 
 function inventoryDeltaWrapperSchema(
-  type: "ACQUIRE_ITEM" | "EQUIP_ITEM" | "UNEQUIP_ITEM" | "DISCARD_ITEM"
+  type:
+    | "ACQUIRE_ITEM"
+    | "EQUIP_ITEM"
+    | "UNEQUIP_ITEM"
+    | "DISCARD_ITEM"
+    | "DISMANTLE_ITEM"
 ) {
   return z.object({
     type: z.literal(type),
@@ -242,6 +250,8 @@ const dungeonLogUnequipItemDeltaSchema =
   inventoryDeltaWrapperSchema("UNEQUIP_ITEM");
 const dungeonLogDiscardItemDeltaSchema =
   inventoryDeltaWrapperSchema("DISCARD_ITEM");
+const dungeonLogDismantleItemDeltaSchema =
+  inventoryDeltaWrapperSchema("DISMANTLE_ITEM");
 
 const dungeonLogLevelUpDeltaSchema = z.object({
   type: z.literal("LEVEL_UP"),
@@ -312,6 +322,7 @@ export const dungeonLogDeltaSchema = z.union([
   dungeonLogEquipItemDeltaSchema,
   dungeonLogUnequipItemDeltaSchema,
   dungeonLogDiscardItemDeltaSchema,
+  dungeonLogDismantleItemDeltaSchema,
   dungeonLogLevelUpDeltaSchema,
   dungeonLogStatAppliedDeltaSchema,
   dungeonLogBuffAppliedDeltaSchema,
@@ -446,6 +457,21 @@ const dungeonLogDiscardItemDetailsSchema = z.object({
   }),
 });
 
+const dungeonLogDismantleItemDetailsSchema = z.object({
+  type: z.literal("DISMANTLE_ITEM"),
+  details: z.object({
+    item: dungeonLogInventoryDetailItemSchema,
+    materials: z
+      .array(
+        z.object({
+          code: z.string(),
+          quantity: z.number().int().optional(),
+        })
+      )
+      .optional(),
+  }),
+});
+
 const dungeonLogLevelUpDetailsSchema = z.object({
   type: z.literal("LEVEL_UP"),
   details: z.object({
@@ -529,6 +555,7 @@ export const dungeonLogDetailsSchema = z.union([
   dungeonLogEquipItemDetailsSchema,
   dungeonLogUnequipItemDetailsSchema,
   dungeonLogDiscardItemDetailsSchema,
+  dungeonLogDismantleItemDetailsSchema,
   dungeonLogLevelUpDetailsSchema,
   dungeonLogStatAppliedDetailsSchema,
   dungeonLogRestDetailsSchema,

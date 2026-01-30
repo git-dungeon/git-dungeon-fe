@@ -29,6 +29,7 @@ export const sampleInventoryItems: InventoryItem[] = [
     sprite: null,
     createdAt: "2026-01-18T12:00:00.000Z",
     isEquipped: true,
+    quantity: 1,
     version: 1,
   },
   {
@@ -45,6 +46,7 @@ export const sampleInventoryItems: InventoryItem[] = [
     sprite: null,
     createdAt: "2026-01-18T11:30:00.000Z",
     isEquipped: true,
+    quantity: 1,
     version: 1,
   },
   {
@@ -58,6 +60,7 @@ export const sampleInventoryItems: InventoryItem[] = [
     sprite: null,
     createdAt: "2026-01-18T10:10:00.000Z",
     isEquipped: false,
+    quantity: 1,
     version: 1,
   },
   {
@@ -71,6 +74,21 @@ export const sampleInventoryItems: InventoryItem[] = [
     sprite: null,
     createdAt: "2026-01-17T22:10:00.000Z",
     isEquipped: false,
+    quantity: 1,
+    version: 1,
+  },
+  {
+    id: "inv-material-metal-scrap",
+    code: "material-metal-scrap",
+    name: null,
+    slot: "material",
+    rarity: "common",
+    modifiers: [],
+    effect: null,
+    sprite: null,
+    createdAt: "2026-01-17T21:40:00.000Z",
+    isEquipped: false,
+    quantity: 12,
     version: 1,
   },
 ];
@@ -81,6 +99,7 @@ export const sampleEquippedMap: InventoryEquippedMap = {
   weapon: sampleInventoryItems[0],
   ring: sampleInventoryItems[2],
   consumable: null,
+  material: null,
 };
 
 const baseStats = sampleDashboardState.stats.base;
