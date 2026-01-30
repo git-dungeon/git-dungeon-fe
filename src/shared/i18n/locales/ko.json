@@ -368,14 +368,6 @@
       "material-metal-scrap": "금속 파편",
       "material-mithril-dust": "미스릴 가루"
     },
-    "errors": {
-      "invalidRequest": "잘못된 인벤토리 요청입니다.",
-      "itemNotFound": "아이템을 찾을 수 없습니다.",
-      "slotConflict": "해당 슬롯에 이미 아이템이 있습니다.",
-      "versionMismatch": "인벤토리가 최신 상태가 아닙니다. 새로고침 후 다시 시도하세요.",
-      "rateLimited": "요청이 너무 많습니다. 잠시 후 다시 시도하세요.",
-      "requestFailed": "인벤토리 요청에 실패했습니다."
-    },
     "modal": {
       "close": "닫기",
       "additionalStats": "효과",
