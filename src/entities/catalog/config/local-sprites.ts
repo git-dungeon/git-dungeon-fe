@@ -44,10 +44,10 @@ import sapphireRingImage from "@/assets/ring/sapphire-ring.png";
 import silverBandImage from "@/assets/ring/silver-band.png";
 import topazRingImage from "@/assets/ring/topaz-ring.png";
 
-import leatherScrapImage from "@/assets/misc/leather-scrap.png";
-import clothScrapImage from "@/assets/misc/cloth-scrap.png";
-import metalScrapImage from "@/assets/misc/metal-scrap.png";
-import mithrilDustImage from "@/assets/misc/mithril-dust.png";
+import leatherScrapImage from "@/assets/material/leather-scrap.png";
+import clothScrapImage from "@/assets/material/cloth-scrap.png";
+import metalScrapImage from "@/assets/material/metal-scrap.png";
+import mithrilDustImage from "@/assets/material/mithril-dust.png";
 import steelFragmentImage from "@/assets/misc/steel-fragment.png";
 
 import ancientDragonImage from "@/assets/monster/ancient-dragon.png";
