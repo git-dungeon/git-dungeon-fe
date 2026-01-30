@@ -368,6 +368,14 @@
       "material-metal-scrap": "Metal Scrap",
       "material-mithril-dust": "Mithril Dust"
     },
+    "errors": {
+      "invalidRequest": "Invalid inventory request.",
+      "itemNotFound": "Item not found.",
+      "slotConflict": "That slot is already occupied.",
+      "versionMismatch": "Inventory is out of date. Refresh and try again.",
+      "rateLimited": "Too many requests. Please try again soon.",
+      "requestFailed": "Inventory request failed."
+    },
     "modal": {
       "close": "Close",
       "additionalStats": "Effects",

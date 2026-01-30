@@ -277,6 +277,7 @@ describe("inventory actions", () => {
     };
 
     const expectedMaterial = materialBySlot[target!.slot];
+    const rarity = target!.rarity ?? "common";
     const materialItem = next.items.find(
       (item) => item.code === expectedMaterial && item.slot === "material"
     );
@@ -284,6 +285,6 @@ describe("inventory actions", () => {
     expect(next.version).toBe(inventory.version + 1);
     expect(next.items.some((item) => item.id === target!.id)).toBe(false);
     expect(materialItem).toBeTruthy();
-    expect(materialItem?.quantity).toBe(quantityByRarity[target!.rarity]);
+    expect(materialItem?.quantity).toBe(quantityByRarity[rarity]);
   });
 });

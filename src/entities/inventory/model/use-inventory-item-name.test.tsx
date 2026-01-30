@@ -33,11 +33,11 @@ function NameProbe({ code }: { code: string }) {
   return <div data-testid="name">{resolveName(code, null)}</div>;
 }
 
-beforeAll(() => {
+beforeAll(async () => {
   (
     globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }
   ).IS_REACT_ACT_ENVIRONMENT = true;
-  void i18next.changeLanguage("ko");
+  await i18next.changeLanguage("ko");
 });
 
 describe("useInventoryItemNameResolver", () => {
