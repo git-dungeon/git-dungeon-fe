@@ -252,4 +252,101 @@ describe("InventoryModal", () => {
 
     unmount();
   });
+
+  it("수량이 있는 아이템은 버리기 클릭 시 수량 선택 모달이 열린다", async () => {
+    const { container, unmount } = render(
+      <InventoryModal
+        item={{ ...baseItem, quantity: 3 }}
+        slot="weapon"
+        isPending={false}
+        isSyncing={false}
+        error={null}
+        onClose={() => undefined}
+        onEquip={async () => undefined}
+        onUnequip={async () => undefined}
+        onDiscard={async () => undefined}
+        onDismantle={async () => undefined}
+        onClearError={() => undefined}
+        dismantleError={null}
+      />
+    );
+
+    const modalRoot = container.querySelector(".pixel-modal.max-w-xl");
+    const discardButton = modalRoot
+      ? findButton(modalRoot, "버리기")
+      : undefined;
+    expect(discardButton).toBeDefined();
+
+    await act(async () => {
+      discardButton?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+
+    const discardDialog = container.querySelector(".pixel-modal.max-w-lg");
+    expect(discardDialog).not.toBeNull();
+    expect(discardDialog?.textContent).toContain("아이템 버리기");
+
+    unmount();
+  });
+
+  it("버리기 확인 시 수량을 포함해 onDiscard를 호출한다", async () => {
+    const onDiscard = vi.fn().mockResolvedValue(undefined);
+    const onClose = vi.fn();
+
+    const { container, unmount } = render(
+      <InventoryModal
+        item={{ ...baseItem, quantity: 4 }}
+        slot="weapon"
+        isPending={false}
+        isSyncing={false}
+        error={null}
+        onClose={onClose}
+        onEquip={async () => undefined}
+        onUnequip={async () => undefined}
+        onDiscard={onDiscard}
+        onDismantle={async () => undefined}
+        onClearError={() => undefined}
+        dismantleError={null}
+      />
+    );
+
+    const modalRoot = container.querySelector(".pixel-modal.max-w-xl");
+    const discardButton = modalRoot
+      ? findButton(modalRoot, "버리기")
+      : undefined;
+    expect(discardButton).toBeDefined();
+
+    await act(async () => {
+      discardButton?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+
+    const discardDialog = container.querySelector(".pixel-modal.max-w-lg");
+    expect(discardDialog).not.toBeNull();
+
+    const quantityInput = discardDialog?.querySelector(
+      'input[type="number"]'
+    ) as HTMLInputElement | null;
+    expect(quantityInput).not.toBeNull();
+
+    await act(async () => {
+      if (quantityInput) {
+        quantityInput.value = "2";
+        quantityInput.dispatchEvent(new Event("input", { bubbles: true }));
+      }
+    });
+
+    const confirmButton = discardDialog
+      ? findButton(discardDialog, "확인")
+      : undefined;
+    expect(confirmButton).toBeDefined();
+
+    await act(async () => {
+      confirmButton?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+      await Promise.resolve();
+    });
+
+    expect(onDiscard).toHaveBeenCalledWith(baseItem.id, 2);
+    expect(onClose).toHaveBeenCalled();
+
+    unmount();
+  });
 });

@@ -33,7 +33,7 @@ interface InventoryLayoutProps {
   error: Error | null;
   onEquip: (itemId: string) => Promise<unknown>;
   onUnequip: (itemId: string) => Promise<unknown>;
-  onDiscard: (itemId: string) => Promise<unknown>;
+  onDiscard: (itemId: string, quantity?: number) => Promise<unknown>;
   onDismantle: (itemId: string) => Promise<unknown>;
   dismantleError: Error | null;
   onClearError: () => void;

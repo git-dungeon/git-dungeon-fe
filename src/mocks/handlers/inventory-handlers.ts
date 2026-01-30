@@ -511,6 +511,7 @@ interface InventoryActionRequestBody {
   itemId?: string;
   expectedVersion?: number;
   inventoryVersion?: number;
+  quantity?: number;
 }
 
 const EMPTY_EQUIPPED: InventoryEquippedMap = {
@@ -646,7 +647,9 @@ export const inventoryHandlers = [
       !payload ||
       typeof payload.itemId !== "string" ||
       typeof payload.expectedVersion !== "number" ||
-      typeof payload.inventoryVersion !== "number"
+      typeof payload.inventoryVersion !== "number" ||
+      (payload.quantity !== undefined &&
+        (!Number.isInteger(payload.quantity) || payload.quantity < 1))
     ) {
       return respondWithError("요청 바디가 올바르지 않습니다.", {
         status: 400,
@@ -814,7 +817,23 @@ export const inventoryHandlers = [
       });
     }
 
-    inventoryItems.splice(index, 1);
+    const target = inventoryItems[index];
+    const currentQuantity = target?.quantity ?? 1;
+    const discardQuantity = payload.quantity ?? currentQuantity;
+
+    if (discardQuantity < 1 || discardQuantity > currentQuantity) {
+      return respondWithError("버릴 수량이 올바르지 않습니다.", {
+        status: 400,
+        code: "INVENTORY_INVALID_REQUEST",
+      });
+    }
+
+    if (discardQuantity < currentQuantity) {
+      target.quantity = currentQuantity - discardQuantity;
+      target.version += 1;
+    } else {
+      inventoryItems.splice(index, 1);
+    }
 
     inventoryVersion += 1;
 

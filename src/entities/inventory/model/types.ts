@@ -84,6 +84,7 @@ export const inventoryItemMutationRequestSchema = z
     itemId: z.string(),
     expectedVersion: z.number(),
     inventoryVersion: z.number(),
+    quantity: z.number().int().min(1).optional(),
   })
   .strict();
 export type InventoryItemMutationRequest = z.infer<

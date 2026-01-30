@@ -396,6 +396,13 @@
       "cancel": "Cancel",
       "empty": "No materials expected."
     },
+    "discard": {
+      "title": "Discard Item",
+      "description": "Select the quantity to discard.",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "available": "Available {{count}}"
+    },
     "hint": {
       "title": "Tip",
       "description": "Click a slot or inventory item to view details and change equipment."

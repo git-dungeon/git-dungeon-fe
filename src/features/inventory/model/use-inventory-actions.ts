@@ -106,7 +106,8 @@ export function useInventoryActions() {
       const optimistic = buildOptimisticInventory(
         previous,
         type,
-        payload.itemId
+        payload.itemId,
+        payload.quantity
       );
       queryClient.setQueryData(INVENTORY_QUERY_KEY, optimistic);
 
@@ -167,9 +168,14 @@ export function useInventoryActions() {
   const executeWithRetry = async (
     type: InventoryActionType,
     itemId: string,
-    mutation: typeof equipMutation
+    mutation: typeof equipMutation,
+    quantity?: number
   ) => {
-    const variables = buildInventoryMutationVariables(queryClient, itemId);
+    const variables = buildInventoryMutationVariables(
+      queryClient,
+      itemId,
+      quantity
+    );
 
     try {
       await mutation.mutateAsync(variables);
@@ -185,7 +191,7 @@ export function useInventoryActions() {
       try {
         await syncInventory();
         await mutation.mutateAsync(
-          buildInventoryMutationVariables(queryClient, itemId)
+          buildInventoryMutationVariables(queryClient, itemId, quantity)
         );
       } catch (retryError) {
         setLastError(buildActionFailure(type, retryError));
@@ -229,8 +235,8 @@ export function useInventoryActions() {
     equip: (itemId: string) => executeWithRetry("equip", itemId, equipMutation),
     unequip: (itemId: string) =>
       executeWithRetry("unequip", itemId, unequipMutation),
-    discard: (itemId: string) =>
-      executeWithRetry("discard", itemId, discardMutation),
+    discard: (itemId: string, quantity?: number) =>
+      executeWithRetry("discard", itemId, discardMutation, quantity),
     dismantle: (itemId: string) =>
       executeWithRetry("dismantle", itemId, dismantleMutation),
     isPending:
@@ -248,7 +254,8 @@ export function useInventoryActions() {
 
 function buildInventoryMutationVariables(
   queryClient: QueryClient,
-  itemId: string
+  itemId: string,
+  quantity?: number
 ): InventoryActionVariables {
   const current =
     queryClient.getQueryData<InventoryResponse>(INVENTORY_QUERY_KEY);
@@ -260,15 +267,22 @@ function buildInventoryMutationVariables(
     itemId,
     expectedVersion: itemVersion,
     inventoryVersion,
+    ...(typeof quantity === "number" ? { quantity } : {}),
   };
 }
 
 function buildOptimisticInventory(
   previous: InventoryResponse,
   action: Exclude<InventoryActionType, "dismantle">,
-  targetId: string
+  targetId: string,
+  quantity?: number
 ): InventoryResponse {
-  const items = applyOptimisticItems(previous.items, action, targetId);
+  const items = applyOptimisticItems(
+    previous.items,
+    action,
+    targetId,
+    quantity
+  );
   const equipped = buildEquippedMap(items);
 
   const equipmentBonus = calculateEquipmentBonus(equipped);
@@ -290,11 +304,33 @@ function buildOptimisticInventory(
 function applyOptimisticItems(
   items: InventoryItem[],
   action: InventoryActionType,
-  targetId: string
+  targetId: string,
+  quantity?: number
 ): InventoryItem[] {
   const targetSlot = findSlotByItemId(items, targetId);
 
   if (action === "discard") {
+    const target = items.find((item) => item.id === targetId);
+    if (!target) {
+      return items;
+    }
+
+    const currentQuantity = target.quantity ?? 1;
+    const discardQuantity =
+      typeof quantity === "number" && quantity > 0 ? quantity : currentQuantity;
+
+    if (discardQuantity < currentQuantity) {
+      return items.map((item) =>
+        item.id === targetId
+          ? {
+              ...item,
+              quantity: Math.max(1, currentQuantity - discardQuantity),
+              version: (item.version ?? 0) + 1,
+            }
+          : item
+      );
+    }
+
     return items.filter((item) => item.id !== targetId);
   }
 

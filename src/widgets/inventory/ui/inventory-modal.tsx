@@ -26,6 +26,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { copyText } from "@/shared/lib/clipboard";
 import { InventoryDismantleModal } from "@/widgets/inventory/ui/inventory-dismantle-modal";
+import { InventoryDiscardModal } from "@/widgets/inventory/ui/inventory-discard-modal";
 import { canDismantleItem } from "@/widgets/inventory/lib/dismantle-preview";
 import { useInventoryItemNameResolver } from "@/entities/inventory/model/use-inventory-item-name";
 import { isEquippableSlot } from "@/entities/inventory/lib/equipable";
@@ -39,7 +40,7 @@ interface InventoryModalProps {
   onClose: () => void;
   onEquip: (itemId: string) => Promise<unknown>;
   onUnequip: (itemId: string) => Promise<unknown>;
-  onDiscard: (itemId: string) => Promise<unknown>;
+  onDiscard: (itemId: string, quantity?: number) => Promise<unknown>;
   onDismantle: (itemId: string) => Promise<unknown>;
   onClearError: () => void;
   dismantleError: Error | null;
@@ -63,6 +64,7 @@ export function InventoryModal({
   const resolveItemName = useInventoryItemNameResolver();
   const resolveDescription = useCatalogItemDescriptionResolver();
   const [isDismantleOpen, setIsDismantleOpen] = useState(false);
+  const [isDiscardOpen, setIsDiscardOpen] = useState(false);
   if (!item || !slot) {
     return null;
   }
@@ -76,6 +78,7 @@ export function InventoryModal({
   const rarityClass = `rarity-${item.rarity ?? "common"}`;
   const canDismantle = canDismantleItem(item);
   const canEquip = isEquippableSlot(item.slot);
+  const maxQuantity = Math.max(item.quantity ?? 1, 1);
 
   const handleOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) {
@@ -114,6 +117,11 @@ export function InventoryModal({
   };
 
   const handleDiscard = async () => {
+    if (maxQuantity > 1) {
+      onClearError();
+      setIsDiscardOpen(true);
+      return;
+    }
     try {
       await onDiscard(item.id);
       onClose();
@@ -131,10 +139,24 @@ export function InventoryModal({
     setIsDismantleOpen(false);
   };
 
+  const handleCloseDiscard = () => {
+    setIsDiscardOpen(false);
+  };
+
   const handleConfirmDismantle = async () => {
     try {
       await onDismantle(item.id);
       setIsDismantleOpen(false);
+      onClose();
+    } catch {
+      // 에러는 상위에서 전달된 상태로 표시한다.
+    }
+  };
+
+  const handleConfirmDiscard = async (quantity: number) => {
+    try {
+      await onDiscard(item.id, quantity);
+      setIsDiscardOpen(false);
       onClose();
     } catch {
       // 에러는 상위에서 전달된 상태로 표시한다.
@@ -343,6 +365,15 @@ export function InventoryModal({
         error={dismantleError}
         onClose={handleCloseDismantle}
         onConfirm={handleConfirmDismantle}
+      />
+      <InventoryDiscardModal
+        item={item}
+        open={isDiscardOpen}
+        isPending={isPending}
+        isSyncing={isSyncing}
+        error={error}
+        onClose={handleCloseDiscard}
+        onConfirm={handleConfirmDiscard}
       />
     </Dialog>
   );

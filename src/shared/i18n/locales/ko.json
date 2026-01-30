@@ -396,6 +396,13 @@
       "cancel": "취소",
       "empty": "예상 재료가 없습니다."
     },
+    "discard": {
+      "title": "아이템 버리기",
+      "description": "버릴 수량을 선택하세요.",
+      "confirm": "확인",
+      "cancel": "취소",
+      "available": "보유 수량 {{count}}"
+    },
     "hint": {
       "title": "팁",
       "description": "슬롯 또는 인벤토리 아이템을 클릭해 상세 정보를 확인하고 장착을 변경해보세요."
