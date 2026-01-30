@@ -646,6 +646,7 @@
     "delta": {
       "floor": "Floor",
       "gold": "Gold",
+      "chests": "Chests",
       "floorProgress": "Floor progress {{value}}",
       "itemSummary": "Items {{count}}",
       "skillPoints": "Skill points {{value}}",

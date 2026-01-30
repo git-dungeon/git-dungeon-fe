@@ -32,6 +32,32 @@ describe("formatDelta", () => {
     expect(summary?.tone).toBe("success");
   });
 
+  it("BATTLE 보상에 상자가 있으면 상자 수량을 표시한다", () => {
+    const entry: DungeonLogEntry = {
+      id: "log-battle-chests",
+      category: "EXPLORATION",
+      floor: 1,
+      action: "BATTLE",
+      status: "COMPLETED",
+      createdAt: "2025-12-01T00:00:00Z",
+      delta: {
+        type: "BATTLE",
+        detail: {
+          rewards: {
+            chests: 2,
+          },
+        },
+      },
+      extra: null,
+    };
+
+    const entries = formatDelta(entry);
+    const chestDelta = entries.find((item) => item.text === "상자 +2");
+
+    expect(chestDelta).toBeDefined();
+    expect(chestDelta?.tone).toBe("success");
+  });
+
   it("DISMANTLE_ITEM 로그에서 제거/획득 변동을 함께 표시한다", () => {
     const entry: DungeonLogEntry = {
       id: "log-dismantle-delta",

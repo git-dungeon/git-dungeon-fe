@@ -98,6 +98,7 @@ export function formatDelta(
     case "BATTLE": {
       entries.push(...formatStatsDelta(entry.id, delta.detail.stats));
       pushNumeric(entries, entry.id, "gold", delta.detail.rewards?.gold);
+      pushNumeric(entries, entry.id, "chests", delta.detail.rewards?.chests);
       pushProgress(entries, entry.id, delta.detail.progress?.delta);
       pushRewardItemsSummary(entries, entry.id, delta.detail.rewards?.items);
       break;
@@ -105,6 +106,7 @@ export function formatDelta(
     case "TREASURE": {
       entries.push(...formatStatsDelta(entry.id, delta.detail.stats));
       pushNumeric(entries, entry.id, "gold", delta.detail.rewards?.gold);
+      pushNumeric(entries, entry.id, "chests", delta.detail.rewards?.chests);
       pushProgress(entries, entry.id, delta.detail.progress?.delta);
       pushRewardItemsSummary(entries, entry.id, delta.detail.rewards?.items);
       break;

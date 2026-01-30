@@ -42,6 +42,16 @@ function findButton(root: Element, label: string) {
   ) as HTMLButtonElement | undefined;
 }
 
+function setInputValue(input: HTMLInputElement, value: string) {
+  const setter = Object.getOwnPropertyDescriptor(
+    HTMLInputElement.prototype,
+    "value"
+  )?.set;
+  setter?.call(input, value);
+  input.dispatchEvent(new Event("input", { bubbles: true }));
+  input.dispatchEvent(new Event("change", { bubbles: true }));
+}
+
 beforeAll(() => {
   (
     globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }
@@ -329,8 +339,7 @@ describe("InventoryModal", () => {
 
     await act(async () => {
       if (quantityInput) {
-        quantityInput.value = "2";
-        quantityInput.dispatchEvent(new Event("input", { bubbles: true }));
+        setInputValue(quantityInput, "2");
       }
     });
 

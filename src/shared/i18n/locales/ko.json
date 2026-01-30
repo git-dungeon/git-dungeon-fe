@@ -643,6 +643,7 @@
     "delta": {
       "floor": "층",
       "gold": "골드",
+      "chests": "상자",
       "floorProgress": "층 진행도 {{value}}",
       "itemSummary": "아이템 {{count}}개",
       "skillPoints": "스킬 포인트 {{value}}",

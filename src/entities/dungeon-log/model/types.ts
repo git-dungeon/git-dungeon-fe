@@ -92,6 +92,7 @@ export type DungeonLogRewardItem = z.infer<typeof dungeonLogRewardItemSchema>;
 export const dungeonLogRewardsDeltaSchema = z
   .object({
     gold: z.number().int().optional(),
+    chests: z.number().int().optional(),
     items: z.array(dungeonLogRewardItemSchema).optional(),
     buffs: z
       .array(
