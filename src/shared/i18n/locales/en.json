@@ -410,6 +410,10 @@
     "effects": {
       "resurrection": "Resurrection"
     },
+    "enhancement": {
+      "level": "Enhance ★{{level}}",
+      "bonusLine": "Enhancement Bonus: {{stat}} +{{value}}"
+    },
     "errors": {
       "invalidRequest": "The request is invalid.",
       "itemNotFound": "Item not found.",

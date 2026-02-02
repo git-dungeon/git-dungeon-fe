@@ -30,6 +30,11 @@ import { InventoryDiscardModal } from "@/widgets/inventory/ui/inventory-discard-
 import { canDismantleItem } from "@/widgets/inventory/lib/dismantle-preview";
 import { useInventoryItemNameResolver } from "@/entities/inventory/model/use-inventory-item-name";
 import { isEquippableSlot } from "@/entities/inventory/lib/equipable";
+import {
+  formatEnhancementStars,
+  resolveEnhancementBonus,
+  resolveEnhancementLevel,
+} from "@/entities/inventory/lib/enhancement";
 
 interface InventoryModalProps {
   item: InventoryItem | null;
@@ -79,6 +84,9 @@ export function InventoryModal({
   const canDismantle = canDismantleItem(item);
   const canEquip = isEquippableSlot(item.slot);
   const maxQuantity = Math.max(item.quantity ?? 1, 1);
+  const enhancementLevel = resolveEnhancementLevel(item.enhancementLevel);
+  const enhancementStars = formatEnhancementStars(enhancementLevel);
+  const enhancementBonus = resolveEnhancementBonus(item.slot, enhancementLevel);
 
   const handleOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) {
@@ -212,6 +220,16 @@ export function InventoryModal({
                 >
                   {formatRarity(item.rarity)}
                 </PixelPill>
+                {enhancementStars ? (
+                  <PixelPill
+                    tone="neutral"
+                    className="text-[10px] font-semibold"
+                  >
+                    {t("inventory.enhancement.level", {
+                      level: enhancementLevel,
+                    })}
+                  </PixelPill>
+                ) : null}
               </DialogDescription>
             </div>
           </DialogHeader>
@@ -266,6 +284,14 @@ export function InventoryModal({
                 </li>
               ) : null}
             </ul>
+            {enhancementBonus ? (
+              <p className="pixel-text-xs pixel-text-muted font-semibold">
+                {t("inventory.enhancement.bonusLine", {
+                  stat: resolveStatLabel(enhancementBonus.stat),
+                  value: enhancementBonus.value,
+                })}
+              </p>
+            ) : null}
           </section>
 
           {item.effect ? (

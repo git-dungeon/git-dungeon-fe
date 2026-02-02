@@ -410,6 +410,10 @@
     "effects": {
       "resurrection": "부활"
     },
+    "enhancement": {
+      "level": "강화 ★{{level}}",
+      "bonusLine": "강화 보너스: {{stat}} +{{value}}"
+    },
     "errors": {
       "invalidRequest": "요청 정보가 올바르지 않습니다.",
       "itemNotFound": "아이템을 찾을 수 없습니다.",

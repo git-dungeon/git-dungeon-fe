@@ -3,9 +3,15 @@ import { getInventorySlotLabel } from "@/entities/inventory/config/slot-labels";
 import { formatRarity } from "@/entities/dashboard/lib/formatters";
 import { formatInventoryEffect } from "@/entities/inventory/lib/formatters";
 import { resolveLocalItemSprite } from "@/entities/catalog/config/local-sprites";
+import {
+  formatEnhancementStars,
+  resolveEnhancementBonus,
+  resolveEnhancementLevel,
+} from "@/entities/inventory/lib/enhancement";
 import { cn } from "@/shared/lib/utils";
 import { formatStatChange, resolveStatLabel } from "@/shared/lib/stats/format";
 import { PixelPill } from "@/shared/ui/pixel-pill";
+import { useTranslation } from "react-i18next";
 
 interface InventoryItemCardProps {
   item: InventoryItem;
@@ -32,6 +38,7 @@ export function InventoryItemCard({
   compact = false,
   nameClassName,
 }: InventoryItemCardProps) {
+  const { t } = useTranslation();
   const resolvedName = displayName ?? item.name ?? item.code;
   const sprite = resolveLocalItemSprite(item.code);
   const rarityClass = `rarity-${item.rarity ?? "common"}`;
@@ -40,6 +47,9 @@ export function InventoryItemCard({
   );
   const quantity = item.quantity ?? 1;
   const showQuantity = item.slot === "material" || quantity > 1;
+  const enhancementLevel = resolveEnhancementLevel(item.enhancementLevel);
+  const enhancementStars = formatEnhancementStars(enhancementLevel);
+  const enhancementBonus = resolveEnhancementBonus(item.slot, enhancementLevel);
 
   if (compact) {
     return (
@@ -67,6 +77,11 @@ export function InventoryItemCard({
           {showQuantity ? (
             <span className="bg-background/80 pixel-text-xs absolute top-1 right-1 rounded px-1 font-semibold">
               x{quantity}
+            </span>
+          ) : null}
+          {enhancementStars ? (
+            <span className="bg-background/80 pixel-text-xs absolute top-1 left-1 rounded px-1 font-semibold">
+              {enhancementStars}
             </span>
           ) : null}
         </div>
@@ -104,6 +119,11 @@ export function InventoryItemCard({
             x{quantity}
           </span>
         ) : null}
+        {enhancementStars ? (
+          <span className="bg-background/80 pixel-text-xs absolute top-1 left-1 rounded px-1 font-semibold">
+            {enhancementStars}
+          </span>
+        ) : null}
       </div>
       <div className="flex flex-col items-center gap-1">
         {showSlotLabel ? (
@@ -131,6 +151,11 @@ export function InventoryItemCard({
             className="text-[10px] font-semibold tracking-wide uppercase"
           >
             {formatRarity(item.rarity)}
+          </PixelPill>
+        ) : null}
+        {enhancementStars ? (
+          <PixelPill tone="neutral" className="text-[10px]">
+            {t("inventory.enhancement.level", { level: enhancementLevel })}
           </PixelPill>
         ) : null}
         {showModifiers
@@ -176,6 +201,14 @@ export function InventoryItemCard({
           </PixelPill>
         ) : null}
       </div>
+      {enhancementBonus ? (
+        <p className="pixel-text-xs pixel-text-muted font-semibold">
+          {t("inventory.enhancement.bonusLine", {
+            stat: resolveStatLabel(enhancementBonus.stat),
+            value: enhancementBonus.value,
+          })}
+        </p>
+      ) : null}
     </div>
   );
 }
