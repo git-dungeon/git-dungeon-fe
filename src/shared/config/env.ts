@@ -127,6 +127,7 @@ export const INVENTORY_ENDPOINTS = {
   unequip: "/api/inventory/unequip",
   discard: "/api/inventory/discard",
   dismantle: "/api/inventory/dismantle",
+  enhance: "/api/inventory/enhance",
 } as const;
 
 export const GITHUB_ENDPOINTS = {
