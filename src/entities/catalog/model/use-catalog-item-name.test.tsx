@@ -62,6 +62,18 @@ const catalogFixture: CatalogData = {
   ],
   buffs: [],
   monsters: [],
+  enhancement: {
+    maxLevel: 10,
+    successRates: {},
+    goldCosts: {},
+    materialCounts: {},
+    materialsBySlot: {
+      weapon: "material-metal-scrap",
+      armor: "material-cloth-scrap",
+      helmet: "material-leather-scrap",
+      ring: "material-mithril-dust",
+    },
+  },
   assetsBaseUrl: null,
   spriteMap: null,
 };
