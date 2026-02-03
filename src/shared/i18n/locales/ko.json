@@ -383,6 +383,7 @@
       "actions": {
         "equip": "장착",
         "unequip": "해제",
+        "enhance": "강화",
         "discard": "버리기",
         "dismantle": "분해"
       }
@@ -413,6 +414,29 @@
     "enhancement": {
       "level": "강화 ★{{level}}",
       "bonusLine": "강화 보너스: {{stat}} +{{value}}"
+    },
+    "enhance": {
+      "title": "장비 강화",
+      "description": "재료와 골드를 소모해 장비를 강화합니다.",
+      "itemTitle": "강화 대상",
+      "previewTitle": "강화 정보",
+      "materialTitle": "강화 재료",
+      "goldLabel": "골드",
+      "materialUnknown": "강화 재료",
+      "levelRange": "레벨: ★{{current}} → ★{{next}}",
+      "successRate": "성공 확률: {{rate}}%",
+      "previewBonus": "{{stat}} +{{value}}",
+      "goldCost": "골드: {{cost}} (보유 {{current}})",
+      "materialCost": "재료: {{code}} x{{cost}} (보유 {{current}})",
+      "bonusGain": "보너스: {{stat}} +{{from}} → +{{to}}",
+      "confirm": "강화 시도",
+      "disabledMax": "최대 강화 레벨입니다.",
+      "disabledGold": "골드가 부족합니다.",
+      "disabledMaterial": "강화 재료가 부족합니다.",
+      "resultSuccess": "강화 성공!",
+      "resultFail": "강화 실패...",
+      "forgeAlt": "강화 대장간 모루 이미지",
+      "unavailable": "강화 정보를 불러올 수 없습니다."
     },
     "errors": {
       "invalidRequest": "요청 정보가 올바르지 않습니다.",
