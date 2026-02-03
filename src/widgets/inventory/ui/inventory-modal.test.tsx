@@ -17,6 +17,31 @@ vi.mock("@/entities/catalog/model/use-catalog-item-description", () => ({
   },
 }));
 
+vi.mock("@/entities/catalog/model/use-catalog-item-name", () => ({
+  useCatalogItemNameResolver: () => {
+    return (code: string, fallback?: string | null) => fallback ?? code;
+  },
+}));
+
+vi.mock("@/entities/catalog/model/use-catalog", () => ({
+  useCatalog: () => ({
+    data: {
+      enhancement: {
+        maxLevel: 10,
+        successRates: { "1": 1 },
+        goldCosts: { "1": 5 },
+        materialCounts: { "1": 1 },
+        materialsBySlot: {
+          weapon: "material-metal-scrap",
+          armor: "material-cloth-scrap",
+          helmet: "material-leather-scrap",
+          ring: "material-mithril-dust",
+        },
+      },
+    },
+  }),
+}));
+
 function render(ui: React.ReactElement) {
   const app = document.createElement("div");
   app.className = "pixel-app";

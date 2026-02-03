@@ -197,8 +197,7 @@ export function useInventoryActions() {
     );
 
     try {
-      await mutation.mutateAsync(variables);
-      return;
+      return await mutation.mutateAsync(variables);
     } catch (error) {
       if (!isVersionMismatchError(error)) {
         throw error;
@@ -209,7 +208,7 @@ export function useInventoryActions() {
 
       try {
         await syncInventory();
-        await mutation.mutateAsync(
+        return await mutation.mutateAsync(
           buildInventoryMutationVariables(queryClient, itemId, quantity)
         );
       } catch (retryError) {

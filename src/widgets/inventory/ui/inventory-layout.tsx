@@ -35,8 +35,11 @@ interface InventoryLayoutProps {
   onUnequip: (itemId: string) => Promise<unknown>;
   onDiscard: (itemId: string, quantity?: number) => Promise<unknown>;
   onDismantle: (itemId: string) => Promise<unknown>;
+  onEnhance: (itemId: string) => Promise<unknown>;
   dismantleError: Error | null;
+  enhanceError: Error | null;
   onClearError: () => void;
+  gold: number;
 }
 
 export function InventoryLayout({
@@ -52,8 +55,11 @@ export function InventoryLayout({
   onUnequip,
   onDiscard,
   onDismantle,
+  onEnhance,
   dismantleError,
+  enhanceError,
   onClearError,
+  gold,
 }: InventoryLayoutProps) {
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<InventoryItemSlot | null>(
@@ -158,8 +164,12 @@ export function InventoryLayout({
         onUnequip={onUnequip}
         onDiscard={onDiscard}
         onDismantle={onDismantle}
+        onEnhance={onEnhance}
         onClearError={onClearError}
         dismantleError={dismantleError}
+        enhanceError={enhanceError}
+        items={items}
+        gold={gold}
       />
     </div>
   );

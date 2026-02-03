@@ -16,8 +16,12 @@ export function InventoryPage() {
   const showLoading = overview.isLoading && !inventoryData;
   const avatarUrl = profileQuery.data?.profile.avatarUrl ?? null;
   const inventoryError =
-    actions.lastError?.source === "dismantle" ? null : actions.error;
+    actions.lastError?.source === "dismantle" ||
+    actions.lastError?.source === "enhance"
+      ? null
+      : actions.error;
   const dismantleError = actions.errorMap?.dismantle?.error ?? null;
+  const enhanceError = actions.errorMap?.enhance?.error ?? null;
 
   return (
     <section className="space-y-6">
@@ -74,8 +78,11 @@ export function InventoryPage() {
           onUnequip={actions.unequip}
           onDiscard={actions.discard}
           onDismantle={actions.dismantle}
+          onEnhance={actions.enhance}
           dismantleError={dismantleError}
+          enhanceError={enhanceError}
           onClearError={actions.clearError}
+          gold={overview.data.gold}
         />
       ) : null}
     </section>
