@@ -74,6 +74,28 @@ const catalogFixture: CatalogData = {
       ring: "material-mithril-dust",
     },
   },
+  dismantle: {
+    baseMaterialQuantityByRarity: {
+      common: 1,
+      uncommon: 2,
+      rare: 3,
+      epic: 4,
+      legendary: 5,
+    },
+    refundByEnhancementLevel: {
+      "0": 0,
+      "1": 0,
+      "2": 1,
+      "3": 3,
+      "4": 5,
+      "5": 7,
+      "6": 10,
+      "7": 14,
+      "8": 18,
+      "9": 22,
+      "10": 27,
+    },
+  },
   assetsBaseUrl: null,
   spriteMap: null,
 };

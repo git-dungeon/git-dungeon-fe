@@ -85,6 +85,24 @@ export type CatalogEnhancementConfig = z.infer<
   typeof catalogEnhancementConfigSchema
 >;
 
+export const catalogDismantleConfigSchema = z
+  .object({
+    baseMaterialQuantityByRarity: z
+      .object({
+        common: z.number().int().min(0),
+        uncommon: z.number().int().min(0),
+        rare: z.number().int().min(0),
+        epic: z.number().int().min(0),
+        legendary: z.number().int().min(0),
+      })
+      .strict(),
+    refundByEnhancementLevel: z.record(z.string(), z.number().int().min(0)),
+  })
+  .strict();
+export type CatalogDismantleConfig = z.infer<
+  typeof catalogDismantleConfigSchema
+>;
+
 export const catalogDataSchema = z.object({
   version: z.number(),
   updatedAt: z.string(),
@@ -92,6 +110,7 @@ export const catalogDataSchema = z.object({
   buffs: z.array(catalogBuffSchema),
   monsters: z.array(catalogMonsterSchema),
   enhancement: catalogEnhancementConfigSchema,
+  dismantle: catalogDismantleConfigSchema,
   assetsBaseUrl: z.string().nullable().optional(),
   spriteMap: z.record(z.string(), z.string()).nullable().optional(),
 });

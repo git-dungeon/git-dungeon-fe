@@ -1,12 +1,85 @@
 import { http, HttpResponse } from "msw";
 import { CATALOG_ENDPOINTS } from "@/shared/config/env";
 import { respondWithSuccess } from "@/mocks/lib/api-response";
+import type {
+  CatalogDismantleConfig,
+  CatalogEnhancementConfig,
+} from "@/entities/catalog/model/types";
 
 type CatalogLocale = "ko" | "en";
 
 const ETAG_BY_LOCALE: Record<CatalogLocale, string> = {
   ko: '"catalog-ko-v1"',
   en: '"catalog-en-v1"',
+};
+
+export const MOCK_CATALOG_ENHANCEMENT_CONFIG: CatalogEnhancementConfig = {
+  maxLevel: 10,
+  successRates: {
+    "1": 1,
+    "2": 0.95,
+    "3": 0.9,
+    "4": 0.85,
+    "5": 0.8,
+    "6": 0.7,
+    "7": 0.6,
+    "8": 0.45,
+    "9": 0.3,
+    "10": 0.15,
+  },
+  goldCosts: {
+    "1": 5,
+    "2": 10,
+    "3": 20,
+    "4": 35,
+    "5": 55,
+    "6": 80,
+    "7": 110,
+    "8": 145,
+    "9": 185,
+    "10": 230,
+  },
+  materialCounts: {
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4,
+    "5": 5,
+    "6": 6,
+    "7": 7,
+    "8": 8,
+    "9": 9,
+    "10": 10,
+  },
+  materialsBySlot: {
+    weapon: "material-metal-scrap",
+    armor: "material-cloth-scrap",
+    helmet: "material-leather-scrap",
+    ring: "material-mithril-dust",
+  },
+};
+
+export const MOCK_CATALOG_DISMANTLE_CONFIG: CatalogDismantleConfig = {
+  baseMaterialQuantityByRarity: {
+    common: 1,
+    uncommon: 2,
+    rare: 3,
+    epic: 4,
+    legendary: 5,
+  },
+  refundByEnhancementLevel: {
+    "0": 0,
+    "1": 0,
+    "2": 1,
+    "3": 3,
+    "4": 5,
+    "5": 7,
+    "6": 10,
+    "7": 14,
+    "8": 18,
+    "9": 22,
+    "10": 27,
+  },
 };
 
 function resolveLocale(url: URL): CatalogLocale {
@@ -27,51 +100,8 @@ function createCatalogResponsePayload(locale: CatalogLocale) {
       items: [],
       buffs: [],
       monsters: [],
-      enhancement: {
-        maxLevel: 10,
-        successRates: {
-          "1": 1,
-          "2": 0.95,
-          "3": 0.9,
-          "4": 0.85,
-          "5": 0.8,
-          "6": 0.7,
-          "7": 0.6,
-          "8": 0.45,
-          "9": 0.3,
-          "10": 0.15,
-        },
-        goldCosts: {
-          "1": 5,
-          "2": 10,
-          "3": 20,
-          "4": 35,
-          "5": 55,
-          "6": 80,
-          "7": 110,
-          "8": 145,
-          "9": 185,
-          "10": 230,
-        },
-        materialCounts: {
-          "1": 1,
-          "2": 2,
-          "3": 3,
-          "4": 4,
-          "5": 5,
-          "6": 6,
-          "7": 7,
-          "8": 8,
-          "9": 9,
-          "10": 10,
-        },
-        materialsBySlot: {
-          weapon: "material-metal-scrap",
-          armor: "material-cloth-scrap",
-          helmet: "material-leather-scrap",
-          ring: "material-mithril-dust",
-        },
-      },
+      enhancement: MOCK_CATALOG_ENHANCEMENT_CONFIG,
+      dismantle: MOCK_CATALOG_DISMANTLE_CONFIG,
       assetsBaseUrl: null,
       spriteMap: null,
     },

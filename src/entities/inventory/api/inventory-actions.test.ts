@@ -11,6 +11,7 @@ import { postInventoryEquip } from "./post-inventory-equip";
 import { postInventoryEnhance } from "./post-inventory-enhance";
 import { postInventoryUnequip } from "./post-inventory-unequip";
 import { getDashboardState } from "@/entities/dashboard/api/get-dashboard-state";
+import { MOCK_CATALOG_DISMANTLE_CONFIG } from "@/mocks/handlers/catalog-handlers";
 
 describe("inventory actions", () => {
   it("버전이 불일치하면 412 INVENTORY_VERSION_MISMATCH로 처리된다", async () => {
@@ -287,11 +288,20 @@ describe("inventory actions", () => {
       (item) => item.code === expectedMaterial && item.slot === "material"
     );
 
+    const enhancementLevel = Math.max(
+      0,
+      Math.floor(target!.enhancementLevel ?? 0)
+    );
+    const refund =
+      MOCK_CATALOG_DISMANTLE_CONFIG.refundByEnhancementLevel[
+        String(enhancementLevel)
+      ] ?? 0;
+
     expect(next.version).toBe(inventory.version + 1);
     expect(next.items.some((item) => item.id === target!.id)).toBe(false);
     expect(materialItem).toBeTruthy();
     expect(materialItem?.quantity).toBe(
-      (materialBefore?.quantity ?? 0) + quantityByRarity[rarity]
+      (materialBefore?.quantity ?? 0) + quantityByRarity[rarity] + refund
     );
   });
 

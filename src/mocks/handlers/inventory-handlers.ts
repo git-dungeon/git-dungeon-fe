@@ -8,6 +8,7 @@ import type {
 } from "@/entities/inventory/model/types";
 import type { EquipmentSlot } from "@/entities/dashboard/model/types";
 import { mockDashboardResponse } from "@/mocks/handlers/dashboard-handlers";
+import { MOCK_CATALOG_DISMANTLE_CONFIG } from "@/mocks/handlers/catalog-handlers";
 import { mockTimestampMinutesAgo } from "@/mocks/handlers/shared/time";
 import { respondWithError, respondWithSuccess } from "@/mocks/lib/api-response";
 
@@ -465,14 +466,6 @@ const MATERIAL_CODE_BY_SLOT: Record<string, string | undefined> = {
   armor: "material-cloth-scrap",
   weapon: "material-metal-scrap",
   ring: "material-mithril-dust",
-};
-
-const MATERIAL_QUANTITY_BY_RARITY: Record<InventoryItem["rarity"], number> = {
-  common: 1,
-  uncommon: 2,
-  rare: 3,
-  epic: 4,
-  legendary: 5,
 };
 
 const ENHANCEMENT_MAX_LEVEL = 10;
@@ -1153,7 +1146,20 @@ export const inventoryHandlers = [
       });
     }
 
-    const materialQuantity = MATERIAL_QUANTITY_BY_RARITY[target.rarity] ?? 1;
+    const enhancementLevel = Math.max(
+      0,
+      Math.floor(target.enhancementLevel ?? 0)
+    );
+
+    const baseMaterialQuantity =
+      MOCK_CATALOG_DISMANTLE_CONFIG.baseMaterialQuantityByRarity[
+        target.rarity
+      ] ?? 1;
+    const refundMaterialQuantity =
+      MOCK_CATALOG_DISMANTLE_CONFIG.refundByEnhancementLevel[
+        String(enhancementLevel)
+      ] ?? 0;
+    const materialQuantity = baseMaterialQuantity + refundMaterialQuantity;
     const materialRarity =
       materialCode === "material-mithril-dust" ? "legendary" : "common";
 
