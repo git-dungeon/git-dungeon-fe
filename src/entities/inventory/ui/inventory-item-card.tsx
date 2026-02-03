@@ -20,6 +20,8 @@ interface InventoryItemCardProps {
   showModifiers?: boolean;
   showEffect?: boolean;
   showRarity?: boolean;
+  showEnhancementPill?: boolean;
+  showEnhancementBonusLine?: boolean;
   truncateName?: boolean;
   displayName?: string;
   compact?: boolean;
@@ -33,6 +35,8 @@ export function InventoryItemCard({
   showModifiers = true,
   showEffect = true,
   showRarity = true,
+  showEnhancementPill = true,
+  showEnhancementBonusLine = true,
   truncateName = true,
   displayName,
   compact = false,
@@ -49,7 +53,9 @@ export function InventoryItemCard({
   const showQuantity = item.slot === "material" || quantity > 1;
   const enhancementLevel = resolveEnhancementLevel(item.enhancementLevel);
   const enhancementStars = formatEnhancementStars(enhancementLevel);
-  const enhancementBonus = resolveEnhancementBonus(item.slot, enhancementLevel);
+  const enhancementBonus = showEnhancementBonusLine
+    ? resolveEnhancementBonus(item.slot, enhancementLevel)
+    : null;
 
   if (compact) {
     return (
@@ -153,7 +159,7 @@ export function InventoryItemCard({
             {formatRarity(item.rarity)}
           </PixelPill>
         ) : null}
-        {enhancementStars ? (
+        {showEnhancementPill && enhancementStars ? (
           <PixelPill tone="neutral" className="text-[10px]">
             {t("inventory.enhancement.level", { level: enhancementLevel })}
           </PixelPill>
@@ -201,7 +207,7 @@ export function InventoryItemCard({
           </PixelPill>
         ) : null}
       </div>
-      {enhancementBonus ? (
+      {showEnhancementBonusLine && enhancementBonus ? (
         <p className="pixel-text-xs pixel-text-muted font-semibold">
           {t("inventory.enhancement.bonusLine", {
             stat: resolveStatLabel(enhancementBonus.stat),
