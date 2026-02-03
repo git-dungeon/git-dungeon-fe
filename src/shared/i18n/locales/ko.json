@@ -518,6 +518,7 @@
         "UNEQUIP_ITEM": "해제",
         "DISCARD_ITEM": "버리기",
         "DISMANTLE_ITEM": "분해",
+        "ENHANCE_ITEM": "강화",
         "BUFF_APPLIED": "버프 적용",
         "BUFF_EXPIRED": "버프 종료",
         "LEVEL_UP": "레벨 업",
@@ -611,6 +612,7 @@
       "UNEQUIP_ITEM": "해제",
       "DISCARD_ITEM": "버리기",
       "DISMANTLE_ITEM": "분해",
+      "ENHANCE_ITEM": "강화",
       "BUFF_APPLIED": "버프 적용",
       "BUFF_EXPIRED": "버프 종료",
       "LEVEL_UP": "레벨 업",
@@ -631,6 +633,7 @@
         "UNEQUIP_ITEM": "아이템을 해제합니다",
         "DISCARD_ITEM": "아이템을 버립니다",
         "DISMANTLE_ITEM": "아이템을 분해합니다",
+        "ENHANCE_ITEM": "장비를 강화합니다",
         "BUFF_APPLIED": "버프가 적용됩니다",
         "BUFF_EXPIRED": "버프가 종료됩니다",
         "LEVEL_UP": "레벨 업을 준비합니다",
@@ -650,6 +653,7 @@
         "UNEQUIP_ITEM": "아이템을 해제했습니다",
         "DISCARD_ITEM": "아이템을 버렸습니다",
         "DISMANTLE_ITEM": "아이템을 분해했습니다",
+        "ENHANCE_ITEM": "장비 강화를 시도했습니다",
         "BUFF_APPLIED": "버프가 적용되었습니다",
         "BUFF_EXPIRED": "버프가 종료되었습니다",
         "LEVEL_UP": "레벨이 올랐습니다",
@@ -680,7 +684,13 @@
       "equipped": "장착 {{item}}",
       "unequipped": "해제 {{item}}",
       "acquired": "획득 {{item}} x{{count}}",
-      "removed": "제거 {{item}} x{{count}}"
+      "removed": "제거 {{item}} x{{count}}",
+      "enhanceSuccess": "강화 성공 (★{{before}} → ★{{after}})",
+      "enhanceFail": "강화 실패 (★{{before}} 유지)"
+    },
+    "enhancement": {
+      "success": "강화가 성공했습니다",
+      "fail": "강화에 실패했습니다"
     },
     "floor": "{{floor}}층",
     "message": {

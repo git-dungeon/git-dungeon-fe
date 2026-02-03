@@ -196,4 +196,58 @@ describe("buildLogThumbnails", () => {
     expect(thumbnails[0]?.rarity).toBe("epic");
     expect(thumbnails[1]?.badge).toBe("success");
   });
+
+  it("ENHANCE_ITEM 로그에서 강화 결과 아이템과 소모 재료를 표시한다", () => {
+    const entry: DungeonLogEntry = {
+      id: "log-enhance-thumb",
+      category: "STATUS",
+      floor: null,
+      action: "ENHANCE_ITEM",
+      status: "COMPLETED",
+      createdAt: "2026-02-03T00:00:00Z",
+      delta: {
+        type: "ENHANCE_ITEM",
+        detail: {
+          inventory: {
+            removed: [
+              {
+                itemId: "inv-material-1",
+                code: "material-metal-scrap",
+                slot: "material",
+                quantity: 2,
+              },
+            ],
+          },
+          stats: { atk: 1 },
+        },
+      },
+      extra: {
+        type: "ENHANCE_ITEM",
+        details: {
+          item: {
+            id: "inv-weapon-1",
+            code: "weapon-wooden-sword",
+            rarity: "epic",
+            modifiers: [],
+          },
+          enhancement: {
+            before: 1,
+            after: 2,
+            success: true,
+            chance: 0.8,
+          },
+        },
+      },
+    };
+
+    const thumbnails = buildLogThumbnails(entry);
+    expect(thumbnails.map((thumbnail) => thumbnail.id)).toEqual([
+      "log-enhance-thumb-action",
+      "log-enhance-thumb-consumed-item-1",
+      "log-enhance-thumb-enhanced-item",
+    ]);
+    expect(thumbnails[1]?.badge).toBe("danger");
+    expect(thumbnails[2]?.badge).toBe("success");
+    expect(thumbnails[2]?.rarity).toBe("epic");
+  });
 });

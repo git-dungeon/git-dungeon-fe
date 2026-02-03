@@ -60,6 +60,7 @@ export function DungeonLogFiltersPanel({
     UNEQUIP_ITEM: t("logs.filters.labels.UNEQUIP_ITEM"),
     DISCARD_ITEM: t("logs.filters.labels.DISCARD_ITEM"),
     DISMANTLE_ITEM: t("logs.filters.labels.DISMANTLE_ITEM"),
+    ENHANCE_ITEM: t("logs.filters.labels.ENHANCE_ITEM"),
     BUFF_APPLIED: t("logs.filters.labels.BUFF_APPLIED"),
     BUFF_EXPIRED: t("logs.filters.labels.BUFF_EXPIRED"),
     LEVEL_UP: t("logs.filters.labels.LEVEL_UP"),

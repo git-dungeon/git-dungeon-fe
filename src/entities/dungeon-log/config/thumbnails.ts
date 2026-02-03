@@ -8,6 +8,7 @@ import treasureImage from "@/assets/event/treasure.png";
 import moveImage from "@/assets/event/move.png";
 import goldImage from "@/assets/event/gold.png";
 import emptyImage from "@/assets/event/empty.png";
+import forgeImage from "@/assets/enhancement/forge.png";
 import atkIcon from "@/assets/stat/atk.png";
 import defIcon from "@/assets/stat/def.png";
 import hpIcon from "@/assets/stat/hp.png";
@@ -54,6 +55,7 @@ const ACTION_IMAGE_MAP: Partial<Record<DungeonLogAction, string>> = {
   TRAP: trapImage,
   MOVE: moveImage,
   EMPTY: emptyImage,
+  ENHANCE_ITEM: forgeImage,
 };
 
 const STAT_ICON_MAP = {
@@ -114,6 +116,7 @@ function resolveGoldBadge(
       case "UNEQUIP_ITEM":
       case "DISCARD_ITEM":
       case "DISMANTLE_ITEM":
+      case "ENHANCE_ITEM":
       case "BUFF_APPLIED":
       case "BUFF_EXPIRED":
       case "LEVEL_UP":
@@ -166,6 +169,7 @@ export function buildLogThumbnails(
   const actionThumbnail = resolveActionThumbnail(entry.action);
   const isBattleAction = entry.action === "BATTLE";
   const isTreasureAction = entry.action === "TREASURE";
+  const isEnhanceAction = entry.action === "ENHANCE_ITEM";
   const pushRewardItems = (items?: DungeonLogRewardItem[]) => {
     if (!items?.length) {
       return;
@@ -216,7 +220,12 @@ export function buildLogThumbnails(
     return pushed;
   };
 
-  if (actionThumbnail && (isBattleAction || isTreasureAction)) {
+  // 이벤트/행동 아이콘은 항상 가장 먼저 보여야 하는 케이스가 있다.
+  // (예: 강화는 모루 아이콘이 로그의 대표 이벤트 이미지 역할을 한다)
+  if (
+    actionThumbnail &&
+    (isBattleAction || isTreasureAction || isEnhanceAction)
+  ) {
     thumbnails.push({
       id: `${entry.id}-action`,
       src: actionThumbnail,
@@ -310,6 +319,41 @@ export function buildLogThumbnails(
     pushInventoryItems(inventory.added, "success", "added-item");
   }
 
+  if (delta?.type === "ENHANCE_ITEM") {
+    const inventory = delta.detail.inventory;
+    pushInventoryItems(inventory.removed, "danger", "consumed-item");
+
+    const enhancedItem =
+      entry.extra?.type === "ENHANCE_ITEM" ? entry.extra.details?.item : null;
+    const itemKey = enhancedItem?.code;
+    const itemThumbnail = resolveItemThumbnail(itemKey);
+    if (itemThumbnail) {
+      const itemName = itemKey ? resolveName(itemKey) : undefined;
+      const rarity =
+        itemKey && enhancedItem
+          ? resolveRarity(itemKey, enhancedItem.rarity)
+          : undefined;
+      const success =
+        entry.extra?.type === "ENHANCE_ITEM"
+          ? entry.extra.details?.enhancement?.success
+          : undefined;
+      const badge: LogThumbnailBadge | undefined =
+        typeof success === "boolean"
+          ? success
+            ? "success"
+            : "danger"
+          : undefined;
+
+      thumbnails.push({
+        id: `${entry.id}-enhanced-item`,
+        src: itemThumbnail,
+        alt: itemName ?? t("logs.thumbnails.item"),
+        badge,
+        rarity,
+      });
+    }
+  }
+
   if (
     delta?.type === "EQUIP_ITEM" ||
     delta?.type === "UNEQUIP_ITEM" ||
@@ -381,7 +425,12 @@ export function buildLogThumbnails(
     });
   }
 
-  if (actionThumbnail && !isBattleAction && !isTreasureAction) {
+  if (
+    actionThumbnail &&
+    !isBattleAction &&
+    !isTreasureAction &&
+    !isEnhanceAction
+  ) {
     thumbnails.push({
       id: `${entry.id}-action`,
       src: actionThumbnail,

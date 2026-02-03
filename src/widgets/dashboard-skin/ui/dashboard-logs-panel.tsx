@@ -75,7 +75,7 @@ export function DashboardLogsPanel({ logs }: DashboardLogsPanelProps) {
                   </p>
                   <p className="pixel-log-meta">
                     {formatFloorLabel(t, log.floor)} ·
-                    {resolveStatusLabel(log.status, log.action)}
+                    {resolveStatusLabel(log.status, log.action, log)}
                   </p>
                 </div>
               </li>

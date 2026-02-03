@@ -518,6 +518,7 @@
         "UNEQUIP_ITEM": "Unequip",
         "DISCARD_ITEM": "Discard",
         "DISMANTLE_ITEM": "Dismantle",
+        "ENHANCE_ITEM": "Enhance",
         "BUFF_APPLIED": "Buff Applied",
         "BUFF_EXPIRED": "Buff Expired",
         "LEVEL_UP": "Level Up",
@@ -614,6 +615,7 @@
       "UNEQUIP_ITEM": "Unequip",
       "DISCARD_ITEM": "Discard",
       "DISMANTLE_ITEM": "Dismantle",
+      "ENHANCE_ITEM": "Enhance",
       "BUFF_APPLIED": "Buff Applied",
       "BUFF_EXPIRED": "Buff Expired",
       "LEVEL_UP": "Level Up",
@@ -634,6 +636,7 @@
         "UNEQUIP_ITEM": "Unequipping item",
         "DISCARD_ITEM": "Discarding item",
         "DISMANTLE_ITEM": "Dismantling item",
+        "ENHANCE_ITEM": "Enhancing equipment",
         "BUFF_APPLIED": "Applying buff",
         "BUFF_EXPIRED": "Buff ending",
         "LEVEL_UP": "Preparing level up",
@@ -653,6 +656,7 @@
         "UNEQUIP_ITEM": "Item unequipped",
         "DISCARD_ITEM": "Item discarded",
         "DISMANTLE_ITEM": "Item dismantled",
+        "ENHANCE_ITEM": "Attempted enhancement",
         "BUFF_APPLIED": "Buff applied",
         "BUFF_EXPIRED": "Buff expired",
         "LEVEL_UP": "Level up completed",
@@ -683,7 +687,13 @@
       "equipped": "Equipped {{item}}",
       "unequipped": "Unequipped {{item}}",
       "acquired": "Acquired {{item}} x{{count}}",
-      "removed": "Removed {{item}} x{{count}}"
+      "removed": "Removed {{item}} x{{count}}",
+      "enhanceSuccess": "Enhancement success (★{{before}} → ★{{after}})",
+      "enhanceFail": "Enhancement failed (★{{before}} unchanged)"
+    },
+    "enhancement": {
+      "success": "Enhancement succeeded",
+      "fail": "Enhancement failed"
     },
     "floor": "Floor {{floor}}",
     "message": {
