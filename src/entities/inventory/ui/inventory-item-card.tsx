@@ -1,4 +1,7 @@
-import type { InventoryItem } from "@/entities/inventory/model/types";
+import type {
+  InventoryItem,
+  InventoryModifier,
+} from "@/entities/inventory/model/types";
 import { getInventorySlotLabel } from "@/entities/inventory/config/slot-labels";
 import { formatRarity } from "@/entities/dashboard/lib/formatters";
 import { formatInventoryEffect } from "@/entities/inventory/lib/formatters";
@@ -13,11 +16,16 @@ import { formatStatChange, resolveStatLabel } from "@/shared/lib/stats/format";
 import { PixelPill } from "@/shared/ui/pixel-pill";
 import { useTranslation } from "react-i18next";
 
+type StatModifierDisplayMode = "separate" | "aggregate";
+type StatModifier = Extract<InventoryModifier, { kind: "stat" }>;
+
 interface InventoryItemCardProps {
   item: InventoryItem;
   className?: string;
   showSlotLabel?: boolean;
   showModifiers?: boolean;
+  modifierDisplayMode?: StatModifierDisplayMode;
+  includeEnhancementInModifiers?: boolean;
   showEffect?: boolean;
   showRarity?: boolean;
   showEnhancementPill?: boolean;
@@ -33,6 +41,8 @@ export function InventoryItemCard({
   className,
   showSlotLabel = true,
   showModifiers = true,
+  modifierDisplayMode = "separate",
+  includeEnhancementInModifiers = false,
   showEffect = true,
   showRarity = true,
   showEnhancementPill = true,
@@ -48,7 +58,7 @@ export function InventoryItemCard({
   const rarityClass = `rarity-${item.rarity ?? "common"}`;
   const statModifiers = item.modifiers.filter(
     (modifier) => modifier.kind === "stat"
-  );
+  ) as StatModifier[];
   const quantity = item.quantity ?? 1;
   const showQuantity = item.slot === "material" || quantity > 1;
   const enhancementLevel = resolveEnhancementLevel(item.enhancementLevel);
@@ -56,6 +66,42 @@ export function InventoryItemCard({
   const enhancementBonus = showEnhancementBonusLine
     ? resolveEnhancementBonus(item.slot, enhancementLevel)
     : null;
+
+  const displayModifiers = (() => {
+    const baseModifiers = statModifiers;
+    const enhancementModifier =
+      includeEnhancementInModifiers && enhancementStars
+        ? resolveEnhancementBonus(item.slot, enhancementLevel)
+        : null;
+
+    const merged = enhancementModifier
+      ? [
+          ...baseModifiers,
+          {
+            kind: "stat" as const,
+            stat: enhancementModifier.stat,
+            mode: "flat" as const,
+            value: enhancementModifier.value,
+          },
+        ]
+      : baseModifiers;
+
+    if (modifierDisplayMode !== "aggregate") {
+      return merged;
+    }
+
+    const byKey = new Map<string, StatModifier>();
+    for (const modifier of merged) {
+      const key = `${modifier.stat}:${modifier.mode}`;
+      const existing = byKey.get(key);
+      if (existing) {
+        existing.value = existing.value + modifier.value;
+      } else {
+        byKey.set(key, { ...modifier });
+      }
+    }
+    return Array.from(byKey.values()).filter((m) => m.value !== 0);
+  })();
 
   if (compact) {
     return (
@@ -165,7 +211,7 @@ export function InventoryItemCard({
           </PixelPill>
         ) : null}
         {showModifiers
-          ? statModifiers.map((modifier, index) => {
+          ? displayModifiers.map((modifier, index) => {
               const label = resolveStatLabel(modifier.stat);
               const { text, tone } =
                 modifier.mode === "percent"
