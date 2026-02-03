@@ -313,6 +313,90 @@ describe("InventoryModal", () => {
     unmount();
   });
 
+  it("강화 버튼 클릭 시 강화 모달이 열리고 강화 요청 후 성공 결과를 표시한다", async () => {
+    const onEnhance = vi.fn().mockResolvedValue({
+      version: 2,
+      items: [{ ...baseItem, enhancementLevel: 1, version: 2 }],
+      equipped: {
+        helmet: null,
+        armor: null,
+        weapon: null,
+        ring: null,
+        consumable: null,
+        material: null,
+      },
+      summary: {
+        base: { hp: 10, maxHp: 10, atk: 10, def: 10, luck: 10 },
+        total: { hp: 10, maxHp: 10, atk: 10, def: 10, luck: 10 },
+        equipmentBonus: { hp: 0, maxHp: 0, atk: 0, def: 0, luck: 0 },
+      },
+    });
+
+    const { container, unmount } = render(
+      <InventoryModal
+        item={baseItem}
+        slot="weapon"
+        isPending={false}
+        isSyncing={false}
+        error={null}
+        onClose={() => undefined}
+        onEquip={async () => undefined}
+        onUnequip={async () => undefined}
+        onDiscard={async () => undefined}
+        onDismantle={async () => undefined}
+        onEnhance={onEnhance}
+        onClearError={() => undefined}
+        dismantleError={null}
+        items={[
+          {
+            id: "material-metal-scrap",
+            code: "material-metal-scrap",
+            name: "Metal Scrap",
+            slot: "material",
+            rarity: "common",
+            modifiers: [],
+            effect: null,
+            sprite: null,
+            createdAt: "2026-01-28T00:00:00.000Z",
+            isEquipped: false,
+            quantity: 1,
+            version: 1,
+          },
+        ]}
+        gold={10}
+      />
+    );
+
+    const modalRoot = container.querySelector(".pixel-modal.max-w-xl");
+    expect(modalRoot).not.toBeNull();
+
+    const enhanceButton = modalRoot ? findButton(modalRoot, "강화") : undefined;
+    expect(enhanceButton).toBeDefined();
+    expect(enhanceButton?.disabled).toBe(false);
+
+    await act(async () => {
+      enhanceButton?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+
+    const enhanceDialog = container.querySelector(".pixel-modal.max-w-5xl");
+    expect(enhanceDialog).not.toBeNull();
+
+    const confirmButton = enhanceDialog
+      ? findButton(enhanceDialog, "강화 시도")
+      : undefined;
+    expect(confirmButton).toBeDefined();
+
+    await act(async () => {
+      confirmButton?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+      await Promise.resolve();
+    });
+
+    expect(onEnhance).toHaveBeenCalledWith(baseItem.id);
+    expect(enhanceDialog?.textContent).toContain("강화 성공!");
+
+    unmount();
+  });
+
   it("수량이 있는 아이템은 버리기 클릭 시 수량 선택 모달이 열린다", async () => {
     const { container, unmount } = render(
       <InventoryModal
