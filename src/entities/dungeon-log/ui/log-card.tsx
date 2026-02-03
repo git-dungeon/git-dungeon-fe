@@ -46,7 +46,8 @@ export function LogCard({
   });
   const meta = `${formatFloorLabel(t, log.floor)} · ${resolveStatusLabel(
     log.status,
-    log.action
+    log.action,
+    log
   )}`;
   const timestamp = formatLogTimestamp(log.createdAt);
 

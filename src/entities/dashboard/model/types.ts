@@ -76,6 +76,7 @@ export const equipmentItemSchema = z.object({
   createdAt: z.string(),
   isEquipped: z.boolean(),
   quantity: z.number().int().min(1).default(1),
+  enhancementLevel: z.number().int().min(0).optional(),
   version: z.number(),
 });
 export type EquipmentItem = z.infer<typeof equipmentItemSchema>;

@@ -18,12 +18,18 @@ import { postInventoryDiscard } from "@/entities/inventory/api/post-inventory-di
 import { postInventoryEquip } from "@/entities/inventory/api/post-inventory-equip";
 import { postInventoryUnequip } from "@/entities/inventory/api/post-inventory-unequip";
 import { postInventoryDismantle } from "@/entities/inventory/api/post-inventory-dismantle";
+import { postInventoryEnhance } from "@/entities/inventory/api/post-inventory-enhance";
 import {
   isInventoryErrorCode,
   type InventoryErrorCode,
 } from "@/entities/inventory/model/error-codes";
 
-type InventoryActionType = "equip" | "unequip" | "discard" | "dismantle";
+type InventoryActionType =
+  | "equip"
+  | "unequip"
+  | "discard"
+  | "dismantle"
+  | "enhance";
 
 interface InventoryActionFailure {
   source: InventoryActionType;
@@ -99,7 +105,7 @@ export function useInventoryActions() {
         return { previous };
       }
 
-      if (type === "dismantle") {
+      if (type === "dismantle" || type === "enhance") {
         return { previous };
       }
 
@@ -165,6 +171,19 @@ export function useInventoryActions() {
     retry: false,
   });
 
+  const enhanceMutation = useMutation({
+    mutationFn: postInventoryEnhance,
+    onMutate: createOptimisticHandler("enhance"),
+    onSuccess: handleSuccess,
+    onError: (error, _variables, context) => {
+      if (!isVersionMismatchError(error)) {
+        setLastError(buildActionFailure("enhance", error));
+      }
+      rollbackOnError(queryClient, context);
+    },
+    retry: false,
+  });
+
   const executeWithRetry = async (
     type: InventoryActionType,
     itemId: string,
@@ -178,8 +197,7 @@ export function useInventoryActions() {
     );
 
     try {
-      await mutation.mutateAsync(variables);
-      return;
+      return await mutation.mutateAsync(variables);
     } catch (error) {
       if (!isVersionMismatchError(error)) {
         throw error;
@@ -190,7 +208,7 @@ export function useInventoryActions() {
 
       try {
         await syncInventory();
-        await mutation.mutateAsync(
+        return await mutation.mutateAsync(
           buildInventoryMutationVariables(queryClient, itemId, quantity)
         );
       } catch (retryError) {
@@ -207,6 +225,7 @@ export function useInventoryActions() {
     { source: "unequip" as const, error: unequipMutation.error },
     { source: "discard" as const, error: discardMutation.error },
     { source: "dismantle" as const, error: dismantleMutation.error },
+    { source: "enhance" as const, error: enhanceMutation.error },
   ];
 
   const errorMap = buildActionErrorMap(actionErrors);
@@ -229,6 +248,7 @@ export function useInventoryActions() {
     unequipMutation.reset();
     discardMutation.reset();
     dismantleMutation.reset();
+    enhanceMutation.reset();
   };
 
   return {
@@ -239,11 +259,14 @@ export function useInventoryActions() {
       executeWithRetry("discard", itemId, discardMutation, quantity),
     dismantle: (itemId: string) =>
       executeWithRetry("dismantle", itemId, dismantleMutation),
+    enhance: (itemId: string) =>
+      executeWithRetry("enhance", itemId, enhanceMutation),
     isPending:
       equipMutation.isPending ||
       unequipMutation.isPending ||
       discardMutation.isPending ||
-      dismantleMutation.isPending,
+      dismantleMutation.isPending ||
+      enhanceMutation.isPending,
     isSyncing,
     error: aggregatedError,
     lastError,
@@ -273,7 +296,7 @@ function buildInventoryMutationVariables(
 
 function buildOptimisticInventory(
   previous: InventoryResponse,
-  action: Exclude<InventoryActionType, "dismantle">,
+  action: Exclude<InventoryActionType, "dismantle" | "enhance">,
   targetId: string,
   quantity?: number
 ): InventoryResponse {

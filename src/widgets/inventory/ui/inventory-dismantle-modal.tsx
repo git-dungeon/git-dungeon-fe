@@ -18,6 +18,7 @@ import { getInventorySlotLabel } from "@/entities/inventory/config/slot-labels";
 import { formatRarity } from "@/entities/dashboard/lib/formatters";
 import { buildDismantlePreview } from "@/widgets/inventory/lib/dismantle-preview";
 import { useInventoryItemNameResolver } from "@/entities/inventory/model/use-inventory-item-name";
+import { useCatalog } from "@/entities/catalog/model/use-catalog";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 
@@ -42,6 +43,8 @@ export function InventoryDismantleModal({
 }: InventoryDismantleModalProps) {
   const { t } = useTranslation();
   const resolveItemName = useInventoryItemNameResolver();
+  const catalogQuery = useCatalog();
+  const dismantleConfig = catalogQuery.data?.dismantle;
 
   if (!item) {
     return null;
@@ -51,7 +54,7 @@ export function InventoryDismantleModal({
   const sprite = resolveLocalItemSprite(item.code);
   const rarityClass = `rarity-${item.rarity ?? "common"}`;
   const isBusy = isPending || isSyncing;
-  const previewItems = buildDismantlePreview(item);
+  const previewItems = buildDismantlePreview(item, dismantleConfig);
   const hasPreview = previewItems.length > 0;
 
   const handleOpenChange = (nextOpen: boolean) => {

@@ -19,6 +19,40 @@ describe("getCatalog", () => {
       items: [],
       buffs: [],
       monsters: [],
+      enhancement: {
+        maxLevel: 10,
+        successRates: {},
+        goldCosts: {},
+        materialCounts: {},
+        materialsBySlot: {
+          weapon: "material-metal-scrap",
+          armor: "material-cloth-scrap",
+          helmet: "material-leather-scrap",
+          ring: "material-mithril-dust",
+        },
+      },
+      dismantle: {
+        baseMaterialQuantityByRarity: {
+          common: 1,
+          uncommon: 2,
+          rare: 3,
+          epic: 4,
+          legendary: 5,
+        },
+        refundByEnhancementLevel: {
+          "0": 0,
+          "1": 0,
+          "2": 1,
+          "3": 3,
+          "4": 5,
+          "5": 7,
+          "6": 10,
+          "7": 14,
+          "8": 18,
+          "9": 22,
+          "10": 27,
+        },
+      },
       assetsBaseUrl: null,
       spriteMap: null,
     };
@@ -58,6 +92,7 @@ describe("getCatalog", () => {
     expect(Array.isArray(data.items)).toBe(true);
     expect(Array.isArray(data.buffs)).toBe(true);
     expect(Array.isArray(data.monsters)).toBe(true);
+    expect(data.enhancement.maxLevel).toBeTypeOf("number");
   });
 
   it("304이지만 캐시 데이터가 없으면 If-None-Match 없이 재요청한다", async () => {
@@ -69,6 +104,40 @@ describe("getCatalog", () => {
       items: [],
       buffs: [],
       monsters: [],
+      enhancement: {
+        maxLevel: 10,
+        successRates: {},
+        goldCosts: {},
+        materialCounts: {},
+        materialsBySlot: {
+          weapon: "material-metal-scrap",
+          armor: "material-cloth-scrap",
+          helmet: "material-leather-scrap",
+          ring: "material-mithril-dust",
+        },
+      },
+      dismantle: {
+        baseMaterialQuantityByRarity: {
+          common: 1,
+          uncommon: 2,
+          rare: 3,
+          epic: 4,
+          legendary: 5,
+        },
+        refundByEnhancementLevel: {
+          "0": 0,
+          "1": 0,
+          "2": 1,
+          "3": 3,
+          "4": 5,
+          "5": 7,
+          "6": 10,
+          "7": 14,
+          "8": 18,
+          "9": 22,
+          "10": 27,
+        },
+      },
       assetsBaseUrl: null,
       spriteMap: null,
     };

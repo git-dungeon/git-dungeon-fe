@@ -48,6 +48,10 @@ export function InventorySlots({
               <InventoryItemCard
                 item={item}
                 displayName={resolveItemName(item.code, item.name)}
+                showEnhancementPill={false}
+                showEnhancementBonusLine={false}
+                includeEnhancementInModifiers
+                modifierDisplayMode="aggregate"
               />
             ) : (
               <InventoryEmptySlot slot={slot} />

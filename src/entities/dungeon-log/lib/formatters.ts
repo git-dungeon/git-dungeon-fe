@@ -37,8 +37,22 @@ export function resolveActionLabel(action: DungeonLogAction): string {
 
 export function resolveStatusLabel(
   status: DungeonLogStatus,
-  action: DungeonLogAction
+  action: DungeonLogAction,
+  entry?: DungeonLogEntry | null
 ): string {
+  if (action === "ENHANCE_ITEM" && status === "COMPLETED") {
+    const success =
+      entry?.extra?.type === "ENHANCE_ITEM"
+        ? entry.extra.details?.enhancement?.success
+        : undefined;
+
+    if (typeof success === "boolean") {
+      return success
+        ? t("logs.enhancement.success")
+        : t("logs.enhancement.fail");
+    }
+  }
+
   const statusKey = `logs.statusAction.${status}.${action}`;
   const statusLabel = t(statusKey);
   if (statusLabel !== statusKey) {
@@ -148,6 +162,18 @@ export function formatDelta(
       );
       break;
     }
+    case "ENHANCE_ITEM": {
+      entries.push(...formatStatsDelta(entry.id, delta.detail.stats));
+      pushEnhancementResult(entries, entry);
+      entries.push(
+        ...formatInventoryDelta(
+          entry.id,
+          delta.detail.inventory,
+          resolveItemName
+        )
+      );
+      break;
+    }
     case "LEVEL_UP": {
       entries.push(...formatStatsDelta(entry.id, delta.detail.stats));
       const skillPoints = delta.detail.rewards?.skillPoints;
@@ -195,6 +221,32 @@ export function formatDelta(
   }
 
   return entries;
+}
+
+function pushEnhancementResult(
+  acc: FormattedDeltaEntry[],
+  entry: DungeonLogEntry
+) {
+  if (entry.extra?.type !== "ENHANCE_ITEM") {
+    return;
+  }
+
+  const enhancement = entry.extra.details?.enhancement;
+  if (!enhancement) {
+    return;
+  }
+
+  const before = enhancement.before;
+  const after = enhancement.after;
+  const success = enhancement.success;
+
+  acc.push({
+    id: `${entry.id}-enhancement-result`,
+    text: success
+      ? t("logs.delta.enhanceSuccess", { before, after })
+      : t("logs.delta.enhanceFail", { before }),
+    tone: success ? "success" : "danger",
+  });
 }
 
 function pushNumeric(
@@ -349,7 +401,7 @@ export function buildLogDescription(
   const statusLabel =
     resultLabel ??
     storyMessage?.text ??
-    resolveStatusLabel(entry.status, entry.action);
+    resolveStatusLabel(entry.status, entry.action, entry);
   const detailsLabel = buildDetailsAttachment(entry, {
     monsterName,
     omitOpponent: Boolean(!resultLabel && storyMessage?.usesMonster),

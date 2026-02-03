@@ -1,4 +1,7 @@
-import type { InventoryItem } from "@/entities/inventory/model/types";
+import type {
+  InventoryItem,
+  InventoryResponse,
+} from "@/entities/inventory/model/types";
 import type { InventoryItemSlot } from "@/entities/inventory/model/types";
 import { useState } from "react";
 import { formatRarity } from "@/entities/dashboard/lib/formatters";
@@ -27,9 +30,18 @@ import { toast } from "sonner";
 import { copyText } from "@/shared/lib/clipboard";
 import { InventoryDismantleModal } from "@/widgets/inventory/ui/inventory-dismantle-modal";
 import { InventoryDiscardModal } from "@/widgets/inventory/ui/inventory-discard-modal";
+import {
+  InventoryEnhanceModal,
+  type InventoryEnhanceResult,
+} from "@/widgets/inventory/ui/inventory-enhance-modal";
 import { canDismantleItem } from "@/widgets/inventory/lib/dismantle-preview";
 import { useInventoryItemNameResolver } from "@/entities/inventory/model/use-inventory-item-name";
 import { isEquippableSlot } from "@/entities/inventory/lib/equipable";
+import {
+  formatEnhancementStars,
+  resolveEnhancementBonus,
+  resolveEnhancementLevel,
+} from "@/entities/inventory/lib/enhancement";
 
 interface InventoryModalProps {
   item: InventoryItem | null;
@@ -42,8 +54,12 @@ interface InventoryModalProps {
   onUnequip: (itemId: string) => Promise<unknown>;
   onDiscard: (itemId: string, quantity?: number) => Promise<unknown>;
   onDismantle: (itemId: string) => Promise<unknown>;
+  onEnhance?: (itemId: string) => Promise<unknown>;
   onClearError: () => void;
   dismantleError: Error | null;
+  enhanceError?: Error | null;
+  items?: InventoryItem[];
+  gold?: number;
 }
 
 export function InventoryModal({
@@ -57,14 +73,21 @@ export function InventoryModal({
   onUnequip,
   onDiscard,
   onDismantle,
+  onEnhance,
   onClearError,
   dismantleError,
+  enhanceError,
+  items,
+  gold,
 }: InventoryModalProps) {
   const { t } = useTranslation();
   const resolveItemName = useInventoryItemNameResolver();
   const resolveDescription = useCatalogItemDescriptionResolver();
   const [isDismantleOpen, setIsDismantleOpen] = useState(false);
   const [isDiscardOpen, setIsDiscardOpen] = useState(false);
+  const [isEnhanceOpen, setIsEnhanceOpen] = useState(false);
+  const [enhanceResult, setEnhanceResult] =
+    useState<InventoryEnhanceResult>(null);
   if (!item || !slot) {
     return null;
   }
@@ -79,6 +102,11 @@ export function InventoryModal({
   const canDismantle = canDismantleItem(item);
   const canEquip = isEquippableSlot(item.slot);
   const maxQuantity = Math.max(item.quantity ?? 1, 1);
+  const inventoryItems = items ?? [];
+  const currentGold = gold ?? 0;
+  const enhancementLevel = resolveEnhancementLevel(item.enhancementLevel);
+  const enhancementStars = formatEnhancementStars(enhancementLevel);
+  const enhancementBonus = resolveEnhancementBonus(item.slot, enhancementLevel);
 
   const handleOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) {
@@ -143,6 +171,17 @@ export function InventoryModal({
     setIsDiscardOpen(false);
   };
 
+  const handleOpenEnhance = () => {
+    onClearError();
+    setEnhanceResult(null);
+    setIsEnhanceOpen(true);
+  };
+
+  const handleCloseEnhance = () => {
+    setEnhanceResult(null);
+    setIsEnhanceOpen(false);
+  };
+
   const handleConfirmDismantle = async () => {
     try {
       await onDismantle(item.id);
@@ -158,6 +197,26 @@ export function InventoryModal({
       await onDiscard(item.id, quantity);
       setIsDiscardOpen(false);
       onClose();
+    } catch {
+      // 에러는 상위에서 전달된 상태로 표시한다.
+    }
+  };
+
+  const handleConfirmEnhance = async () => {
+    if (!onEnhance) {
+      return;
+    }
+
+    const previousLevel = resolveEnhancementLevel(item.enhancementLevel);
+    try {
+      const nextInventory = await onEnhance(item.id);
+      if (isInventoryResponse(nextInventory)) {
+        const nextItem = nextInventory.items.find(
+          (inventoryItem) => inventoryItem.id === item.id
+        );
+        const nextLevel = resolveEnhancementLevel(nextItem?.enhancementLevel);
+        setEnhanceResult(nextLevel > previousLevel ? "success" : "fail");
+      }
     } catch {
       // 에러는 상위에서 전달된 상태로 표시한다.
     }
@@ -212,6 +271,16 @@ export function InventoryModal({
                 >
                   {formatRarity(item.rarity)}
                 </PixelPill>
+                {enhancementStars ? (
+                  <PixelPill
+                    tone="neutral"
+                    className="text-[10px] font-semibold"
+                  >
+                    {t("inventory.enhancement.level", {
+                      level: enhancementLevel,
+                    })}
+                  </PixelPill>
+                ) : null}
               </DialogDescription>
             </div>
           </DialogHeader>
@@ -267,6 +336,38 @@ export function InventoryModal({
               ) : null}
             </ul>
           </section>
+
+          {enhancementBonus ? (
+            <section className="flex flex-col gap-2 text-sm">
+              <h3 className="pixel-text-xs pixel-text-muted tracking-wide uppercase">
+                {t("inventory.enhancement.bonusTitle")}
+              </h3>
+              <div className="flex flex-wrap items-center gap-2">
+                {(() => {
+                  const { text, tone } = formatStatChange(
+                    enhancementBonus.stat,
+                    enhancementBonus.value
+                  );
+                  const iconTone =
+                    tone === "success"
+                      ? "up"
+                      : tone === "danger"
+                        ? "down"
+                        : null;
+
+                  return (
+                    <PixelPill
+                      tone={tone}
+                      icon={iconTone ?? undefined}
+                      className="text-[10px]"
+                    >
+                      {text}
+                    </PixelPill>
+                  );
+                })()}
+              </div>
+            </section>
+          ) : null}
 
           {item.effect ? (
             <section className="flex flex-col gap-2 text-sm">
@@ -338,6 +439,15 @@ export function InventoryModal({
             </PixelButton>
             <PixelButton
               type="button"
+              onClick={handleOpenEnhance}
+              disabled={!canEquip || isBusy || !onEnhance}
+              tone="accent"
+              className="pixel-text-xs flex-1"
+            >
+              {t("inventory.modal.actions.enhance")}
+            </PixelButton>
+            <PixelButton
+              type="button"
               onClick={handleDiscard}
               disabled={isBusy}
               tone="danger"
@@ -375,6 +485,27 @@ export function InventoryModal({
         onClose={handleCloseDiscard}
         onConfirm={handleConfirmDiscard}
       />
+      <InventoryEnhanceModal
+        item={item}
+        items={inventoryItems}
+        gold={currentGold}
+        open={isEnhanceOpen}
+        isPending={isPending}
+        isSyncing={isSyncing}
+        error={enhanceError ?? null}
+        result={enhanceResult}
+        onClose={handleCloseEnhance}
+        onConfirm={handleConfirmEnhance}
+      />
     </Dialog>
   );
+}
+
+function isInventoryResponse(value: unknown): value is InventoryResponse {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const data = value as { items?: unknown };
+  return Array.isArray(data.items);
 }

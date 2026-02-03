@@ -383,6 +383,7 @@
       "actions": {
         "equip": "Equip",
         "unequip": "Unequip",
+        "enhance": "Enhance",
         "discard": "Discard",
         "dismantle": "Dismantle"
       }
@@ -409,6 +410,34 @@
     },
     "effects": {
       "resurrection": "Resurrection"
+    },
+    "enhancement": {
+      "level": "Enhance ★{{level}}",
+      "bonusTitle": "Enhancement Bonus",
+      "bonusLine": "Enhancement Bonus: {{stat}} +{{value}}"
+    },
+    "enhance": {
+      "title": "Equipment Enhancement",
+      "description": "Spend materials and gold to enhance your equipment.",
+      "itemTitle": "Target Item",
+      "previewTitle": "Enhancement Info",
+      "materialTitle": "Enhancement Materials",
+      "goldLabel": "Gold",
+      "materialUnknown": "Enhancement Material",
+      "levelRange": "Level: ★{{current}} → ★{{next}}",
+      "successRate": "Success Rate: {{rate}}%",
+      "previewBonus": "{{stat}} +{{value}}",
+      "goldCost": "Gold: {{cost}} (Owned {{current}})",
+      "materialCost": "Material: {{code}} x{{cost}} (Owned {{current}})",
+      "bonusGain": "Bonus: {{stat}} +{{from}} → +{{to}}",
+      "confirm": "Attempt Enhancement",
+      "disabledMax": "This item is already at max enhancement.",
+      "disabledGold": "Not enough gold.",
+      "disabledMaterial": "Not enough enhancement materials.",
+      "resultSuccess": "Enhancement success!",
+      "resultFail": "Enhancement failed...",
+      "forgeAlt": "Enhancement forge anvil image",
+      "unavailable": "Enhancement data is unavailable."
     },
     "errors": {
       "invalidRequest": "The request is invalid.",
@@ -490,6 +519,7 @@
         "UNEQUIP_ITEM": "Unequip",
         "DISCARD_ITEM": "Discard",
         "DISMANTLE_ITEM": "Dismantle",
+        "ENHANCE_ITEM": "Enhance",
         "BUFF_APPLIED": "Buff Applied",
         "BUFF_EXPIRED": "Buff Expired",
         "LEVEL_UP": "Level Up",
@@ -586,6 +616,7 @@
       "UNEQUIP_ITEM": "Unequip",
       "DISCARD_ITEM": "Discard",
       "DISMANTLE_ITEM": "Dismantle",
+      "ENHANCE_ITEM": "Enhance",
       "BUFF_APPLIED": "Buff Applied",
       "BUFF_EXPIRED": "Buff Expired",
       "LEVEL_UP": "Level Up",
@@ -606,6 +637,7 @@
         "UNEQUIP_ITEM": "Unequipping item",
         "DISCARD_ITEM": "Discarding item",
         "DISMANTLE_ITEM": "Dismantling item",
+        "ENHANCE_ITEM": "Enhancing equipment",
         "BUFF_APPLIED": "Applying buff",
         "BUFF_EXPIRED": "Buff ending",
         "LEVEL_UP": "Preparing level up",
@@ -625,6 +657,7 @@
         "UNEQUIP_ITEM": "Item unequipped",
         "DISCARD_ITEM": "Item discarded",
         "DISMANTLE_ITEM": "Item dismantled",
+        "ENHANCE_ITEM": "Attempted enhancement",
         "BUFF_APPLIED": "Buff applied",
         "BUFF_EXPIRED": "Buff expired",
         "LEVEL_UP": "Level up completed",
@@ -655,7 +688,13 @@
       "equipped": "Equipped {{item}}",
       "unequipped": "Unequipped {{item}}",
       "acquired": "Acquired {{item}} x{{count}}",
-      "removed": "Removed {{item}} x{{count}}"
+      "removed": "Removed {{item}} x{{count}}",
+      "enhanceSuccess": "Enhancement success (★{{before}} → ★{{after}})",
+      "enhanceFail": "Enhancement failed (★{{before}} unchanged)"
+    },
+    "enhancement": {
+      "success": "Enhancement succeeded",
+      "fail": "Enhancement failed"
     },
     "floor": "Floor {{floor}}",
     "message": {

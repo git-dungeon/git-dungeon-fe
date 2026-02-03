@@ -8,7 +8,10 @@ import { getInventory } from "./get-inventory";
 import { postInventoryDiscard } from "./post-inventory-discard";
 import { postInventoryDismantle } from "./post-inventory-dismantle";
 import { postInventoryEquip } from "./post-inventory-equip";
+import { postInventoryEnhance } from "./post-inventory-enhance";
 import { postInventoryUnequip } from "./post-inventory-unequip";
+import { getDashboardState } from "@/entities/dashboard/api/get-dashboard-state";
+import { MOCK_CATALOG_DISMANTLE_CONFIG } from "@/mocks/handlers/catalog-handlers";
 
 describe("inventory actions", () => {
   it("버전이 불일치하면 412 INVENTORY_VERSION_MISMATCH로 처리된다", async () => {
@@ -278,13 +281,70 @@ describe("inventory actions", () => {
 
     const expectedMaterial = materialBySlot[target!.slot];
     const rarity = target!.rarity ?? "common";
+    const materialBefore = inventory.items.find(
+      (item) => item.code === expectedMaterial && item.slot === "material"
+    );
     const materialItem = next.items.find(
       (item) => item.code === expectedMaterial && item.slot === "material"
     );
 
+    const enhancementLevel = Math.max(
+      0,
+      Math.floor(target!.enhancementLevel ?? 0)
+    );
+    const refund =
+      MOCK_CATALOG_DISMANTLE_CONFIG.refundByEnhancementLevel[
+        String(enhancementLevel)
+      ] ?? 0;
+
     expect(next.version).toBe(inventory.version + 1);
     expect(next.items.some((item) => item.id === target!.id)).toBe(false);
     expect(materialItem).toBeTruthy();
-    expect(materialItem?.quantity).toBe(quantityByRarity[rarity]);
+    expect(materialItem?.quantity).toBe(
+      (materialBefore?.quantity ?? 0) + quantityByRarity[rarity] + refund
+    );
+  });
+
+  it("강화 성공 시 강화 레벨이 증가하고 골드/재료가 감소한다", async () => {
+    const dashboardBefore = await getDashboardState();
+    const inventory = await getInventory();
+    const target = inventory.items.find((item) =>
+      ["helmet", "armor", "weapon", "ring"].includes(item.slot)
+    );
+
+    expect(target).toBeTruthy();
+
+    const materialBySlot: Record<string, string> = {
+      helmet: "material-leather-scrap",
+      armor: "material-cloth-scrap",
+      weapon: "material-metal-scrap",
+      ring: "material-mithril-dust",
+    };
+    const expectedMaterial = materialBySlot[target!.slot];
+    const materialBefore = inventory.items.find(
+      (item) => item.slot === "material" && item.code === expectedMaterial
+    );
+
+    expect(materialBefore).toBeTruthy();
+
+    const next = await postInventoryEnhance({
+      itemId: target!.id,
+      expectedVersion: target!.version,
+      inventoryVersion: inventory.version,
+    });
+
+    const updated = next.items.find((item) => item.id === target!.id);
+    const materialAfter = next.items.find(
+      (item) => item.slot === "material" && item.code === expectedMaterial
+    );
+
+    expect(next.version).toBe(inventory.version + 1);
+    expect(updated?.enhancementLevel ?? 0).toBe(
+      (target!.enhancementLevel ?? 0) + 1
+    );
+    expect(materialAfter?.quantity).toBe((materialBefore?.quantity ?? 1) - 1);
+
+    const dashboardAfter = await getDashboardState();
+    expect(dashboardAfter.gold).toBe(dashboardBefore.gold - 5);
   });
 });

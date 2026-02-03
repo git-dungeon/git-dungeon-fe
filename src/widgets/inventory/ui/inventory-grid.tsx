@@ -72,6 +72,8 @@ function InventoryGridCell({
         showRarity={false}
         showModifiers={false}
         showEffect={false}
+        showEnhancementPill={false}
+        showEnhancementBonusLine={false}
         truncateName={false}
         nameClassName="text-[11px]"
         className="pointer-events-none"

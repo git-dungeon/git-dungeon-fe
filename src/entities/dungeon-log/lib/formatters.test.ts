@@ -108,6 +108,60 @@ describe("formatDelta", () => {
     expect(removed?.icon).toBe("minus");
   });
 
+  it("ENHANCE_ITEM 로그에서 성공/확률 문구를 표시한다", () => {
+    const entry: DungeonLogEntry = {
+      id: "log-enhance-delta",
+      category: "STATUS",
+      floor: null,
+      action: "ENHANCE_ITEM",
+      status: "COMPLETED",
+      createdAt: "2026-02-03T00:00:00Z",
+      delta: {
+        type: "ENHANCE_ITEM",
+        detail: {
+          inventory: {
+            removed: [
+              {
+                itemId: "inv-material-1",
+                code: "material-metal-scrap",
+                slot: "material",
+                quantity: 2,
+              },
+            ],
+          },
+          stats: { atk: 1 },
+        },
+      },
+      extra: {
+        type: "ENHANCE_ITEM",
+        details: {
+          item: {
+            id: "inv-weapon-1",
+            code: "weapon-wooden-sword",
+            rarity: "epic",
+            modifiers: [],
+            name: "Wooden Sword",
+          },
+          enhancement: {
+            before: 1,
+            after: 2,
+            success: true,
+            chance: 0.8,
+          },
+          cost: {
+            gold: 10,
+            materials: [{ code: "material-metal-scrap", quantity: 2 }],
+          },
+        },
+      },
+    };
+
+    const entries = formatDelta(entry);
+    expect(entries.some((item) => item.text === "강화 성공 (★1 → ★2)")).toBe(
+      true
+    );
+  });
+
   it("MOVE 로그에서 층 증가와 진행도 변화를 함께 표시한다", () => {
     const entry: DungeonLogEntry = {
       id: "log-move-complete",
@@ -232,6 +286,43 @@ describe("formatDelta", () => {
 
     expect(message).toContain("사망 원인: 전투에서 패배 (거대 쥐)");
   });
+
+  it.each([
+    { success: true, expected: "강화가 성공했습니다" },
+    { success: false, expected: "강화에 실패했습니다" },
+  ])(
+    "ENHANCE_ITEM 로그는 성공 여부에 따라 상태 문구가 달라진다",
+    ({ success, expected }) => {
+      const entry = {
+        id: `log-enhance-status-${success ? "success" : "fail"}`,
+        category: "STATUS",
+        action: "ENHANCE_ITEM",
+        status: "COMPLETED",
+        createdAt: "2026-02-03T00:00:00Z",
+        delta: null,
+        extra: {
+          type: "ENHANCE_ITEM",
+          details: {
+            item: {
+              id: "inv-weapon-1",
+              code: "weapon-wooden-sword",
+              rarity: "epic",
+              modifiers: [],
+            },
+            enhancement: {
+              before: 1,
+              after: success ? 2 : 1,
+              success,
+              chance: 0.8,
+            },
+          },
+        },
+      } as DungeonLogEntry;
+
+      const message = buildLogDescription(entry);
+      expect(message).toContain(expected);
+    }
+  );
 
   it("스토리 템플릿은 로그 ID 기준으로 고정 선택된다", () => {
     const entry = {
