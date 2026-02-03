@@ -335,15 +335,39 @@ export function InventoryModal({
                 </li>
               ) : null}
             </ul>
-            {enhancementBonus ? (
-              <p className="pixel-text-xs pixel-text-muted font-semibold">
-                {t("inventory.enhancement.bonusLine", {
-                  stat: resolveStatLabel(enhancementBonus.stat),
-                  value: enhancementBonus.value,
-                })}
-              </p>
-            ) : null}
           </section>
+
+          {enhancementBonus ? (
+            <section className="flex flex-col gap-2 text-sm">
+              <h3 className="pixel-text-xs pixel-text-muted tracking-wide uppercase">
+                {t("inventory.enhancement.bonusTitle")}
+              </h3>
+              <div className="flex flex-wrap items-center gap-2">
+                {(() => {
+                  const { text, tone } = formatStatChange(
+                    enhancementBonus.stat,
+                    enhancementBonus.value
+                  );
+                  const iconTone =
+                    tone === "success"
+                      ? "up"
+                      : tone === "danger"
+                        ? "down"
+                        : null;
+
+                  return (
+                    <PixelPill
+                      tone={tone}
+                      icon={iconTone ?? undefined}
+                      className="text-[10px]"
+                    >
+                      {text}
+                    </PixelPill>
+                  );
+                })()}
+              </div>
+            </section>
+          ) : null}
 
           {item.effect ? (
             <section className="flex flex-col gap-2 text-sm">

@@ -288,7 +288,7 @@ describe("InventoryModal", () => {
     unmount();
   });
 
-  it("강화 레벨이 있으면 별 배지와 강화 보너스 라인을 표시한다", () => {
+  it("강화 레벨이 있으면 별 배지와 강화 보너스를 표시한다", () => {
     const { container, unmount } = render(
       <InventoryModal
         item={{ ...baseItem, enhancementLevel: 3 }}
@@ -308,7 +308,8 @@ describe("InventoryModal", () => {
 
     const modalRoot = container.querySelector(".pixel-modal.max-w-xl");
     expect(modalRoot?.textContent).toContain("강화 ★3");
-    expect(modalRoot?.textContent).toContain("강화 보너스: ATK +3");
+    expect(modalRoot?.textContent).toContain("강화 보너스");
+    expect(modalRoot?.textContent).toContain("ATK +3");
 
     unmount();
   });

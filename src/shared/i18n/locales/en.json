@@ -413,6 +413,7 @@
     },
     "enhancement": {
       "level": "Enhance ★{{level}}",
+      "bonusTitle": "Enhancement Bonus",
       "bonusLine": "Enhancement Bonus: {{stat}} +{{value}}"
     },
     "enhance": {

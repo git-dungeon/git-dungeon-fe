@@ -413,6 +413,7 @@
     },
     "enhancement": {
       "level": "강화 ★{{level}}",
+      "bonusTitle": "강화 보너스",
       "bonusLine": "강화 보너스: {{stat}} +{{value}}"
     },
     "enhance": {
