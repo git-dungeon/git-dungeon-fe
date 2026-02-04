@@ -1,0 +1,96 @@
+import type { Meta, StoryObj } from "@storybook/react";
+import { InventoryEnhanceModal } from "@/widgets/inventory/ui/inventory-enhance-modal";
+import { sampleInventoryItems } from "@/mocks/fixtures/storybook";
+import { WithCatalogPrefill } from "@/mocks/decorators/with-catalog-prefill";
+
+const meta: Meta<typeof InventoryEnhanceModal> = {
+  title: "widgets/InventoryEnhanceModal",
+  component: InventoryEnhanceModal,
+  decorators: [(Story) => <WithCatalogPrefill>{Story()}</WithCatalogPrefill>],
+  parameters: {
+    layout: "centered",
+    pixel: { background: true },
+  },
+};
+
+export default meta;
+
+type Story = StoryObj<typeof InventoryEnhanceModal>;
+
+const weaponItem = sampleInventoryItems[0];
+const materialItem = sampleInventoryItems[4];
+
+export const Default: Story = {
+  args: {
+    item: weaponItem,
+    items: [weaponItem, materialItem],
+    gold: 999,
+    open: true,
+    isPending: false,
+    isSyncing: false,
+    error: null,
+    result: null,
+    onClose: () => undefined,
+    onConfirm: async () => undefined,
+  },
+};
+
+export const NotEnoughMaterial: Story = {
+  args: {
+    item: weaponItem,
+    items: [weaponItem, { ...materialItem, quantity: 0 }],
+    gold: 999,
+    open: true,
+    isPending: false,
+    isSyncing: false,
+    error: null,
+    result: null,
+    onClose: () => undefined,
+    onConfirm: async () => undefined,
+  },
+};
+
+export const NotEnoughGold: Story = {
+  args: {
+    item: weaponItem,
+    items: [weaponItem, materialItem],
+    gold: 0,
+    open: true,
+    isPending: false,
+    isSyncing: false,
+    error: null,
+    result: null,
+    onClose: () => undefined,
+    onConfirm: async () => undefined,
+  },
+};
+
+export const Syncing: Story = {
+  args: {
+    item: weaponItem,
+    items: [weaponItem, materialItem],
+    gold: 999,
+    open: true,
+    isPending: false,
+    isSyncing: true,
+    error: null,
+    result: null,
+    onClose: () => undefined,
+    onConfirm: async () => undefined,
+  },
+};
+
+export const ErrorState: Story = {
+  args: {
+    item: weaponItem,
+    items: [weaponItem, materialItem],
+    gold: 999,
+    open: true,
+    isPending: false,
+    isSyncing: false,
+    error: new Error("강화에 실패했습니다."),
+    result: null,
+    onClose: () => undefined,
+    onConfirm: async () => undefined,
+  },
+};

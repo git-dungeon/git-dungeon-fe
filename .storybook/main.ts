@@ -3,7 +3,14 @@ import type { StorybookConfig } from "@storybook/react-vite";
 import { mergeConfig } from "vite";
 
 const config: StorybookConfig = {
-  stories: ["../src/**/*.stories.@(ts|tsx)"],
+  stories: [
+    // Pixel UI + product-facing stories only.
+    // Base(shadcn) UI stories are intentionally excluded to reduce confusion.
+    "../src/shared/ui/pixel-*.stories.@(ts|tsx)",
+    "../src/shared/ui/sonner.stories.@(ts|tsx)",
+    "../src/widgets/**/*.stories.@(ts|tsx)",
+    "../src/features/**/*.stories.@(ts|tsx)",
+  ],
   addons: ["@storybook/addon-essentials"],
   framework: "@storybook/react-vite",
   staticDirs: ["../public"],
