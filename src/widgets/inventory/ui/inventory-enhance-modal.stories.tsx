@@ -10,6 +10,7 @@ import { createMockCatalogData } from "@/mocks/fixtures/catalog";
 const meta: Meta<typeof InventoryEnhanceModal> = {
   title: "widgets/InventoryEnhanceModal",
   component: InventoryEnhanceModal,
+  decorators: [(Story) => <WithCatalogPrefill>{Story()}</WithCatalogPrefill>],
   parameters: {
     layout: "centered",
     pixel: { background: true },
@@ -36,7 +37,6 @@ function WithCatalogPrefill({ children }: { children: ReactNode }) {
 }
 
 export const Default: Story = {
-  decorators: [(Story) => <WithCatalogPrefill>{Story()}</WithCatalogPrefill>],
   args: {
     item: weaponItem,
     items: [weaponItem, materialItem],
@@ -52,7 +52,6 @@ export const Default: Story = {
 };
 
 export const NotEnoughMaterial: Story = {
-  decorators: [(Story) => <WithCatalogPrefill>{Story()}</WithCatalogPrefill>],
   args: {
     item: weaponItem,
     items: [weaponItem, { ...materialItem, quantity: 0 }],
@@ -68,7 +67,6 @@ export const NotEnoughMaterial: Story = {
 };
 
 export const NotEnoughGold: Story = {
-  decorators: [(Story) => <WithCatalogPrefill>{Story()}</WithCatalogPrefill>],
   args: {
     item: weaponItem,
     items: [weaponItem, materialItem],
@@ -84,7 +82,6 @@ export const NotEnoughGold: Story = {
 };
 
 export const Syncing: Story = {
-  decorators: [(Story) => <WithCatalogPrefill>{Story()}</WithCatalogPrefill>],
   args: {
     item: weaponItem,
     items: [weaponItem, materialItem],
@@ -100,7 +97,6 @@ export const Syncing: Story = {
 };
 
 export const ErrorState: Story = {
-  decorators: [(Story) => <WithCatalogPrefill>{Story()}</WithCatalogPrefill>],
   args: {
     item: weaponItem,
     items: [weaponItem, materialItem],

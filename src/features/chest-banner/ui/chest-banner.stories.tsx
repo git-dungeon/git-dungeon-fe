@@ -1,5 +1,5 @@
 import type { Decorator, Meta, StoryObj } from "@storybook/react";
-import { useMemo, type ReactElement } from "react";
+import { useMemo, useRef, type ReactNode } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   Outlet,
@@ -13,8 +13,11 @@ import { ChestBanner } from "@/features/chest-banner/ui/chest-banner";
 import type { RouterContext } from "@/shared/lib/router/router-context";
 import { createAuthService } from "@/entities/auth/lib/auth-service";
 
-function ChestBannerStoryRouter({ Story }: { Story: () => ReactElement }) {
+function ChestBannerStoryRouter({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
+  const childrenRef = useRef(children);
+  childrenRef.current = children;
+
   const router = useMemo(() => {
     const rootRoute = createRootRouteWithContext<RouterContext>()({
       component: () => <Outlet />,
@@ -23,7 +26,7 @@ function ChestBannerStoryRouter({ Story }: { Story: () => ReactElement }) {
     const chestRoute = createRoute({
       getParentRoute: () => rootRoute,
       path: "/chest",
-      component: Story,
+      component: () => <>{childrenRef.current}</>,
     });
 
     const routeTree = rootRoute.addChildren([chestRoute]);
@@ -38,13 +41,13 @@ function ChestBannerStoryRouter({ Story }: { Story: () => ReactElement }) {
         initialEntries: ["/chest"],
       }),
     });
-  }, [Story, queryClient]);
+  }, [queryClient]);
 
   return <RouterProvider router={router} />;
 }
 
 const withRouter: Decorator = (Story) => (
-  <ChestBannerStoryRouter Story={Story} />
+  <ChestBannerStoryRouter>{Story()}</ChestBannerStoryRouter>
 );
 
 const meta: Meta<typeof ChestBanner> = {

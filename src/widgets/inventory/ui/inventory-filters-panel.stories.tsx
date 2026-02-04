@@ -14,6 +14,23 @@ import { useArgs } from "@storybook/preview-api";
 
 type InventoryFiltersPanelArgs = ComponentProps<typeof InventoryFiltersPanel>;
 
+const renderFiltersPanel = () => {
+  // Storybook preview hook: must be called inside story render/decorator.
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const [args, updateArgs] = useArgs<InventoryFiltersPanelArgs>();
+
+  return (
+    <InventoryFiltersPanel
+      {...args}
+      onEquippedChange={(value) => updateArgs({ equippedFilter: value })}
+      onSortChange={(value) => updateArgs({ sortFilter: value })}
+      onSlotsChange={(value) => updateArgs({ selectedSlots: value })}
+      onRaritiesChange={(value) => updateArgs({ selectedRarities: value })}
+      onDateRangeChange={(value) => updateArgs({ dateRange: value })}
+    />
+  );
+};
+
 const meta: Meta<typeof InventoryFiltersPanel> = {
   title: "widgets/InventoryFiltersPanel",
   component: InventoryFiltersPanel,
@@ -28,22 +45,7 @@ export default meta;
 type Story = StoryObj<typeof InventoryFiltersPanel>;
 
 export const Default: Story = {
-  render: () => {
-    // Storybook preview hook: must be called inside story render/decorator.
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const [args, updateArgs] = useArgs<InventoryFiltersPanelArgs>();
-
-    return (
-      <InventoryFiltersPanel
-        {...args}
-        onEquippedChange={(value) => updateArgs({ equippedFilter: value })}
-        onSortChange={(value) => updateArgs({ sortFilter: value })}
-        onSlotsChange={(value) => updateArgs({ selectedSlots: value })}
-        onRaritiesChange={(value) => updateArgs({ selectedRarities: value })}
-        onDateRangeChange={(value) => updateArgs({ dateRange: value })}
-      />
-    );
-  },
+  render: renderFiltersPanel,
   args: {
     equippedFilter: "ALL" satisfies InventoryEquippedFilter,
     sortFilter: "DEFAULT" satisfies InventorySortFilter,
@@ -62,22 +64,7 @@ export const Default: Story = {
 };
 
 export const WithSelections: Story = {
-  render: () => {
-    // Storybook preview hook: must be called inside story render/decorator.
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const [args, updateArgs] = useArgs<InventoryFiltersPanelArgs>();
-
-    return (
-      <InventoryFiltersPanel
-        {...args}
-        onEquippedChange={(value) => updateArgs({ equippedFilter: value })}
-        onSortChange={(value) => updateArgs({ sortFilter: value })}
-        onSlotsChange={(value) => updateArgs({ selectedSlots: value })}
-        onRaritiesChange={(value) => updateArgs({ selectedRarities: value })}
-        onDateRangeChange={(value) => updateArgs({ dateRange: value })}
-      />
-    );
-  },
+  render: renderFiltersPanel,
   args: {
     equippedFilter: "EQUIPPED" satisfies InventoryEquippedFilter,
     sortFilter: "ACQUIRED_DESC" satisfies InventorySortFilter,
