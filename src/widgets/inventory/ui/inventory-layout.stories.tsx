@@ -16,6 +16,11 @@ export default meta;
 type Story = StoryObj<typeof InventoryLayout>;
 
 export const Default: Story = {
+  parameters: {
+    pixel: {
+      background: true,
+    },
+  },
   args: {
     items: sampleInventoryItems,
     equipped: sampleEquippedMap,
