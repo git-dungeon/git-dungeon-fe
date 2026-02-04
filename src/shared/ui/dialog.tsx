@@ -11,6 +11,15 @@ const DialogPortal = DialogPrimitive.Portal;
 
 const DialogClose = DialogPrimitive.Close;
 
+function resolvePixelAppContainer() {
+  if (typeof document === "undefined") {
+    return null;
+  }
+
+  const element = document.querySelector(".pixel-app");
+  return element instanceof HTMLElement ? element : null;
+}
+
 const DialogOverlay = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Overlay>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
@@ -31,13 +40,41 @@ const DialogContent = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
 >(({ className, children, ...props }, ref) => {
   // .pixel-app 내부로 Portal 렌더링하여 CSS 변수 상속
-  const container = React.useMemo(
-    () => document.querySelector(".pixel-app") ?? undefined,
-    []
+  // Storybook 등의 초기 렌더 타이밍에서 .pixel-app이 아직 DOM에 없을 수 있으므로
+  // 마운트 이후(그리고 필요 시 DOM 변화 감지 후)에 컨테이너를 확정한다.
+  const [container, setContainer] = React.useState<HTMLElement | null>(() =>
+    resolvePixelAppContainer()
   );
 
+  React.useLayoutEffect(() => {
+    if (container) {
+      return;
+    }
+
+    const resolved = resolvePixelAppContainer();
+    if (resolved) {
+      setContainer(resolved);
+      return;
+    }
+
+    if (typeof MutationObserver === "undefined") {
+      return;
+    }
+
+    const observer = new MutationObserver(() => {
+      const nextContainer = resolvePixelAppContainer();
+      if (nextContainer) {
+        setContainer(nextContainer);
+        observer.disconnect();
+      }
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, [container]);
+
   return (
-    <DialogPortal container={container}>
+    <DialogPortal container={container ?? undefined}>
       <DialogOverlay />
       <DialogPrimitive.Content
         ref={ref}
