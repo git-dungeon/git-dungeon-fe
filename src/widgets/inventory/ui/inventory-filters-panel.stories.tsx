@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import type { ComponentProps } from "react";
 import {
   InventoryFiltersPanel,
   type InventoryDateRange,
@@ -10,6 +11,8 @@ import type {
   InventoryItemSlot,
 } from "@/entities/inventory/model/types";
 import { useArgs } from "@storybook/preview-api";
+
+type InventoryFiltersPanelArgs = ComponentProps<typeof InventoryFiltersPanel>;
 
 const meta: Meta<typeof InventoryFiltersPanel> = {
   title: "widgets/InventoryFiltersPanel",
@@ -28,7 +31,7 @@ export const Default: Story = {
   render: () => {
     // Storybook preview hook: must be called inside story render/decorator.
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const [args, updateArgs] = useArgs<typeof meta>();
+    const [args, updateArgs] = useArgs<InventoryFiltersPanelArgs>();
 
     return (
       <InventoryFiltersPanel
@@ -62,7 +65,7 @@ export const WithSelections: Story = {
   render: () => {
     // Storybook preview hook: must be called inside story render/decorator.
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const [args, updateArgs] = useArgs<typeof meta>();
+    const [args, updateArgs] = useArgs<InventoryFiltersPanelArgs>();
 
     return (
       <InventoryFiltersPanel

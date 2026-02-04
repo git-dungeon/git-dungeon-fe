@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { RankingTable } from "@/widgets/ranking-table/ui/ranking-table";
 import type { RankingEntry } from "@/entities/ranking/model/types";
+import type { RankingListState } from "@/features/ranking-list/model/use-ranking-list";
 
 const meta: Meta<typeof RankingTable> = {
   title: "widgets/RankingTable",
@@ -18,8 +19,6 @@ type Story = StoryObj<typeof RankingTable>;
 const sampleRankings: RankingEntry[] = [
   {
     rank: 1,
-    userId: "user-1",
-    username: "tester",
     displayName: "Tester",
     avatarUrl: null,
     level: 12,
@@ -27,8 +26,6 @@ const sampleRankings: RankingEntry[] = [
   },
   {
     rank: 2,
-    userId: "user-2",
-    username: "runner-up",
     displayName: "Runner",
     avatarUrl: null,
     level: 10,
@@ -36,16 +33,22 @@ const sampleRankings: RankingEntry[] = [
   },
 ];
 
+const fetchNextPageStub: RankingListState["fetchNextPage"] = () =>
+  Promise.resolve({} as never);
+
+const refetchStub: RankingListState["refetch"] = () =>
+  Promise.resolve({} as never);
+
 export const Default: Story = {
   args: {
     rankings: sampleRankings,
     status: "success",
     error: null,
     isFetching: false,
-    fetchNextPage: async () => undefined,
+    fetchNextPage: fetchNextPageStub,
     hasNextPage: false,
     isFetchingNextPage: false,
-    refetch: async () => undefined,
+    refetch: refetchStub,
   },
 };
 
@@ -55,10 +58,10 @@ export const Pending: Story = {
     status: "pending",
     error: null,
     isFetching: false,
-    fetchNextPage: async () => undefined,
+    fetchNextPage: fetchNextPageStub,
     hasNextPage: false,
     isFetchingNextPage: false,
-    refetch: async () => undefined,
+    refetch: refetchStub,
   },
 };
 
@@ -68,10 +71,10 @@ export const Empty: Story = {
     status: "success",
     error: null,
     isFetching: false,
-    fetchNextPage: async () => undefined,
+    fetchNextPage: fetchNextPageStub,
     hasNextPage: false,
     isFetchingNextPage: false,
-    refetch: async () => undefined,
+    refetch: refetchStub,
   },
 };
 
@@ -81,9 +84,9 @@ export const ErrorState: Story = {
     status: "error",
     error: new Error("랭킹 조회에 실패했습니다."),
     isFetching: false,
-    fetchNextPage: async () => undefined,
+    fetchNextPage: fetchNextPageStub,
     hasNextPage: false,
     isFetchingNextPage: false,
-    refetch: async () => undefined,
+    refetch: refetchStub,
   },
 };
