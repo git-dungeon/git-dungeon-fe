@@ -24,23 +24,23 @@ export default meta;
 
 type Story = StoryObj<typeof InventoryFiltersPanel>;
 
-function InventoryFiltersPanelArgsBridge() {
-  const [args, updateArgs] = useArgs<typeof meta>();
-
-  return (
-    <InventoryFiltersPanel
-      {...args}
-      onEquippedChange={(value) => updateArgs({ equippedFilter: value })}
-      onSortChange={(value) => updateArgs({ sortFilter: value })}
-      onSlotsChange={(value) => updateArgs({ selectedSlots: value })}
-      onRaritiesChange={(value) => updateArgs({ selectedRarities: value })}
-      onDateRangeChange={(value) => updateArgs({ dateRange: value })}
-    />
-  );
-}
-
 export const Default: Story = {
-  render: () => <InventoryFiltersPanelArgsBridge />,
+  render: () => {
+    // Storybook preview hook: must be called inside story render/decorator.
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [args, updateArgs] = useArgs<typeof meta>();
+
+    return (
+      <InventoryFiltersPanel
+        {...args}
+        onEquippedChange={(value) => updateArgs({ equippedFilter: value })}
+        onSortChange={(value) => updateArgs({ sortFilter: value })}
+        onSlotsChange={(value) => updateArgs({ selectedSlots: value })}
+        onRaritiesChange={(value) => updateArgs({ selectedRarities: value })}
+        onDateRangeChange={(value) => updateArgs({ dateRange: value })}
+      />
+    );
+  },
   args: {
     equippedFilter: "ALL" satisfies InventoryEquippedFilter,
     sortFilter: "DEFAULT" satisfies InventorySortFilter,
@@ -59,7 +59,22 @@ export const Default: Story = {
 };
 
 export const WithSelections: Story = {
-  render: () => <InventoryFiltersPanelArgsBridge />,
+  render: () => {
+    // Storybook preview hook: must be called inside story render/decorator.
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [args, updateArgs] = useArgs<typeof meta>();
+
+    return (
+      <InventoryFiltersPanel
+        {...args}
+        onEquippedChange={(value) => updateArgs({ equippedFilter: value })}
+        onSortChange={(value) => updateArgs({ sortFilter: value })}
+        onSlotsChange={(value) => updateArgs({ selectedSlots: value })}
+        onRaritiesChange={(value) => updateArgs({ selectedRarities: value })}
+        onDateRangeChange={(value) => updateArgs({ dateRange: value })}
+      />
+    );
+  },
   args: {
     equippedFilter: "EQUIPPED" satisfies InventoryEquippedFilter,
     sortFilter: "ACQUIRED_DESC" satisfies InventorySortFilter,
