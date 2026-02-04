@@ -7,8 +7,6 @@ const config: StorybookConfig = {
     // Pixel UI + product-facing stories only.
     // Base(shadcn) UI stories are intentionally excluded to reduce confusion.
     "../src/shared/ui/pixel-*.stories.@(ts|tsx)",
-    "../src/shared/ui/radial-progress.stories.@(ts|tsx)",
-    "../src/shared/ui/summary-tile.stories.@(ts|tsx)",
     "../src/shared/ui/sonner.stories.@(ts|tsx)",
     "../src/widgets/**/*.stories.@(ts|tsx)",
     "../src/features/**/*.stories.@(ts|tsx)",
