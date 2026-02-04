@@ -1,11 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { InventoryEnhanceModal } from "@/widgets/inventory/ui/inventory-enhance-modal";
 import { sampleInventoryItems } from "@/mocks/fixtures/storybook";
-import { useQueryClient } from "@tanstack/react-query";
-import type { ReactNode } from "react";
-import { useEffect } from "react";
-import { CATALOG_QUERY_KEY } from "@/entities/catalog/model/catalog-query";
-import { createMockCatalogData } from "@/mocks/fixtures/catalog";
+import { WithCatalogPrefill } from "@/mocks/decorators/with-catalog-prefill";
 
 const meta: Meta<typeof InventoryEnhanceModal> = {
   title: "widgets/InventoryEnhanceModal",
@@ -23,18 +19,6 @@ type Story = StoryObj<typeof InventoryEnhanceModal>;
 
 const weaponItem = sampleInventoryItems[0];
 const materialItem = sampleInventoryItems[4];
-
-function WithCatalogPrefill({ children }: { children: ReactNode }) {
-  const queryClient = useQueryClient();
-
-  useEffect(() => {
-    queryClient.setQueryData([...CATALOG_QUERY_KEY, "default"], () =>
-      createMockCatalogData()
-    );
-  }, [queryClient]);
-
-  return <>{children}</>;
-}
 
 export const Default: Story = {
   args: {

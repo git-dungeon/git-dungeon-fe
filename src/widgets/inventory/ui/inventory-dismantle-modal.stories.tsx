@@ -1,10 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { InventoryDismantleModal } from "@/widgets/inventory/ui/inventory-dismantle-modal";
 import { sampleInventoryItems } from "@/mocks/fixtures/storybook";
+import { WithCatalogPrefill } from "@/mocks/decorators/with-catalog-prefill";
 
 const meta: Meta<typeof InventoryDismantleModal> = {
   title: "widgets/InventoryDismantleModal",
   component: InventoryDismantleModal,
+  decorators: [(Story) => <WithCatalogPrefill>{Story()}</WithCatalogPrefill>],
   parameters: {
     layout: "centered",
     pixel: { background: true },
