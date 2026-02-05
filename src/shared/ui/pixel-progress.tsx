@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { clampPercent } from "@/shared/lib/math";
 import { cn } from "@/shared/lib/utils";
 
 type PixelProgressTone = "hp" | "exp" | "progress";
@@ -11,13 +12,6 @@ interface PixelProgressProps {
   className?: string;
   valueLabel?: ReactNode;
   ariaLabel?: string;
-}
-
-function clampPercent(value: number) {
-  if (!Number.isFinite(value)) {
-    return 0;
-  }
-  return Math.min(100, Math.max(0, value));
 }
 
 export function PixelProgress({

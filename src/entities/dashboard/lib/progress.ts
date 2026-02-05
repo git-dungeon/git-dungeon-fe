@@ -5,14 +5,9 @@ import {
   MIN_FLOOR_PROGRESS,
   MIN_PERCENT,
 } from "@/entities/dashboard/config/constants";
+import { clampPercent } from "@/shared/lib/math";
 
-export function clampPercent(value: number): number {
-  if (!Number.isFinite(value)) {
-    return MIN_PERCENT;
-  }
-
-  return Math.min(Math.max(value, MIN_PERCENT), MAX_PERCENT);
-}
+export { clampPercent };
 
 export function calcPercent(current: number, max: number): number {
   if (!Number.isFinite(current) || !Number.isFinite(max) || max <= 0) {
