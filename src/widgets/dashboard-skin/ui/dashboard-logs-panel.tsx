@@ -1,14 +1,14 @@
 import { MISSING_SPRITE } from "@/entities/catalog/config/local-sprites";
-import type { DungeonLogEntry } from "@/entities/dungeon-log/model/types";
+import type { LogEntry } from "@/entities/logs/model/types";
 import {
   buildLogDescription,
   formatLogTimestamp,
   resolveStatusLabel,
-} from "@/entities/dungeon-log/lib/formatters";
+} from "@/entities/logs/lib/formatters";
 import {
   buildLogThumbnails,
   resolveActionThumbnail,
-} from "@/entities/dungeon-log/config/thumbnails";
+} from "@/entities/logs/config/thumbnails";
 import { useCatalogItemNameResolver } from "@/entities/catalog/model/use-catalog-item-name";
 import { useCatalogMonsterNameResolver } from "@/entities/catalog/model/use-catalog-monster-name";
 import { useCatalogItemRarityResolver } from "@/entities/catalog/model/use-catalog-item-rarity";
@@ -16,7 +16,7 @@ import { PixelPanel } from "@/shared/ui/pixel-panel";
 import { useTranslation } from "react-i18next";
 
 interface DashboardLogsPanelProps {
-  logs: DungeonLogEntry[];
+  logs: LogEntry[];
 }
 
 export function DashboardLogsPanel({ logs }: DashboardLogsPanelProps) {
