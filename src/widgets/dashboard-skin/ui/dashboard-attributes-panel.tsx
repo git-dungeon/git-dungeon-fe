@@ -1,6 +1,7 @@
 import { formatNumber } from "@/entities/dashboard/lib/formatters";
 import type { CharacterStatSummary } from "@/features/character-summary/lib/build-character-overview";
 import { PixelPanel } from "@/shared/ui/pixel-panel";
+import { StatValueWithBonus } from "@/shared/ui/stat-value-with-bonus";
 import { DashboardStatRow } from "@/widgets/dashboard-skin/ui/dashboard-stat-row";
 import { useTranslation } from "react-i18next";
 
@@ -19,22 +20,52 @@ export function DashboardAttributesPanel({
     {
       key: "hp",
       label: t("dashboard.attributes.hp"),
-      value: `${formatNumber(stats.total.hp)} / ${formatNumber(stats.total.maxHp)}`,
+      value: (
+        <StatValueWithBonus
+          bonus={stats.equipmentBonus.maxHp}
+          format={formatNumber}
+        >
+          <>
+            {formatNumber(stats.total.hp)} / {formatNumber(stats.total.maxHp)}
+          </>
+        </StatValueWithBonus>
+      ),
     },
     {
       key: "atk",
       label: t("dashboard.attributes.atk"),
-      value: formatNumber(stats.total.atk),
+      value: (
+        <StatValueWithBonus
+          bonus={stats.equipmentBonus.atk}
+          format={formatNumber}
+        >
+          {formatNumber(stats.total.atk)}
+        </StatValueWithBonus>
+      ),
     },
     {
       key: "def",
       label: t("dashboard.attributes.def"),
-      value: formatNumber(stats.total.def),
+      value: (
+        <StatValueWithBonus
+          bonus={stats.equipmentBonus.def}
+          format={formatNumber}
+        >
+          {formatNumber(stats.total.def)}
+        </StatValueWithBonus>
+      ),
     },
     {
       key: "luck",
       label: t("dashboard.attributes.luck"),
-      value: formatNumber(stats.total.luck),
+      value: (
+        <StatValueWithBonus
+          bonus={stats.equipmentBonus.luck}
+          format={formatNumber}
+        >
+          {formatNumber(stats.total.luck)}
+        </StatValueWithBonus>
+      ),
     },
     {
       key: "ap",

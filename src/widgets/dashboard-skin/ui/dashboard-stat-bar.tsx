@@ -1,4 +1,5 @@
 import { cn } from "@/shared/lib/utils";
+import { PixelProgress } from "@/shared/ui/pixel-progress";
 
 interface DashboardStatBarProps {
   label: string;
@@ -30,13 +31,14 @@ export function DashboardStatBar({
     return (
       <div className={cn("pixel-stat-bar", className)}>
         <span className="pixel-stat-label pixel-stat-label--bar">{label}</span>
-        <div className="pixel-bar pixel-bar--value flex-1">
-          <div
-            className={cn("pixel-bar-fill", `pixel-bar-fill--${tone}`)}
-            style={{ width: `${percent}%` }}
-          />
-          <span className="pixel-bar-value">{value}</span>
-        </div>
+        <PixelProgress
+          className="flex-1"
+          percent={percent}
+          tone={tone}
+          size="value"
+          valueLabel={value}
+          ariaLabel={label}
+        />
       </div>
     );
   }
@@ -47,12 +49,7 @@ export function DashboardStatBar({
         <span className="pixel-stat-label">{label}</span>
         <span className="pixel-stat-value">{value}</span>
       </div>
-      <div className="pixel-bar">
-        <div
-          className={cn("pixel-bar-fill", `pixel-bar-fill--${tone}`)}
-          style={{ width: `${percent}%` }}
-        />
-      </div>
+      <PixelProgress percent={percent} tone={tone} ariaLabel={label} />
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import type { Profile } from "@/entities/profile/model/types";
+import { PixelAvatar } from "@/shared/ui/pixel-avatar";
 import { useTranslation } from "react-i18next";
 
 interface ProfileIdentityProps {
@@ -11,10 +12,12 @@ export function ProfileIdentity({ profile }: ProfileIdentityProps) {
 
   return (
     <div className="flex items-center gap-4">
-      <Avatar
-        media={profile.avatarUrl}
-        fallback={initials}
+      <PixelAvatar
+        src={profile.avatarUrl}
         alt={t("settings.profile.avatarAlt")}
+        fallback={<span className="text-base font-semibold">{initials}</span>}
+        className="size-16 p-0"
+        imageClassName="h-full w-full object-cover"
       />
       <div className="space-y-1">
         <p className="pixel-text-base text-lg font-semibold">
@@ -38,29 +41,4 @@ function resolveInitials(profile: Profile): string {
     .join("")
     .slice(0, 2)
     .toUpperCase();
-}
-
-function Avatar({
-  media,
-  fallback,
-  alt,
-}: {
-  media?: string;
-  fallback: string;
-  alt: string;
-}) {
-  return (
-    <div className="bg-muted pixel-text-base flex size-16 items-center justify-center overflow-hidden rounded-full border">
-      {media ? (
-        <img
-          src={media}
-          alt={alt}
-          className="size-full object-cover"
-          loading="lazy"
-        />
-      ) : (
-        <span className="text-base font-semibold">{fallback}</span>
-      )}
-    </div>
-  );
 }

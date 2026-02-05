@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { PixelPill } from "@/shared/ui/pixel-pill";
 import { PixelButton } from "@/shared/ui/pixel-button";
 import { cn } from "@/shared/lib/utils";
+import levelUpIcon from "@/assets/event/level-up.png";
 
 interface LevelUpBannerProps {
   points: number;
@@ -20,9 +21,16 @@ export function LevelUpBanner({ points, className }: LevelUpBannerProps) {
     <section className={cn("level-up-banner", className)}>
       <Link to="/level-up" className="level-up-banner-inner">
         <div className="level-up-banner-content">
-          <span className="level-up-banner-title font-pixel-title">
-            {t("levelUp.banner.title")}
-          </span>
+          <div className="level-up-banner-title-row">
+            <img
+              className="level-up-banner-icon"
+              src={levelUpIcon}
+              alt={t("levelUp.banner.iconAlt")}
+            />
+            <span className="level-up-banner-title font-pixel-title">
+              {t("levelUp.banner.title")}
+            </span>
+          </div>
           <span className="level-up-banner-message">
             {t("levelUp.banner.message", { points })}
           </span>

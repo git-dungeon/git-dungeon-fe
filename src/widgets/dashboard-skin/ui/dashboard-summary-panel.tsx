@@ -5,6 +5,7 @@ import {
 import type { InventoryItem } from "@/entities/inventory/model/types";
 import { formatNumber } from "@/entities/dashboard/lib/formatters";
 import { calcRoundedPercent } from "@/entities/dashboard/lib/progress";
+import { PixelAvatar } from "@/shared/ui/pixel-avatar";
 import { PixelPanel } from "@/shared/ui/pixel-panel";
 import { DashboardStatBar } from "@/widgets/dashboard-skin/ui/dashboard-stat-bar";
 import { DashboardStatRow } from "@/widgets/dashboard-skin/ui/dashboard-stat-row";
@@ -49,13 +50,12 @@ export function DashboardSummaryPanel({
       contentClassName="gap-4"
     >
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-        <div className="pixel-avatar w-fit">
-          <img
-            src={avatarSrc}
-            alt={t("dashboard.summaryRows.avatar")}
-            className="h-16 w-16 object-contain"
-          />
-        </div>
+        <PixelAvatar
+          src={avatarSrc}
+          alt={t("dashboard.summaryRows.avatar")}
+          className="w-fit"
+          imageClassName="h-16 w-16 object-contain"
+        />
         <div className="flex-1 space-y-3">
           <DashboardStatRow
             label={t("dashboard.summaryRows.level")}

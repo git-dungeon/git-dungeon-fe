@@ -1,7 +1,7 @@
-import { RefreshCw } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useProfile } from "@/entities/profile/model/use-profile";
 import { PixelButton } from "@/shared/ui/pixel-button";
+import { PixelIcon } from "@/shared/ui/pixel-icon";
 import { PixelPanel } from "@/shared/ui/pixel-panel";
 import { PixelSkeleton } from "@/shared/ui/pixel-skeleton";
 import { SettingsProfileCard } from "@/widgets/settings-profile/ui/settings-profile-card";
@@ -40,7 +40,7 @@ export function SettingsProfileSection() {
           pixelSize="compact"
           onClick={() => void profileQuery.refetch()}
         >
-          <RefreshCw className="size-4" aria-hidden />
+          <PixelIcon name="refresh" size={16} className="shrink-0" />
           {t("settings.profile.retry")}
         </PixelButton>
       </PixelPanel>

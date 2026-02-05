@@ -40,6 +40,7 @@
   "levelUp": {
     "banner": {
       "title": "LEVEL UP!",
+      "iconAlt": "Level up",
       "message": "{{points}} level-up points available.",
       "points": "{{points}} POINTS",
       "cta": "Choose stats"

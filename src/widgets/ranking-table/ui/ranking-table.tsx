@@ -5,6 +5,7 @@ import {
   PixelSkeletonState,
 } from "@/shared/ui/pixel-state";
 import { PixelPanel } from "@/shared/ui/pixel-panel";
+import { PixelAvatar } from "@/shared/ui/pixel-avatar";
 import type { RankingEntry } from "@/entities/ranking/model/types";
 import { useTranslation } from "react-i18next";
 import type { RankingListState } from "@/features/ranking-list/model/use-ranking-list";
@@ -114,18 +115,13 @@ function RankingRow({ entry }: { entry: RankingEntry }) {
       <td className="text-foreground py-3 pr-2 font-semibold">{entry.rank}</td>
       <td className="py-3">
         <div className="flex items-center gap-3">
-          <div className="pixel-avatar h-10 w-10 p-0">
-            {avatarUrl ? (
-              <img
-                src={avatarUrl}
-                alt={t("ranking.avatarAlt")}
-                className="h-full w-full object-cover"
-                loading="lazy"
-              />
-            ) : (
-              <span className="text-muted-foreground text-xs">—</span>
-            )}
-          </div>
+          <PixelAvatar
+            src={avatarUrl}
+            alt={t("ranking.avatarAlt")}
+            className="h-10 w-10 p-0"
+            imageClassName="h-full w-full object-cover"
+            fallback={<span className="text-muted-foreground text-xs">—</span>}
+          />
           <span className="text-foreground min-w-0 truncate font-medium">
             {displayName}
           </span>
