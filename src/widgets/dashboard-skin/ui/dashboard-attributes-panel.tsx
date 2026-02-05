@@ -9,6 +9,25 @@ interface DashboardAttributesPanelProps {
   ap: number;
 }
 
+function formatBonus(value: number) {
+  if (!value) {
+    return null;
+  }
+
+  const sign = value > 0 ? "+" : "";
+  const toneClass =
+    value > 0
+      ? "text-emerald-600 dark:text-emerald-400"
+      : "text-rose-600 dark:text-rose-400";
+
+  return (
+    <span className={toneClass}>
+      ({sign}
+      {formatNumber(value)})
+    </span>
+  );
+}
+
 export function DashboardAttributesPanel({
   stats,
   ap,
@@ -19,22 +38,54 @@ export function DashboardAttributesPanel({
     {
       key: "hp",
       label: t("dashboard.attributes.hp"),
-      value: `${formatNumber(stats.total.hp)} / ${formatNumber(stats.total.maxHp)}`,
+      value: (() => {
+        const bonus = formatBonus(stats.equipmentBonus.maxHp);
+        return (
+          <>
+            {formatNumber(stats.total.hp)} / {formatNumber(stats.total.maxHp)}
+            {bonus ? <span className="ml-1">{bonus}</span> : null}
+          </>
+        );
+      })(),
     },
     {
       key: "atk",
       label: t("dashboard.attributes.atk"),
-      value: formatNumber(stats.total.atk),
+      value: (() => {
+        const bonus = formatBonus(stats.equipmentBonus.atk);
+        return (
+          <>
+            {formatNumber(stats.total.atk)}
+            {bonus ? <span className="ml-1">{bonus}</span> : null}
+          </>
+        );
+      })(),
     },
     {
       key: "def",
       label: t("dashboard.attributes.def"),
-      value: formatNumber(stats.total.def),
+      value: (() => {
+        const bonus = formatBonus(stats.equipmentBonus.def);
+        return (
+          <>
+            {formatNumber(stats.total.def)}
+            {bonus ? <span className="ml-1">{bonus}</span> : null}
+          </>
+        );
+      })(),
     },
     {
       key: "luck",
       label: t("dashboard.attributes.luck"),
-      value: formatNumber(stats.total.luck),
+      value: (() => {
+        const bonus = formatBonus(stats.equipmentBonus.luck);
+        return (
+          <>
+            {formatNumber(stats.total.luck)}
+            {bonus ? <span className="ml-1">{bonus}</span> : null}
+          </>
+        );
+      })(),
     },
     {
       key: "ap",
