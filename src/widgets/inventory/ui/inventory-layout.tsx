@@ -8,12 +8,12 @@ import type {
 import { InventorySlots } from "@/widgets/inventory/ui/inventory-slots";
 import { InventoryCharacterPanel } from "@/widgets/inventory/ui/inventory-character-panel";
 import { InventoryGrid } from "@/widgets/inventory/ui/inventory-grid";
-import {
-  InventoryFiltersPanel,
-  type InventoryDateRange,
-  type InventoryEquippedFilter,
-  type InventorySortFilter,
-} from "@/widgets/inventory/ui/inventory-filters-panel";
+import { InventoryFiltersPanel } from "@/widgets/inventory/ui/inventory-filters-panel";
+import type {
+  InventoryDateRange,
+  InventoryEquippedFilter,
+  InventorySortFilter,
+} from "@/widgets/inventory/model/types";
 import { InventoryModal } from "@/widgets/inventory/ui/inventory-modal";
 import {
   filterInventoryItems,

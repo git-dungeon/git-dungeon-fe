@@ -1,16 +1,16 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import type { ComponentProps } from "react";
-import {
-  InventoryFiltersPanel,
-  type InventoryDateRange,
-  type InventoryEquippedFilter,
-  type InventorySortFilter,
-} from "@/widgets/inventory/ui/inventory-filters-panel";
+import { InventoryFiltersPanel } from "@/widgets/inventory/ui/inventory-filters-panel";
 import type {
   EquipmentRarity,
   InventoryItemSlot,
 } from "@/entities/inventory/model/types";
 import { useArgs } from "@storybook/preview-api";
+import type {
+  InventoryDateRange,
+  InventoryEquippedFilter,
+  InventorySortFilter,
+} from "@/widgets/inventory/model/types";
 
 type InventoryFiltersPanelArgs = ComponentProps<typeof InventoryFiltersPanel>;
 
