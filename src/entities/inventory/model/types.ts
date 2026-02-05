@@ -10,7 +10,7 @@ import {
   type EquipmentSlot,
   type EquipmentRarity,
   type InventoryModifier,
-} from "@/entities/dashboard/model/types";
+} from "@/entities/equipment/model/types";
 
 export type InventoryItemSlot = EquipmentItemSlot;
 export const inventoryItemSlotSchema = equipmentItemSlotSchema;

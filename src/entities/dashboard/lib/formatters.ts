@@ -1,7 +1,7 @@
 import type {
   EquipmentRarity,
   InventoryModifier,
-} from "@/entities/dashboard/model/types";
+} from "@/entities/equipment/model/types";
 import { formatStatChange } from "@/shared/lib/stats/format";
 import { i18next } from "@/shared/i18n/i18n";
 

@@ -1,8 +1,8 @@
 import type {
   InventoryEquippedMap,
   InventoryItem,
+  EquipmentSlot,
 } from "@/entities/inventory/model/types";
-import type { EquipmentSlot } from "@/entities/dashboard/model/types";
 import { PixelPanel } from "@/shared/ui/pixel-panel";
 import { PixelSlotButton } from "@/shared/ui/pixel-slot-button";
 import {

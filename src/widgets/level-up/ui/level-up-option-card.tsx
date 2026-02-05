@@ -4,7 +4,7 @@ import type {
   LevelUpStat,
 } from "@/entities/level-up/model/types";
 import { formatRarity } from "@/entities/dashboard/lib/formatters";
-import type { EquipmentRarity } from "@/entities/dashboard/model/types";
+import type { EquipmentRarity } from "@/entities/equipment/model/types";
 import { PixelPill } from "@/shared/ui/pixel-pill";
 import { PixelButton } from "@/shared/ui/pixel-button";
 import { cn } from "@/shared/lib/utils";

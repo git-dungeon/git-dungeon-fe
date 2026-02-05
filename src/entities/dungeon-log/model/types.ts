@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { inventoryModifierSchema } from "@/entities/dashboard/model/types";
+import { inventoryModifierSchema } from "@/entities/equipment/model/types";
 
 export const DUNGEON_LOGS_FILTER_TYPES = [
   "EXPLORATION",
