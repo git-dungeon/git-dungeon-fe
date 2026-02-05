@@ -1,5 +1,6 @@
 import { MISSING_SPRITE } from "@/entities/catalog/config/local-sprites";
 import { formatNumber } from "@/entities/dashboard/lib/formatters";
+import { PixelAvatar } from "@/shared/ui/pixel-avatar";
 import { PixelPanel } from "@/shared/ui/pixel-panel";
 import { DashboardStatRow } from "@/widgets/dashboard-skin/ui/dashboard-stat-row";
 import type { CharacterStatSummary } from "@/features/character-summary/lib/build-character-overview";
@@ -98,13 +99,12 @@ export function InventoryCharacterPanel({
   return (
     <PixelPanel title={t("dashboard.panels.summary")} className="h-full">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-        <div className="pixel-avatar w-fit">
-          <img
-            src={avatarUrl ?? MISSING_SPRITE}
-            alt={t("dashboard.summaryRows.avatar")}
-            className="h-16 w-16 object-contain"
-          />
-        </div>
+        <PixelAvatar
+          src={avatarUrl ?? MISSING_SPRITE}
+          alt={t("dashboard.summaryRows.avatar")}
+          className="w-fit"
+          imageClassName="h-16 w-16 object-contain"
+        />
         <div className="flex-1 space-y-2">
           {rows.map((row) => (
             <div

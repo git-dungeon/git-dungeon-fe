@@ -19,6 +19,9 @@ export function PixelAvatar({
   loading = "lazy",
 }: PixelAvatarProps) {
   const resolvedSrc = src?.trim() ? src : null;
+  const resolvedImageClassName = resolvedSrc
+    ? cn("object-contain", imageClassName ?? "h-full w-full")
+    : cn("flex items-center justify-center", imageClassName ?? "h-full w-full");
 
   return (
     <div
@@ -29,17 +32,11 @@ export function PixelAvatar({
         <img
           src={resolvedSrc}
           alt={alt}
-          className={cn("h-full w-full object-contain", imageClassName)}
+          className={resolvedImageClassName}
           loading={loading}
         />
       ) : (
-        <div
-          className={cn(
-            "pixel-text-base flex h-full w-full items-center justify-center",
-            imageClassName
-          )}
-          aria-hidden
-        >
+        <div className={resolvedImageClassName} aria-hidden>
           {fallback ?? <span className="pixel-text-muted text-xs">—</span>}
         </div>
       )}
