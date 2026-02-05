@@ -1,9 +1,10 @@
-import { RefreshCw, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import {
   formatDateTime,
   formatRelativeTime,
 } from "@/shared/lib/datetime/formatters";
 import { PixelButton } from "@/shared/ui/pixel-button";
+import { PixelIcon } from "@/shared/ui/pixel-icon";
 import { normalizeError } from "@/shared/errors/normalize-error";
 import type { ProfileConnections } from "@/entities/profile/model/types";
 import { useGithubSyncStatus } from "@/entities/github/model/use-github-sync-status";
@@ -82,7 +83,7 @@ export function GithubConnection({ connections }: GithubConnectionProps) {
             {githubSync.isPending ? (
               <Loader2 className="size-4 animate-spin" aria-hidden />
             ) : (
-              <RefreshCw className="size-4" aria-hidden />
+              <PixelIcon name="refresh" size={16} className="shrink-0" />
             )}
             {t("settings.github.refresh")}
           </PixelButton>
