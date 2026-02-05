@@ -601,6 +601,18 @@
     gap: 4px;
   }
 
+  .level-up-banner-title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .level-up-banner-icon {
+    width: 32px;
+    height: 32px;
+    image-rendering: pixelated;
+  }
+
   .level-up-banner-title {
     font-size: 1rem;
   }

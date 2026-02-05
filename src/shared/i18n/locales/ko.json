@@ -40,6 +40,7 @@
   "levelUp": {
     "banner": {
       "title": "LEVEL UP!",
+      "iconAlt": "레벨업",
       "message": "레벨업 포인트 {{points}}개가 남아 있습니다.",
       "points": "{{points}} 포인트",
       "cta": "능력치 선택"
