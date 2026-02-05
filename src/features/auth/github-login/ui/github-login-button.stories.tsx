@@ -1,15 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { GithubLoginButton } from "@/features/auth/github-login/ui/github-login-button";
+import { GitHubLoginButton } from "@/features/auth/github-login/ui/github-login-button";
 import { PixelIcon } from "@/shared/ui/pixel-icon";
 
-const meta: Meta<typeof GithubLoginButton> = {
-  title: "features/Auth/GithubLoginButton",
-  component: GithubLoginButton,
+const meta: Meta<typeof GitHubLoginButton> = {
+  title: "features/Auth/GitHubLoginButton",
+  component: GitHubLoginButton,
 };
 
 export default meta;
 
-type Story = StoryObj<typeof GithubLoginButton>;
+type Story = StoryObj<typeof GitHubLoginButton>;
 
 export const Default: Story = {
   args: {

@@ -2,10 +2,10 @@ import { GITHUB_ENDPOINTS } from "@/shared/config/env";
 import { requestWithSchema } from "@/shared/api/http-client";
 import {
   githubSyncDataSchema,
-  type GithubSyncData,
+  type GitHubSyncData,
 } from "@/entities/github/model/types";
 
-export async function postGithubSync(): Promise<GithubSyncData> {
+export async function postGitHubSync(): Promise<GitHubSyncData> {
   return requestWithSchema(GITHUB_ENDPOINTS.sync, githubSyncDataSchema, {
     method: "POST",
   });

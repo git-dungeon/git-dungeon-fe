@@ -4,7 +4,7 @@ import type {
 } from "@/entities/profile/model/types";
 import { PixelPanel } from "@/shared/ui/pixel-panel";
 import { ProfileIdentity } from "@/features/settings/ui/profile-identity";
-import { GithubConnection } from "@/features/settings/ui/github-connection";
+import { GitHubConnection } from "@/features/settings/ui/github-connection";
 import { ProfileFieldList } from "@/features/settings/ui/profile-field-list";
 import {
   formatDateTime,
@@ -56,7 +56,7 @@ export function SettingsProfileCard({
         ]}
       />
       <div className="border-t border-white/10 pt-4">
-        <GithubConnection connections={connections} />
+        <GitHubConnection connections={connections} />
       </div>
     </PixelPanel>
   );

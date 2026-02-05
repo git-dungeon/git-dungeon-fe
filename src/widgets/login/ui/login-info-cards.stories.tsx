@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { LoginInfoCards } from "@/widgets/login/ui/login-info-cards";
-import cardGithubImage from "@/assets/login/git-integration.webp";
+import cardGitHubImage from "@/assets/login/git-integration.webp";
 import cardAutoImage from "@/assets/login/auto-exploration.webp";
 import cardLootImage from "@/assets/login/epic-loot.webp";
 
@@ -17,7 +17,7 @@ export const Default: Story = {
   args: {
     cards: [
       {
-        image: cardGithubImage,
+        image: cardGitHubImage,
         title: "GitHub 연동",
         description: "커밋을 던전 탐험으로 변환합니다.",
       },

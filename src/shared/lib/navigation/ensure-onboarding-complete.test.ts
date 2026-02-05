@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { QueryClient } from "@tanstack/react-query";
 import { ensureOnboardingComplete } from "./ensure-onboarding-complete";
 import { GITHUB_SYNC_STATUS_QUERY_KEY } from "@/entities/github/model/github-sync-status-query";
-import type { GithubSyncStatusData } from "@/entities/github/model/types";
+import type { GitHubSyncStatusData } from "@/entities/github/model/types";
 
 vi.mock("@tanstack/react-router", async (importOriginal) => {
   const actual =
@@ -19,8 +19,8 @@ vi.mock("@/shared/lib/query/ensure-query-data-safe", () => ({
 }));
 
 function createStatus(
-  overrides?: Partial<GithubSyncStatusData>
-): GithubSyncStatusData {
+  overrides?: Partial<GitHubSyncStatusData>
+): GitHubSyncStatusData {
   return {
     connected: true,
     allowed: true,

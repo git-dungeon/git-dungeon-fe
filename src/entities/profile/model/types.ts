@@ -11,13 +11,13 @@ export const profileSchema = authSessionSchema.extend({
 });
 export type Profile = z.infer<typeof profileSchema>;
 
-const profileGithubConnectionSchema = z.object({
+const profileGitHubConnectionSchema = z.object({
   connected: z.boolean(),
   lastSyncAt: z.string().optional(),
 });
 
 export const profileConnectionsSchema = z.object({
-  github: profileGithubConnectionSchema.optional(),
+  github: profileGitHubConnectionSchema.optional(),
 });
 export type ProfileConnections = z.infer<typeof profileConnectionsSchema>;
 

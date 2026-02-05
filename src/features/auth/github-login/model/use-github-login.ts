@@ -7,30 +7,26 @@ import {
 import { sanitizeRedirectPath } from "@/shared/lib/navigation/sanitize-redirect-path";
 import type { AuthSession } from "@/entities/auth/model/types";
 
-export interface UseGithubLoginOptions {
-  redirectTo?: string;
-}
-
 const REDIRECT_BROWSER_REQUIRED_MESSAGE =
   "로그인을 진행하려면 브라우저 환경이 필요합니다.";
 const REDIRECT_GENERIC_ERROR_MESSAGE =
   "로그인 중 문제가 발생했습니다. 잠시 후 다시 시도하세요.";
 
-function buildGithubRedirectUrl(safeRedirect: string): string {
+function buildGitHubRedirectUrl(safeRedirect: string): string {
   if (typeof window === "undefined" || !window.location?.origin) {
-    return resolveApiUrl(AUTH_ENDPOINTS.startGithubOAuth);
+    return resolveApiUrl(AUTH_ENDPOINTS.startGitHubOAuth);
   }
 
   if (IS_MSW_ENABLED) {
     const baseUrl = new URL(
-      AUTH_ENDPOINTS.startGithubOAuth,
+      AUTH_ENDPOINTS.startGitHubOAuth,
       window.location.origin
     );
     baseUrl.searchParams.set("redirect", safeRedirect);
     return baseUrl.toString();
   }
 
-  const resolved = resolveApiUrl(AUTH_ENDPOINTS.startGithubOAuth);
+  const resolved = resolveApiUrl(AUTH_ENDPOINTS.startGitHubOAuth);
   const baseUrl = resolved.startsWith("http")
     ? new URL(resolved)
     : new URL(resolved, window.location.origin);
@@ -49,7 +45,11 @@ declare global {
   }
 }
 
-export function useGithubLogin(options: UseGithubLoginOptions = {}) {
+export interface UseGitHubLoginOptions {
+  redirectTo?: string;
+}
+
+export function useGitHubLogin(options: UseGitHubLoginOptions = {}) {
   const { redirectTo } = options;
   const processingRef = useRef(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -70,7 +70,7 @@ export function useGithubLogin(options: UseGithubLoginOptions = {}) {
         throw new Error(REDIRECT_BROWSER_REQUIRED_MESSAGE);
       }
 
-      const targetUrl = buildGithubRedirectUrl(safeRedirect);
+      const targetUrl = buildGitHubRedirectUrl(safeRedirect);
 
       if (IS_MSW_ENABLED && window.__mswAuth) {
         await window.__mswAuth.login();

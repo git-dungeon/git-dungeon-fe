@@ -129,14 +129,14 @@ export const authHandlers = [
       }
     );
   }),
-  http.get(AUTH_ENDPOINTS.startGithubOAuth, ({ request }) => {
+  http.get(AUTH_ENDPOINTS.startGitHubOAuth, ({ request }) => {
     const requestUrl = new URL(request.url);
     const safeRedirect = resolveRedirectFromUrl(request.url);
     const session = DEFAULT_SESSION;
     const headers = createLoginHeaders(session);
 
     const bridgeUrl = new URL(
-      AUTH_ENDPOINTS.completeGithubRedirect,
+      AUTH_ENDPOINTS.completeGitHubRedirect,
       `${requestUrl.protocol}//${requestUrl.host}`
     );
     bridgeUrl.searchParams.set("redirect", safeRedirect);
@@ -148,7 +148,7 @@ export const authHandlers = [
 
     return createRedirectResponse(bridgeUrl.toString(), headers);
   }),
-  http.get(AUTH_ENDPOINTS.completeGithubRedirect, ({ request }) => {
+  http.get(AUTH_ENDPOINTS.completeGitHubRedirect, ({ request }) => {
     const requestUrl = new URL(request.url);
     const safeRedirect = sanitizeRedirectPath(
       requestUrl.searchParams.get("redirect") ?? undefined,

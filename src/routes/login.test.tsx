@@ -19,14 +19,14 @@ vi.mock("@/entities/auth/model/use-auth-session", () => ({
 }));
 
 const loginMock = vi.fn();
-const useGithubLoginMock = vi.fn(() => ({
+const useGitHubLoginMock = vi.fn(() => ({
   login: loginMock,
   isLoading: false,
   error: null,
 }));
 
 vi.mock("@/features/auth/github-login/model/use-github-login", () => ({
-  useGithubLogin: () => useGithubLoginMock(),
+  useGitHubLogin: () => useGitHubLoginMock(),
 }));
 
 function render(ui: React.ReactElement) {
@@ -58,7 +58,7 @@ describe("/login 화면", () => {
     loginMock.mockReset();
     navigateMock.mockReset();
     loginMock.mockResolvedValue(undefined);
-    useGithubLoginMock.mockReturnValue({
+    useGitHubLoginMock.mockReturnValue({
       login: loginMock,
       isLoading: false,
       error: null,
@@ -156,7 +156,7 @@ describe("/login 화면", () => {
   });
 
   it("로그인 진행 중에는 버튼에 스피너와 aria-busy 속성을 표시한다", () => {
-    useGithubLoginMock.mockReturnValue({
+    useGitHubLoginMock.mockReturnValue({
       login: loginMock,
       isLoading: true,
       error: null,

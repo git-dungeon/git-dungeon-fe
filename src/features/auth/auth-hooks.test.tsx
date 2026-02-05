@@ -10,7 +10,7 @@ import {
 } from "vitest";
 import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useGithubLogin } from "./github-login/model/use-github-login";
+import { useGitHubLogin } from "./github-login/model/use-github-login";
 import { useLogout } from "./logout/model/use-logout";
 
 const navigateMock = vi.fn();
@@ -34,8 +34,8 @@ vi.mock("@/shared/api/http-client", () => {
 vi.mock("@/shared/config/env", () => {
   return {
     AUTH_ENDPOINTS: {
-      startGithubOAuth: "/auth/github",
-      completeGithubRedirect: "/auth/github/redirect",
+      startGitHubOAuth: "/auth/github",
+      completeGitHubRedirect: "/auth/github/redirect",
       session: "/api/auth/session",
       logout: "/api/auth/logout",
     },
@@ -77,12 +77,12 @@ function renderWithQueryClient(ui: React.ReactElement, client: QueryClient) {
   };
 }
 
-function renderGithubLoginHook(options?: Parameters<typeof useGithubLogin>[0]) {
+function renderGitHubLoginHook(options?: Parameters<typeof useGitHubLogin>[0]) {
   const queryClient = new QueryClient();
-  let hookResult: ReturnType<typeof useGithubLogin>;
+  let hookResult: ReturnType<typeof useGitHubLogin>;
 
   function HookWrapper(props: PropsWithChildren<typeof options>) {
-    hookResult = useGithubLogin(props);
+    hookResult = useGitHubLogin(props);
     return null;
   }
 
@@ -119,7 +119,7 @@ function renderLogoutHook() {
   };
 }
 
-describe("useGithubLogin", () => {
+describe("useGitHubLogin", () => {
   const originalLocation = window.location;
   let locationAssignMock: ReturnType<typeof vi.fn>;
 
@@ -150,7 +150,7 @@ describe("useGithubLogin", () => {
   });
 
   it("OAuth 엔드포인트로 리다이렉트하며 redirect 파라미터를 포함한다", async () => {
-    const { result, unmount } = renderGithubLoginHook({
+    const { result, unmount } = renderGitHubLoginHook({
       redirectTo: "/logs",
     });
 
@@ -166,7 +166,7 @@ describe("useGithubLogin", () => {
   });
 
   it("위험한 redirect 값을 기본 대시보드로 대체한다", async () => {
-    const { result, unmount } = renderGithubLoginHook({
+    const { result, unmount } = renderGitHubLoginHook({
       redirectTo: "https://malicious.example.com/callback",
     });
 
@@ -189,7 +189,7 @@ describe("useGithubLogin", () => {
       return path;
     });
 
-    const { result, unmount } = renderGithubLoginHook({
+    const { result, unmount } = renderGitHubLoginHook({
       redirectTo: "/inventory",
     });
 
@@ -214,7 +214,7 @@ describe("useGithubLogin", () => {
       value: undefined,
     });
 
-    const { result, unmount } = renderGithubLoginHook();
+    const { result, unmount } = renderGitHubLoginHook();
 
     let caught: unknown;
     await act(async () => {

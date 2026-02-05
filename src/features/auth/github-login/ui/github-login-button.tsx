@@ -1,17 +1,17 @@
 import type { MouseEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/shared/lib/utils";
-import { useGithubLogin } from "@/features/auth/github-login/model/use-github-login";
+import { useGitHubLogin } from "@/features/auth/github-login/model/use-github-login";
 import { PixelButton } from "@/shared/ui/pixel-button";
 import type { ButtonProps } from "@/shared/ui/button";
 
-export interface GithubLoginButtonProps extends Omit<ButtonProps, "onClick"> {
+export interface GitHubLoginButtonProps extends Omit<ButtonProps, "onClick"> {
   redirectTo?: string;
   onLoginStart?: () => void;
   onLoginError?: (error: Error) => void;
 }
 
-export function GithubLoginButton(props: GithubLoginButtonProps) {
+export function GitHubLoginButton(props: GitHubLoginButtonProps) {
   const {
     redirectTo,
     className,
@@ -23,7 +23,7 @@ export function GithubLoginButton(props: GithubLoginButtonProps) {
     ...rest
   } = props;
   const { t } = useTranslation();
-  const { login, isLoading } = useGithubLogin({ redirectTo });
+  const { login, isLoading } = useGitHubLogin({ redirectTo });
 
   const handleClick = async (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
