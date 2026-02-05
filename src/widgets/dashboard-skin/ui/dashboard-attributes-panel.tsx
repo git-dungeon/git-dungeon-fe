@@ -2,7 +2,7 @@ import { formatNumber } from "@/entities/dashboard/lib/formatters";
 import type { CharacterStatSummary } from "@/features/character-summary/lib/build-character-overview";
 import { PixelPanel } from "@/shared/ui/pixel-panel";
 import { StatValueWithBonus } from "@/shared/ui/stat-value-with-bonus";
-import { DashboardStatRow } from "@/widgets/dashboard-skin/ui/dashboard-stat-row";
+import { PixelStatRow } from "@/shared/ui/pixel-stat-row";
 import { useTranslation } from "react-i18next";
 
 interface DashboardAttributesPanelProps {
@@ -82,7 +82,7 @@ export function DashboardAttributesPanel({
             key={row.key}
             className="border-b border-white/5 pb-2 last:border-none last:pb-0"
           >
-            <DashboardStatRow label={row.label} value={row.value} />
+            <PixelStatRow label={row.label} value={row.value} />
           </li>
         ))}
       </ul>

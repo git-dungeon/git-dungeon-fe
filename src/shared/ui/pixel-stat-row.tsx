@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { cn } from "@/shared/lib/utils";
 
-interface DashboardStatRowProps {
+interface PixelStatRowProps {
   label: string;
   value: ReactNode;
   iconSrc?: string;
@@ -13,7 +13,7 @@ interface DashboardStatRowProps {
   valueClassName?: string;
 }
 
-export function DashboardStatRow({
+export function PixelStatRow({
   label,
   value,
   iconSrc,
@@ -23,7 +23,7 @@ export function DashboardStatRow({
   className,
   labelClassName,
   valueClassName,
-}: DashboardStatRowProps) {
+}: PixelStatRowProps) {
   const layoutClass =
     layout === "inline"
       ? "flex items-center gap-3"

@@ -7,8 +7,8 @@ import { formatNumber } from "@/entities/dashboard/lib/formatters";
 import { calcRoundedPercent } from "@/entities/dashboard/lib/progress";
 import { PixelAvatar } from "@/shared/ui/pixel-avatar";
 import { PixelPanel } from "@/shared/ui/pixel-panel";
+import { PixelStatRow } from "@/shared/ui/pixel-stat-row";
 import { DashboardStatBar } from "@/widgets/dashboard-skin/ui/dashboard-stat-bar";
-import { DashboardStatRow } from "@/widgets/dashboard-skin/ui/dashboard-stat-row";
 import { useTranslation } from "react-i18next";
 
 const goldImage = "/coin.webp";
@@ -57,7 +57,7 @@ export function DashboardSummaryPanel({
           imageClassName="h-16 w-16 object-contain"
         />
         <div className="flex-1 space-y-3">
-          <DashboardStatRow
+          <PixelStatRow
             label={t("dashboard.summaryRows.level")}
             value={t("dashboard.summaryRows.levelValue", { level })}
           />
@@ -75,11 +75,11 @@ export function DashboardSummaryPanel({
             tone="exp"
             valueInBar
           />
-          <DashboardStatRow
+          <PixelStatRow
             label={t("dashboard.summaryRows.ap")}
             value={`${formatNumber(ap)}`}
           />
-          <DashboardStatRow
+          <PixelStatRow
             label={t("dashboard.summaryRows.gold")}
             value={`${formatNumber(gold)}`}
             iconSrc={goldImage}
