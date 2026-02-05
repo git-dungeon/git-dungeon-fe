@@ -3,7 +3,7 @@ import {
   resolveLocalItemSprite,
 } from "@/entities/catalog/config/local-sprites";
 import type { InventoryItem } from "@/entities/inventory/model/types";
-import { formatNumber } from "@/entities/dashboard/lib/formatters";
+import { formatNumber } from "@/shared/lib/format/number";
 import { calcRoundedPercent } from "@/entities/dashboard/lib/progress";
 import { PixelAvatar } from "@/shared/ui/pixel-avatar";
 import { PixelPanel } from "@/shared/ui/pixel-panel";

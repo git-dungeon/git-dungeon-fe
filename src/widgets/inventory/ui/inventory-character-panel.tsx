@@ -1,5 +1,5 @@
 import { MISSING_SPRITE } from "@/entities/catalog/config/local-sprites";
-import { formatNumber } from "@/entities/dashboard/lib/formatters";
+import { formatNumber } from "@/shared/lib/format/number";
 import { PixelAvatar } from "@/shared/ui/pixel-avatar";
 import { PixelPanel } from "@/shared/ui/pixel-panel";
 import { PixelStatRow } from "@/shared/ui/pixel-stat-row";

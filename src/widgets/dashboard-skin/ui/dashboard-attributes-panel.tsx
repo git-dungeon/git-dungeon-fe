@@ -1,4 +1,4 @@
-import { formatNumber } from "@/entities/dashboard/lib/formatters";
+import { formatNumber } from "@/shared/lib/format/number";
 import type { CharacterStatSummary } from "@/features/character-summary/lib/build-character-overview";
 import { PixelPanel } from "@/shared/ui/pixel-panel";
 import { StatValueWithBonus } from "@/shared/ui/stat-value-with-bonus";
