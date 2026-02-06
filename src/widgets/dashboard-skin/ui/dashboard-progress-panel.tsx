@@ -1,8 +1,8 @@
 import { MISSING_SPRITE } from "@/entities/catalog/config/local-sprites";
 import { roundPercent } from "@/entities/dashboard/lib/progress";
 import { PixelPanel } from "@/shared/ui/pixel-panel";
+import { PixelStatRow } from "@/shared/ui/pixel-stat-row";
 import { DashboardStatBar } from "@/widgets/dashboard-skin/ui/dashboard-stat-bar";
-import { DashboardStatRow } from "@/widgets/dashboard-skin/ui/dashboard-stat-row";
 import { useTranslation } from "react-i18next";
 
 interface DashboardProgressPanelProps {
@@ -30,7 +30,7 @@ export function DashboardProgressPanel({
     <PixelPanel title={t("dashboard.panels.progress")}>
       <div className="flex flex-col gap-4 md:flex-row md:items-center">
         <div className="flex-1 space-y-3">
-          <DashboardStatRow
+          <PixelStatRow
             label={t("dashboard.progress.currentFloor")}
             value={t("dashboard.progress.currentFloorValue", {
               current: floor.current,

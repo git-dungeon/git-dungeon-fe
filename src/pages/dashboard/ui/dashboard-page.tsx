@@ -1,12 +1,12 @@
 import { Button } from "@/shared/ui/button";
-import { useDungeonLogs } from "@/entities/dungeon-log/model/use-dungeon-logs";
+import { useLogs } from "@/entities/logs/model/use-logs";
 import {
   buildLogThumbnails,
   resolveActionThumbnail,
-} from "@/entities/dungeon-log/config/thumbnails";
+} from "@/entities/logs/config/thumbnails";
 import { DASHBOARD_RECENT_LOG_LIMIT } from "@/pages/dashboard/config/constants";
 import { useCharacterOverview } from "@/features/character-summary/model/use-character-overview";
-import type { DungeonLogsFilterType } from "@/entities/dungeon-log/model/types";
+import type { LogsFilterType } from "@/entities/logs/model/types";
 import { useProfile } from "@/entities/profile/model/use-profile";
 import { useCatalogItemNameResolver } from "@/entities/catalog/model/use-catalog-item-name";
 import { useCatalogMonsterNameResolver } from "@/entities/catalog/model/use-catalog-monster-name";
@@ -25,9 +25,9 @@ export function DashboardPage() {
   const resolveItemName = useCatalogItemNameResolver();
   const resolveMonsterName = useCatalogMonsterNameResolver();
   const resolveItemRarity = useCatalogItemRarityResolver();
-  const { data: logsData } = useDungeonLogs({
+  const { data: logsData } = useLogs({
     limit: DASHBOARD_RECENT_LOG_LIMIT,
-    type: "EXPLORATION" satisfies DungeonLogsFilterType,
+    type: "EXPLORATION" satisfies LogsFilterType,
   });
 
   const state = overview.dashboard.data ?? null;

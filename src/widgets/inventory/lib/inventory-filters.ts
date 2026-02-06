@@ -7,7 +7,7 @@ import type {
   InventoryDateRange,
   InventoryEquippedFilter,
   InventorySortFilter,
-} from "@/widgets/inventory/ui/inventory-filters-panel";
+} from "@/widgets/inventory/model/types";
 
 export interface InventoryFilterState {
   equippedFilter: InventoryEquippedFilter;

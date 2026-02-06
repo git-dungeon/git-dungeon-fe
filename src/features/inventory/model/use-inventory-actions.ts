@@ -73,7 +73,7 @@ export function useInventoryActions() {
     );
     queryClient.invalidateQueries({ queryKey: INVENTORY_QUERY_KEY });
     queryClient.invalidateQueries({ queryKey: DASHBOARD_STATE_QUERY_KEY });
-    queryClient.invalidateQueries({ queryKey: ["dungeon-logs"] });
+    queryClient.invalidateQueries({ queryKey: ["logs"] });
   };
 
   const syncInventory = async () => {

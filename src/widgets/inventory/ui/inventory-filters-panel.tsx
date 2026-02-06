@@ -15,6 +15,11 @@ import {
   SelectValue,
 } from "@/shared/ui/select";
 import { cn } from "@/shared/lib/utils";
+import type {
+  InventoryDateRange,
+  InventoryEquippedFilter,
+  InventorySortFilter,
+} from "@/widgets/inventory/model/types";
 
 const SLOT_OPTIONS: InventoryItemSlot[] = [
   "helmet",
@@ -32,14 +37,6 @@ const RARITY_OPTIONS: EquipmentRarity[] = [
   "epic",
   "legendary",
 ];
-
-export type InventoryEquippedFilter = "ALL" | "EQUIPPED" | "UNEQUIPPED";
-export type InventorySortFilter = "DEFAULT" | "ACQUIRED_DESC" | "ACQUIRED_ASC";
-
-export interface InventoryDateRange {
-  start: string;
-  end: string;
-}
 
 interface InventoryFiltersPanelProps {
   equippedFilter: InventoryEquippedFilter;

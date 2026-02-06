@@ -8,7 +8,7 @@ const INITIAL_GITHUB_CONNECTION = mockProfileOverview.connections.github
   ? { ...mockProfileOverview.connections.github }
   : undefined;
 
-export function resetGithubMockState() {
+export function resetGitHubMockState() {
   if (!INITIAL_GITHUB_CONNECTION) {
     mockProfileOverview.connections.github = undefined;
     return;

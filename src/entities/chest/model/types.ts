@@ -2,7 +2,7 @@ import { z } from "zod";
 import {
   equipmentItemSlotSchema,
   equipmentRaritySchema,
-} from "@/entities/dashboard/model/types";
+} from "@/entities/equipment/model/types";
 
 export const chestOpenItemSchema = z
   .object({

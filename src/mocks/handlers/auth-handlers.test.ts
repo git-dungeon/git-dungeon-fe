@@ -25,7 +25,7 @@ describe("authHandlers (MSW)", () => {
 
   it("/auth/github는 브리지 리다이렉트와 세션 쿠키를 설정한다", async () => {
     const response = await fetch(
-      `${baseUrl}${AUTH_ENDPOINTS.startGithubOAuth}?redirect=${encodeURIComponent("/inventory")}`,
+      `${baseUrl}${AUTH_ENDPOINTS.startGitHubOAuth}?redirect=${encodeURIComponent("/inventory")}`,
       {
         redirect: "manual",
       }
@@ -33,7 +33,7 @@ describe("authHandlers (MSW)", () => {
 
     expect(response.status).toBe(302);
     const location = response.headers.get("Location");
-    expect(location).toContain(AUTH_ENDPOINTS.completeGithubRedirect);
+    expect(location).toContain(AUTH_ENDPOINTS.completeGitHubRedirect);
     expect(location).toContain("mode=success");
     expect(location).toContain("redirect=%2Finventory");
 
@@ -48,7 +48,7 @@ describe("authHandlers (MSW)", () => {
 
   it("/auth/github/redirect 성공 응답은 최종 경로로 이동시킨다", async () => {
     const response = await fetch(
-      `${baseUrl}${AUTH_ENDPOINTS.completeGithubRedirect}?mode=success&redirect=${encodeURIComponent("/dashboard")}&origin=${encodeURIComponent(baseUrl)}`,
+      `${baseUrl}${AUTH_ENDPOINTS.completeGitHubRedirect}?mode=success&redirect=${encodeURIComponent("/dashboard")}&origin=${encodeURIComponent(baseUrl)}`,
       {
         redirect: "manual",
       }
@@ -61,7 +61,7 @@ describe("authHandlers (MSW)", () => {
 
   it("/auth/github/redirect 오류 응답은 authError 쿼리를 포함한다", async () => {
     const response = await fetch(
-      `${baseUrl}${AUTH_ENDPOINTS.completeGithubRedirect}?mode=error&error=access_denied&redirect=${encodeURIComponent("https://malicious.example.com")}&origin=${encodeURIComponent("https://malicious.example.com")}`,
+      `${baseUrl}${AUTH_ENDPOINTS.completeGitHubRedirect}?mode=error&error=access_denied&redirect=${encodeURIComponent("https://malicious.example.com")}&origin=${encodeURIComponent("https://malicious.example.com")}`,
       {
         redirect: "manual",
       }

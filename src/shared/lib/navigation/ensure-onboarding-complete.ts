@@ -4,7 +4,7 @@ import {
   GITHUB_SYNC_STATUS_QUERY_KEY,
   githubSyncStatusQueryOptions,
 } from "@/entities/github/model/github-sync-status-query";
-import type { GithubSyncStatusData } from "@/entities/github/model/types";
+import type { GitHubSyncStatusData } from "@/entities/github/model/types";
 import { ensureQueryDataSafe } from "@/shared/lib/query/ensure-query-data-safe";
 
 export async function ensureOnboardingComplete(
@@ -12,7 +12,7 @@ export async function ensureOnboardingComplete(
 ): Promise<void> {
   await ensureQueryDataSafe(queryClient, githubSyncStatusQueryOptions);
 
-  const status = queryClient.getQueryData<GithubSyncStatusData>(
+  const status = queryClient.getQueryData<GitHubSyncStatusData>(
     GITHUB_SYNC_STATUS_QUERY_KEY
   );
 

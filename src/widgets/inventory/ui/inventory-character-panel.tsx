@@ -1,9 +1,9 @@
 import { MISSING_SPRITE } from "@/entities/catalog/config/local-sprites";
-import { formatNumber } from "@/entities/dashboard/lib/formatters";
+import { formatNumber } from "@/shared/lib/format/number";
 import { PixelAvatar } from "@/shared/ui/pixel-avatar";
 import { PixelPanel } from "@/shared/ui/pixel-panel";
+import { PixelStatRow } from "@/shared/ui/pixel-stat-row";
 import { StatValueWithBonus } from "@/shared/ui/stat-value-with-bonus";
-import { DashboardStatRow } from "@/widgets/dashboard-skin/ui/dashboard-stat-row";
 import type { CharacterStatSummary } from "@/features/character-summary/lib/build-character-overview";
 import { useTranslation } from "react-i18next";
 
@@ -93,7 +93,7 @@ export function InventoryCharacterPanel({
               key={row.key}
               className="border-b border-white/5 pb-2 last:border-none last:pb-0"
             >
-              <DashboardStatRow label={row.label} value={row.value} />
+              <PixelStatRow label={row.label} value={row.value} />
             </div>
           ))}
         </div>

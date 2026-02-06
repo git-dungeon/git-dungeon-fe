@@ -6,9 +6,9 @@ import {
   formatDateTime,
   formatRelativeTime,
 } from "@/shared/lib/datetime/formatters";
-import { GithubConnection } from "./github-connection";
+import { GitHubConnection } from "./github-connection";
 
-const useGithubSyncStatusMock = vi.fn(() => ({
+const useGitHubSyncStatusMock = vi.fn(() => ({
   data: null as unknown,
   isLoading: false,
   isError: false,
@@ -16,18 +16,18 @@ const useGithubSyncStatusMock = vi.fn(() => ({
 }));
 
 vi.mock("@/entities/github/model/use-github-sync-status", () => ({
-  useGithubSyncStatus: () => useGithubSyncStatusMock(),
+  useGitHubSyncStatus: () => useGitHubSyncStatusMock(),
 }));
 
 const mutateAsyncMock = vi.fn();
-const useGithubSyncMock = vi.fn(() => ({
+const useGitHubSyncMock = vi.fn(() => ({
   mutateAsync: mutateAsyncMock,
   isPending: false,
   error: null as Error | null,
 }));
 
 vi.mock("@/features/settings/model/use-github-sync", () => ({
-  useGithubSync: () => useGithubSyncMock(),
+  useGitHubSync: () => useGitHubSyncMock(),
 }));
 
 function render(ui: React.ReactElement) {
@@ -54,18 +54,18 @@ beforeAll(() => {
   ).IS_REACT_ACT_ENVIRONMENT = true;
 });
 
-describe("GithubConnection", () => {
+describe("GitHubConnection", () => {
   afterEach(() => {
     vi.useRealTimers();
     mutateAsyncMock.mockReset();
-    useGithubSyncMock.mockReset();
-    useGithubSyncMock.mockReturnValue({
+    useGitHubSyncMock.mockReset();
+    useGitHubSyncMock.mockReturnValue({
       mutateAsync: mutateAsyncMock,
       isPending: false,
       error: null as Error | null,
     });
-    useGithubSyncStatusMock.mockReset();
-    useGithubSyncStatusMock.mockReturnValue({
+    useGitHubSyncStatusMock.mockReset();
+    useGitHubSyncStatusMock.mockReturnValue({
       data: null as unknown,
       isLoading: false,
       isError: false,
@@ -78,7 +78,7 @@ describe("GithubConnection", () => {
     vi.setSystemTime(new Date("2025-10-21T04:00:00.000Z"));
 
     const nextAvailableAt = new Date("2025-10-21T06:00:00.000Z");
-    useGithubSyncStatusMock.mockReturnValue({
+    useGitHubSyncStatusMock.mockReturnValue({
       data: {
         connected: true,
         allowed: false,
@@ -94,7 +94,7 @@ describe("GithubConnection", () => {
     });
 
     const { container, unmount } = render(
-      <GithubConnection
+      <GitHubConnection
         connections={{
           github: { connected: true, lastSyncAt: "2025-10-21T01:00:00.000Z" },
         }}
@@ -118,7 +118,7 @@ describe("GithubConnection", () => {
 
   it("미연결 상태 메시지를 안내한다", () => {
     const { container, unmount } = render(
-      <GithubConnection connections={{ github: { connected: false } }} />
+      <GitHubConnection connections={{ github: { connected: false } }} />
     );
 
     const textContent = container.textContent ?? "";
@@ -130,7 +130,7 @@ describe("GithubConnection", () => {
   });
 
   it("409 오류는 안내 메시지를 표시한다", () => {
-    useGithubSyncStatusMock.mockReturnValue({
+    useGitHubSyncStatusMock.mockReturnValue({
       data: {
         connected: true,
         allowed: true,
@@ -145,7 +145,7 @@ describe("GithubConnection", () => {
       refetch: vi.fn().mockResolvedValue(undefined),
     });
 
-    useGithubSyncMock.mockReturnValue({
+    useGitHubSyncMock.mockReturnValue({
       mutateAsync: mutateAsyncMock,
       isPending: false,
       error: new ApiError("Conflict", 409, {
@@ -154,7 +154,7 @@ describe("GithubConnection", () => {
     });
 
     const { container, unmount } = render(
-      <GithubConnection connections={{ github: { connected: true } }} />
+      <GitHubConnection connections={{ github: { connected: true } }} />
     );
 
     const alertElement = container.querySelector('[role="alert"]');

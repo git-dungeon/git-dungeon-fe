@@ -1,4 +1,4 @@
-import type { DungeonLogEntry } from "@/entities/dungeon-log/model/types";
+import type { LogEntry } from "@/entities/logs/model/types";
 import type {
   InventoryEquippedMap,
   InventoryItem,
@@ -8,12 +8,12 @@ import type {
   CharacterStatSummary,
 } from "@/features/character-summary/lib/build-character-overview";
 import { mockDashboardResponse } from "@/mocks/handlers/dashboard-handlers";
-import { mockDungeonLogs } from "@/mocks/handlers/dungeon-log-handlers";
+import { mockLogs } from "@/mocks/handlers/logs-handlers";
 import { mockProfileOverview } from "@/mocks/fixtures/profile-overview";
 
 export const sampleDashboardState = mockDashboardResponse.state;
 
-export const sampleDungeonLogs: DungeonLogEntry[] = mockDungeonLogs;
+export const sampleLogs: LogEntry[] = mockLogs;
 
 export const sampleProfileOverview = mockProfileOverview;
 

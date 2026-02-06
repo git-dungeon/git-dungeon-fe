@@ -6,7 +6,7 @@ import type {
 import {
   EQUIPMENT_SLOTS,
   type EquipmentSlot,
-} from "@/entities/dashboard/model/types";
+} from "@/entities/equipment/model/types";
 import { InventoryItemCard } from "@/entities/inventory/ui/inventory-item-card";
 import { getInventorySlotLabel } from "@/entities/inventory/config/slot-labels";
 import { useTranslation } from "react-i18next";

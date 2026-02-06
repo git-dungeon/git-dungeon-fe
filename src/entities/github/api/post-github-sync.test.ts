@@ -3,11 +3,11 @@ import { http } from "msw";
 import { server } from "@/mocks/tests/server";
 import { respondWithError, respondWithSuccess } from "@/mocks/lib/api-response";
 import { GITHUB_ENDPOINTS } from "@/shared/config/env";
-import { postGithubSync } from "./post-github-sync";
+import { postGitHubSync } from "./post-github-sync";
 import { isAppError } from "@/shared/errors/app-error";
 
-describe("postGithubSync", () => {
-  it("성공 시 GithubSyncData를 반환한다", async () => {
+describe("postGitHubSync", () => {
+  it("성공 시 GitHubSyncData를 반환한다", async () => {
     server.use(
       http.post(GITHUB_ENDPOINTS.sync, () =>
         respondWithSuccess({
@@ -26,7 +26,7 @@ describe("postGithubSync", () => {
       )
     );
 
-    const data = await postGithubSync();
+    const data = await postGitHubSync();
 
     expect(data.tokenType).toBe("oauth");
     expect(data.logId).toBeTypeOf("string");
@@ -42,7 +42,7 @@ describe("postGithubSync", () => {
       )
     );
 
-    await expect(postGithubSync()).rejects.toMatchObject({
+    await expect(postGitHubSync()).rejects.toMatchObject({
       name: "AppError",
       code: "API_CONFLICT",
     });
@@ -59,8 +59,8 @@ describe("postGithubSync", () => {
     );
 
     try {
-      await postGithubSync();
-      throw new Error("Expected postGithubSync to throw");
+      await postGitHubSync();
+      throw new Error("Expected postGitHubSync to throw");
     } catch (error) {
       expect(isAppError(error)).toBe(true);
       if (!isAppError(error)) return;

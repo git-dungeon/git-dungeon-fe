@@ -2,10 +2,10 @@ import { GITHUB_ENDPOINTS } from "@/shared/config/env";
 import { requestWithSchema } from "@/shared/api/http-client";
 import {
   githubSyncStatusDataSchema,
-  type GithubSyncStatusData,
+  type GitHubSyncStatusData,
 } from "@/entities/github/model/types";
 
-export async function getGithubSyncStatus(): Promise<GithubSyncStatusData> {
+export async function getGitHubSyncStatus(): Promise<GitHubSyncStatusData> {
   return requestWithSchema(
     GITHUB_ENDPOINTS.status,
     githubSyncStatusDataSchema,

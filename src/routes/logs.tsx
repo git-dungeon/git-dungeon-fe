@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { LogsPage } from "@/pages/dungeon-log/ui/logs-page";
+import { LogsPage } from "@/pages/logs/ui/logs-page";
 import { ensureOnboardingComplete } from "@/shared/lib/navigation/ensure-onboarding-complete";
 
 export const Route = createFileRoute("/logs")({

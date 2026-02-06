@@ -1,5 +1,5 @@
 import { Card, CardContent, CardDescription } from "@/shared/ui/card";
-import { formatNumber } from "@/entities/dashboard/lib/formatters";
+import { formatNumber } from "@/shared/lib/format/number";
 
 export interface StatItemProps {
   title: string;

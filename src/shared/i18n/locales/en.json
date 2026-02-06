@@ -451,7 +451,7 @@
   },
   "auth": {
     "login": {
-      "cta": "Login With Github",
+      "cta": "Login With GitHub",
       "subtitle": "Log in with your GitHub account and start exploring.",
       "imageAlt": "Dungeon gate",
       "cards": {
@@ -481,7 +481,7 @@
         "generic": "Something went wrong during login. Please try again."
       },
       "button": {
-        "default": "Login With Github",
+        "default": "Login With GitHub",
         "loading": "Logging in with GitHub"
       }
     }

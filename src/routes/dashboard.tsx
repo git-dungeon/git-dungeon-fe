@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { dashboardStateQueryOptions } from "@/entities/dashboard/model/dashboard-state-query";
-import { dungeonLogsQueryOptions } from "@/entities/dungeon-log/model/dungeon-logs-query";
+import { logsQueryOptions } from "@/entities/logs/model/logs-query";
 import { DASHBOARD_RECENT_LOG_LIMIT } from "@/pages/dashboard/config/constants";
 import { DashboardPage } from "@/pages/dashboard/ui/dashboard-page";
 import { ensureOnboardingComplete } from "@/shared/lib/navigation/ensure-onboarding-complete";
@@ -17,7 +17,7 @@ export const Route = createFileRoute("/dashboard")({
       ensureQueryDataSafe(context.queryClient, dashboardStateQueryOptions),
       ensureQueryDataSafe(
         context.queryClient,
-        dungeonLogsQueryOptions({ limit: DASHBOARD_RECENT_LOG_LIMIT })
+        logsQueryOptions({ limit: DASHBOARD_RECENT_LOG_LIMIT })
       ),
     ]);
   },

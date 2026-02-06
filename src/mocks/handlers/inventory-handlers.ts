@@ -5,8 +5,8 @@ import type {
   InventoryItem,
   InventoryResponse,
   InventoryStatValues,
+  EquipmentSlot,
 } from "@/entities/inventory/model/types";
-import type { EquipmentSlot } from "@/entities/dashboard/model/types";
 import { mockDashboardResponse } from "@/mocks/handlers/dashboard-handlers";
 import { MOCK_CATALOG_DISMANTLE_CONFIG } from "@/mocks/handlers/catalog-handlers";
 import { mockTimestampMinutesAgo } from "@/mocks/handlers/shared/time";

@@ -7,20 +7,20 @@ import { PixelButton } from "@/shared/ui/pixel-button";
 import { PixelIcon } from "@/shared/ui/pixel-icon";
 import { normalizeError } from "@/shared/errors/normalize-error";
 import type { ProfileConnections } from "@/entities/profile/model/types";
-import { useGithubSyncStatus } from "@/entities/github/model/use-github-sync-status";
-import { useGithubSync } from "@/features/settings/model/use-github-sync";
+import { useGitHubSyncStatus } from "@/entities/github/model/use-github-sync-status";
+import { useGitHubSync } from "@/features/settings/model/use-github-sync";
 import { useTranslation } from "react-i18next";
 
-interface GithubConnectionProps {
+interface GitHubConnectionProps {
   connections: ProfileConnections;
 }
 
-export function GithubConnection({ connections }: GithubConnectionProps) {
+export function GitHubConnection({ connections }: GitHubConnectionProps) {
   const { t } = useTranslation();
   const github = connections.github;
   const isConnected = github?.connected ?? false;
-  const githubSync = useGithubSync();
-  const statusQuery = useGithubSyncStatus();
+  const githubSync = useGitHubSync();
+  const statusQuery = useGitHubSyncStatus();
 
   const status = statusQuery.data ?? null;
   const resolvedConnected = status?.connected ?? isConnected;
@@ -34,7 +34,7 @@ export function GithubConnection({ connections }: GithubConnectionProps) {
   const isSyncAllowed = status ? status.allowed : true;
   const isSyncDisabled =
     githubSync.isPending || isStatusLoading || !isSyncAllowed;
-  const syncErrorMessage = resolveGithubSyncErrorMessage(t, githubSync.error);
+  const syncErrorMessage = resolveGitHubSyncErrorMessage(t, githubSync.error);
 
   return (
     <div className="flex w-full flex-col items-start gap-3">
@@ -156,7 +156,7 @@ function resolveNextSyncLabel(
   };
 }
 
-function resolveGithubSyncErrorMessage(
+function resolveGitHubSyncErrorMessage(
   t: (key: string) => string,
   error: unknown
 ): string | null {

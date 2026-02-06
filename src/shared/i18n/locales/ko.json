@@ -451,7 +451,7 @@
   },
   "auth": {
     "login": {
-      "cta": "Login With Github",
+      "cta": "Login With GitHub",
       "subtitle": "GitHub 계정으로 로그인하고 탐험을 시작하세요.",
       "imageAlt": "던전 게이트",
       "cards": {

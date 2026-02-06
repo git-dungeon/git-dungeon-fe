@@ -1,6 +1,6 @@
 import { authHandlers } from "./auth-handlers";
 import { dashboardHandlers } from "./dashboard-handlers";
-import { dungeonLogHandlers } from "./dungeon-log-handlers";
+import { logsHandlers } from "./logs-handlers";
 import { inventoryHandlers } from "./inventory-handlers";
 import { settingsHandlers } from "./settings-handlers";
 import { embedHandlers } from "./embed-handlers";
@@ -13,7 +13,7 @@ import { chestHandlers } from "./chest-handlers";
 export const handlers = [
   ...authHandlers,
   ...dashboardHandlers,
-  ...dungeonLogHandlers,
+  ...logsHandlers,
   ...inventoryHandlers,
   ...settingsHandlers,
   ...catalogHandlers,

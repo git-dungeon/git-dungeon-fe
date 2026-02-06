@@ -1,9 +1,9 @@
 import { useTranslation } from "react-i18next";
 import loginSubImage from "@/assets/login/login-sub.webp";
-import cardGithubImage from "@/assets/login/git-integration.webp";
+import cardGitHubImage from "@/assets/login/git-integration.webp";
 import cardAutoImage from "@/assets/login/auto-exploration.webp";
 import cardLootImage from "@/assets/login/epic-loot.webp";
-import { GithubLoginButton } from "@/features/auth/github-login/ui/github-login-button";
+import { GitHubLoginButton } from "@/features/auth/github-login/ui/github-login-button";
 import { useLanguagePreference } from "@/features/settings/model/use-language-preference";
 import { LanguageSelect } from "@/features/settings/ui/language-select";
 import { PixelPanel } from "@/shared/ui/pixel-panel";
@@ -26,7 +26,7 @@ export function LoginScreen({ safeRedirect, authErrorCode }: LoginScreenProps) {
 
   const cards = [
     {
-      image: cardGithubImage,
+      image: cardGitHubImage,
       title: t("auth.login.cards.github.title"),
       description: t("auth.login.cards.github.description"),
     },
@@ -66,7 +66,7 @@ export function LoginScreen({ safeRedirect, authErrorCode }: LoginScreenProps) {
           {t("auth.login.subtitle")}
         </p>
         <div className="flex w-full flex-col items-center gap-3">
-          <GithubLoginButton
+          <GitHubLoginButton
             redirectTo={safeRedirect}
             onLoginStart={onLoginStart}
             onLoginError={onLoginError}
@@ -78,7 +78,7 @@ export function LoginScreen({ safeRedirect, authErrorCode }: LoginScreenProps) {
               <PixelIcon name="github" size={14} />
               {t("auth.login.cta")}
             </span>
-          </GithubLoginButton>
+          </GitHubLoginButton>
           {status ? (
             <p
               role={status.type === "info" ? "status" : "alert"}

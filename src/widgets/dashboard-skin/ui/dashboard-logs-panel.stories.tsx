@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { DashboardLogsPanel } from "@/widgets/dashboard-skin/ui/dashboard-logs-panel";
-import { sampleDungeonLogs } from "@/mocks/fixtures/storybook";
+import { sampleLogs } from "@/mocks/fixtures/storybook";
 
 const meta: Meta<typeof DashboardLogsPanel> = {
   title: "widgets/DashboardLogsPanel",
@@ -13,7 +13,7 @@ type Story = StoryObj<typeof DashboardLogsPanel>;
 
 export const Default: Story = {
   args: {
-    logs: sampleDungeonLogs.slice(0, 4),
+    logs: sampleLogs.slice(0, 4),
   },
 };
 

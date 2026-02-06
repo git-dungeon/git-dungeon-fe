@@ -6,20 +6,20 @@ import { PixelPanel } from "@/shared/ui/pixel-panel";
 import { PixelButton } from "@/shared/ui/pixel-button";
 import { PixelCheckIcon } from "@/shared/ui/pixel-check-icon";
 import { normalizeError } from "@/shared/errors/normalize-error";
-import { useGithubSyncStatus } from "@/entities/github/model/use-github-sync-status";
-import { useGithubSync } from "@/features/settings/model/use-github-sync";
+import { useGitHubSyncStatus } from "@/entities/github/model/use-github-sync-status";
+import { useGitHubSync } from "@/features/settings/model/use-github-sync";
 
 export function OnboardingPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const statusQuery = useGithubSyncStatus();
-  const githubSync = useGithubSync();
+  const statusQuery = useGitHubSyncStatus();
+  const githubSync = useGitHubSync();
 
   const status = statusQuery.data ?? null;
   const statusMessage = resolveOnboardingStatusMessage(t, status, {
     isLoading: statusQuery.isLoading,
   });
-  const syncErrorMessage = resolveGithubSyncErrorMessage(t, githubSync.error);
+  const syncErrorMessage = resolveGitHubSyncErrorMessage(t, githubSync.error);
 
   const isConnected = status?.connected ?? true;
   const isAllowed = status?.allowed ?? true;
@@ -151,7 +151,7 @@ function resolveOnboardingStatusMessage(
   return null;
 }
 
-function resolveGithubSyncErrorMessage(
+function resolveGitHubSyncErrorMessage(
   t: (key: string) => string,
   error: unknown
 ): string | null {

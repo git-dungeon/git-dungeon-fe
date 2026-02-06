@@ -1,5 +1,6 @@
 import { cn } from "@/shared/lib/utils";
 import { PixelProgress } from "@/shared/ui/pixel-progress";
+import { PixelStatRow } from "@/shared/ui/pixel-stat-row";
 
 interface DashboardStatBarProps {
   label: string;
@@ -19,12 +20,7 @@ export function DashboardStatBar({
   valueInBar = false,
 }: DashboardStatBarProps) {
   if (typeof percent !== "number") {
-    return (
-      <div className={cn("flex items-center justify-between", className)}>
-        <span className="pixel-stat-label">{label}</span>
-        <span className="pixel-stat-value">{value}</span>
-      </div>
-    );
+    return <PixelStatRow label={label} value={value} className={className} />;
   }
 
   if (valueInBar) {
@@ -45,10 +41,7 @@ export function DashboardStatBar({
 
   return (
     <div className={cn("space-y-1", className)}>
-      <div className="flex items-center justify-between">
-        <span className="pixel-stat-label">{label}</span>
-        <span className="pixel-stat-value">{value}</span>
-      </div>
+      <PixelStatRow label={label} value={value} />
       <PixelProgress percent={percent} tone={tone} ariaLabel={label} />
     </div>
   );

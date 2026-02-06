@@ -3,9 +3,9 @@ import { http } from "msw";
 import { server } from "@/mocks/tests/server";
 import { respondWithSuccess } from "@/mocks/lib/api-response";
 import { GITHUB_ENDPOINTS } from "@/shared/config/env";
-import { getGithubSyncStatus } from "./get-github-sync-status";
+import { getGitHubSyncStatus } from "./get-github-sync-status";
 
-describe("getGithubSyncStatus", () => {
+describe("getGitHubSyncStatus", () => {
   it("동기화 가능 여부를 반환한다", async () => {
     server.use(
       http.get(GITHUB_ENDPOINTS.status, () =>
@@ -21,7 +21,7 @@ describe("getGithubSyncStatus", () => {
       )
     );
 
-    const data = await getGithubSyncStatus();
+    const data = await getGitHubSyncStatus();
 
     expect(data.connected).toBe(true);
     expect(data.allowed).toBe(false);

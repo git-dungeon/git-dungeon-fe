@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { githubSyncStatusQueryOptions } from "@/entities/github/model/github-sync-status-query";
 
-export function useGithubSyncStatus() {
+export function useGitHubSyncStatus() {
   return useQuery(githubSyncStatusQueryOptions);
 }

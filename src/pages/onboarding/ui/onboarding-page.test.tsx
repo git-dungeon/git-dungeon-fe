@@ -12,7 +12,7 @@ vi.mock("@tanstack/react-router", () => ({
 }));
 
 vi.mock("@/entities/github/model/use-github-sync-status", () => ({
-  useGithubSyncStatus: () => ({
+  useGitHubSyncStatus: () => ({
     data: { connected: true, allowed: true },
     isLoading: false,
     refetch: refetchMock,
@@ -20,7 +20,7 @@ vi.mock("@/entities/github/model/use-github-sync-status", () => ({
 }));
 
 vi.mock("@/features/settings/model/use-github-sync", () => ({
-  useGithubSync: () => ({
+  useGitHubSync: () => ({
     mutateAsync: mutateAsyncMock,
     isPending: false,
     error: null,

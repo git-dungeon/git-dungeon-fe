@@ -22,7 +22,7 @@ export const githubSyncDataSchema = z
   })
   .strict();
 
-export type GithubSyncData = z.infer<typeof githubSyncDataSchema>;
+export type GitHubSyncData = z.infer<typeof githubSyncDataSchema>;
 
 export const githubSyncStatusDataSchema = z
   .object({
@@ -36,4 +36,4 @@ export const githubSyncStatusDataSchema = z
   })
   .strict();
 
-export type GithubSyncStatusData = z.infer<typeof githubSyncStatusDataSchema>;
+export type GitHubSyncStatusData = z.infer<typeof githubSyncStatusDataSchema>;
