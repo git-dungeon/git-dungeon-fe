@@ -341,6 +341,7 @@ export type LogMonster = z.infer<typeof logMonsterSchema>;
 const dungeonLogStatBlockSchema = z
   .object({
     hp: z.number().int(),
+    maxHp: z.number().int().optional(),
     atk: z.number().int(),
     def: z.number().int(),
     luck: z.number().int(),
