@@ -16,14 +16,10 @@ export function useLogsTimeline(params: UseLogsTimelineParams = {}) {
   const [cursorHistory, setCursorHistory] = useState<Array<string | undefined>>(
     [undefined]
   );
-  const [pendingDirection, setPendingDirection] = useState<
-    "next" | "refresh" | null
-  >(null);
 
   useEffect(() => {
     setPageIndex(0);
     setCursorHistory([undefined]);
-    setPendingDirection(null);
   }, [filterType, from, pageSize, to]);
 
   const currentCursor = cursorHistory[pageIndex];
@@ -40,25 +36,27 @@ export function useLogsTimeline(params: UseLogsTimelineParams = {}) {
 
   const logs = useMemo(() => data?.logs ?? [], [data]);
   const hasNextPage = Boolean(data?.nextCursor);
-  const isFetchingNextPage = pendingDirection === "next" && isFetching;
-
-  useEffect(() => {
-    if (!isFetching) {
-      setPendingDirection(null);
-    }
-  }, [isFetching]);
+  const hasPreviousPage = pageIndex > 0;
+  const pageNumber = pageIndex + 1;
 
   const fetchNextPage = () => {
     if (!data?.nextCursor || isFetching) {
       return;
     }
 
-    setPendingDirection("next");
     setCursorHistory((prev) => {
       const base = prev.slice(0, pageIndex + 1);
       return [...base, data.nextCursor ?? undefined];
     });
     setPageIndex((prev) => prev + 1);
+  };
+
+  const fetchPreviousPage = () => {
+    if (!hasPreviousPage || isFetching) {
+      return;
+    }
+
+    setPageIndex((prev) => Math.max(prev - 1, 0));
   };
 
   return {
@@ -67,10 +65,11 @@ export function useLogsTimeline(params: UseLogsTimelineParams = {}) {
     error,
     isFetching,
     fetchNextPage,
+    fetchPreviousPage,
     hasNextPage,
-    isFetchingNextPage,
+    hasPreviousPage,
+    pageNumber,
     refetch: () => {
-      setPendingDirection("refresh");
       void refetch();
     },
   };

@@ -75,20 +75,28 @@ beforeEach(() => {
 });
 
 describe("LogsTimeline", () => {
-  it("새로고침 버튼 클릭 시 refetch를 호출한다", () => {
-    const refetchMock = vi.fn();
-    const logs = [{ id: "log-1" } as LogEntry];
-
-    useLogsTimelineMock.mockReturnValue({
-      logs,
+  function buildTimelineState(overrides: Record<string, unknown> = {}) {
+    return {
+      logs: [{ id: "log-1" } as LogEntry],
       status: "success",
       error: null,
       isFetching: false,
       fetchNextPage: vi.fn(),
+      fetchPreviousPage: vi.fn(),
       hasNextPage: false,
-      isFetchingNextPage: false,
-      refetch: refetchMock,
-    });
+      hasPreviousPage: false,
+      pageNumber: 1,
+      refetch: vi.fn(),
+      ...overrides,
+    };
+  }
+
+  it("새로고침 버튼 클릭 시 refetch를 호출한다", () => {
+    const refetchMock = vi.fn();
+
+    useLogsTimelineMock.mockReturnValue(
+      buildTimelineState({ refetch: refetchMock })
+    );
 
     const { container, unmount } = render(<LogsTimeline />);
 
@@ -107,18 +115,9 @@ describe("LogsTimeline", () => {
   });
 
   it("로딩 중에는 새로고침 버튼이 비활성화된다", () => {
-    const logs = [{ id: "log-1" } as LogEntry];
-
-    useLogsTimelineMock.mockReturnValue({
-      logs,
-      status: "success",
-      error: null,
-      isFetching: true,
-      fetchNextPage: vi.fn(),
-      hasNextPage: false,
-      isFetchingNextPage: false,
-      refetch: vi.fn(),
-    });
+    useLogsTimelineMock.mockReturnValue(
+      buildTimelineState({ isFetching: true })
+    );
 
     const { container, unmount } = render(<LogsTimeline />);
 
@@ -127,6 +126,68 @@ describe("LogsTimeline", () => {
     ) as HTMLButtonElement;
 
     expect(refreshButton.disabled).toBe(true);
+
+    unmount();
+  });
+
+  it("첫 페이지에서는 이전 버튼이 비활성화되고 마지막 페이지에서는 다음 버튼이 비활성화된다", () => {
+    useLogsTimelineMock.mockReturnValue(
+      buildTimelineState({
+        hasNextPage: false,
+        hasPreviousPage: false,
+        pageNumber: 1,
+      })
+    );
+
+    const { container, unmount } = render(<LogsTimeline />);
+
+    const previousButton = container.querySelector(
+      '[data-testid="logs-prev-page-button"]'
+    ) as HTMLButtonElement;
+    const nextButton = container.querySelector(
+      '[data-testid="logs-next-page-button"]'
+    ) as HTMLButtonElement;
+    const pageNumber = container.querySelector(
+      '[data-testid="logs-page-number"]'
+    ) as HTMLSpanElement;
+
+    expect(previousButton.disabled).toBe(true);
+    expect(nextButton.disabled).toBe(true);
+    expect(pageNumber.textContent).toContain("1");
+
+    unmount();
+  });
+
+  it("이전/다음 버튼 클릭 시 각 페이지 이동 핸들러를 호출한다", () => {
+    const fetchPreviousPageMock = vi.fn();
+    const fetchNextPageMock = vi.fn();
+
+    useLogsTimelineMock.mockReturnValue(
+      buildTimelineState({
+        hasNextPage: true,
+        hasPreviousPage: true,
+        pageNumber: 2,
+        fetchPreviousPage: fetchPreviousPageMock,
+        fetchNextPage: fetchNextPageMock,
+      })
+    );
+
+    const { container, unmount } = render(<LogsTimeline />);
+
+    const previousButton = container.querySelector(
+      '[data-testid="logs-prev-page-button"]'
+    ) as HTMLButtonElement;
+    const nextButton = container.querySelector(
+      '[data-testid="logs-next-page-button"]'
+    ) as HTMLButtonElement;
+
+    act(() => {
+      previousButton.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+      nextButton.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+
+    expect(fetchPreviousPageMock).toHaveBeenCalledTimes(1);
+    expect(fetchNextPageMock).toHaveBeenCalledTimes(1);
 
     unmount();
   });
