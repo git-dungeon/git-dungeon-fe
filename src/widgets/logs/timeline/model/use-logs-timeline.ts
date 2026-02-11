@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { LogsFilterType } from "@/entities/logs/model/types";
-import { useInfiniteLogs } from "@/entities/logs/model/use-infinite-logs";
+import { useLogsPage } from "@/entities/logs/model/use-logs-page";
 import { LOGS_PAGE_SIZE } from "@/widgets/logs/timeline/config/constants";
 
 interface UseLogsTimelineParams {
@@ -10,58 +10,92 @@ interface UseLogsTimelineParams {
   to?: string;
 }
 
+interface CursorPaginationState {
+  filterKey: string;
+  pageIndex: number;
+  cursorHistory: Array<string | undefined>;
+}
+
 export function useLogsTimeline(params: UseLogsTimelineParams = {}) {
   const { filterType, pageSize = LOGS_PAGE_SIZE, from, to } = params;
+  const filterKey = `${filterType ?? "ALL"}|${from ?? ""}|${to ?? ""}|${pageSize}`;
+  const [pagination, setPagination] = useState<CursorPaginationState>(() => ({
+    filterKey,
+    pageIndex: 0,
+    cursorHistory: [undefined],
+  }));
 
-  const query = useInfiniteLogs({
+  const isFilterChanged = pagination.filterKey !== filterKey;
+  const activePageIndex = isFilterChanged ? 0 : pagination.pageIndex;
+  const activeCursorHistory = isFilterChanged
+    ? [undefined]
+    : pagination.cursorHistory;
+  const currentCursor = activeCursorHistory[activePageIndex];
+
+  useEffect(() => {
+    setPagination((prev) =>
+      prev.filterKey === filterKey
+        ? prev
+        : { filterKey, pageIndex: 0, cursorHistory: [undefined] }
+    );
+  }, [filterKey]);
+
+  const query = useLogsPage({
     limit: pageSize,
     type: filterType,
     from,
     to,
+    cursor: currentCursor,
   });
 
-  const {
-    data,
-    status,
-    error,
-    isFetching,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    refetch,
-  } = query;
+  const { data, status, error, isFetching, refetch } = query;
 
-  const logs = useMemo(
-    () => data?.pages.flatMap((page) => page.logs) ?? [],
-    [data]
-  );
+  const logs = useMemo(() => data?.logs ?? [], [data]);
+  const hasNextPage = Boolean(data?.nextCursor);
+  const hasPreviousPage = activePageIndex > 0;
+  const pageNumber = activePageIndex + 1;
 
-  const sentinelRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    if (status !== "success") {
+  const fetchNextPage = () => {
+    if (!data?.nextCursor || isFetching) {
       return;
     }
 
-    const node = sentinelRef.current;
-    if (!node || !hasNextPage) {
+    setPagination((prev) => {
+      const current =
+        prev.filterKey === filterKey
+          ? prev
+          : { filterKey, pageIndex: 0, cursorHistory: [undefined] };
+      const base = current.cursorHistory.slice(0, current.pageIndex + 1);
+
+      return {
+        ...current,
+        pageIndex: current.pageIndex + 1,
+        cursorHistory: [...base, data.nextCursor ?? undefined],
+      };
+    });
+  };
+
+  const fetchPreviousPage = () => {
+    if (isFetching) {
       return;
     }
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const [entry] = entries;
-        if (entry?.isIntersecting && hasNextPage && !isFetchingNextPage) {
-          fetchNextPage();
-        }
-      },
-      { rootMargin: "200px 0px" }
-    );
+    setPagination((prev) => {
+      const current =
+        prev.filterKey === filterKey
+          ? prev
+          : { filterKey, pageIndex: 0, cursorHistory: [undefined] };
 
-    observer.observe(node);
+      if (current.pageIndex <= 0) {
+        return current;
+      }
 
-    return () => observer.disconnect();
-  }, [fetchNextPage, hasNextPage, isFetchingNextPage, status]);
+      return {
+        ...current,
+        pageIndex: current.pageIndex - 1,
+      };
+    });
+  };
 
   return {
     logs,
@@ -69,9 +103,12 @@ export function useLogsTimeline(params: UseLogsTimelineParams = {}) {
     error,
     isFetching,
     fetchNextPage,
+    fetchPreviousPage,
     hasNextPage,
-    isFetchingNextPage,
-    refetch,
-    sentinelRef,
+    hasPreviousPage,
+    pageNumber,
+    refetch: () => {
+      void refetch();
+    },
   };
 }

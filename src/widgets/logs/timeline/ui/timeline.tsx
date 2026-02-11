@@ -41,10 +41,11 @@ export function LogsTimeline({
     error,
     isFetching,
     fetchNextPage,
+    fetchPreviousPage,
     hasNextPage,
-    isFetchingNextPage,
+    hasPreviousPage,
+    pageNumber,
     refetch,
-    sentinelRef,
   } = useLogsTimeline({ filterType, from, to });
   const [selectedLog, setSelectedLog] = useState<LogEntry | null>(null);
   const resolveItemName = useCatalogItemNameResolver();
@@ -76,7 +77,9 @@ export function LogsTimeline({
     return <EmptyState t={t} />;
   }
 
-  const isRefreshing = isFetching || isFetchingNextPage;
+  const isRefreshing = isFetching;
+  const isPreviousDisabled = isRefreshing || !hasPreviousPage;
+  const isNextDisabled = isRefreshing || !hasNextPage;
 
   return (
     <div className="space-y-4">
@@ -114,20 +117,30 @@ export function LogsTimeline({
           );
         })}
       </ul>
-      <div ref={sentinelRef} className="flex justify-center py-6">
-        {isFetchingNextPage ? (
-          <span className="pixel-text-muted text-sm">
-            {t("logs.timeline.loadingNext")}
-          </span>
-        ) : hasNextPage ? (
-          <PixelButton onClick={() => fetchNextPage()}>
-            {t("logs.timeline.loadMore")}
-          </PixelButton>
-        ) : (
-          <span className="pixel-text-muted text-sm">
-            {t("logs.timeline.allLoaded")}
-          </span>
-        )}
+      <div className="flex items-center justify-center gap-3 py-6">
+        <PixelButton
+          onClick={() => fetchPreviousPage()}
+          disabled={isPreviousDisabled}
+          aria-label={t("logs.timeline.previous")}
+          data-testid="logs-prev-page-button"
+        >
+          {t("logs.timeline.previous")}
+        </PixelButton>
+        <span
+          className="pixel-text-muted min-w-20 text-center text-sm"
+          aria-live="polite"
+          data-testid="logs-page-number"
+        >
+          {t("logs.timeline.page", { page: pageNumber })}
+        </span>
+        <PixelButton
+          onClick={() => fetchNextPage()}
+          disabled={isNextDisabled}
+          aria-label={t("logs.timeline.next")}
+          data-testid="logs-next-page-button"
+        >
+          {t("logs.timeline.next")}
+        </PixelButton>
       </div>
       <LogsDetailDialog
         log={selectedLog}
