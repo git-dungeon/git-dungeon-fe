@@ -88,7 +88,6 @@ describe("LogsTimeline", () => {
       hasNextPage: false,
       isFetchingNextPage: false,
       refetch: refetchMock,
-      sentinelRef: { current: null },
     });
 
     const { container, unmount } = render(<LogsTimeline />);
@@ -119,7 +118,6 @@ describe("LogsTimeline", () => {
       hasNextPage: false,
       isFetchingNextPage: false,
       refetch: vi.fn(),
-      sentinelRef: { current: null },
     });
 
     const { container, unmount } = render(<LogsTimeline />);

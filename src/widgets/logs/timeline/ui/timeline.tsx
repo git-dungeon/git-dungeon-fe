@@ -44,7 +44,6 @@ export function LogsTimeline({
     hasNextPage,
     isFetchingNextPage,
     refetch,
-    sentinelRef,
   } = useLogsTimeline({ filterType, from, to });
   const [selectedLog, setSelectedLog] = useState<LogEntry | null>(null);
   const resolveItemName = useCatalogItemNameResolver();
@@ -114,7 +113,7 @@ export function LogsTimeline({
           );
         })}
       </ul>
-      <div ref={sentinelRef} className="flex justify-center py-6">
+      <div className="flex justify-center py-6">
         {isFetchingNextPage ? (
           <span className="pixel-text-muted text-sm">
             {t("logs.timeline.loadingNext")}

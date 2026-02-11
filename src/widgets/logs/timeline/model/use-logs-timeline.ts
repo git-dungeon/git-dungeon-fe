@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { LogsFilterType } from "@/entities/logs/model/types";
 import { useLogsPage } from "@/entities/logs/model/use-logs-page";
 import { LOGS_PAGE_SIZE } from "@/widgets/logs/timeline/config/constants";
@@ -42,8 +42,6 @@ export function useLogsTimeline(params: UseLogsTimelineParams = {}) {
   const hasNextPage = Boolean(data?.nextCursor);
   const isFetchingNextPage = pendingDirection === "next" && isFetching;
 
-  const sentinelRef = useRef<HTMLDivElement | null>(null);
-
   useEffect(() => {
     if (!isFetching) {
       setPendingDirection(null);
@@ -75,6 +73,5 @@ export function useLogsTimeline(params: UseLogsTimelineParams = {}) {
       setPendingDirection("refresh");
       void refetch();
     },
-    sentinelRef,
   };
 }
