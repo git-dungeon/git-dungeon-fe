@@ -216,6 +216,12 @@ describe("useLogsTimeline", () => {
         cursor: undefined,
       })
     );
+    expect(useLogsPageMock).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "BATTLE",
+        cursor: "cursor-1",
+      })
+    );
 
     unmount();
   });

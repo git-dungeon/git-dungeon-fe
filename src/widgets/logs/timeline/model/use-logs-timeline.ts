@@ -10,19 +10,35 @@ interface UseLogsTimelineParams {
   to?: string;
 }
 
+interface CursorPaginationState {
+  filterKey: string;
+  pageIndex: number;
+  cursorHistory: Array<string | undefined>;
+}
+
 export function useLogsTimeline(params: UseLogsTimelineParams = {}) {
   const { filterType, pageSize = LOGS_PAGE_SIZE, from, to } = params;
-  const [pageIndex, setPageIndex] = useState(0);
-  const [cursorHistory, setCursorHistory] = useState<Array<string | undefined>>(
-    [undefined]
-  );
+  const filterKey = `${filterType ?? "ALL"}|${from ?? ""}|${to ?? ""}|${pageSize}`;
+  const [pagination, setPagination] = useState<CursorPaginationState>(() => ({
+    filterKey,
+    pageIndex: 0,
+    cursorHistory: [undefined],
+  }));
+
+  const isFilterChanged = pagination.filterKey !== filterKey;
+  const activePageIndex = isFilterChanged ? 0 : pagination.pageIndex;
+  const activeCursorHistory = isFilterChanged
+    ? [undefined]
+    : pagination.cursorHistory;
+  const currentCursor = activeCursorHistory[activePageIndex];
 
   useEffect(() => {
-    setPageIndex(0);
-    setCursorHistory([undefined]);
-  }, [filterType, from, pageSize, to]);
-
-  const currentCursor = cursorHistory[pageIndex];
+    setPagination((prev) =>
+      prev.filterKey === filterKey
+        ? prev
+        : { filterKey, pageIndex: 0, cursorHistory: [undefined] }
+    );
+  }, [filterKey]);
 
   const query = useLogsPage({
     limit: pageSize,
@@ -36,27 +52,49 @@ export function useLogsTimeline(params: UseLogsTimelineParams = {}) {
 
   const logs = useMemo(() => data?.logs ?? [], [data]);
   const hasNextPage = Boolean(data?.nextCursor);
-  const hasPreviousPage = pageIndex > 0;
-  const pageNumber = pageIndex + 1;
+  const hasPreviousPage = activePageIndex > 0;
+  const pageNumber = activePageIndex + 1;
 
   const fetchNextPage = () => {
     if (!data?.nextCursor || isFetching) {
       return;
     }
 
-    setCursorHistory((prev) => {
-      const base = prev.slice(0, pageIndex + 1);
-      return [...base, data.nextCursor ?? undefined];
+    setPagination((prev) => {
+      const current =
+        prev.filterKey === filterKey
+          ? prev
+          : { filterKey, pageIndex: 0, cursorHistory: [undefined] };
+      const base = current.cursorHistory.slice(0, current.pageIndex + 1);
+
+      return {
+        ...current,
+        pageIndex: current.pageIndex + 1,
+        cursorHistory: [...base, data.nextCursor ?? undefined],
+      };
     });
-    setPageIndex((prev) => prev + 1);
   };
 
   const fetchPreviousPage = () => {
-    if (!hasPreviousPage || isFetching) {
+    if (isFetching) {
       return;
     }
 
-    setPageIndex((prev) => Math.max(prev - 1, 0));
+    setPagination((prev) => {
+      const current =
+        prev.filterKey === filterKey
+          ? prev
+          : { filterKey, pageIndex: 0, cursorHistory: [undefined] };
+
+      if (current.pageIndex <= 0) {
+        return current;
+      }
+
+      return {
+        ...current,
+        pageIndex: current.pageIndex - 1,
+      };
+    });
   };
 
   return {
