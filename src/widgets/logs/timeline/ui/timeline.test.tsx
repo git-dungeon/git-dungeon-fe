@@ -191,4 +191,55 @@ describe("LogsTimeline", () => {
 
     unmount();
   });
+
+  it("에러 상태에서는 재시도 버튼만 표시되고 클릭 시 refetch를 호출한다", () => {
+    const refetchMock = vi.fn();
+
+    useLogsTimelineMock.mockReturnValue(
+      buildTimelineState({
+        status: "error",
+        error: new Error("boom"),
+        refetch: refetchMock,
+      })
+    );
+
+    const { container, unmount } = render(<LogsTimeline />);
+
+    expect(
+      container.querySelector('[data-testid="logs-refresh-button"]')
+    ).toBeNull();
+
+    const buttons = container.querySelectorAll("button");
+    expect(buttons.length).toBe(1);
+
+    act(() => {
+      buttons[0].dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+
+    expect(refetchMock).toHaveBeenCalledTimes(1);
+
+    unmount();
+  });
+
+  it("빈 상태에서는 로그 카드/페이지네이션 컨트롤을 렌더링하지 않는다", () => {
+    useLogsTimelineMock.mockReturnValue(
+      buildTimelineState({
+        logs: [],
+      })
+    );
+
+    const { container, unmount } = render(<LogsTimeline />);
+
+    expect(container.querySelectorAll('[data-testid="log-card"]').length).toBe(
+      0
+    );
+    expect(
+      container.querySelector('[data-testid="logs-prev-page-button"]')
+    ).toBeNull();
+    expect(
+      container.querySelector('[data-testid="logs-next-page-button"]')
+    ).toBeNull();
+
+    unmount();
+  });
 });
